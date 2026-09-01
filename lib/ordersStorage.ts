@@ -1,5 +1,3 @@
-import { supabase } from "@/lib/supabase";
-
 export interface OrderItem {
   id: string;
   product_slug: string;
@@ -17,42 +15,6 @@ export interface OrderItem {
 
 const LOCAL_STORAGE_KEY = "isivente_orders_store";
 
-export async function saveNewOrder(orderData: Omit<OrderItem, "id" | "created_at">): Promise<OrderItem> {
-  const newOrder: OrderItem = {
-    ...orderData,
-    id: "ord_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
-    created_at: new Date().toISOString()
-  };
-
-  // 1. Sauvegarde locale immédiate (LocalStorage) pour garantie 100% zéro perte
-  if (typeof window !== "undefined") {
-    try {
-      const existing = getLocalOrders();
-      const updated = [newOrder, ...existing];
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-    } catch (err) {
-      console.warn("LocalStorage save error:", err);
-    }
-  }
-
-  // 2. Sauvegarde dans Supabase si configuré
-  try {
-    const { data, error } = await supabase.from("orders").insert([{
-      ...orderData,
-      id: newOrder.id,
-      created_at: newOrder.at || newOrder.created_at
-    }]).select();
-
-    if (error) {
-      console.warn("Supabase insert notice:", error.message);
-    }
-  } catch (err) {
-    console.warn("Supabase network notice:", err);
-  }
-
-  return newOrder;
-}
-
 export function getLocalOrders(): OrderItem[] {
   if (typeof window === "undefined") return [];
   try {
@@ -64,34 +26,89 @@ export function getLocalOrders(): OrderItem[] {
   }
 }
 
+export function saveLocalOrder(order: OrderItem) {
+  if (typeof window === "undefined") return;
+  try {
+    const existing = getLocalOrders();
+    const filtered = existing.filter((o) => o.id !== order.id);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([order, ...filtered]));
+  } catch (err) {
+    console.warn("LocalStorage error:", err);
+  }
+}
+
+// 🚀 SAUVEGARDE COMMANDE (CLIENT -> SERVEUR + LOCAL)
+export async function saveNewOrder(orderData: Omit<OrderItem, "id" | "created_at">): Promise<OrderItem> {
+  const tempOrder: OrderItem = {
+    ...orderData,
+    id: "ord_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+    created_at: new Date().toISOString()
+  };
+
+  // 1. Sauvegarde locale immédiate
+  saveLocalOrder(tempOrder);
+
+  // 2. Appel de l'API Serveur centralisée (/api/orders)
+  try {
+    const response = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orderData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.order) {
+        saveLocalOrder(data.order);
+        return data.order;
+      }
+    }
+  } catch (err) {
+    console.warn("API POST error, order kept in local storage:", err);
+  }
+
+  return tempOrder;
+}
+
+// 📦 RÉCUPÉRATION COMMANDE (DASHBOARD ADMIN)
 export async function getAllOrders(): Promise<OrderItem[]> {
   const localOrders = getLocalOrders();
 
-  // Essayer de récupérer depuis Supabase
   try {
-    const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const response = await fetch("/api/orders", {
+      method: "GET",
+      headers: { "Cache-Control": "no-cache" }
+    });
 
-    if (!error && data && data.length > 0) {
-      // Fusionner sans doublons
-      const map = new Map<string, OrderItem>();
-      data.forEach((o: any) => map.set(o.id, o));
-      localOrders.forEach((o) => {
-        if (!map.has(o.id)) map.set(o.id, o);
-      });
-      return Array.from(map.values()).sort((a, b) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+    if (response.ok) {
+      const data = await response.json();
+      if (data.orders && Array.isArray(data.orders)) {
+        // Fusionner serveur + local sans doublon
+        const map = new Map<string, OrderItem>();
+        data.orders.forEach((o: OrderItem) => map.set(o.id, o));
+        localOrders.forEach((o: OrderItem) => {
+          if (!map.has(o.id)) map.set(o.id, o);
+        });
+
+        const merged = Array.from(map.values()).sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
+        }
+
+        return merged;
+      }
     }
   } catch (err) {
-    console.warn("Supabase fetch notice:", err);
+    console.warn("API GET error, returning local orders:", err);
   }
 
   return localOrders;
 }
 
+// 🔄 MISE À JOUR STATUT
 export async function updateLocalAndRemoteOrderStatus(orderId: string, newStatus: string): Promise<boolean> {
   // 1. Mise à jour locale
   if (typeof window !== "undefined") {
@@ -99,16 +116,18 @@ export async function updateLocalAndRemoteOrderStatus(orderId: string, newStatus
       const existing = getLocalOrders();
       const updated = existing.map((o) => (o.id === orderId ? { ...o, status: newStatus as any } : o));
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-    } catch (err) {
-      console.warn("LocalStorage update error:", err);
-    }
+    } catch (err) {}
   }
 
-  // 2. Mise à jour Supabase
+  // 2. Mise à jour serveur
   try {
-    await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
+    await fetch("/api/orders", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: orderId, status: newStatus }),
+    });
   } catch (err) {
-    console.warn("Supabase update notice:", err);
+    console.warn("API PATCH error:", err);
   }
 
   return true;
