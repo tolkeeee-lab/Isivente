@@ -8,11 +8,8 @@ export interface OrderItem {
   bundle_id?: string;
   quantity?: number;
   total_amount?: number;
-  amount?: number;
   customer_name?: string;
-  name?: string;
   customer_phone?: string;
-  phone?: string;
   shipping_city?: string;
   city?: string;
   shipping_address?: string;
@@ -32,35 +29,31 @@ function saveToLocalStorage(order: any) {
   } catch {}
 }
 
-/** Sauvegarde une nouvelle commande dans Supabase avec mapping complet de toutes les colonnes possibles */
+/** Sauvegarde une nouvelle commande dans Supabase avec auto-adaptation au schéma */
 export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   const randomNum = Math.floor(100000 + Math.random() * 900000);
   const orderNumberStr = "CMD-" + randomNum;
 
-  const name = orderData.customer_name || orderData.name || "Client";
-  const phone = orderData.customer_phone || orderData.phone || "";
-  const city = orderData.shipping_city || orderData.city || "";
+  const name = orderData.customer_name || "Client";
+  const phone = orderData.customer_phone || "";
+  const city = orderData.shipping_city || orderData.city || "Cotonou";
   const address = orderData.shipping_address || orderData.address || "";
-  const amount = orderData.total_amount || orderData.amount || 14900;
+  const totalAmount = orderData.total_amount || 14900;
   const quantity = orderData.quantity || 1;
   const productTitle = orderData.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1";
   const productSlug = orderData.product_slug || "umei";
   const status = orderData.status || "pending";
   const createdAt = new Date().toISOString();
 
-  // Payload universel contenant les noms de colonnes et leurs alias (pour satisfaire les contraintes NOT NULL)
-  const fullPayload: any = {
+  // Objet de commande standard
+  let payload: Record<string, any> = {
     order_number: orderNumberStr,
     customer_name: name,
-    name: name,
     customer_phone: phone,
-    phone: phone,
-    shipping_city: city,
     city: city,
+    shipping_city: city,
     shipping_address: address,
-    address: address,
-    total_amount: amount,
-    amount: amount,
+    total_amount: totalAmount,
     quantity: quantity,
     product_title: productTitle,
     product_slug: productSlug,
@@ -69,54 +62,44 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   };
 
   // 1. Sauvegarde locale de sécurité
-  saveToLocalStorage({ ...fullPayload, id: "local_" + Date.now() });
+  saveToLocalStorage({ ...payload, id: "local_" + Date.now() });
 
-  // 2. Premier essai d'insertion complète dans Supabase
-  let res = await supabase.from("orders").insert([fullPayload]).select();
+  // 2. Insertion dans Supabase avec boucle de repli automatique en cas de colonne manquante
+  let attempts = 0;
+  while (attempts < 5) {
+    attempts++;
+    const res = await supabase.from("orders").insert([payload]).select();
 
-  // 3. Si certaines colonnes n'existent pas dans la table, filtrer et réessayer
-  if (res.error) {
-    console.warn("Supabase initial insert notice:", res.error.message);
+    if (!res.error) {
+      return res.data?.[0] || payload;
+    }
 
-    // Essayer avec uniquement le schéma classique standard (city, address, phone, name)
-    const standardPayload: any = {
-      order_number: orderNumberStr,
-      name: name,
-      phone: phone,
-      city: city,
-      address: address,
-      amount: amount,
-      total_amount: amount,
-      quantity: quantity,
-      status: status,
-      created_at: createdAt
-    };
-    let res2 = await supabase.from("orders").insert([standardPayload]).select();
-    if (!res2.error) return res2.data?.[0] || standardPayload;
+    // Si une colonne n'existe pas dans la table Supabase, la retirer et réessayer
+    const match = res.error.message.match(/Could not find the '([^']+)' column/);
+    if (match && match[1]) {
+      const missingColumn = match[1];
+      delete payload[missingColumn];
+      continue;
+    }
 
-    // Essayer avec le schéma alternatif (customer_name, customer_phone, shipping_city, shipping_address)
-    const altPayload: any = {
-      order_number: orderNumberStr,
-      customer_name: name,
-      customer_phone: phone,
-      shipping_city: city,
-      shipping_address: address,
-      total_amount: amount,
-      quantity: quantity,
-      status: status,
-      created_at: createdAt
-    };
-    let res3 = await supabase.from("orders").insert([altPayload]).select();
-    if (!res3.error) return res3.data?.[0] || altPayload;
+    // Si erreur de type sur order_number (ex: attendu integer)
+    if (res.error.message.includes("order_number") || res.error.code === "22P02") {
+      payload.order_number = randomNum;
+      continue;
+    }
+
+    console.warn("Supabase insert notice:", res.error.message);
+    break;
   }
 
-  return res.data?.[0] || fullPayload;
+  return payload;
 }
 
-/** Normalise un objet commande pour affichage sans faille dans le Dashboard */
+/** Normalise un objet commande pour le Dashboard */
 function normalizeOrder(o: any): OrderItem {
   return {
     ...o,
+    order_number: o.order_number || ("CMD-" + (o.id || "000").substring(0, 6)),
     customer_name: o.customer_name || o.name || "Client",
     customer_phone: o.customer_phone || o.phone || "",
     shipping_city: o.shipping_city || o.city || "Cotonou",
