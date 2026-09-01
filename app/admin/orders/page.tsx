@@ -34,13 +34,13 @@ export default function OrdersPage() {
     setUpdating(false);
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'pending': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">À confirmer</span>;
       case 'shipped': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">En cours (Livreur)</span>;
       case 'delivered': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Livrée & Encaissée</span>;
       case 'cancelled': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Annulée</span>;
-      default: return null;
+      default: return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">En attente</span>;
     }
   };
 
@@ -71,7 +71,7 @@ export default function OrdersPage() {
             <ul className="divide-y divide-gray-100">
               {filteredOrders.map(order => (
                 <li 
-                  key={order.id}
+                  key={order.id || Math.random()}
                   onClick={() => setSelectedOrder(order)}
                   className={`p-6 hover:bg-gray-50/50 cursor-pointer transition-colors ${selectedOrder?.id === order.id ? 'bg-premium-bg border-l-4 border-l-premium-accent' : ''}`}
                 >
@@ -81,7 +81,7 @@ export default function OrdersPage() {
                   </div>
                   <div className="flex justify-between items-center text-sm text-gray-500">
                     <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {order.shipping_city}</span>
-                    <span className="font-medium text-premium-dark">{order.total_amount.toLocaleString('fr-FR')} F</span>
+                    <span className="font-medium text-premium-dark">{(order.total_amount || 0).toLocaleString('fr-FR')} F</span>
                   </div>
                 </li>
               ))}
@@ -128,8 +128,8 @@ export default function OrdersPage() {
                   <div className="flex-1">
                     <p className="font-medium text-premium-dark">{selectedOrder.product_title}</p>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="text-gray-600 text-sm">Quantité: {selectedOrder.quantity}</span>
-                      <span className="font-bold text-premium-dark">{selectedOrder.total_amount.toLocaleString('fr-FR')} F</span>
+                      <span className="text-gray-600 text-sm">Quantité: {selectedOrder.quantity || 1}</span>
+                      <span className="font-bold text-premium-dark">{(selectedOrder.total_amount || 0).toLocaleString('fr-FR')} F</span>
                     </div>
                   </div>
                 </div>
@@ -139,7 +139,7 @@ export default function OrdersPage() {
                 <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Date</h4>
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-gray-400" />
-                  <p className="font-medium text-premium-dark">{new Date(selectedOrder.created_at).toLocaleString('fr-FR')}</p>
+                  <p className="font-medium text-premium-dark">{new Date(selectedOrder.created_at || Date.now()).toLocaleString('fr-FR')}</p>
                 </div>
               </div>
             </div>
