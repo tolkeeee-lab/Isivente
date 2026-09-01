@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { trackUserSession } from "@/lib/analyticsStorage";
 import { 
   Check, 
   ArrowRight, 
@@ -66,6 +67,24 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  // ⏱️ Suivi automatique du temps passé sur la page et du taux de clic (Analytics CTR)
+  useEffect(() => {
+    const startTime = Date.now();
+    let hasClicked = false;
+
+    const recordTime = (clicked: boolean = false) => {
+      const durationSeconds = (Date.now() - startTime) / 1000;
+      trackUserSession(slug || "umei", durationSeconds, clicked || hasClicked);
+    };
+
+    window.addEventListener("beforeunload", () => recordTime(false));
+
+    return () => {
+      recordTime(false);
+      window.removeEventListener("beforeunload", () => recordTime(false));
+    };
+  }, [slug]);
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -97,6 +116,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
       };
 
       await saveNewOrder(orderData);
+      await trackUserSession(slug || "umei", 30, true);
       window.location.href = `/p/${slug}/success`;
     } catch (err) {
       console.error("Order error:", err);
