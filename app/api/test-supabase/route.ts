@@ -17,14 +17,15 @@ export async function GET() {
 
   const randomNum = Math.floor(100000 + Math.random() * 900000);
 
-  // Exact Supabase columns based on diagnostics:
-  // customer_name, customer_phone, city, address, order_number, total_amount, quantity, status, created_at
+  // Exact complete payload matching Supabase orders table:
   const testOrder = {
     order_number: "CMD-" + randomNum,
     customer_name: "Test Client Supabase",
     customer_phone: "97000000",
     city: "Cotonou",
     address: "Haie Vive",
+    product_slug: "umei",
+    product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
     total_amount: 14900,
     quantity: 1,
     status: "pending",

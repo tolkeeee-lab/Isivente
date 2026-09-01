@@ -43,13 +43,15 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   const status = orderData.status || "pending";
   const createdAt = new Date().toISOString();
 
-  // Schéma exact de votre table Supabase
+  // Schéma exact et complet de votre table Supabase
   let payload: Record<string, any> = {
     order_number: orderNumberStr,
     customer_name: name,
     customer_phone: phone,
     city: city,
     address: address,
+    product_slug: orderData.product_slug || "umei",
+    product_title: orderData.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1",
     total_amount: totalAmount,
     quantity: quantity,
     status: status,
