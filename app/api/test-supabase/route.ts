@@ -17,7 +17,7 @@ export async function GET() {
 
   const randomNum = Math.floor(100000 + Math.random() * 900000);
 
-  // Exact complete payload matching Supabase orders table:
+  // Exact complete Supabase schema with bundle_name:
   const testOrder = {
     order_number: "CMD-" + randomNum,
     customer_name: "Test Client Supabase",
@@ -26,6 +26,7 @@ export async function GET() {
     address: "Haie Vive",
     product_slug: "umei",
     product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
+    bundle_name: "Pack Découverte (1 Brosse)",
     total_amount: 14900,
     quantity: 1,
     status: "pending",

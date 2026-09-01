@@ -6,6 +6,7 @@ export interface OrderItem {
   product_slug?: string;
   product_title?: string;
   bundle_id?: string;
+  bundle_name?: string;
   quantity?: number;
   total_amount?: number;
   customer_name?: string;
@@ -52,6 +53,7 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
     address: address,
     product_slug: orderData.product_slug || "umei",
     product_title: orderData.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1",
+    bundle_name: orderData.bundle_name || "Pack Découverte (1 Brosse)",
     total_amount: totalAmount,
     quantity: quantity,
     status: status,

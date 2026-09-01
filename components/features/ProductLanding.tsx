@@ -83,12 +83,15 @@ export default function ProductLanding({ slug }: { slug: string }) {
         product_slug: slug || "umei",
         product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
         bundle_id: selectedBundle.id,
+        bundle_name: selectedBundle.name,
         quantity: selectedBundle.quantity,
         total_amount: selectedBundle.price,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
         shipping_city: city,
+        city: city,
         shipping_address: address,
+        address: address,
         status: 'pending' as const
       };
 
