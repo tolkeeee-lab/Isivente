@@ -57,23 +57,25 @@ interface FAQItem {
 
 // Données riches par défaut pour une résilience maximale
 const DEFAULT_PRODUCT_DATA = {
-  title: "Brosse Démêlante Vapeur Uméi Pro",
-  tagline: "Le secret d'un démêlage sans douleur, sans casse et hydraté en profondeur.",
+  title: "Brosse Démêlante Vapeur Uméi Pro 3-en-1",
+  tagline: "Vapeur assouplissante, brume d'huile essentielle et clic libérateur. Fini les pleurs et les cheveux arrachés.",
   brand: "uméi.",
-  image_url: "/images/brosse-transparente.png",
-  secondary_image: "/images/brosse-umei-vapeur.jpg",
-  price: 14900,
-  original_price: 24900,
+  image_url: "/images/umei-hero.jpg",
+  secondary_image: "/images/umei-action.jpg",
+  click_image: "/images/umei-click.jpg",
+  video_url: "/videos/demo-umei.mp4",
+  price: 7500,
+  original_price: 15000,
   rating: 4.9,
   reviewsCount: 1420,
-  description: "Dites adieu aux pleurs et aux séances de coiffure interminables. La micro-brume thermo-active détend la fibre capillaire instantanément pour un glissement parfait.",
+  description: "Dites adieu aux séances de coiffure douloureuses. La micro-brume thermo-active détend la fibre capillaire instantanément pour un glissement sans accroc.",
   bundles: [
     {
       id: "solo",
       name: "Pack Découverte (1 Brosse)",
       quantity: 1,
-      price: 14900,
-      original_price: 24900,
+      price: 7500,
+      original_price: 15000,
       badge: null,
       description: "Idéal pour tester l'expérience Uméi à la maison.",
       popular: false
@@ -82,9 +84,9 @@ const DEFAULT_PRODUCT_DATA = {
       id: "duo",
       name: "Pack Sérénité Duo (2 Brosses)",
       quantity: 2,
-      price: 24900,
-      original_price: 49800,
-      badge: "⭐ PLUS POPULAIRE - ÉCONOMISEZ 50%",
+      price: 13000,
+      original_price: 30000,
+      badge: "⭐ PLUS POPULAIRE - ÉCONOMISEZ 57%",
       description: "1 pour vous + 1 pour votre fille, sœur ou amie.",
       popular: true
     },
@@ -92,9 +94,9 @@ const DEFAULT_PRODUCT_DATA = {
       id: "famille",
       name: "Pack Famille (3 Brosses)",
       quantity: 3,
-      price: 34900,
-      original_price: 74700,
-      badge: "🔥 MEILLEURE VALEUR",
+      price: 18000,
+      original_price: 45000,
+      badge: "🔥 MEILLEURE OFFRE",
       description: "Le pack complet pour toute la maison au tarif le plus avantageux.",
       popular: false
     }
@@ -503,8 +505,59 @@ export default function ProductLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* 🎬 SECTION DÉMONSTRATION VIDÉO EN DIRECT */}
+      <section id="demo-video" className="py-12 md:py-16 bg-gradient-to-b from-purple-100/60 to-white border-y border-purple-100">
+        <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
+          
+          <div className="mb-8">
+            <span className="text-xs font-extrabold tracking-widest uppercase text-purple-700 bg-purple-50 px-3.5 py-1.5 rounded-full border border-purple-200">
+              Démonstration Vidéo
+            </span>
+            <h2 className="font-display font-extrabold text-2xl md:text-4xl text-premium-dark mt-3">
+              Voyez la brosse uméi en action
+            </h2>
+            <p className="text-gray-600 text-sm md:text-base mt-2 max-w-xl mx-auto font-normal">
+              Regardez comment la micro-brume thermo-active détend instantanément les boucles pour un brossage fluide et sans douleur.
+            </p>
+          </div>
+
+          <div className="relative bg-white p-3 sm:p-4 rounded-3xl shadow-2xl border border-purple-200 overflow-hidden max-w-3xl mx-auto">
+            <div className="relative rounded-2xl overflow-hidden bg-purple-950 aspect-video flex items-center justify-center">
+              
+              {/* Badge direct */}
+              <div className="absolute top-3 left-3 bg-purple-900/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 z-10">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                <span>Vidéo Démonstration</span>
+              </div>
+
+              <video 
+                src="/videos/demo-umei.mp4"
+                poster="/images/umei-action.jpg"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                className="w-full h-full object-cover"
+              >
+                Votre navigateur ne supporte pas la lecture de vidéos.
+              </video>
+            </div>
+            
+            <div className="mt-3 flex items-center justify-center gap-4 text-xs font-semibold text-purple-900">
+              <span className="flex items-center gap-1">✨ 100% Sans douleur</span>
+              <span>•</span>
+              <span className="flex items-center gap-1">💧 Hydratation instantanée</span>
+              <span>•</span>
+              <span className="flex items-center gap-1">⚡ Nettoyage 1-clic</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* 🌿 SECTION 3 AVANTAGES MAJEURS (CARDS ÉLÉGANTES) */}
-      <section className="py-16 md:py-20 bg-white border-y border-gray-100">
+      <section className="py-16 md:py-20 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -538,6 +591,44 @@ export default function ProductLanding({ slug }: { slug: string }) {
             ))}
           </div>
 
+        </div>
+      </section>
+
+      {/* 📸 SECTION PHOTO DÉTAIL : LE CLIC LIBÉRATEUR */}
+      <section className="py-16 md:py-20 bg-purple-50/50">
+        <div className="max-w-5xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="relative rounded-3xl overflow-hidden shadow-xl border border-purple-100">
+            <img 
+              src="/images/umei-click.jpg" 
+              alt="Nettoyage 1 clic brosse uméi" 
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div className="space-y-5">
+            <span className="text-xs font-bold uppercase tracking-widest bg-rose-100 text-rose-700 px-3 py-1 rounded-full">
+              Le détail qui change tout
+            </span>
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl md:text-4xl text-premium-dark">
+              Un clic, et vos cheveux se détachent tout seuls.
+            </h2>
+            <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+              Sur une brosse ordinaire, retirer les cheveux coincés prend des minutes et salit vos doigts. Grâce au système d’éjection breveté de la brosse uméi, une simple pression expulse tous les cheveux résiduels en une fraction de seconde.
+            </p>
+            <div className="space-y-2.5 pt-2">
+              <div className="flex items-center gap-2.5 text-sm font-semibold text-gray-800">
+                <Check className="w-4 h-4 text-purple-700" />
+                <span>Zéro cheveu coincé entre les picots</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-sm font-semibold text-gray-800">
+                <Check className="w-4 h-4 text-purple-700" />
+                <span>Nettoyage instantané et 100% hygiénique</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-sm font-semibold text-gray-800">
+                <Check className="w-4 h-4 text-purple-700" />
+                <span>Picots doux anti-casse pour cuir chevelu sensible</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
