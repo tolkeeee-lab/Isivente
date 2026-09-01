@@ -1,0 +1,43 @@
+{
+  "name": "Isivente - Gestion & Ventes",
+  "short_name": "Isivente",
+  "description": "Plateforme de gestion de commandes, catalogue et ventes directes.",
+  "start_url": "/admin",
+  "display": "standalone",
+  "background_color": "#241B36",
+  "theme_color": "#8B6FE0",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Commandes",
+      "url": "/admin/orders",
+      "description": "Voir les commandes récentes"
+    },
+    {
+      "name": "Produits",
+      "url": "/admin/products",
+      "description": "Voir le catalogue"
+    }
+  ]
+}
