@@ -70,7 +70,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerPhone.trim() || customerPhone.trim().length < 8) {
       alert("Veuillez saisir un numéro de téléphone valide pour la confirmation de livraison.");
@@ -78,23 +78,27 @@ export default function ProductLanding({ slug }: { slug: string }) {
     }
 
     setIsSubmitting(true);
+    try {
+      const orderData = {
+        product_slug: slug || "umei",
+        product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
+        bundle_id: selectedBundle.id,
+        quantity: selectedBundle.quantity,
+        total_amount: selectedBundle.price,
+        customer_name: customerName,
+        customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
+        shipping_city: city,
+        shipping_address: address,
+        status: 'pending' as const
+      };
 
-    const orderData = {
-      product_slug: slug || "umei",
-      product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
-      bundle_id: selectedBundle.id,
-      quantity: selectedBundle.quantity,
-      total_amount: selectedBundle.price,
-      customer_name: customerName,
-      customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
-      shipping_city: city,
-      shipping_address: address,
-      status: 'pending' as const
-    };
-
-    saveNewOrder(orderData);
-
-    window.location.href = `/p/${slug}/success`;
+      await saveNewOrder(orderData);
+      window.location.href = `/p/${slug}/success`;
+    } catch (err) {
+      console.error("Order error:", err);
+      alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
+      setIsSubmitting(false);
+    }
   };
 
   return (

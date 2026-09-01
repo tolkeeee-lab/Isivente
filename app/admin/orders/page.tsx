@@ -11,9 +11,9 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [updating, setUpdating] = useState(false);
 
-  const fetchOrders = () => {
+  const fetchOrders = async () => {
     setLoading(true);
-    const data = getAllOrders();
+    const data = await getAllOrders();
     setOrders(data);
     setLoading(false);
   };
@@ -24,9 +24,9 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => filter === "all" || order.status === filter);
 
-  const updateOrderStatus = (id: string, newStatus: string) => {
+  const updateOrderStatus = async (id: string, newStatus: string) => {
     setUpdating(true);
-    updateStorageStatus(id, newStatus);
+    await updateStorageStatus(id, newStatus);
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus as any } : o));
     if (selectedOrder && selectedOrder.id === id) {
       setSelectedOrder({ ...selectedOrder, status: newStatus as any });
