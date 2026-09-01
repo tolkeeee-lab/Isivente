@@ -60,9 +60,9 @@ const DEFAULT_PRODUCT_DATA = {
   title: "Brosse Démêlante Vapeur Uméi Pro 3-en-1",
   tagline: "Vapeur assouplissante, brume d'huile essentielle et clic libérateur. Fini les pleurs et les cheveux arrachés.",
   brand: "uméi.",
-  image_url: "/images/umei-hero.jpg",
-  secondary_image: "/images/umei-action.jpg",
-  click_image: "/images/umei-click.jpg",
+  image_url: "/images/umei-hero-real.jpg",
+  secondary_image: "/images/umei-hero-transparent.png",
+  click_image: "/images/umei-clic-real.jpg",
   video_url: "/videos/demo-umei.mp4",
   price: 7500,
   original_price: 15000,
@@ -532,7 +532,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
               <video 
                 src="/videos/demo-umei.mp4"
-                poster="/images/umei-action.jpg"
+                poster="/images/umei-hero-real.jpg"
                 autoPlay
                 loop
                 muted

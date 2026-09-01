@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>uméi — Brosse Démêlante Vapeur 3-en-1</title>
+<title>uméi — Démêler ne devrait pas faire mal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#F5F0FC;
@@ -29,8 +29,8 @@
   body{font-family:'Inter', sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; overflow-x:hidden;}
   img, video{max-width:100%; display:block;}
   a{color:inherit;}
-  .display{font-family:'Space Grotesk', sans-serif; font-weight:700; line-height:1.05; letter-spacing:-0.01em;}
-  .wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+  .display{font-family:'Space Grotesk', sans-serif; font-weight:700; line-height:1.02; letter-spacing:-0.01em;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
   a:focus-visible, button:focus-visible, summary:focus-visible{outline:3px solid var(--magenta); outline-offset:3px; border-radius:4px;}
 
   .reveal{opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease;}
@@ -38,42 +38,42 @@
   @media (prefers-reduced-motion: reduce){.reveal{opacity:1; transform:none;}}
 
   /* ---------- Header ---------- */
-  header{position:sticky; top:0; z-index:50; background:rgba(245,240,252,0.92); backdrop-filter:blur(12px); border-bottom:1px solid rgba(139,111,224,0.15);}
-  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1180px; margin:0 auto;}
+  header{position:sticky; top:0; z-index:50; background:rgba(245,240,252,0.9); backdrop-filter:blur(12px); border-bottom:1px solid rgba(139,111,224,0.15);}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:20px 32px; max-width:1180px; margin:0 auto;}
   .logo{font-family:'Space Grotesk', sans-serif; font-size:24px; font-weight:800; display:flex; align-items:center; gap:8px;}
-  .logo .dot{width:10px; height:10px; background:var(--magenta); border-radius:50%; display:inline-block;}
-  .nav-links{display:flex; gap:28px; list-style:none; font-size:14px; font-weight:600;}
-  .nav-links a{text-decoration:none; color:var(--ink); opacity:0.75; transition:opacity .15s;}
+  .logo .dot{width:9px; height:9px; background:var(--magenta); border-radius:50%; display:inline-block;}
+  .nav-links{display:flex; gap:32px; list-style:none; font-size:15px; font-weight:600;}
+  .nav-links a{text-decoration:none; color:var(--ink); opacity:0.7; transition:opacity .15s;}
   .nav-links a:hover{opacity:1; color:var(--magenta);}
-  .nav-cta{background:var(--magenta); color:#fff; padding:10px 22px; border-radius:100px; font-size:13.5px; font-weight:700; text-decoration:none; white-space:nowrap; transition:all .2s; box-shadow:0 8px 20px -8px rgba(255,92,147,0.6);}
+  .nav-cta{background:var(--magenta); color:#fff; padding:12px 24px; border-radius:100px; font-size:14px; font-weight:700; text-decoration:none; white-space:nowrap; transition:all .2s; box-shadow:0 8px 20px -8px rgba(255,92,147,0.6);}
   .nav-cta:hover{background:var(--magenta-deep); transform:translateY(-1px);}
 
   /* ---------- Hero ---------- */
-  .hero{padding:48px 0 0; position:relative;}
-  .hero-grid{display:grid; grid-template-columns:1.05fr 0.95fr; gap:44px; align-items:center;}
-  .hero h1{font-size:clamp(34px,4.8vw,56px); margin-bottom:20px;}
+  .hero{padding:60px 0 0; position:relative;}
+  .hero-grid{display:grid; grid-template-columns:1.05fr 0.95fr; gap:48px; align-items:center;}
+  .hero h1{font-size:clamp(36px,5vw,60px); margin-bottom:24px;}
   .hero h1 .c1{color:var(--lavender-deep);}
   .hero h1 .c2{color:var(--magenta);}
-  .hero p.lede{font-size:17px; color:var(--ink-soft); max-width:44ch; margin-bottom:28px; font-weight:500;}
-  .cta-row{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:24px;}
-  .btn-primary{background:var(--magenta); color:#fff; padding:16px 32px; border-radius:100px; font-weight:700; font-size:16px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:all .2s; border:none; cursor:pointer; box-shadow:0 12px 28px -10px rgba(255,92,147,0.6);}
+  .hero p.lede{font-size:18px; color:var(--ink-soft); max-width:44ch; margin-bottom:32px; font-weight:500;}
+  .cta-row{display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:26px;}
+  .btn-primary{background:var(--magenta); color:#fff; padding:17px 32px; border-radius:100px; font-weight:700; font-size:16px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:all .2s; border:none; cursor:pointer; box-shadow:0 12px 28px -10px rgba(255,92,147,0.55);}
   .btn-primary:hover{background:var(--magenta-deep); transform:translateY(-2px); box-shadow:0 16px 32px -8px rgba(255,92,147,0.7);}
-  .btn-secondary{background:#fff; color:var(--ink); padding:15px 26px; border-radius:100px; font-weight:700; font-size:15px; text-decoration:none; transition:all .2s; box-shadow:0 6px 18px -8px rgba(139,111,224,0.35); border:1px solid rgba(139,111,224,0.2);}
-  .btn-secondary:hover{transform:translateY(-2px); background:var(--bg-soft);}
+  .btn-secondary{background:#fff; color:var(--ink); padding:15px 28px; border-radius:100px; font-weight:700; font-size:15px; text-decoration:none; transition:transform .15s; box-shadow:0 6px 18px -8px rgba(139,111,224,0.35); border:1px solid rgba(139,111,224,0.2);}
+  .btn-secondary:hover{transform:translateY(-2px);}
   .badge-row{display:flex; gap:10px; flex-wrap:wrap;}
-  .badge-pill{background:#fff; color:var(--ink-soft); font-size:12.5px; font-weight:700; padding:6px 14px; border-radius:100px; box-shadow:0 4px 14px -6px rgba(139,111,224,0.3); border:1px solid rgba(139,111,224,0.15);}
+  .badge-pill{background:#fff; color:var(--ink-soft); font-size:13px; font-weight:700; padding:8px 16px; border-radius:100px; box-shadow:0 4px 14px -6px rgba(139,111,224,0.3); border:1px solid rgba(139,111,224,0.15);}
 
   .hero-visual{position:relative; display:flex; justify-content:center; align-items:center;}
-  .hero-photo-wrap{position:relative; width:100%; max-width:380px;}
-  .hero-photo-wrap img{border-radius:28px; width:100%; box-shadow:0 24px 50px -15px rgba(139,111,224,0.45);}
+  .hero-photo-wrap{position:relative; width:100%; max-width:400px;}
+  .hero-photo-wrap img{border-radius:32px; width:100%; box-shadow:0 30px 60px -20px rgba(139,111,224,0.4); object-fit:cover;}
   .sticker{position:absolute; font-family:'Space Grotesk', sans-serif; font-weight:700; border-radius:50%; display:flex; align-items:center; justify-content:center; text-align:center; box-shadow:0 14px 30px -10px rgba(0,0,0,0.18);}
-  .sticker.s1{width:105px; height:105px; font-size:12px; line-height:1.25; top:-14px; left:-24px; transform:rotate(-10deg); padding:8px; background:var(--mint); color:var(--ink);}
-  .sticker.s2{width:88px; height:88px; font-size:11.5px; line-height:1.2; bottom:-10px; right:-18px; transform:rotate(9deg); background:var(--peach); color:var(--ink); padding:6px;}
+  .sticker.s1{width:112px; height:112px; font-size:13px; line-height:1.25; top:-16px; left:-28px; transform:rotate(-10deg); padding:8px; background:var(--mint); color:var(--ink);}
+  .sticker.s2{width:92px; height:92px; font-size:12.5px; line-height:1.2; bottom:0; right:-20px; transform:rotate(9deg); background:var(--peach); color:var(--ink); padding:6px;}
 
   /* ---------- Marquee ---------- */
-  .marquee-band{background:var(--lavender-deep); color:#fff; padding:14px 0; overflow:hidden; margin-top:48px; transform:rotate(-1deg);}
-  .marquee-track{display:flex; white-space:nowrap; animation:scroll-left 24s linear infinite; width:max-content;}
-  .marquee-track span{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:15px; padding:0 18px; display:flex; align-items:center; gap:16px;}
+  .marquee-band{background:var(--lavender-deep); color:#fff; padding:15px 0; overflow:hidden; margin-top:52px; transform:rotate(-1deg);}
+  .marquee-track{display:flex; white-space:nowrap; animation:scroll-left 26s linear infinite; width:max-content;}
+  .marquee-track span{font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:17px; padding:0 18px; display:flex; align-items:center; gap:18px;}
   .marquee-track span em{font-style:normal; color:var(--peach);}
   @keyframes scroll-left{from{transform:translateX(0);} to{transform:translateX(-50%);}}
 
@@ -86,59 +86,67 @@
   .video-badge span.pulsing-dot{width:8px; height:8px; background:var(--magenta); border-radius:50%; animation:pulse 1.5s infinite;}
   @keyframes pulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.4; transform:scale(1.2);}}
 
+  /* ---------- Section shared ---------- */
+  section{padding:88px 0;}
+  .features-head{text-align:center; max-width:640px; margin:0 auto 48px;}
+  .features-head h2{font-size:clamp(28px,4vw,42px); margin-bottom:14px;}
+  .features-head p{color:var(--ink-soft); font-size:16px; font-weight:500;}
+
   /* ---------- Features ---------- */
-  section{padding:76px 0;}
-  .features-head{text-align:center; max-width:640px; margin:0 auto 44px;}
-  .features-head .tag{display:inline-block; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; background:var(--lavender); color:var(--ink); padding:5px 14px; border-radius:100px; margin-bottom:12px;}
-  .features-head h2{font-size:clamp(26px,3.8vw,38px); margin-bottom:12px;}
-  .features-head p{color:var(--ink-soft); font-size:15px; font-weight:500;}
-  .features-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .feature-card{background:var(--card); border-radius:24px; padding:30px 24px; box-shadow:0 14px 34px -18px rgba(139,111,224,0.35); transition:transform .18s; border:1px solid rgba(139,111,224,0.12);}
-  .feature-card:hover{transform:translateY(-4px);}
-  .feature-icon{width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin-bottom:18px;}
+  .features-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .feature-card{background:var(--card); border-radius:26px; padding:34px 28px; box-shadow:0 16px 40px -20px rgba(139,111,224,0.35); transition:transform .18s; border:1px solid rgba(139,111,224,0.12);}
+  .feature-card:hover{transform:translateY(-5px);}
+  .feature-icon{width:58px; height:58px; border-radius:18px; display:flex; align-items:center; justify-content:center; margin-bottom:20px;}
   .feature-icon.i1{background:var(--lavender);}
   .feature-icon.i2{background:var(--sky);}
   .feature-icon.i3{background:var(--mint);}
-  .feature-card h3{font-family:'Space Grotesk', sans-serif; font-size:19px; font-weight:700; margin-bottom:8px;}
-  .feature-card p{color:var(--ink-soft); font-size:14.5px; font-weight:500;}
+  .feature-card h3{font-family:'Space Grotesk', sans-serif; font-size:21px; font-weight:700; margin-bottom:10px;}
+  .feature-card p{color:var(--ink-soft); font-size:15px; font-weight:500;}
 
-  /* Photo feature */
-  .photo-feature{display:grid; grid-template-columns:0.9fr 1.1fr; gap:48px; align-items:center;}
+  /* ---------- Statement ---------- */
+  .statement{text-align:center;}
+  .statement-inner{background:linear-gradient(135deg, var(--lavender) 0%, var(--sky) 100%); border-radius:40px; padding:70px 40px;}
+  .statement h2{font-size:clamp(28px,5vw,48px); max-width:16ch; margin:0 auto; color:var(--ink);}
+  .statement h2 .accent{color:#fff;}
+
+  /* ---------- Photo feature ---------- */
+  .photo-feature{display:grid; grid-template-columns:0.9fr 1.1fr; gap:52px; align-items:center;}
   .photo-feature img{border-radius:28px; box-shadow:0 20px 50px -20px rgba(139,111,224,0.4); width:100%;}
-  .photo-feature-copy .tag{display:inline-block; background:var(--peach); color:var(--ink); font-size:13px; font-weight:700; padding:6px 16px; border-radius:100px; margin-bottom:16px;}
-  .photo-feature-copy h2{font-size:clamp(26px,3.6vw,38px); margin-bottom:16px;}
-  .photo-feature-copy p{color:var(--ink-soft); font-size:15.5px; margin-bottom:20px;}
-  .check-list{list-style:none; display:flex; flex-direction:column; gap:10px;}
-  .check-list li{display:flex; gap:10px; align-items:center; font-size:14.5px; font-weight:600;}
+  .photo-feature-copy .tag{display:inline-block; background:var(--peach); color:var(--ink); font-size:13px; font-weight:700; padding:7px 16px; border-radius:100px; margin-bottom:18px;}
+  .photo-feature-copy h2{font-size:clamp(26px,3.6vw,38px); margin-bottom:18px; max-width:12ch;}
+  .photo-feature-copy p{color:var(--ink-soft); font-size:16px; font-weight:500; max-width:42ch; margin-bottom:24px;}
+  .check-list{list-style:none; display:flex; flex-direction:column; gap:12px;}
+  .check-list li{display:flex; gap:10px; align-items:center; font-size:15px; font-weight:600;}
+  .check-list svg{flex-shrink:0;}
 
-  /* ---------- FORMULAIRE DE COMMANDE (COD ORDER FORM) ---------- */
-  .order-section{background:linear-gradient(180deg, #FFFFFF 0%, #F5F0FC 100%); border-radius:36px; padding:50px 24px; box-shadow:0 30px 70px -20px rgba(139,111,224,0.35); border:2px solid var(--lavender); max-width:840px; margin:0 auto;}
-  .order-header{text-align:center; margin-bottom:32px;}
+  /* ---------- FORMULAIRE DE COMMANDE DIRECT (COD) ---------- */
+  .order-section{background:linear-gradient(180deg, #FFFFFF 0%, #F5F0FC 100%); border-radius:36px; padding:54px 28px; box-shadow:0 30px 70px -20px rgba(139,111,224,0.35); border:2px solid var(--lavender); max-width:860px; margin:0 auto;}
+  .order-header{text-align:center; margin-bottom:34px;}
   .order-header .sale-badge{background:linear-gradient(90deg, #FF5C93, #8B6FE0); color:#fff; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; padding:6px 16px; border-radius:100px; display:inline-block; margin-bottom:12px;}
-  .order-header h2{font-size:clamp(24px,3.8vw,36px); color:var(--ink); margin-bottom:8px;}
-  .order-header p{color:var(--ink-soft); font-size:14.5px;}
+  .order-header h2{font-size:clamp(24px,4vw,36px); color:var(--ink); margin-bottom:8px;}
+  .order-header p{color:var(--ink-soft); font-size:15px;}
 
   /* BUNDLES SELECTION */
-  .bundles-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:28px;}
-  .bundle-card{border:2px solid #E5DEFA; background:#fff; border-radius:18px; padding:16px 12px; cursor:pointer; text-align:center; position:relative; transition:all .2s;}
+  .bundles-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:30px;}
+  .bundle-card{border:2px solid #E5DEFA; background:#fff; border-radius:20px; padding:18px 12px; cursor:pointer; text-align:center; position:relative; transition:all .2s;}
   .bundle-card.active{border-color:var(--magenta); background:rgba(255,92,147,0.05); box-shadow:0 10px 25px -8px rgba(255,92,147,0.35); transform:scale(1.02);}
-  .bundle-badge{position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--magenta); color:#fff; font-size:10px; font-weight:800; padding:2px 10px; border-radius:100px; white-space:nowrap;}
-  .bundle-title{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:14.5px; margin-top:6px; color:var(--ink);}
+  .bundle-badge{position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--magenta); color:#fff; font-size:10px; font-weight:800; padding:3px 10px; border-radius:100px; white-space:nowrap; text-transform:uppercase;}
+  .bundle-title{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:15px; margin-top:6px; color:var(--ink);}
   .bundle-price{font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:800; color:var(--magenta); margin:4px 0;}
   .bundle-old-price{font-size:12px; text-decoration:line-through; color:var(--ink-soft);}
   .bundle-desc{font-size:11px; color:var(--ink-soft); margin-top:4px;}
 
   /* INPUT FIELDS */
-  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;}
-  .form-group{display:flex; flex-direction:column; gap:5px;}
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;}
+  .form-group{display:flex; flex-direction:column; gap:6px;}
   .form-group.full{grid-column:1/-1;}
   .form-group label{font-size:13px; font-weight:700; color:var(--ink);}
   .form-group label span.req{color:var(--magenta);}
-  .form-input{width:100%; padding:13px 15px; border-radius:14px; border:1.5px solid #D8CBEF; font-family:'Inter', sans-serif; font-size:14px; color:var(--ink); background:#fff; transition:border-color .2s; outline:none;}
+  .form-input{width:100%; padding:14px 16px; border-radius:14px; border:1.5px solid #D8CBEF; font-family:'Inter', sans-serif; font-size:14.5px; color:var(--ink); background:#fff; transition:border-color .2s; outline:none;}
   .form-input:focus{border-color:var(--magenta); box-shadow:0 0 0 3px rgba(255,92,147,0.15);}
 
   /* ORDER SUMMARY */
-  .order-summary-box{background:var(--bg-soft); border-radius:18px; padding:16px 20px; margin-bottom:22px; border:1px solid rgba(139,111,224,0.25);}
+  .order-summary-box{background:var(--bg-soft); border-radius:18px; padding:18px 20px; margin-bottom:24px; border:1px solid rgba(139,111,224,0.25);}
   .summary-row{display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px; color:var(--ink-soft); font-weight:500;}
   .summary-row.total{border-top:1px dashed rgba(139,111,224,0.3); padding-top:10px; margin-top:8px; font-size:18px; font-weight:800; color:var(--ink);}
   .free-shipping{color:var(--mint-deep); font-weight:700;}
@@ -146,26 +154,31 @@
   /* FORM BUTTON */
   .submit-btn{width:100%; background:linear-gradient(90deg, #FF5C93, #E13D74); color:#fff; padding:18px; border-radius:16px; font-family:'Space Grotesk', sans-serif; font-size:17px; font-weight:800; border:none; cursor:pointer; box-shadow:0 14px 30px -10px rgba(255,92,147,0.6); transition:all .2s; display:flex; align-items:center; justify-content:center; gap:10px;}
   .submit-btn:hover{transform:translateY(-2px); box-shadow:0 18px 36px -8px rgba(255,92,147,0.75);}
-  .guarantee-note{text-align:center; font-size:12px; color:var(--ink-soft); margin-top:12px; font-weight:500;}
+  .guarantee-note{text-align:center; font-size:12px; color:var(--ink-soft); margin-top:14px; font-weight:500;}
 
   /* ---------- Testimonials ---------- */
-  .testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .testi-card{border-radius:24px; padding:24px; box-shadow:0 14px 34px -18px rgba(139,111,224,0.4); border:1px solid rgba(139,111,224,0.15);}
+  .testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .testi-card{border-radius:26px; padding:28px; box-shadow:0 14px 34px -18px rgba(139,111,224,0.4); border:1px solid rgba(139,111,224,0.15);}
   .testi-card.tl{background:var(--lavender);}
   .testi-card.tm{background:var(--mint);}
   .testi-card.tp{background:var(--peach);}
-  .testi-card .stars{color:#F59E0B; margin-bottom:8px; font-size:15px;}
-  .testi-card p.q{font-size:14.5px; font-weight:600; margin-bottom:12px; line-height:1.45; color:var(--ink);}
-  .testi-card .h{font-family:'Space Grotesk', sans-serif; font-size:12.5px; font-weight:800; color:var(--ink); opacity:0.8;}
+  .testi-card p.q{font-size:16.5px; font-weight:600; margin-bottom:16px; line-height:1.45; color:var(--ink);}
+  .testi-card .h{font-family:'Space Grotesk', sans-serif; font-size:13.5px; font-weight:700; color:var(--ink); opacity:0.7;}
 
   /* ---------- FAQ ---------- */
   .faq-list{max-width:760px; margin:0 auto;}
-  details{background:var(--card); border-radius:18px; padding:18px 22px; margin-bottom:12px; box-shadow:0 8px 22px -14px rgba(139,111,224,0.3); border:1px solid rgba(139,111,224,0.12);}
-  summary{list-style:none; display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-family:'Space Grotesk', sans-serif; font-size:16px; font-weight:700;}
+  details{background:var(--card); border-radius:20px; padding:22px 26px; margin-bottom:14px; box-shadow:0 8px 22px -14px rgba(139,111,224,0.3); border:1px solid rgba(139,111,224,0.12);}
+  summary{list-style:none; display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-family:'Space Grotesk', sans-serif; font-size:17px; font-weight:700;}
   summary::-webkit-details-marker{display:none;}
-  summary .plus{font-size:20px; color:var(--magenta); transition:transform .2s; margin-left:14px;}
+  summary .plus{font-size:22px; color:var(--magenta); transition:transform .2s; flex-shrink:0; margin-left:20px;}
   details[open] summary .plus{transform:rotate(45deg);}
-  details p{margin-top:12px; color:var(--ink-soft); font-size:14.5px; font-weight:500;}
+  details p{margin-top:14px; color:var(--ink-soft); font-size:15.5px; font-weight:500; max-width:60ch;}
+
+  /* ---------- Final CTA ---------- */
+  .final-cta{text-align:center;}
+  .final-cta-inner{background:var(--ink); border-radius:40px; padding:70px 40px;}
+  .final-cta h2{font-size:clamp(28px,5.2vw,46px); max-width:16ch; margin:0 auto 28px; color:#fff;}
+  .final-cta .btn-primary{font-size:17px; padding:19px 38px;}
 
   /* ---------- Mobile Floating CTA ---------- */
   .mobile-sticky-bar{display:none; position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.96); backdrop-filter:blur(10px); border-top:1px solid rgba(139,111,224,0.2); padding:10px 16px; z-index:90; box-shadow:0 -8px 20px rgba(0,0,0,0.08); align-items:center; justify-content:space-between; gap:12px;}
@@ -173,23 +186,33 @@
   .mobile-sticky-bar .sub{font-size:11px; color:var(--ink-soft); font-weight:600;}
 
   /* ---------- Footer ---------- */
-  footer{padding:40px 0 30px; border-top:1px solid rgba(139,111,224,0.15); margin-top:40px;}
-  .footer-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; font-size:13px; color:var(--ink-soft); font-weight:600;}
+  footer{padding:40px 0 28px;}
+  .footer-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; font-size:13.5px; color:var(--ink-soft); font-weight:600;}
+  .footer-links{display:flex; gap:22px; list-style:none;}
+  .footer-links a{text-decoration:none; color:var(--ink-soft);}
+  .footer-links a:hover{color:var(--ink);}
 
   /* ---------- Responsive ---------- */
   @media (max-width:900px){
-    .wrap{padding:0 16px;}
+    .wrap{padding:0 20px;}
+    .nav{padding:14px 20px;}
     .nav-links{display:none;}
-    .hero-grid{grid-template-columns:1fr; gap:36px;}
+    .hero-grid{grid-template-columns:1fr; gap:44px;}
     .hero-visual{order:-1;}
     .hero-photo-wrap{max-width:280px; margin:0 auto;}
     .features-grid{grid-template-columns:1fr;}
+    .statement-inner{padding:48px 26px; border-radius:28px;}
+    .photo-feature{grid-template-columns:1fr; gap:32px;}
+    .photo-feature img{max-width:320px; margin:0 auto;}
+    .order-section{padding:36px 18px; border-radius:28px;}
     .bundles-grid{grid-template-columns:1fr; gap:10px;}
     .form-grid{grid-template-columns:1fr;}
-    .photo-feature{grid-template-columns:1fr; gap:32px;}
     .testi-grid{grid-template-columns:1fr;}
+    .final-cta-inner{padding:48px 26px; border-radius:28px;}
     .mobile-sticky-bar{display:flex;}
-    section{padding:48px 0;}
+    section{padding:56px 0;}
+    .sticker.s1{width:88px; height:88px; font-size:10.5px; left:-8px;}
+    .sticker.s2{width:74px; height:74px; font-size:10px; right:-6px;}
   }
 </style>
 </head>
@@ -200,11 +223,11 @@
     <div class="logo"><span class="dot"></span>uméi</div>
     <ul class="nav-links">
       <li><a href="#demo-video">Démonstration</a></li>
-      <li><a href="#comment">Avantages</a></li>
+      <li><a href="#comment">Comment ça marche</a></li>
       <li><a href="#avis">Avis</a></li>
-      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#faq">Questions</a></li>
     </ul>
-    <a href="#commander" class="nav-cta">Commander (COD)</a>
+    <a href="#commander" class="nav-cta">Commander</a>
   </nav>
 </header>
 
@@ -213,23 +236,20 @@
   <div class="wrap hero-grid">
     <div>
       <h1 class="display">Démêler tes <span class="c1">boucles</span> ne devrait pas <span class="c2">faire mal.</span></h1>
-      <p class="lede">Micro-vapeur hydratante, brume d'huile essentielle et clic libérateur. Fini le peigne qui arrache et le fer qui brûle tes pointes.</p>
+      <p class="lede">Vapeur, huile essentielle et clic libérateur — dans une seule brosse. Fini le peigne qui accroche et le fer qui abîme.</p>
       <div class="cta-row">
-        <a href="#commander" class="btn-primary">
-          <span>Commander — 7 500 FCFA</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <a href="#demo-video" class="btn-secondary">Voir la démo vidéo</a>
+        <a href="#commander" class="btn-primary">Je commande — 7 500 FCFA</a>
+        <a href="#demo-video" class="btn-secondary">Voir comment ça marche</a>
       </div>
       <div class="badge-row">
-        <span class="badge-pill">💵 Paiement à la livraison</span>
-        <span class="badge-pill">🚚 Livraison 24h à 48h</span>
-        <span class="badge-pill">🛡️ Garantie 30 jours</span>
+        <span class="badge-pill">Paiement à la livraison</span>
+        <span class="badge-pill">Livraison 48–72h</span>
+        <span class="badge-pill">Garantie 30 jours</span>
       </div>
     </div>
     <div class="hero-visual">
       <div class="hero-photo-wrap">
-        <img src="/images/umei-hero.jpg" alt="Brosse vapeur uméi en action, jet de vapeur visible">
+        <img src="/images/umei-hero-real.jpg" alt="Brosse vapeur uméi en action, jet de vapeur visible">
         <div class="sticker s1">3-en-1 vapeur + huile + clic</div>
         <div class="sticker s2">Sans chaleur agressive</div>
       </div>
@@ -248,7 +268,6 @@
 <section id="demo-video" class="video-section">
   <div class="wrap">
     <div class="features-head reveal">
-      <span class="tag">Démonstration Vidéo</span>
       <h2 class="display">Voyez la brosse uméi en action</h2>
       <p>Regardez comment la micro-brume détend les boucles pour un brossage fluide et sans douleur.</p>
     </div>
@@ -261,7 +280,7 @@
         </div>
         <video 
           src="/videos/demo-umei.mp4" 
-          poster="/images/umei-action.jpg"
+          poster="/images/umei-hero-real.jpg"
           autoplay 
           loop 
           muted 
@@ -279,7 +298,6 @@
 <section id="comment">
   <div class="wrap">
     <div class="features-head reveal">
-      <span class="tag">Technologie & Soin</span>
       <h2 class="display">Ce qu'il y a dedans, en vrai.</h2>
       <p>Pas de magie — juste trois mécanismes qui font le travail à ta place.</p>
     </div>
@@ -289,7 +307,7 @@
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#241B36" stroke-width="1.8"><path d="M7 21c-1.5-1.5-1.5-4 0-5.5M12 21c-1.5-1.5-1.5-4 0-5.5M17 21c-1.5-1.5-1.5-4 0-5.5" stroke-linecap="round"/><path d="M9 12c0-3 1.5-4.5 1.5-7C10.5 3 12 2 12 2s-1 3 1 5c1.2 1.2 2 2.5 2 4.5" stroke-linecap="round"/></svg>
         </div>
         <h3>Vapeur</h3>
-        <p>Assouplit la fibre avant même que la brosse touche tes cheveux. Le démêlage devient un pur plaisir.</p>
+        <p>Assouplit la fibre avant même que la brosse touche tes cheveux. Le démêlage devient presque agréable.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon i2">
@@ -303,8 +321,17 @@
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#241B36" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M9 12.5l2 2 4-4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <h3>Clic libérateur</h3>
-        <p>Un clic et tes cheveux se détachent de la brosse. Plus besoin de les décoincer un par un à la main.</p>
+        <p>Un clic et tes cheveux se détachent de la brosse. Plus besoin de les décoincer un par un, à la main.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT -->
+<section class="statement">
+  <div class="wrap reveal">
+    <div class="statement-inner">
+      <h2 class="display">Tes cheveux méritent <span class="accent">mieux</span> qu'un peigne qui tire.</h2>
     </div>
   </div>
 </section>
@@ -312,7 +339,7 @@
 <!-- PHOTO FEATURE CLIC -->
 <section>
   <div class="wrap photo-feature">
-    <img class="reveal" src="/images/umei-click.jpg" alt="Système de clic libérateur brosse uméi">
+    <img class="reveal" src="/images/umei-clic-real.jpg" alt="Gros plan sur les picots et le clic de la brosse uméi">
     <div class="photo-feature-copy reveal">
       <span class="tag">Le détail qui change tout</span>
       <h2 class="display">Un clic, et c'est réglé.</h2>
@@ -433,28 +460,24 @@
   </div>
 </section>
 
-<!-- AVIS CLIENTES -->
+<!-- AVIS -->
 <section id="avis">
   <div class="wrap">
     <div class="features-head reveal">
-      <span class="tag">Témoignages</span>
-      <h2 class="display">Ce que disent celles qui l'ont testée</h2>
-      <p>Des centaines de mamans et de femmes ont transformé leur rituel.</p>
+      <h2 class="display">On te laisse pas juste sur parole.</h2>
+      <p>Ce que disent celles qui ont déjà changé de rituel.</p>
     </div>
     <div class="testi-grid reveal">
       <div class="testi-card tl">
-        <div class="stars">★★★★★</div>
-        <p class="q">Je ne savais même pas qu'un démêlage pouvait ne pas faire mal. Ma fille de 5 ans ne pleure plus du tout le dimanche.</p>
+        <p class="q">Je ne savais même pas qu'un démêlage pouvait ne pas faire mal. Vie changée, sans exagérer.</p>
         <div class="h">Amina G. — Cotonou</div>
       </div>
       <div class="testi-card tm">
-        <div class="stars">★★★★★</div>
-        <p class="q">Mon fer à lisser prend la poussière. Sur mes cheveux crépus 4C, ça glisse tout seul avec la vapeur.</p>
+        <p class="q">Mon fer à lisser prend la poussière depuis que j'ai reçu la brosse. Mes pointes me remercient.</p>
         <div class="h">Christelle T. — Abomey-Calavi</div>
       </div>
       <div class="testi-card tp">
-        <div class="stars">★★★★★</div>
-        <p class="q">Le clic pour libérer les cheveux, c'est le détail auquel personne ne pense — et qui change tout au quotidien.</p>
+        <p class="q">Le clic pour libérer les cheveux, c'est le détail auquel personne ne pense — et qui change tout.</p>
         <div class="h">Mireille D. — Porto-Novo</div>
       </div>
     </div>
@@ -465,26 +488,35 @@
 <section id="faq">
   <div class="wrap">
     <div class="features-head reveal">
-      <span class="tag">Foire aux questions</span>
-      <h2 class="display">Vos questions fréquentes</h2>
+      <h2 class="display">Les questions qu'on nous pose</h2>
     </div>
     <div class="faq-list reveal">
       <details>
         <summary>Convient-elle aux cheveux crépus et très bouclés ? <span class="plus">+</span></summary>
-        <p>Oui. La vapeur assouplit la fibre avant le passage de la brosse, ce qui la rend particulièrement adaptée aux textures bouclées, frisées et crépues (3A à 4C).</p>
-      </details>
-      <details>
-        <summary>Comment fonctionne le paiement à la livraison ? <span class="plus">+</span></summary>
-        <p>Vous ne payez rien en ligne. Vous passez commande sur cette page, nous vous contactons pour confirmer l'adresse, et vous payez directement le livreur en espèces après réception.</p>
+        <p>Oui. La vapeur assouplit la fibre avant le passage de la brosse, ce qui la rend particulièrement adaptée aux textures bouclées, frisées et crépues.</p>
       </details>
       <details>
         <summary>Faut-il ajouter de l'eau à chaque utilisation ? <span class="plus">+</span></summary>
-        <p>Le réservoir se remplit en quelques secondes et suffit pour plusieurs séances. Vous pouvez y ajouter quelques gouttes de votre sérum ou huile préférée.</p>
+        <p>Le réservoir se remplit en quelques secondes et suffit pour plusieurs séances. Tu peux y ajouter l'huile essentielle de ton choix.</p>
       </details>
       <details>
-        <summary>Quels sont les délais de livraison ? <span class="plus">+</span></summary>
-        <p>Nous livrons en 24h à 48h dans les zones principales avec suivi téléphonique personnalisé.</p>
+        <summary>La vapeur abîme-t-elle les cheveux comme un fer à lisser ? <span class="plus">+</span></summary>
+        <p>Non. Contrairement à un fer chauffant, la vapeur hydrate la fibre au lieu de l'assécher — c'est ce qui permet de démêler sans fragiliser tes cheveux.</p>
       </details>
+      <details>
+        <summary>Livrez-vous dans mon pays ? <span class="plus">+</span></summary>
+        <p>Nous livrons sous 48 à 72 heures dans les zones desservies, avec paiement à la livraison. Contacte-nous pour confirmer la disponibilité dans ta ville.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="wrap reveal">
+    <div class="final-cta-inner">
+      <h2 class="display">Prête à changer ton rituel capillaire ?</h2>
+      <a href="#commander" class="btn-primary">Commander ma brosse — 7 500 FCFA</a>
     </div>
   </div>
 </section>
@@ -492,10 +524,10 @@
 <!-- STICKY MOBILE BAR -->
 <div class="mobile-sticky-bar">
   <div>
-    <div class="sub">Total COD :</div>
+    <div class="sub">Total à payer :</div>
     <div class="price-tag" id="mobilePrice">13 000 F</div>
   </div>
-  <a href="#commander" class="btn-primary" style="padding: 10px 20px; font-size: 14px;">
+  <a href="#commander" class="btn-primary" style="padding: 10px 22px; font-size: 14px;">
     <span>Commander</span>
   </a>
 </div>
@@ -503,10 +535,10 @@
 <footer>
   <div class="wrap footer-row">
     <div>© 2026 uméi. Tous droits réservés.</div>
-    <ul style="display:flex; gap:16px; list-style:none;">
+    <ul class="footer-links">
       <li><a href="#demo-video">Vidéo</a></li>
       <li><a href="#commander">Commander</a></li>
-      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#faq">Questions</a></li>
     </ul>
   </div>
 </footer>
@@ -530,11 +562,11 @@
   function handleFormSubmit(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
-    btn.innerHTML = '<span>Validation en cours...</span>';
+    btn.innerHTML = '<span>Validation de votre commande...</span>';
     btn.style.opacity = '0.7';
 
     setTimeout(() => {
-      alert('🎉 Félicitations ' + document.getElementById('custName').value + ' ! Votre commande de ' + currentPack + ' (' + currentPrice.toLocaleString('fr-FR') + ' FCFA) a bien été reçue. Notre service client va vous appeler pour la livraison.');
+      alert('🎉 Félicitations ' + document.getElementById('custName').value + ' ! Votre commande de ' + currentPack + ' (' + currentPrice.toLocaleString('fr-FR') + ' FCFA) a bien été reçue. Notre service de livraison va vous contacter par téléphone ou WhatsApp.');
       btn.innerHTML = '<span>Commande Confirmée ✓</span>';
     }, 800);
   }
