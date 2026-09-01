@@ -27,8 +27,8 @@ const BUNDLES: ProductBundle[] = [
     id: "solo",
     name: "Pack Découverte (1 Brosse)",
     quantity: 1,
-    price: 7500,
-    original_price: 10000,
+    price: 14900,
+    original_price: 24900,
     badge: null,
     description: "Idéal pour tester l'expérience",
     popular: false
@@ -37,9 +37,9 @@ const BUNDLES: ProductBundle[] = [
     id: "duo",
     name: "Pack Sérénité Duo (2 Brosses)",
     quantity: 2,
-    price: 13000,
-    original_price: 20000,
-    badge: "⭐ Populaire (-57%)",
+    price: 24900,
+    original_price: 49800,
+    badge: "⭐ Populaire (-50%)",
     description: "1 pour toi + 1 offerte pour ta fille ou amie",
     popular: true
   },
@@ -47,8 +47,8 @@ const BUNDLES: ProductBundle[] = [
     id: "famille",
     name: "Pack Famille (3 Brosses)",
     quantity: 3,
-    price: 18000,
-    original_price: 30000,
+    price: 34900,
+    original_price: 74700,
     badge: "🔥 Meilleur Prix",
     description: "Pour toute la maison au tarif le plus bas",
     popular: false
@@ -168,7 +168,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
                 onClick={() => scrollToSection("commander")}
                 className="bg-[#FF5C93] hover:bg-[#E13D74] text-white px-8 py-4 rounded-full font-bold text-base shadow-[0_12px_28px_-10px_rgba(255,92,147,0.55)] hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
               >
-                <span>Je commande — 7 500 FCFA</span>
+                <span>Je commande — 14 900 FCFA</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
 
@@ -632,7 +632,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
             onClick={() => scrollToSection("commander")}
             className="bg-[#FF5C93] hover:bg-[#E13D74] text-white px-8 py-4 rounded-full font-bold text-base shadow-lg hover:-translate-y-0.5 transition-all"
           >
-            Commander ma brosse — 7 500 FCFA
+            Commander ma brosse — 14 900 FCFA
           </button>
         </div>
       </section>
