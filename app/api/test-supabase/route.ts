@@ -15,14 +15,17 @@ export async function GET() {
 
   const randomNum = Math.floor(100000 + Math.random() * 900000);
 
-  // Test insert with order_number
+  // Test insert without manually specifying 'id' (letting Postgres generate UUID)
   const testOrder = {
     order_number: "CMD-" + randomNum,
-    customer_name: "Test Validation",
+    product_slug: "umei",
+    product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
+    customer_name: "Test Client Supabase",
     customer_phone: "97000000",
     shipping_city: "Cotonou",
     shipping_address: "Haie Vive",
     total_amount: 14900,
+    quantity: 1,
     status: "pending",
     created_at: new Date().toISOString()
   };
@@ -33,7 +36,7 @@ export async function GET() {
     .select();
 
   return NextResponse.json({
-    insert_with_order_number: {
+    insert_test: {
       success: !insertError,
       error: insertError ? insertError : null,
       data: insertData

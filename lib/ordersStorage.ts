@@ -27,60 +27,50 @@ function saveToLocalStorage(order: any) {
   } catch {}
 }
 
-/** Sauvegarde une nouvelle commande dans Supabase avec sécurité et gestion automatique du numéro de commande */
+/** Sauvegarde une nouvelle commande dans Supabase */
 export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   const randomNum = Math.floor(100000 + Math.random() * 900000);
   const orderNumberStr = "CMD-" + randomNum;
 
-  const fullOrder = {
-    ...orderData,
+  // Préparation de l'objet de commande sans forcer un ID textuel incompatible avec le type UUID de Postgres
+  const { id: _unusedId, ...cleanOrderData } = orderData;
+
+  const payload: any = {
+    ...cleanOrderData,
     order_number: orderNumberStr,
     created_at: new Date().toISOString(),
   };
 
-  // Sauvegarde locale de secours immédiate
-  saveToLocalStorage(fullOrder);
+  // 1. Sauvegarde locale de sécurité immédiate
+  saveToLocalStorage({ ...payload, id: "local_" + Date.now() });
 
-  // 1. Premier essai d'insertion avec order_number format texte
-  let res = await supabase.from("orders").insert([fullOrder]).select();
+  // 2. Insertion dans Supabase
+  let res = await supabase.from("orders").insert([payload]).select();
 
-  // 2. Si échec de type (ex: order_number attend un entier), essai avec un entier
-  if (res.error && (res.error.message.includes("order_number") || res.error.code === "22P02")) {
-    const integerOrder = {
-      ...fullOrder,
-      order_number: randomNum,
-    };
-    res = await supabase.from("orders").insert([integerOrder]).select();
-  }
-
-  // 3. Si échec sur bundle_id manquant dans Supabase
+  // Si colonne bundle_id non existante dans le schéma Supabase, réessayer sans bundle_id
   if (res.error && res.error.message.includes("bundle_id")) {
-    const { bundle_id, ...withoutBundle } = fullOrder;
+    const { bundle_id, ...withoutBundle } = payload;
     res = await supabase.from("orders").insert([withoutBundle]).select();
   }
 
-  // 4. Si toujours une erreur de colonnes inconnues, repli sur les colonnes standard avec order_number
-  if (res.error && res.error.code === "PGRST204") {
-    const coreOrder = {
-      order_number: orderNumberStr,
-      customer_name: orderData.customer_name || "Client",
-      customer_phone: orderData.customer_phone || "",
-      shipping_city: orderData.shipping_city || "",
-      shipping_address: orderData.shipping_address || "",
-      total_amount: orderData.total_amount || 14900,
-      status: "pending"
+  // Si erreur de type sur order_number (ex: attendu integer au lieu de text)
+  if (res.error && (res.error.message.includes("order_number") || res.error.code === "22P02")) {
+    const { bundle_id, ...withoutBundle } = payload;
+    const integerPayload = {
+      ...withoutBundle,
+      order_number: randomNum
     };
-    res = await supabase.from("orders").insert([coreOrder]).select();
+    res = await supabase.from("orders").insert([integerPayload]).select();
   }
 
   if (res.error) {
     console.error("Supabase insert notice:", res.error.message);
   }
 
-  return res.data?.[0] || fullOrder;
+  return res.data?.[0] || payload;
 }
 
-/** Retourne toutes les commandes depuis Supabase (avec fusion du LocalStorage) */
+/** Retourne toutes les commandes depuis Supabase */
 export async function getAllOrders(): Promise<OrderItem[]> {
   let dbOrders: OrderItem[] = [];
 
