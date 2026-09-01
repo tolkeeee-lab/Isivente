@@ -108,7 +108,8 @@ export default function ProductLanding({ slug }: { slug: string }) {
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center font-display text-2xl font-bold">Chargement...</div>;
-  if (!product) return <div className="min-h-screen flex flex-col items-center justify-center font-display p-8 text-center"><h1 className="text-2xl font-bold text-ink">Produit introuvable</h1>{fetchError && <p className="mt-4 text-red-500 font-mono text-sm bg-red-50 p-4 rounded-xl">Erreur Supabase: {fetchError}</p>}</div>;
+  if (!product) return <div className="min-h-screen flex flex-col items-center justify-center font-display p-8 text-center"><h1 className="text-2xl font-bold text-ink">Produit introuvable</h1>{fetchError && <p className="mt-4 text-red-500 font-mono text-sm bg-red-50 p-4 rounded-xl">Erreur Supabase: {fetchError}
+<br/>URL utilisée: {process.env.NEXT_PUBLIC_SUPABASE_URL}</p>}</div>;
 
   return (
     <div className="bg-bg text-ink min-h-screen font-sans">
@@ -459,5 +460,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
     </div>
   );
 }
+
 
 
