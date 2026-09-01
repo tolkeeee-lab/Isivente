@@ -2,152 +2,197 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Search, Filter, MoreVertical, MapPin, Phone, User, Package, Calendar } from "lucide-react";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [updating, setUpdating] = useState(false);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  async function fetchOrders() {
+  const fetchOrders = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false });
     
     if (data) setOrders(data);
     setLoading(false);
-  }
+  };
 
-  const handleStatusChange = async (orderId: string, newStatus: string) => {
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const filteredOrders = orders.filter(order => filter === "all" || order.status === filter);
+
+  const updateOrderStatus = async (id: string, newStatus: string) => {
+    setUpdating(true);
     const { error } = await supabase
       .from("orders")
       .update({ status: newStatus })
-      .eq("id", orderId);
+      .eq("id", id);
     
     if (!error) {
-      setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+      if (selectedOrder && selectedOrder.id === id) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
+      }
     } else {
-      alert("Erreur lors de la mise à jour du statut.");
+      alert("Erreur lors de la mise à jour");
     }
+    setUpdating(false);
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending': return <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold border border-orange-200">En attente</span>;
-      case 'confirmed': return <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold border border-blue-200">Confirmé</span>;
-      case 'shipped': return <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold border border-purple-200">En livraison</span>;
-      case 'delivered': return <span className="bg-mint-deep/20 text-mint-deep px-3 py-1 rounded-full text-xs font-bold border border-mint-deep/30">Livré</span>;
-      case 'cancelled': return <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold border border-slate-200">Annulé</span>;
-      default: return <span>{status}</span>;
+      case 'pending': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">À confirmer</span>;
+      case 'shipped': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">En cours (Livreur)</span>;
+      case 'delivered': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Livrée & Encaissée</span>;
+      case 'cancelled': return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Annulée</span>;
+      default: return null;
     }
   };
 
-  const openWhatsApp = (order: any) => {
-    // Format phone number: remove spaces, ensure + prefix if not present (assuming Benin +229 if missing, but user requested input)
-    let phone = order.customer_phone.replace(/\s+/g, '');
-    if (!phone.startsWith('+')) phone = '+229' + phone;
-
-    const message = `Bonjour ${order.customer_name},\n\nNous avons bien reçu votre commande pour le produit "${order.product_title}" (${order.bundle_name}).\nLe montant total à payer à la livraison est de ${order.total_amount.toLocaleString('fr-FR')} FCFA.\n\nPouvons-nous confirmer la livraison pour l'adresse : ${order.city} - ${order.address} ?`;
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
-  };
-
-  if (loading) {
-    return <div className="p-8 flex items-center gap-3"><Loader2 className="w-5 h-5 animate-spin text-magenta" /> Chargement des commandes...</div>;
-  }
-
   return (
-    <div className="p-8">
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="font-display font-bold text-3xl mb-2">Commandes</h1>
-          <p className="text-ink-soft font-medium">Gérez toutes les commandes COD (Cash On Delivery).</p>
+    <div className="flex flex-col lg:flex-row gap-8">
+      {/* LISTE DES COMMANDES */}
+      <div className={`flex-1 bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden ${selectedOrder ? 'hidden lg:block' : 'block'}`}>
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="font-display font-semibold text-2xl text-premium-dark">Suivi des Livraisons</h1>
+          </div>
+          
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <button onClick={() => setFilter("all")} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === "all" ? "bg-premium-dark text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>Toutes</button>
+            <button onClick={() => setFilter("pending")} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === "pending" ? "bg-orange-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>À confirmer</button>
+            <button onClick={() => setFilter("shipped")} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === "shipped" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>En cours</button>
+            <button onClick={() => setFilter("delivered")} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === "delivered" ? "bg-green-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>Livrées</button>
+            <button onClick={() => setFilter("cancelled")} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filter === "cancelled" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>Annulées</button>
+          </div>
         </div>
-        <button onClick={fetchOrders} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-bold transition-colors">
-          Actualiser
-        </button>
+
+        <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+          {loading ? (
+            <div className="p-8 text-center text-gray-400">Chargement...</div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="p-8 text-center text-gray-400">Aucune commande trouvée</div>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {filteredOrders.map(order => (
+                <li 
+                  key={order.id}
+                  onClick={() => setSelectedOrder(order)}
+                  className={`p-6 hover:bg-gray-50/50 cursor-pointer transition-colors ${selectedOrder?.id === order.id ? 'bg-premium-bg border-l-4 border-l-premium-accent' : ''}`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-semibold text-premium-dark">{order.customer_name}</span>
+                    {getStatusBadge(order.status)}
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {order.shipping_city}</span>
+                    <span className="font-medium text-premium-dark">{order.total_amount.toLocaleString('fr-FR')} F</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
-      <div className="bg-white border-2 border-ink rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b-2 border-ink text-sm font-bold text-ink-soft">
-                <th className="p-4">Réf</th>
-                <th className="p-4">Client</th>
-                <th className="p-4">Ville & Adresse</th>
-                <th className="p-4">Produit</th>
-                <th className="p-4">Total (FCFA)</th>
-                <th className="p-4">Date</th>
-                <th className="p-4">Statut</th>
-                <th className="p-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="p-8 text-center text-ink-soft font-medium">Aucune commande pour le moment.</td>
-                </tr>
-              ) : (
-                orders.map((order) => (
-                  <tr key={order.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
-                    <td className="p-4 font-mono font-bold text-sm text-slate-500">{order.order_number}</td>
-                    <td className="p-4">
-                      <div className="font-bold">{order.customer_name}</div>
-                      <div className="text-xs font-mono text-ink-soft mt-0.5">{order.customer_phone}</div>
-                    </td>
-                    <td className="p-4 text-sm font-medium">
-                      <div className="text-ink">{order.city}</div>
-                      <div className="text-ink-soft text-xs truncate max-w-[150px]">{order.address}</div>
-                    </td>
-                    <td className="p-4 text-sm">
-                      <div className="font-bold">{order.product_title}</div>
-                      <div className="text-ink-soft text-xs">{order.bundle_name} (x{order.quantity})</div>
-                    </td>
-                    <td className="p-4 font-display font-bold text-magenta">
-                      {order.total_amount?.toLocaleString('fr-FR')} F
-                    </td>
-                    <td className="p-4 text-xs font-medium text-ink-soft">
-                      {new Date(order.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </td>
-                    <td className="p-4">
-                      <select 
-                        value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                        className="text-xs font-bold border-2 border-slate-200 rounded-lg p-1.5 focus:border-purple focus:ring-0 cursor-pointer bg-white"
-                      >
-                        <option value="pending">En attente</option>
-                        <option value="confirmed">Confirmé</option>
-                        <option value="shipped">En livraison</option>
-                        <option value="delivered">Livré (Encaissé)</option>
-                        <option value="cancelled">Annulé</option>
-                      </select>
-                      <div className="mt-2">
-                        {getStatusBadge(order.status)}
-                      </div>
-                    </td>
-                    <td className="p-4 text-right">
-                      <button 
-                        onClick={() => openWhatsApp(order)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-xs font-bold hover:bg-[#128C7E] transition-colors shadow-sm"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964 1.003-3.588c-.608-1.065-.928-2.294-.928-3.567 0-3.866 3.15-7.01 7.02-7.01s7.01 3.144 7.01 7.01c0 3.868-3.149 7.035-7.11 7.035z"/></svg>
-                        WhatsApp
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {/* DETAILS COMMANDE (SIDE PANEL) */}
+      {selectedOrder && (
+        <div className="flex-[0.8] bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col h-[calc(100vh-120px)] lg:sticky top-6">
+          <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h2 className="font-display font-semibold text-lg text-premium-dark">Détails de la commande</h2>
+            <button onClick={() => setSelectedOrder(null)} className="lg:hidden text-gray-400 hover:text-gray-600">
+              Fermer
+            </button>
+          </div>
+          
+          <div className="p-6 flex-1 overflow-y-auto">
+            <div className="flex justify-between items-start mb-8">
+              <div>
+                <h3 className="font-display font-bold text-2xl text-premium-dark mb-1">{selectedOrder.customer_name}</h3>
+                <p className="text-gray-500 flex items-center gap-2"><Phone className="w-4 h-4" /> {selectedOrder.customer_phone}</p>
+              </div>
+              {getStatusBadge(selectedOrder.status)}
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-gray-50 p-4 rounded-2xl">
+                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Lieu de livraison</h4>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-premium-dark">{selectedOrder.shipping_city}</p>
+                    <p className="text-gray-600">{selectedOrder.shipping_address}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-2xl">
+                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Produit commandé</h4>
+                <div className="flex items-start gap-3">
+                  <Package className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-medium text-premium-dark">{selectedOrder.product_title}</p>
+                    <div className="flex justify-between items-center mt-1">
+                      <span className="text-gray-600 text-sm">Quantité: {selectedOrder.quantity}</span>
+                      <span className="font-bold text-premium-dark">{selectedOrder.total_amount.toLocaleString('fr-FR')} F</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-2xl">
+                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Date</h4>
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <p className="font-medium text-premium-dark">{new Date(selectedOrder.created_at).toLocaleString('fr-FR')}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ACTIONS */}
+          <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Changer le statut (Livreur)</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                disabled={updating || selectedOrder.status === 'pending'}
+                onClick={() => updateOrderStatus(selectedOrder.id, 'pending')}
+                className={`py-3 rounded-xl text-sm font-medium transition-all ${selectedOrder.status === 'pending' ? 'bg-orange-500 text-white shadow-md' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+              >
+                À confirmer
+              </button>
+              <button 
+                disabled={updating || selectedOrder.status === 'shipped'}
+                onClick={() => updateOrderStatus(selectedOrder.id, 'shipped')}
+                className={`py-3 rounded-xl text-sm font-medium transition-all ${selectedOrder.status === 'shipped' ? 'bg-blue-500 text-white shadow-md' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+              >
+                En cours
+              </button>
+              <button 
+                disabled={updating || selectedOrder.status === 'delivered'}
+                onClick={() => updateOrderStatus(selectedOrder.id, 'delivered')}
+                className={`py-3 rounded-xl text-sm font-medium transition-all ${selectedOrder.status === 'delivered' ? 'bg-green-500 text-white shadow-md' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+              >
+                Livrée
+              </button>
+              <button 
+                disabled={updating || selectedOrder.status === 'cancelled'}
+                onClick={() => updateOrderStatus(selectedOrder.id, 'cancelled')}
+                className={`py-3 rounded-xl text-sm font-medium transition-all ${selectedOrder.status === 'cancelled' ? 'bg-red-500 text-white shadow-md' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
