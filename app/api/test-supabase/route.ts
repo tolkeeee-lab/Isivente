@@ -17,11 +17,12 @@ export async function GET() {
 
   const randomNum = Math.floor(100000 + Math.random() * 900000);
 
-  // Exact Supabase columns: order_number, name, phone, city, address, total_amount, quantity, status, created_at
+  // Exact Supabase columns based on diagnostics:
+  // customer_name, customer_phone, city, address, order_number, total_amount, quantity, status, created_at
   const testOrder = {
     order_number: "CMD-" + randomNum,
-    name: "Test Client Supabase",
-    phone: "97000000",
+    customer_name: "Test Client Supabase",
+    customer_phone: "97000000",
     city: "Cotonou",
     address: "Haie Vive",
     total_amount: 14900,

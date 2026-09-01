@@ -10,10 +10,10 @@ export interface OrderItem {
   total_amount?: number;
   customer_name?: string;
   customer_phone?: string;
-  shipping_city?: string;
   city?: string;
-  shipping_address?: string;
+  shipping_city?: string;
   address?: string;
+  shipping_address?: string;
   status?: "pending" | "shipped" | "delivered" | "cancelled" | string;
   created_at?: string;
 }
@@ -29,37 +29,29 @@ function saveToLocalStorage(order: any) {
   } catch {}
 }
 
-/** Sauvegarde une nouvelle commande dans Supabase avec auto-adaptation au schéma */
+/** Sauvegarde une nouvelle commande dans Supabase avec auto-adaptation au schéma exact */
 export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   const randomNum = Math.floor(100000 + Math.random() * 900000);
   const orderNumberStr = "CMD-" + randomNum;
 
   const name = orderData.customer_name || "Client";
   const phone = orderData.customer_phone || "";
-  const city = orderData.shipping_city || orderData.city || "Cotonou";
-  const address = orderData.shipping_address || orderData.address || "";
+  const city = orderData.city || orderData.shipping_city || "Cotonou";
+  const address = orderData.address || orderData.shipping_address || "";
   const totalAmount = orderData.total_amount || 14900;
   const quantity = orderData.quantity || 1;
-  const productTitle = orderData.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1";
-  const productSlug = orderData.product_slug || "umei";
   const status = orderData.status || "pending";
   const createdAt = new Date().toISOString();
 
-  // Objet de commande standard avec tous les alias de colonnes
+  // Schéma exact de votre table Supabase
   let payload: Record<string, any> = {
     order_number: orderNumberStr,
-    name: name,
     customer_name: name,
-    phone: phone,
     customer_phone: phone,
     city: city,
-    shipping_city: city,
     address: address,
-    shipping_address: address,
     total_amount: totalAmount,
     quantity: quantity,
-    product_title: productTitle,
-    product_slug: productSlug,
     status: status,
     created_at: createdAt,
   };
@@ -105,8 +97,10 @@ function normalizeOrder(o: any): OrderItem {
     order_number: o.order_number || ("CMD-" + (o.id || "000").substring(0, 6)),
     customer_name: o.customer_name || o.name || "Client",
     customer_phone: o.customer_phone || o.phone || "",
-    shipping_city: o.shipping_city || o.city || "Cotonou",
-    shipping_address: o.shipping_address || o.address || "",
+    shipping_city: o.city || o.shipping_city || "Cotonou",
+    city: o.city || o.shipping_city || "Cotonou",
+    shipping_address: o.address || o.shipping_address || "",
+    address: o.address || o.shipping_address || "",
     total_amount: o.total_amount || o.amount || 14900,
     product_title: o.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1",
     quantity: o.quantity || 1,
