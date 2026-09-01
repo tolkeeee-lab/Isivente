@@ -8,7 +8,8 @@ import {
   ChevronDown, 
   Sparkles,
   Droplets,
-  HeartHandshake
+  HeartHandshake,
+  MessageCircle
 } from "lucide-react";
 
 interface ProductBundle {
@@ -664,6 +665,17 @@ export default function ProductLanding({ slug }: { slug: string }) {
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
+
+      {/* 💬 BOUTON FLOATING WHATSAPP ASSISTANCE (+229 01 92 90 18 17) */}
+      <a
+        href={`https://wa.me/2290192901817?text=${encodeURIComponent("Bonjour ! J'ai une question concernant la brosse uméi.")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-16 md:bottom-6 right-4 z-40 bg-emerald-500 hover:bg-emerald-600 text-white p-3 rounded-full shadow-2xl transition-all hover:scale-110 flex items-center justify-center cursor-pointer border-2 border-white"
+        title="Besoin d'aide ? Écrivez-nous sur WhatsApp (+229 01 92 90 18 17)"
+      >
+        <MessageCircle className="w-6 h-6 fill-white text-emerald-500" />
+      </a>
 
       {/* 🦶 FOOTER */}
       <footer className="py-6 px-4 border-t border-[#8B6FE0]/15 max-w-[1180px] mx-auto w-full overflow-hidden">

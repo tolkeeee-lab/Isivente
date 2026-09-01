@@ -72,10 +72,10 @@ export default function SuccessPage() {
         {/* ACTIONS */}
         <div className="space-y-3">
           <a 
-            href={`https://wa.me/22997000000?text=${encodeURIComponent("Bonjour ! Je viens de passer ma commande sur le site et je souhaite confirmer la livraison.")}`} 
+            href={`https://wa.me/2290192901817?text=${encodeURIComponent("Bonjour ! Je viens de passer ma commande sur le site et je souhaite accélérer ma livraison.")}`} 
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-base py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-base py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <MessageCircle className="w-5 h-5" />
             <span>Accélérer ma livraison via WhatsApp</span>
