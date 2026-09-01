@@ -75,9 +75,9 @@ const DEFAULT_PRODUCT_DATA = {
       name: "Pack Découverte (1 Brosse)",
       quantity: 1,
       price: 7500,
-      original_price: 15000,
+      original_price: 10000,
       badge: null,
-      description: "Idéal pour tester l'expérience Uméi à la maison.",
+      description: "Idéal pour tester l'expérience à la maison.",
       popular: false
     },
     {
@@ -85,9 +85,9 @@ const DEFAULT_PRODUCT_DATA = {
       name: "Pack Sérénité Duo (2 Brosses)",
       quantity: 2,
       price: 13000,
-      original_price: 30000,
-      badge: "⭐ PLUS POPULAIRE - ÉCONOMISEZ 57%",
-      description: "1 pour vous + 1 pour votre fille, sœur ou amie.",
+      original_price: 20000,
+      badge: "⭐ PLUS POPULAIRE",
+      description: "1 pour toi + 1 offerte pour ta fille, sœur ou amie.",
       popular: true
     },
     {
@@ -95,32 +95,32 @@ const DEFAULT_PRODUCT_DATA = {
       name: "Pack Famille (3 Brosses)",
       quantity: 3,
       price: 18000,
-      original_price: 45000,
-      badge: "🔥 MEILLEURE OFFRE",
-      description: "Le pack complet pour toute la maison au tarif le plus avantageux.",
+      original_price: 30000,
+      badge: "🔥 MEILLEUR PRIX",
+      description: "Pour toute la maison au tarif le plus avantageux.",
       popular: false
     }
   ] as ProductBundle[],
   features: [
     {
-      title: "Zéro Douleur, Zéro Larme",
-      desc: "Les picots flexibles combinés à la brume glissent à travers les nœuds les plus tenaces sans arracher le cuir chevelu."
+      title: "Vapeur",
+      desc: "Assouplit la fibre avant même que la brosse touche tes cheveux. Le démêlage devient presque agréable."
     },
     {
-      title: "Micro-Vapeur Hydratante",
-      desc: "Hydrate chaque mèche en profondeur pendant le brossage, réduisant la casse de plus de 85%."
+      title: "Brume + huile",
+      desc: "Brumisation 360° qui diffuse ton huile essentielle préférée en même temps que l'eau. Hydratation intégrée."
     },
     {
-      title: "Parfait pour Cheveux Afro & Texturés",
-      desc: "Spécialement calibrée pour les types 3A à 4C, ainsi que les extensions, perruques et cheveux épais d'enfants."
+      title: "Clic libérateur",
+      desc: "Un clic et tes cheveux se détachent de la brosse. Plus besoin de les décoincer un par un, à la main."
     }
   ] as FeatureItem[],
   testimonials: [
     {
       name: "Amina G.",
-      location: "Cotonou (Haie Vive)",
+      location: "Cotonou",
       rating: 5,
-      comment: "Mes séances de démêlage avec ma fille de 6 ans étaient un calvaire chaque dimanche. Depuis qu'on utilise la brosse Uméi avec un peu d'eau tiède, elle ne pleure plus du tout ! C'est devenu notre moment plaisir.",
+      comment: "Je ne savais même pas qu'un démêlage pouvait ne pas faire mal. Vie changée, sans exagérer.",
       date: "Il y a 3 jours",
       verified: true,
       avatarText: "AG"
@@ -129,7 +129,7 @@ const DEFAULT_PRODUCT_DATA = {
       name: "Christelle T.",
       location: "Abomey-Calavi",
       rating: 5,
-      comment: "Très sceptique au début mais franchement impressionnée. Sur mes cheveux crépus 4C bien denses, ça glisse tout seul. Paiement fait au livreur après ouverture du paquet. Service client au top !",
+      comment: "Mon fer à lisser prend la poussière depuis que j'ai reçu la brosse. Mes pointes me remercient.",
       date: "Il y a 5 jours",
       verified: true,
       avatarText: "CT"
@@ -138,7 +138,7 @@ const DEFAULT_PRODUCT_DATA = {
       name: "Mireille D.",
       location: "Porto-Novo",
       rating: 5,
-      comment: "J'ai pris le pack duo pour offrir une brosse à ma sœur. La qualité est incroyable, la batterie tient longtemps et la brume est ultra fine. Je recommande à 100%.",
+      comment: "Le clic pour libérer les cheveux, c'est le détail auquel personne ne pense — et qui change tout.",
       date: "Il y a 1 semaine",
       verified: true,
       avatarText: "MD"
@@ -146,24 +146,20 @@ const DEFAULT_PRODUCT_DATA = {
   ] as Testimonial[],
   faqs: [
     {
-      question: "Comment fonctionne le paiement à la livraison ?",
-      answer: "Vous ne payez strictement rien en ligne. Vous remplissez le formulaire, nous confirmons votre adresse par appel ou WhatsApp, le livreur vous remet le colis et vous réglez directement en espèces à la livraison."
+      question: "Convient-elle aux cheveux crépus et très bouclés ?",
+      answer: "Oui. La vapeur assouplit la fibre avant le passage de la brosse, ce qui la rend particulièrement adaptée aux textures bouclées, frisées et crépues."
     },
     {
-      question: "Quels sont les délais de livraison ?",
-      answer: "À Cotonou, Calavi et Porto-Novo, la livraison s'effectue en 24h à 48h ouvrées. Pour les autres villes du Bénin (Parakou, Ouidah, Bohicon...), comptez 48h à 72h."
+      question: "Faut-il ajouter de l'eau à chaque utilisation ?",
+      answer: "Le réservoir se remplit en quelques secondes et suffit pour plusieurs séances. Tu peux y ajouter l'huile essentielle de ton choix."
     },
     {
-      question: "Puis-je vérifier le colis avant de payer le livreur ?",
-      answer: "Absolument ! Vous avez le droit d'ouvrir le carton de livraison devant le coursier pour vérifier l'état du produit avant d'effectuer le paiement."
+      question: "La vapeur abîme-t-elle les cheveux comme un fer à lisser ?",
+      answer: "Non. Contrairement à un fer chauffant, la vapeur hydrate la fibre au lieu de l'assécher — c'est ce qui permet de démêler sans fragiliser tes cheveux."
     },
     {
-      question: "Cette brosse est-elle adaptée aux cheveux de type 4C et aux enfants ?",
-      answer: "Oui, elle a été tout particulièrement conçue pour les cheveux texturés, frisés, bouclés et afro (types 3 et 4), ainsi que pour le cuir chevelu sensible des enfants."
-    },
-    {
-      question: "Que mettre dans le réservoir de la brosse ?",
-      answer: "Vous pouvez y mettre simplement de l'eau claire (de préférence minérale ou filtrée) ou mélanger quelques gouttes de votre sérum capillaire aqueux préféré pour un soin nutritif instantané."
+      question: "Livrez-vous dans mon pays ?",
+      answer: "Nous livrons sous 48 à 72 heures dans les zones desservies, avec paiement à la livraison. Contacte-nous pour confirmer la disponibilité dans ta ville."
     }
   ] as FAQItem[]
 };
