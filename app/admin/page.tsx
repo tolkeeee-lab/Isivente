@@ -26,41 +26,36 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      const allOrders = await getAllOrders();
+    const allOrders = getAllOrders();
+    
+    let pending = 0;
+    let shipped = 0;
+    let delivered = 0;
+    let cancelled = 0;
+    let revenue = 0;
+
+    allOrders.forEach(order => {
+      if (order.status === 'pending') pending++;
+      if (order.status === 'shipped') shipped++;
+      if (order.status === 'delivered') delivered++;
+      if (order.status === 'cancelled') cancelled++;
       
-      if (allOrders) {
-        let pending = 0;
-        let shipped = 0;
-        let delivered = 0;
-        let cancelled = 0;
-        let revenue = 0;
-
-        allOrders.forEach(order => {
-          if (order.status === 'pending') pending++;
-          if (order.status === 'shipped') shipped++;
-          if (order.status === 'delivered') delivered++;
-          if (order.status === 'cancelled') cancelled++;
-          
-          if (order.status === 'delivered' || order.status === 'shipped' || order.status === 'pending') {
-            revenue += order.total_amount || 0;
-          }
-        });
-
-        setStats({
-          totalOrders: allOrders.length,
-          pendingOrders: pending,
-          shippedOrders: shipped,
-          deliveredOrders: delivered,
-          cancelledOrders: cancelled,
-          revenue
-        });
-
-        setRecentOrders(allOrders.slice(0, 5));
+      if (order.status === 'delivered' || order.status === 'shipped' || order.status === 'pending') {
+        revenue += order.total_amount || 0;
       }
-      setLoading(false);
-    }
-    fetchData();
+    });
+
+    setStats({
+      totalOrders: allOrders.length,
+      pendingOrders: pending,
+      shippedOrders: shipped,
+      deliveredOrders: delivered,
+      cancelledOrders: cancelled,
+      revenue
+    });
+
+    setRecentOrders(allOrders.slice(0, 5));
+    setLoading(false);
   }, []);
 
   if (loading) return (

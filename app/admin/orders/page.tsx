@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllOrders, updateLocalAndRemoteOrderStatus, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, updateOrderStatus as updateStorageStatus, OrderItem } from "@/lib/ordersStorage";
 import { Search, Filter, MoreVertical, MapPin, Phone, User, Package, Calendar } from "lucide-react";
 
 export default function OrdersPage() {
@@ -11,10 +11,10 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [updating, setUpdating] = useState(false);
 
-  const fetchOrders = async () => {
+  const fetchOrders = () => {
     setLoading(true);
-    const data = await getAllOrders();
-    if (data) setOrders(data);
+    const data = getAllOrders();
+    setOrders(data);
     setLoading(false);
   };
 
@@ -24,9 +24,9 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => filter === "all" || order.status === filter);
 
-  const updateOrderStatus = async (id: string, newStatus: string) => {
+  const updateOrderStatus = (id: string, newStatus: string) => {
     setUpdating(true);
-    await updateLocalAndRemoteOrderStatus(id, newStatus);
+    updateStorageStatus(id, newStatus);
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus as any } : o));
     if (selectedOrder && selectedOrder.id === id) {
       setSelectedOrder({ ...selectedOrder, status: newStatus as any });
