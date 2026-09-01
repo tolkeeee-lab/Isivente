@@ -143,11 +143,11 @@ export default function AdminDashboard() {
                 </tr>
               ) : (
                 recentOrders.map(order => (
-                  <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={order.id || Math.random()} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-premium-dark">{order.customer_name}</td>
                     <td className="px-6 py-4 text-gray-500">{order.shipping_city}</td>
-                    <td className="px-6 py-4 text-gray-500">{new Date(order.created_at).toLocaleDateString('fr-FR')}</td>
-                    <td className="px-6 py-4 font-medium text-premium-dark">{order.total_amount.toLocaleString('fr-FR')} F</td>
+                    <td className="px-6 py-4 text-gray-500">{new Date(order.created_at || Date.now()).toLocaleDateString('fr-FR')}</td>
+                    <td className="px-6 py-4 font-medium text-premium-dark">{(order.total_amount || 0).toLocaleString('fr-FR')} F</td>
                     <td className="px-6 py-4">
                       {order.status === 'pending' && <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">En attente</span>}
                       {order.status === 'shipped' && <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">En cours</span>}

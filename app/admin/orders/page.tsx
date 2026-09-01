@@ -24,7 +24,8 @@ export default function OrdersPage() {
 
   const filteredOrders = orders.filter(order => filter === "all" || order.status === filter);
 
-  const updateOrderStatus = async (id: string, newStatus: string) => {
+  const updateOrderStatus = async (id: string | undefined, newStatus: string) => {
+    if (!id) return;
     setUpdating(true);
     await updateStorageStatus(id, newStatus);
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus as any } : o));
