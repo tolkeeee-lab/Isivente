@@ -44,3 +44,31 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* Floating animation for product */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Pulsate animation for Buy Button */
+@keyframes pulsate {
+  0% { transform: scale(0.1); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+.animate-pulsate {
+  animation: pulsate 1s ease-out infinite;
+}
+
+/* Messy Cards Rotations */
+.rotate-messy-1 { transform: rotate(-2deg); }
+.rotate-messy-2 { transform: rotate(1deg); }
+.rotate-messy-3 { transform: rotate(-1deg); }
+.rotate-messy-4 { transform: rotate(2deg); }

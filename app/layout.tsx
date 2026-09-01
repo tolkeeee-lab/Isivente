@@ -1,5 +1,18 @@
 ﻿import type { Metadata } from "next";
+import { Syne, Inter } from "next/font/google";
 import "./globals.css";
+
+const syne = Syne({ 
+  subsets: ["latin"],
+  variable: "--font-syne",
+  display: "swap",
+});
+
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Isivente - Plateforme de Gestion & Vente",
@@ -12,11 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${syne.variable} ${inter.variable}`}>
       <body className="min-h-screen bg-bg text-ink antialiased font-sans">
         {children}
       </body>
     </html>
   );
 }
-

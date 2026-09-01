@@ -8,25 +8,27 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        bg: "var(--bg)",
-        "bg-subtle": "var(--bg-subtle)",
-        panel: "var(--panel)",
-        "border-light": "var(--border-light)",
-        "text-main": "var(--text-main)",
-        "text-muted": "var(--text-muted)",
-        brand: "var(--brand)",
-        "brand-light": "var(--brand-light)",
-        accent: "var(--accent)",
-        "accent-hover": "var(--accent-hover)",
-      },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        display: ["Outfit", "sans-serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
+        display: ["var(--font-syne)", "sans-serif"],
+      },
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        // Néo-Brutalisme Colors
+        brutal: {
+          bg: "#FF5E00", // Takeboost-style intense orange
+          bg2: "#FFB800", // Yellow gradient
+          dark: "#0F0F0F",
+          light: "#FFFFFF",
+          accent: "#CCFF00", // Neon lime
+          purple: "#9D00FF", // Intense purple
+        }
       },
       boxShadow: {
-        soft: "0 4px 20px -2px rgba(15, 23, 42, 0.05)",
-        floating: "0 10px 40px -10px rgba(15, 23, 42, 0.1)",
+        'brutal': '8px 8px 0px 0px rgba(15,15,15,1)',
+        'brutal-lg': '12px 12px 0px 0px rgba(15,15,15,1)',
+        'brutal-hover': '4px 4px 0px 0px rgba(15,15,15,1)',
       }
     },
   },
