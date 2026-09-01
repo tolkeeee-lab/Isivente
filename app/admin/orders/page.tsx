@@ -1,23 +1,19 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getAllOrders, updateLocalAndRemoteOrderStatus, OrderItem } from "@/lib/ordersStorage";
 import { Search, Filter, MoreVertical, MapPin, Phone, User, Package, Calendar } from "lucide-react";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [updating, setUpdating] = useState(false);
 
   const fetchOrders = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
-    
+    const data = await getAllOrders();
     if (data) setOrders(data);
     setLoading(false);
   };
@@ -30,18 +26,10 @@ export default function OrdersPage() {
 
   const updateOrderStatus = async (id: string, newStatus: string) => {
     setUpdating(true);
-    const { error } = await supabase
-      .from("orders")
-      .update({ status: newStatus })
-      .eq("id", id);
-    
-    if (!error) {
-      setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-      if (selectedOrder && selectedOrder.id === id) {
-        setSelectedOrder({ ...selectedOrder, status: newStatus });
-      }
-    } else {
-      alert("Erreur lors de la mise à jour");
+    await updateLocalAndRemoteOrderStatus(id, newStatus);
+    setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus as any } : o));
+    if (selectedOrder && selectedOrder.id === id) {
+      setSelectedOrder({ ...selectedOrder, status: newStatus as any });
     }
     setUpdating(false);
   };

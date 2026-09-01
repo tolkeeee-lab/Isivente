@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getAllOrders, OrderItem } from "@/lib/ordersStorage";
 import { ShoppingBag, TrendingUp, Clock, CheckCircle2, Package, Truck, XCircle } from "lucide-react";
 
 interface Stats {
@@ -22,13 +22,12 @@ export default function AdminDashboard() {
     cancelledOrders: 0,
     revenue: 0
   });
-  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      // Fetch stats
-      const { data: allOrders } = await supabase.from("orders").select("id, status, total_amount, created_at, customer_name, shipping_city").order("created_at", { ascending: false });
+      const allOrders = await getAllOrders();
       
       if (allOrders) {
         let pending = 0;
@@ -43,7 +42,7 @@ export default function AdminDashboard() {
           if (order.status === 'delivered') delivered++;
           if (order.status === 'cancelled') cancelled++;
           
-          if (order.status === 'delivered' || order.status === 'shipped') {
+          if (order.status === 'delivered' || order.status === 'shipped' || order.status === 'pending') {
             revenue += order.total_amount || 0;
           }
         });

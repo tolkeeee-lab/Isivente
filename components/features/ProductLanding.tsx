@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { saveNewOrder } from "@/lib/ordersStorage";
 import { 
   Check, 
   ArrowRight, 
@@ -89,14 +89,10 @@ export default function ProductLanding({ slug }: { slug: string }) {
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
         shipping_city: city,
         shipping_address: address,
-        status: 'pending'
+        status: 'pending' as const
       };
 
-      try {
-        await supabase.from("orders").insert([orderData]);
-      } catch (err) {
-        console.warn("Order insertion note:", err);
-      }
+      await saveNewOrder(orderData);
 
       window.location.href = `/p/${slug}/success`;
     } catch (err) {
