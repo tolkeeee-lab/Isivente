@@ -2,11 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check, Plus, Droplets, Wind, Pointer } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Check, ShieldCheck, Truck, Star, Plus, Minus, ArrowRight, StarHalf, ChevronDown } from "lucide-react";
 
 // --- Types ---
 interface ProductBundle {
@@ -20,7 +16,6 @@ interface ProductBundle {
 }
 
 interface ProductFeature {
-  id: string;
   title: string;
   desc: string;
 }
@@ -39,7 +34,6 @@ interface FAQItem {
 }
 
 export default function ProductLanding({ slug }: { slug: string }) {
-  const router = useRouter();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -51,6 +45,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -67,7 +62,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
       if (data) {
         setProduct(data);
         if (data.bundles && data.bundles.length > 0) {
-          // Select 'duo' by default if it exists, else first one
           const defaultBundle = data.bundles.find((b: any) => b.id === 'duo') || data.bundles[0];
           setSelectedBundle(defaultBundle);
         }
@@ -79,250 +73,245 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedBundle || !product) return;
+    if (!product || !selectedBundle) return;
     setIsSubmitting(true);
 
-    const orderNumber = `UM-${Math.floor(1000 + Math.random() * 9000)}`;
-
-    const { error } = await supabase.from("orders").insert([
-      {
-        order_number: orderNumber,
+    try {
+      const orderData = {
         product_slug: product.slug,
         product_title: product.title,
-        customer_name: customerName,
-        customer_phone: customerPhone,
-        city: city,
-        address: address,
-        bundle_name: selectedBundle.name,
+        bundle_id: selectedBundle.id,
         quantity: selectedBundle.quantity,
         total_amount: selectedBundle.price,
-      }
-    ]);
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        shipping_city: city,
+        shipping_address: address,
+        status: 'pending'
+      };
 
-    setIsSubmitting(false);
-    if (!error) {
-      router.push(`/p/${slug}/success`);
-    } else {
-      alert("Une erreur s'est produite lors de l'enregistrement de votre commande.");
+      const { error } = await supabase.from("orders").insert([orderData]);
+      if (error) throw error;
+      
+      window.location.href = `/p/${slug}/success`;
+    } catch (err) {
+      console.error("Order error", err);
+      alert("Une erreur est survenue lors de la commande. Veuillez ressayer.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center font-display text-2xl font-bold">Chargement...</div>;
-  if (!product) return <div className="min-h-screen flex flex-col items-center justify-center font-display p-8 text-center"><h1 className="text-2xl font-bold text-ink">Produit introuvable</h1>{fetchError && <p className="mt-4 text-red-500 font-mono text-sm bg-red-50 p-4 rounded-xl">Erreur Supabase: {fetchError}
-<br/>URL utilisée: {process.env.NEXT_PUBLIC_SUPABASE_URL}</p>}</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-bg">
+      <div className="w-10 h-10 border-4 border-border-light border-t-accent rounded-full animate-spin"></div>
+    </div>
+  );
+
+  if (!product) return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-bg p-8 text-center">
+      <h1 className="text-3xl font-display font-bold text-text-main mb-4">Produit introuvable</h1>
+      {fetchError && (
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl font-mono text-sm border border-red-100 max-w-lg overflow-auto">
+          <p className="font-bold mb-2">Erreur Supabase:</p>
+          <p>{fetchError}</p>
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className="bg-bg text-ink min-h-screen font-sans">
+    <div className="min-h-screen bg-bg selection:bg-accent/20">
+      {/* URGENCY BAR */}
+      <div className="bg-brand text-white text-center py-2.5 px-4 text-sm font-medium tracking-wide">
+        ? Offre de lancement : <span className="font-bold text-accent">Livraison incluse aujourd'hui</span>
+      </div>
+
       {/* HEADER */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-2 border-ink">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="font-display text-2xl font-bold flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-magenta rounded-full block"></span>
-            {product.slug === 'umei' ? 'uméi' : 'Isivente'}
+      <header className="border-b border-border-light bg-white sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="font-display font-extrabold text-2xl tracking-tighter text-brand">
+            umi
           </div>
-          <nav className="hidden md:flex gap-8 font-bold text-[15px]">
-            <a href="#comment" className="hover:text-magenta transition-colors">Comment ça marche</a>
-            <a href="#avis" className="hover:text-magenta transition-colors">Avis</a>
-            <a href="#faq" className="hover:text-magenta transition-colors">Questions</a>
-          </nav>
-          <a href="#commander">
-            <Button variant="takeboost" size="sm">Commander</Button>
+          <a href="#commander" className="bg-accent hover:bg-accent-hover text-white px-5 py-2 rounded-full font-semibold text-sm transition-all shadow-sm hover:shadow-md">
+            Commander
           </a>
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="pt-16 pb-8 md:pt-20 md:pb-16 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
-          <div>
-            <h1 className="font-display text-[42px] sm:text-[64px] font-bold leading-[0.98] tracking-[-0.02em] mb-6">
-              Démêler tes <span className="text-purple">boucles</span> ne devrait pas <span className="text-magenta">faire mal.</span>
-            </h1>
-            <p className="text-lg text-ink-soft font-medium max-w-[46ch] mb-8">
-              {product.description}
-            </p>
-            <div className="flex flex-wrap items-center gap-4 mb-8">
-              <a href="#commander">
-                <Button variant="primary" size="lg" className="text-[17px]">
-                  Je commande — {product.price.toLocaleString('fr-FR')} FCFA
-                </Button>
-              </a>
-              <a href="#comment">
-                <Button variant="outline" size="lg" className="text-[17px]">
-                  Voir comment ça marche
-                </Button>
-              </a>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Badge variant="default">Paiement à la livraison</Badge>
-              <Badge variant="default">Livraison 48–72h</Badge>
-              <Badge variant="default">Garantie 30 jours</Badge>
-            </div>
-          </div>
-          <div className="relative flex justify-center items-center">
-            <div className="relative w-full max-w-[420px]">
-              <img 
-                src={product.images[0]?.url || "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80"} 
-                alt="Product Hero" 
-                className="w-full rounded-[28px] border-2 border-ink shadow-sm"
-              />
-              <div className="absolute -top-4 -left-6 w-[118px] h-[118px] bg-mint border-2 border-ink rounded-full flex items-center justify-center text-center font-display font-bold text-[14px] leading-tight p-2 shadow-sticker transform -rotate-12">
-                3-en-1 vapeur + huile + clic
-              </div>
-              <div className="absolute -bottom-2 -right-4 w-[96px] h-[96px] bg-magenta text-white border-2 border-ink rounded-full flex items-center justify-center text-center font-display font-bold text-[13px] leading-tight p-1.5 shadow-sticker transform rotate-6">
-                Sans chaleur agressive
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* MARQUEE */}
-      <div className="bg-ink text-white py-4 overflow-hidden mt-14 transform -rotate-1 border-y-2 border-ink">
-        <div className="flex whitespace-nowrap animate-scroll w-max">
-          {[...Array(4)].map((_, i) => (
-            <span key={i} className="font-display font-bold text-[18px] px-5 flex items-center gap-5">
-              VAPEUR <span className="text-mint not-italic">?</span> BRUME + HUILE <span className="text-mint not-italic">?</span> CLIC LIBÉRATEUR <span className="text-mint not-italic">?</span> SANS CHALEUR AGRESSIVE <span className="text-mint not-italic">?</span> POUR TOUTES LES TEXTURES <span className="text-mint not-italic">?</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* FEATURES 3-in-1 */}
-      <section id="comment" className="py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-[640px] mx-auto mb-16">
-            <h2 className="font-display text-[32px] sm:text-[42px] font-bold mb-4">Ce qu'il y a dedans, en vrai.</h2>
-            <p className="text-ink-soft text-[17px] font-medium">Pas de magie — juste trois mécanismes qui font le travail à ta place.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {product.features?.map((feat: ProductFeature, idx: number) => (
-              <Card key={idx} className="border-2 border-ink hover:-translate-y-2 transition-transform duration-300">
-                <CardContent className="p-8">
-                  <div className={`w-[64px] h-[64px] rounded-2xl flex items-center justify-center mb-6 border-2 border-ink ${idx === 0 ? 'bg-purple' : idx === 1 ? 'bg-magenta' : 'bg-mint-deep'}`}>
-                    {idx === 0 && <Wind className="w-8 h-8 text-white" />}
-                    {idx === 1 && <Droplets className="w-8 h-8 text-white" />}
-                    {idx === 2 && <Pointer className="w-8 h-8 text-white" />}
-                  </div>
-                  <h3 className="font-display text-[22px] font-bold mb-3">{feat.title}</h3>
-                  <p className="text-ink-soft text-[15px] font-medium leading-relaxed">{feat.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* STATEMENT */}
-      <section className="bg-panel py-24 border-y-2 border-ink">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="font-display text-[34px] sm:text-[58px] font-bold leading-tight max-w-[18ch] mx-auto">
-            Tes cheveux méritent <span className="text-purple">mieux</span> qu'un peigne qui <span className="text-magenta">tire.</span>
-          </h2>
-        </div>
-      </section>
-
-      {/* PHOTO FEATURE */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-[0.9fr_1.1fr] gap-14 items-center">
-          <img src={product.images[2]?.url || "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388"} alt="Détail clic" className="rounded-[24px] border-2 border-ink w-full max-w-[400px] mx-auto" />
-          <div>
-            <span className="inline-block bg-ink text-white text-[13px] font-bold px-4 py-2 rounded-full mb-5">Le détail qui change tout</span>
-            <h2 className="font-display text-[32px] sm:text-[42px] font-bold leading-tight mb-5 max-w-[14ch]">Un clic, et c'est réglé.</h2>
-            <p className="text-ink-soft text-[17px] font-medium max-w-[42ch] mb-8">
-              Sur une brosse classique, retirer les cheveux coincés prend souvent plus de temps que le coiffage lui-même. Le mécanisme à dégagement automatique règle ça en une seconde.
-            </p>
-            <ul className="space-y-4">
-              <li className="flex items-center gap-3 font-bold text-[16px]"><Check className="text-magenta w-6 h-6 shrink-0" /> Aucun cheveu coincé dans les poils</li>
-              <li className="flex items-center gap-3 font-bold text-[16px]"><Check className="text-magenta w-6 h-6 shrink-0" /> Nettoyage en quelques secondes</li>
-              <li className="flex items-center gap-3 font-bold text-[16px]"><Check className="text-magenta w-6 h-6 shrink-0" /> Poils doux, sans casse ni tiraillement</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* CHECKOUT / OFFER SECTION */}
-      <section id="commander" className="py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="bg-panel border-2 border-ink rounded-[32px] overflow-hidden flex flex-col md:flex-row">
+      {/* HERO SECTION */}
+      <section className="pt-8 pb-16 lg:pt-16 lg:pb-24">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             
-            {/* Left: Bundle Selection */}
-            <div className="flex-1 p-8 md:p-12 border-b-2 md:border-b-0 md:border-r-2 border-ink">
-              <h2 className="font-display text-[28px] font-bold mb-2">Choisis ton offre</h2>
-              <p className="text-ink-soft font-medium mb-8">Sélectionne la quantité. Paiement à la livraison sécurisé.</p>
+            {/* GALLERY */}
+            <div className="flex flex-col gap-4">
+              <div className="aspect-[4/5] sm:aspect-square bg-bg-subtle rounded-3xl overflow-hidden relative">
+                <img 
+                  src={product.images[currentImageIdx]?.url || "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80"} 
+                  alt={product.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {product.images?.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
+                  {product.images.map((img: any, idx: number) => (
+                    <button 
+                      key={idx} 
+                      onClick={() => setCurrentImageIdx(idx)}
+                      className={`relative w-20 h-20 shrink-0 rounded-xl overflow-hidden snap-start transition-all ${currentImageIdx === idx ? 'ring-2 ring-accent ring-offset-2' : 'opacity-70 hover:opacity-100'}`}
+                    >
+                      <img src={img.url} alt={`Vue ${idx+1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* PRODUCT INFO */}
+            <div className="flex flex-col justify-center">
               
-              <div className="space-y-4">
-                {product.bundles?.map((bundle: ProductBundle) => (
-                  <div 
-                    key={bundle.id}
-                    onClick={() => setSelectedBundle(bundle)}
-                    className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
-                      selectedBundle?.id === bundle.id 
-                      ? 'border-magenta bg-magenta/5 ring-4 ring-magenta/10' 
-                      : 'border-panel-line bg-white hover:border-ink'
-                    }`}
-                  >
-                    {bundle.badge && (
-                      <div className="absolute -top-3 left-4 bg-ink text-white text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full">
-                        {bundle.badge}
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                          selectedBundle?.id === bundle.id ? 'border-magenta' : 'border-slate-300'
-                        }`}>
-                          {selectedBundle?.id === bundle.id && <div className="w-3 h-3 bg-magenta rounded-full"></div>}
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-[17px]">{bundle.name}</h4>
-                          <p className="text-sm text-ink-soft font-medium mt-0.5">{bundle.description}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-display font-bold text-[20px] text-magenta">{bundle.price.toLocaleString('fr-FR')} F</div>
-                        {bundle.original_price > bundle.price && (
-                          <div className="text-xs text-slate-400 line-through font-bold">{bundle.original_price.toLocaleString('fr-FR')} F</div>
-                        )}
-                      </div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex text-amber-400">
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <StarHalf className="w-4 h-4 fill-current" />
+                </div>
+                <span className="text-sm font-semibold text-text-muted">4.9/5 (128 avis)</span>
+              </div>
+
+              <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-brand leading-tight mb-4">
+                {product.headline || product.title}
+              </h1>
+              
+              <p className="text-lg text-text-muted mb-8 leading-relaxed">
+                {product.description}
+              </p>
+
+              <div className="flex items-end gap-4 mb-8">
+                <span className="text-4xl font-display font-bold text-brand">{product.price.toLocaleString('fr-FR')} FCFA</span>
+                {product.original_price && (
+                  <span className="text-xl text-text-muted line-through font-medium mb-1">{product.original_price.toLocaleString('fr-FR')} FCFA</span>
+                )}
+              </div>
+
+              <div className="space-y-4 mb-10">
+                {product.features?.slice(0,3).map((feat: ProductFeature, idx: number) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-4 h-4 text-accent" strokeWidth={3} />
+                    </div>
+                    <div>
+                      <span className="font-semibold text-brand">{feat.title}</span>
+                      {feat.desc && <p className="text-text-muted text-sm mt-0.5">{feat.desc}</p>}
                     </div>
                   </div>
                 ))}
               </div>
+
+              <a 
+                href="#commander" 
+                className="w-full bg-accent hover:bg-accent-hover text-white text-center py-4 rounded-2xl font-bold text-lg shadow-floating transition-all flex items-center justify-center gap-2"
+              >
+                Commander maintenant
+                <ArrowRight className="w-5 h-5" />
+              </a>
+
+              <div className="flex items-center justify-center gap-6 mt-6 text-sm font-medium text-text-muted">
+                <div className="flex items-center gap-1.5"><Truck className="w-4 h-4" /> Livraison 48h</div>
+                <div className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4" /> Satisfait ou rembours</div>
+              </div>
             </div>
 
-            {/* Right: Checkout Form */}
-            <div className="flex-1 p-8 md:p-12 bg-white">
-              <h2 className="font-display text-[24px] font-bold mb-6">Informations de livraison</h2>
+          </div>
+        </div>
+      </section>
+
+      {/* CHECKOUT SECTION */}
+      <section id="commander" className="py-16 lg:py-24 bg-bg-subtle border-t border-border-light">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand mb-4">Passez votre commande</h2>
+            <p className="text-text-muted">Remplissez le formulaire ci-dessous. Paiement  la livraison uniquement.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            {/* BUNDLES */}
+            <div className="lg:col-span-5 space-y-4">
+              <h3 className="font-bold text-brand text-lg mb-4">1. Choisissez votre offre</h3>
+              {product.bundles?.map((bundle: ProductBundle) => (
+                <label 
+                  key={bundle.id}
+                  className={`block relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedBundle?.id === bundle.id ? 'border-accent bg-white shadow-soft' : 'border-border-light bg-transparent hover:border-gray-300'}`}
+                >
+                  <input 
+                    type="radio" 
+                    name="bundle" 
+                    className="sr-only"
+                    checked={selectedBundle?.id === bundle.id}
+                    onChange={() => setSelectedBundle(bundle)}
+                  />
+                  {bundle.badge && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand text-white text-[11px] font-bold uppercase tracking-wider py-1 px-3 rounded-full">
+                      {bundle.badge}
+                    </span>
+                  )}
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedBundle?.id === bundle.id ? 'border-accent bg-accent' : 'border-gray-300'}`}>
+                        {selectedBundle?.id === bundle.id && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                      </div>
+                      <span className="font-bold text-brand text-lg">{bundle.name}</span>
+                    </div>
+                  </div>
+                  <div className="pl-8">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-xl font-display font-bold text-brand">{bundle.price.toLocaleString('fr-FR')} F</span>
+                      {bundle.original_price && (
+                        <span className="text-sm text-text-muted line-through">{bundle.original_price.toLocaleString('fr-FR')} F</span>
+                      )}
+                    </div>
+                    {bundle.description && <p className="text-sm text-accent font-medium">{bundle.description}</p>}
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            {/* FORM */}
+            <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl shadow-soft border border-border-light">
+              <h3 className="font-bold text-brand text-lg mb-6">2. Vos coordonnes de livraison</h3>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-bold mb-2">Nom complet</label>
+                  <label className="block text-sm font-semibold text-brand mb-2">Nom complet</label>
                   <input 
                     required 
                     type="text" 
                     value={customerName} 
                     onChange={e => setCustomerName(e.target.value)}
-                    placeholder="Prénom & Nom"
-                    className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-magenta focus:ring-0 transition-colors font-medium"
+                    placeholder="Votre nom et prnom"
+                    className="w-full p-4 bg-bg-subtle border border-border-light rounded-xl focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-2">Numéro WhatsApp / Appel</label>
+                  <label className="block text-sm font-semibold text-brand mb-2">Numro de tlphone (WhatsApp conseill)</label>
                   <input 
                     required 
                     type="tel" 
                     value={customerPhone} 
                     onChange={e => setCustomerPhone(e.target.value)}
-                    className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-magenta focus:ring-0 transition-colors font-medium font-mono"
+                    className="w-full p-4 bg-bg-subtle border border-border-light rounded-xl focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-bold mb-2">Ville (Bénin)</label>
+                    <label className="block text-sm font-semibold text-brand mb-2">Ville (Bnin)</label>
                     <select 
                       value={city} 
                       onChange={e => setCity(e.target.value)}
-                      className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-magenta focus:ring-0 transition-colors font-medium"
+                      className="w-full p-4 bg-bg-subtle border border-border-light rounded-xl focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all appearance-none"
                     >
                       <option value="Cotonou">Cotonou</option>
                       <option value="Abomey-Calavi">Abomey-Calavi</option>
@@ -333,35 +322,41 @@ export default function ProductLanding({ slug }: { slug: string }) {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold mb-2">Quartier / Repère</label>
+                    <label className="block text-sm font-semibold text-brand mb-2">Quartier / Repre</label>
                     <input 
                       required 
                       type="text" 
                       value={address} 
                       onChange={e => setAddress(e.target.value)}
-                      placeholder="Ex: Akpakpa, pharmacie X..."
-                      className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-magenta focus:ring-0 transition-colors font-medium"
+                      placeholder="Ex: Akpakpa, cinma..."
+                      className="w-full p-4 bg-bg-subtle border border-border-light rounded-xl focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all"
                     />
                   </div>
                 </div>
                 
-                <div className="pt-4 border-t-2 border-slate-100 mt-6">
+                <div className="pt-6 mt-6 border-t border-border-light">
                   <div className="flex justify-between items-center mb-6">
-                    <span className="font-bold text-lg">Total à payer (COD) :</span>
-                    <span className="font-display font-bold text-[28px] text-ink">{selectedBundle?.price.toLocaleString('fr-FR')} FCFA</span>
+                    <span className="font-semibold text-text-muted">Total  payer  la livraison :</span>
+                    <span className="font-display font-bold text-2xl text-brand">{selectedBundle?.price.toLocaleString('fr-FR')} FCFA</span>
                   </div>
-                  <Button 
+                  <button 
                     type="submit" 
                     disabled={isSubmitting} 
-                    variant="primary" 
-                    size="xl" 
-                    className="w-full text-[18px] h-[64px]"
+                    className="w-full bg-accent hover:bg-accent-hover text-white text-[18px] font-bold h-16 rounded-xl transition-all shadow-md disabled:opacity-70 flex justify-center items-center gap-2"
                   >
-                    {isSubmitting ? 'Traitement en cours...' : 'Valider ma commande (COD)'}
-                  </Button>
-                  <p className="text-center text-xs text-slate-500 font-medium mt-4">
-                    ?? Vous ne payez rien maintenant. Le paiement se fera en espèces à la livraison.
-                  </p>
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Traitement...
+                      </>
+                    ) : (
+                      'Valider ma commande (COD)'
+                    )}
+                  </button>
+                  <div className="flex items-center justify-center gap-2 mt-4 text-sm text-text-muted">
+                    <ShieldCheck className="w-4 h-4 text-accent" />
+                    <span>Vous ne payez rien maintenant. Le paiement se fait  la livraison.</span>
+                  </div>
                 </div>
               </form>
             </div>
@@ -371,47 +366,54 @@ export default function ProductLanding({ slug }: { slug: string }) {
       </section>
 
       {/* TESTIMONIALS */}
-      <section id="avis" className="py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-[640px] mx-auto mb-16">
-            <h2 className="font-display text-[32px] sm:text-[42px] font-bold mb-4">On te laisse pas juste sur parole.</h2>
-            <p className="text-ink-soft text-[17px] font-medium">Ce que disent celles qui ont déjà changé de rituel.</p>
+      <section className="py-24 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand mb-4">Elles ont chang de rituel</h2>
+            <p className="text-text-muted">Dcouvrez ce que nos clientes pensent de {product.title}.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {product.testimonials?.map((t: Testimonial, idx: number) => (
-              <Card key={idx} className={`border-2 border-ink p-8 flex flex-col justify-between ${idx === 0 ? 'bg-purple text-white border-purple' : idx === 2 ? 'bg-magenta text-white border-magenta' : 'bg-white'}`}>
+              <div key={idx} className="bg-bg-subtle p-8 rounded-3xl border border-border-light flex flex-col justify-between">
                 <div>
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className={`w-5 h-5 ${idx === 1 ? 'text-amber-400' : 'text-white'}`} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <div className="flex text-amber-400 mb-4">
+                    {[...Array(t.rating || 5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
                     ))}
                   </div>
-                  <p className={`text-[17px] font-bold leading-relaxed mb-6 ${idx === 1 ? 'text-ink' : 'text-white'}`}>"{t.comment}"</p>
+                  <p className="text-brand font-medium leading-relaxed mb-6">"{t.comment}"</p>
                 </div>
-                <div>
-                  <p className={`font-display font-bold text-[15px] ${idx === 1 ? 'text-ink' : 'text-white'}`}>{t.handle}</p>
-                  <p className={`text-[13px] font-medium opacity-80 ${idx === 1 ? 'text-ink-soft' : 'text-white'}`}>{t.name} — {t.location}</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
+                    {t.handle.charAt(1).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-bold text-brand text-sm">{t.handle}</p>
+                    <p className="text-xs text-text-muted">{t.name}</p>
+                  </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="bg-panel py-24 border-y-2 border-ink">
+      <section className="py-24 bg-bg-subtle">
         <div className="max-w-3xl mx-auto px-6">
-          <h2 className="font-display text-[32px] sm:text-[42px] font-bold mb-12 text-center">Les questions qu'on nous pose</h2>
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand">Questions frquentes</h2>
+          </div>
           <div className="space-y-4">
             {product.faq?.map((item: FAQItem, idx: number) => (
-              <details key={idx} className="group border-2 border-ink bg-white rounded-2xl [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex cursor-pointer items-center justify-between p-6 font-display font-bold text-[18px]">
+              <details key={idx} className="group bg-white border border-border-light rounded-2xl [&_summary::-webkit-details-marker]:hidden shadow-sm">
+                <summary className="flex cursor-pointer items-center justify-between p-6 font-semibold text-brand text-lg select-none">
                   {item.question}
-                  <span className="relative ml-4 shrink-0 w-8 h-8 rounded-full bg-panel flex items-center justify-center text-magenta group-open:rotate-45 transition-transform duration-300">
-                    <Plus className="w-5 h-5" />
+                  <span className="relative ml-4 shrink-0 w-8 h-8 rounded-full bg-bg-subtle flex items-center justify-center text-text-muted group-open:rotate-180 transition-transform duration-300">
+                    <ChevronDown className="w-5 h-5" />
                   </span>
                 </summary>
-                <div className="px-6 pb-6 text-ink-soft font-medium text-[16px] leading-relaxed">
+                <div className="px-6 pb-6 text-text-muted leading-relaxed">
                   {item.answer}
                 </div>
               </details>
@@ -420,46 +422,26 @@ export default function ProductLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section className="py-24 text-center px-6">
-        <h2 className="font-display text-[34px] sm:text-[50px] font-bold leading-tight max-w-[16ch] mx-auto mb-10">
-          Prête à changer ton rituel capillaire ?
-        </h2>
-        <a href="#commander">
-          <Button variant="primary" size="xl" className="text-[18px]">
-            Commander ma brosse — {product.price.toLocaleString('fr-FR')} FCFA
-          </Button>
-        </a>
-      </section>
-
       {/* FOOTER */}
-      <footer className="border-t-2 border-ink py-10">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-[14px] font-bold text-ink-soft">
-          <div>© {new Date().getFullYear()} {product.slug === 'umei' ? 'uméi' : 'Isivente'}. Tous droits réservés.</div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-magenta transition-colors">Contact</a>
-            <a href="#" className="hover:text-magenta transition-colors">Livraison (Bénin)</a>
-            <a href="#" className="hover:text-magenta transition-colors">Conditions</a>
+      <footer className="bg-white py-12 border-t border-border-light">
+        <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="font-display font-extrabold text-xl tracking-tighter text-brand">umi</div>
+          <div className="text-sm text-text-muted"> {new Date().getFullYear()} Umi. Tous droits rservs.</div>
+          <div className="flex gap-6 text-sm font-medium text-text-muted">
+            <a href="#" className="hover:text-brand transition-colors">Contact</a>
+            <a href="#" className="hover:text-brand transition-colors">Livraison (Bnin)</a>
+            <a href="#" className="hover:text-brand transition-colors">Conditions</a>
           </div>
         </div>
       </footer>
 
       {/* MOBILE STICKY CTA */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-lg border-t-2 border-ink z-50 transform translate-y-0 transition-transform">
-        <div className="flex justify-between items-center max-w-md mx-auto">
-          <div className="flex flex-col">
-            <span className="font-display font-bold text-[14px]">uméi 3-en-1</span>
-            <span className="text-magenta font-bold text-[16px]">{product.price.toLocaleString('fr-FR')} F</span>
-          </div>
-          <a href="#commander">
-            <Button variant="takeboost" size="md">Commander</Button>
-          </a>
-        </div>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl border-t border-border-light z-50">
+        <a href="#commander" className="w-full bg-accent hover:bg-accent-hover text-white text-center h-14 rounded-xl font-bold text-[17px] shadow-lg flex items-center justify-center gap-2">
+          Commander - {product.price.toLocaleString('fr-FR')} F
+        </a>
       </div>
 
     </div>
   );
 }
-
-
-

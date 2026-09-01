@@ -10,28 +10,26 @@ const config: Config = {
     extend: {
       colors: {
         bg: "var(--bg)",
+        "bg-subtle": "var(--bg-subtle)",
         panel: "var(--panel)",
-        "panel-line": "var(--panel-line)",
-        ink: "var(--ink)",
-        "ink-soft": "var(--ink-soft)",
-        purple: "var(--purple)",
-        "purple-deep": "var(--purple-deep)",
-        magenta: "var(--magenta)",
-        "magenta-deep": "var(--magenta-deep)",
-        mint: "var(--mint)",
-        "mint-deep": "var(--mint-deep)",
-        cream: "var(--cream)",
+        "border-light": "var(--border-light)",
+        "text-main": "var(--text-main)",
+        "text-muted": "var(--text-muted)",
+        brand: "var(--brand)",
+        "brand-light": "var(--brand-light)",
+        accent: "var(--accent)",
+        "accent-hover": "var(--accent-hover)",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
-        display: ["Space Grotesk", "sans-serif"],
+        display: ["Outfit", "sans-serif"],
       },
       boxShadow: {
-        sticker: "0 10px 24px -8px rgba(0,0,0,0.3)",
+        soft: "0 4px 20px -2px rgba(15, 23, 42, 0.05)",
+        floating: "0 10px 40px -10px rgba(15, 23, 42, 0.1)",
       }
     },
   },
   plugins: [],
 };
 export default config;
-
