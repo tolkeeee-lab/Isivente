@@ -15,20 +15,17 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        // Néo-Brutalisme Colors
-        brutal: {
-          bg: "#FF5E00", // Takeboost-style intense orange
-          bg2: "#FFB800", // Yellow gradient
-          dark: "#0F0F0F",
+        premium: {
+          bg: "#FAF9F6", // Off-white luxury
+          bg2: "#F3E8FF", // Soft lavender
+          dark: "#1A1A1A", // Off-black
           light: "#FFFFFF",
-          accent: "#CCFF00", // Neon lime
-          purple: "#9D00FF", // Intense purple
+          accent: "#9333EA", // Elegant purple
         }
       },
       boxShadow: {
-        'brutal': '8px 8px 0px 0px rgba(15,15,15,1)',
-        'brutal-lg': '12px 12px 0px 0px rgba(15,15,15,1)',
-        'brutal-hover': '4px 4px 0px 0px rgba(15,15,15,1)',
+        'premium': '0 20px 40px -15px rgba(0,0,0,0.05)',
+        'premium-hover': '0 30px 60px -15px rgba(147, 51, 234, 0.15)',
       }
     },
   },
