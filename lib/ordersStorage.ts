@@ -8,10 +8,15 @@ export interface OrderItem {
   bundle_id?: string;
   quantity?: number;
   total_amount?: number;
+  amount?: number;
   customer_name?: string;
+  name?: string;
   customer_phone?: string;
+  phone?: string;
   shipping_city?: string;
+  city?: string;
   shipping_address?: string;
+  address?: string;
   status?: "pending" | "shipped" | "delivered" | "cancelled" | string;
   created_at?: string;
 }
@@ -27,52 +32,106 @@ function saveToLocalStorage(order: any) {
   } catch {}
 }
 
-/** Sauvegarde une nouvelle commande dans Supabase */
+/** Sauvegarde une nouvelle commande dans Supabase avec mapping complet de toutes les colonnes possibles */
 export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   const randomNum = Math.floor(100000 + Math.random() * 900000);
   const orderNumberStr = "CMD-" + randomNum;
 
-  // Préparation de l'objet de commande sans forcer un ID textuel incompatible avec le type UUID de Postgres
-  const { id: _unusedId, ...cleanOrderData } = orderData;
+  const name = orderData.customer_name || orderData.name || "Client";
+  const phone = orderData.customer_phone || orderData.phone || "";
+  const city = orderData.shipping_city || orderData.city || "";
+  const address = orderData.shipping_address || orderData.address || "";
+  const amount = orderData.total_amount || orderData.amount || 14900;
+  const quantity = orderData.quantity || 1;
+  const productTitle = orderData.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1";
+  const productSlug = orderData.product_slug || "umei";
+  const status = orderData.status || "pending";
+  const createdAt = new Date().toISOString();
 
-  const payload: any = {
-    ...cleanOrderData,
+  // Payload universel contenant les noms de colonnes et leurs alias (pour satisfaire les contraintes NOT NULL)
+  const fullPayload: any = {
     order_number: orderNumberStr,
-    created_at: new Date().toISOString(),
+    customer_name: name,
+    name: name,
+    customer_phone: phone,
+    phone: phone,
+    shipping_city: city,
+    city: city,
+    shipping_address: address,
+    address: address,
+    total_amount: amount,
+    amount: amount,
+    quantity: quantity,
+    product_title: productTitle,
+    product_slug: productSlug,
+    status: status,
+    created_at: createdAt,
   };
 
-  // 1. Sauvegarde locale de sécurité immédiate
-  saveToLocalStorage({ ...payload, id: "local_" + Date.now() });
+  // 1. Sauvegarde locale de sécurité
+  saveToLocalStorage({ ...fullPayload, id: "local_" + Date.now() });
 
-  // 2. Insertion dans Supabase
-  let res = await supabase.from("orders").insert([payload]).select();
+  // 2. Premier essai d'insertion complète dans Supabase
+  let res = await supabase.from("orders").insert([fullPayload]).select();
 
-  // Si colonne bundle_id non existante dans le schéma Supabase, réessayer sans bundle_id
-  if (res.error && res.error.message.includes("bundle_id")) {
-    const { bundle_id, ...withoutBundle } = payload;
-    res = await supabase.from("orders").insert([withoutBundle]).select();
-  }
-
-  // Si erreur de type sur order_number (ex: attendu integer au lieu de text)
-  if (res.error && (res.error.message.includes("order_number") || res.error.code === "22P02")) {
-    const { bundle_id, ...withoutBundle } = payload;
-    const integerPayload = {
-      ...withoutBundle,
-      order_number: randomNum
-    };
-    res = await supabase.from("orders").insert([integerPayload]).select();
-  }
-
+  // 3. Si certaines colonnes n'existent pas dans la table, filtrer et réessayer
   if (res.error) {
-    console.error("Supabase insert notice:", res.error.message);
+    console.warn("Supabase initial insert notice:", res.error.message);
+
+    // Essayer avec uniquement le schéma classique standard (city, address, phone, name)
+    const standardPayload: any = {
+      order_number: orderNumberStr,
+      name: name,
+      phone: phone,
+      city: city,
+      address: address,
+      amount: amount,
+      total_amount: amount,
+      quantity: quantity,
+      status: status,
+      created_at: createdAt
+    };
+    let res2 = await supabase.from("orders").insert([standardPayload]).select();
+    if (!res2.error) return res2.data?.[0] || standardPayload;
+
+    // Essayer avec le schéma alternatif (customer_name, customer_phone, shipping_city, shipping_address)
+    const altPayload: any = {
+      order_number: orderNumberStr,
+      customer_name: name,
+      customer_phone: phone,
+      shipping_city: city,
+      shipping_address: address,
+      total_amount: amount,
+      quantity: quantity,
+      status: status,
+      created_at: createdAt
+    };
+    let res3 = await supabase.from("orders").insert([altPayload]).select();
+    if (!res3.error) return res3.data?.[0] || altPayload;
   }
 
-  return res.data?.[0] || payload;
+  return res.data?.[0] || fullPayload;
 }
 
-/** Retourne toutes les commandes depuis Supabase */
+/** Normalise un objet commande pour affichage sans faille dans le Dashboard */
+function normalizeOrder(o: any): OrderItem {
+  return {
+    ...o,
+    customer_name: o.customer_name || o.name || "Client",
+    customer_phone: o.customer_phone || o.phone || "",
+    shipping_city: o.shipping_city || o.city || "Cotonou",
+    shipping_address: o.shipping_address || o.address || "",
+    total_amount: o.total_amount || o.amount || 14900,
+    product_title: o.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1",
+    quantity: o.quantity || 1,
+    status: o.status || "pending",
+    created_at: o.created_at || new Date().toISOString()
+  };
+}
+
+/** Retourne toutes les commandes depuis Supabase (avec fusion locale) */
 export async function getAllOrders(): Promise<OrderItem[]> {
-  let dbOrders: OrderItem[] = [];
+  let dbOrders: any[] = [];
 
   try {
     const { data, error } = await supabase
@@ -87,8 +146,7 @@ export async function getAllOrders(): Promise<OrderItem[]> {
     console.warn("Supabase fetch notice:", err);
   }
 
-  // Récupérer et fusionner aussi les commandes locales
-  let localOrders: OrderItem[] = [];
+  let localOrders: any[] = [];
   if (typeof window !== "undefined") {
     try {
       const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -98,12 +156,14 @@ export async function getAllOrders(): Promise<OrderItem[]> {
 
   const map = new Map<string, OrderItem>();
   dbOrders.forEach((o) => {
-    const key = o.id || `${o.customer_phone}_${o.created_at}`;
-    map.set(key, o);
+    const normalized = normalizeOrder(o);
+    const key = normalized.id || `${normalized.customer_phone}_${normalized.created_at}`;
+    map.set(key, normalized);
   });
   localOrders.forEach((o) => {
-    const key = o.id || `${o.customer_phone}_${o.created_at}`;
-    if (!map.has(key)) map.set(key, o);
+    const normalized = normalizeOrder(o);
+    const key = normalized.id || `${normalized.customer_phone}_${normalized.created_at}`;
+    if (!map.has(key)) map.set(key, normalized);
   });
 
   return Array.from(map.values()).sort((a, b) => {
