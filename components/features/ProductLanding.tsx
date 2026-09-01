@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Check, ShieldCheck, Truck, Star, Plus, Minus, ArrowRight, StarHalf, ChevronDown } from "lucide-react";
+import { Check, ShieldCheck, Truck, Star, Plus, Minus, ArrowRight, StarHalf, ChevronDown, Hand } from "lucide-react";
 
-// --- Types ---
 interface ProductBundle {
   id: string;
   name: string;
@@ -38,7 +37,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // Form State
   const [selectedBundle, setSelectedBundle] = useState<ProductBundle | null>(null);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("+229");
@@ -55,7 +53,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
         .single();
       
       if (error) {
-        console.error('Supabase Error:', error);
         setFetchError(error.message);
       }
       if (data) {
@@ -91,11 +88,9 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
       const { error } = await supabase.from("orders").insert([orderData]);
       if (error) throw error;
-      
       window.location.href = `/p/${slug}/success`;
     } catch (err) {
-      console.error("Order error", err);
-      alert("Une erreur est survenue lors de la commande. Veuillez ressayer.");
+      alert("Une erreur est survenue lors de la commande.");
     } finally {
       setIsSubmitting(false);
     }
@@ -110,93 +105,115 @@ export default function ProductLanding({ slug }: { slug: string }) {
   if (!product) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-bg p-8 text-center">
       <h1 className="text-3xl font-display font-bold text-text-main mb-4">Produit introuvable</h1>
-      {fetchError && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl font-mono text-sm border border-red-100 max-w-lg overflow-auto">
-          <p className="font-bold mb-2">Erreur Supabase:</p>
-          <p>{fetchError}</p>
-        </div>
-      )}
     </div>
   );
 
   return (
     <div className="min-h-screen bg-bg selection:bg-accent/20 overflow-hidden">
       {/* URGENCY BAR */}
-      <div className="bg-brand text-white text-center py-2.5 px-4 text-sm font-medium tracking-wide">
+      <div className="bg-brand text-white text-center py-2.5 px-4 text-sm font-medium tracking-wide relative z-50">
         🔥 Offre de lancement : <span className="font-bold text-accent">Livraison incluse aujourd'hui</span>
       </div>
 
       {/* HEADER */}
       <header className="border-b border-border-light bg-white sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="font-display font-extrabold text-2xl tracking-tighter text-brand">
-            uméi
-          </div>
-          <a href="#commander" className="bg-accent hover:bg-accent-hover text-white px-5 py-2 rounded-full font-semibold text-sm transition-all shadow-sm hover:shadow-md">
+          <div className="font-display font-extrabold text-2xl tracking-tighter text-brand">uméi</div>
+          <a href="#commander" className="bg-accent hover:bg-accent-hover text-white px-5 py-2 rounded-full font-semibold text-sm transition-all shadow-sm">
             Commander
           </a>
         </div>
       </header>
 
-      {/* HERO SECTION - TAKEBOOST FLOATING STYLE */}
-      <section className="relative bg-bg-subtle pt-12 pb-32 lg:pt-24 lg:pb-48 overflow-visible">
-        {/* Abstract Background Element */}
+      {/* STICKY SCROLL SECTION (HERO + FEATURES) */}
+      <section className="relative bg-bg-subtle pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-visible">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-purple-100/50 to-transparent rounded-bl-[100px] pointer-events-none"></div>
 
         <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
             
-            {/* PRODUCT INFO (LEFT) */}
-            <div className="flex flex-col justify-center order-2 lg:order-1 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 mb-6 mx-auto lg:mx-0 bg-white px-4 py-2 rounded-full shadow-sm border border-border-light">
-                <div className="flex text-amber-400">
-                  <Star className="w-4 h-4 fill-current" />
-                  <Star className="w-4 h-4 fill-current" />
-                  <Star className="w-4 h-4 fill-current" />
-                  <Star className="w-4 h-4 fill-current" />
-                  <StarHalf className="w-4 h-4 fill-current" />
-                </div>
-                <span className="text-sm font-semibold text-brand">4.9/5 (128 avis)</span>
-              </div>
-
-              <h1 className="font-display text-5xl sm:text-6xl font-extrabold text-brand leading-[1.1] mb-6">
-                {product.headline || product.title}
-              </h1>
+            {/* LEFT COLUMN: HERO TEXT + FEATURES */}
+            <div className="lg:col-span-7 flex flex-col order-2 lg:order-1 relative z-20">
               
-              <p className="text-xl text-text-muted mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                {product.description}
-              </p>
+              <div className="text-center lg:text-left mb-16">
+                <div className="inline-flex items-center gap-2 mb-6 mx-auto lg:mx-0 bg-white px-4 py-2 rounded-full shadow-sm border border-border-light">
+                  <div className="flex text-amber-400">
+                    <Star className="w-4 h-4 fill-current" />
+                    <Star className="w-4 h-4 fill-current" />
+                    <Star className="w-4 h-4 fill-current" />
+                    <Star className="w-4 h-4 fill-current" />
+                    <StarHalf className="w-4 h-4 fill-current" />
+                  </div>
+                  <span className="text-sm font-semibold text-brand">4.9/5 (128 avis)</span>
+                </div>
 
-              <div className="flex items-end justify-center lg:justify-start gap-4 mb-10">
-                <span className="text-5xl font-display font-bold text-brand">{product.price.toLocaleString('fr-FR')} FCFA</span>
-                {product.original_price && (
-                  <span className="text-2xl text-text-muted line-through font-medium mb-1">{product.original_price.toLocaleString('fr-FR')} FCFA</span>
-                )}
+                <h1 className="font-display text-5xl sm:text-6xl font-extrabold text-brand leading-[1.1] mb-6">
+                  {product.headline || product.title}
+                </h1>
+                
+                <p className="text-xl text-text-muted mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                  {product.description}
+                </p>
+
+                <div className="flex items-end justify-center lg:justify-start gap-4 mb-10">
+                  <span className="text-5xl font-display font-bold text-brand">{product.price.toLocaleString('fr-FR')} FCFA</span>
+                  {product.original_price && (
+                    <span className="text-2xl text-text-muted line-through font-medium mb-1">{product.original_price.toLocaleString('fr-FR')} FCFA</span>
+                  )}
+                </div>
+
+                <a 
+                  href="#commander" 
+                  className="w-full lg:w-max bg-accent hover:bg-accent-hover text-white text-center py-5 px-10 rounded-full font-bold text-xl shadow-[0_10px_30px_-10px_rgba(16,185,129,0.6)] transition-all flex items-center justify-center gap-3 hover:scale-105"
+                >
+                  Commander maintenant
+                  <ArrowRight className="w-6 h-6" />
+                </a>
+
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-8 text-sm font-semibold text-text-muted">
+                  <div className="flex items-center gap-1.5"><Truck className="w-5 h-5 text-accent" /> Livraison 48h</div>
+                  <div className="flex items-center gap-1.5"><ShieldCheck className="w-5 h-5 text-accent" /> Satisfait ou remboursé</div>
+                </div>
               </div>
 
-              <a 
-                href="#commander" 
-                className="w-full lg:w-max bg-accent hover:bg-accent-hover text-white text-center py-5 px-10 rounded-full font-bold text-xl shadow-[0_10px_30px_-10px_rgba(16,185,129,0.6)] transition-all flex items-center justify-center gap-3 hover:scale-105"
-              >
-                Commander maintenant
-                <ArrowRight className="w-6 h-6" />
-              </a>
-
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-8 text-sm font-semibold text-text-muted">
-                <div className="flex items-center gap-1.5"><Truck className="w-5 h-5 text-accent" /> Livraison 48h</div>
-                <div className="flex items-center gap-1.5"><ShieldCheck className="w-5 h-5 text-accent" /> Satisfait ou remboursé</div>
+              {/* FEATURES EMBEDDED HERE SO IMAGE STAYS STICKY */}
+              <div className="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-border-light relative z-30 mb-8">
+                <h3 className="font-display text-2xl font-bold text-brand mb-8">Pourquoi vous allez l'adorer :</h3>
+                <div className="space-y-8">
+                  {product.features?.map((feat: ProductFeature, idx: number) => (
+                    <div key={idx} className="flex gap-5">
+                      <div className="w-12 h-12 rounded-2xl bg-bg-subtle flex items-center justify-center shrink-0 shadow-sm border border-border-light mt-1">
+                        <Check className="w-6 h-6 text-brand" strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-brand text-xl mb-2">{feat.title}</h4>
+                        {feat.desc && <p className="text-text-muted text-base leading-relaxed">{feat.desc}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
+
             </div>
 
-            {/* FLOATING PRODUCT IMAGE (RIGHT) */}
-            <div className="relative order-1 lg:order-2 flex justify-center lg:justify-end">
-              {/* This image breaks out of the container with negative margins and absolute positioning trickery */}
-              <div className="relative w-full max-w-[400px] lg:max-w-none lg:w-[120%] lg:-mr-[20%] lg:-mb-32 z-20">
-                <img 
-                  src="/images/brosse-transparente.png" 
-                  alt={product.title}
-                  className="w-full h-auto drop-shadow-[0_30px_40px_rgba(42,26,74,0.15)] animate-float"
-                />
+            {/* RIGHT COLUMN: STICKY FLOATING IMAGE & PULSING BUTTON */}
+            <div className="lg:col-span-5 order-1 lg:order-2 h-full relative">
+              <div className="sticky top-32 pt-8 lg:pt-0 pb-12 flex justify-center h-auto">
+                <div className="relative w-[110%] max-w-[450px] lg:w-[150%] lg:-mr-[30%] z-20">
+                  <img 
+                    src="/images/brosse-transparente.png" 
+                    alt={product.title}
+                    className="w-full h-auto drop-shadow-[0_30px_40px_rgba(42,26,74,0.15)] animate-float"
+                  />
+                  
+                  {/* PULSATING BUY BUTTON */}
+                  <a href="#commander" className="absolute top-[35%] right-[20%] lg:right-[30%] group z-50">
+                    <div className="absolute top-0 left-0 w-full h-full border-[3px] border-brand rounded-full animate-pulsate pointer-events-none"></div>
+                    <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-border-light text-brand group-hover:bg-brand group-hover:text-white transition-all hover:scale-110">
+                      <Hand className="w-5 h-5 lg:w-7 lg:h-7" />
+                    </div>
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -204,36 +221,14 @@ export default function ProductLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* FEATURES STRIP */}
-      <section className="bg-white py-12 border-b border-border-light relative z-30 shadow-[0_-20px_40px_rgba(0,0,0,0.02)]">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {product.features?.map((feat: ProductFeature, idx: number) => (
-              <div key={idx} className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-bg-subtle flex items-center justify-center shrink-0 shadow-sm border border-border-light">
-                  <Check className="w-6 h-6 text-brand" strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-brand text-lg">{feat.title}</h4>
-                  {feat.desc && <p className="text-text-muted text-sm">{feat.desc}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CHECKOUT SECTION */}
-      <section id="commander" className="py-20 lg:py-28 bg-white">
+      {/* CHECKOUT */}
+      <section id="commander" className="py-20 lg:py-28 bg-white border-t border-border-light">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-brand mb-4">Passez votre commande</h2>
             <p className="text-lg text-text-muted">Remplissez le formulaire ci-dessous. Paiement à la livraison uniquement.</p>
           </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            
-            {/* BUNDLES */}
             <div className="lg:col-span-5 space-y-4">
               <h3 className="font-bold text-brand text-xl mb-6">1. Choisissez votre offre</h3>
               {product.bundles?.map((bundle: ProductBundle) => (
@@ -241,17 +236,9 @@ export default function ProductLanding({ slug }: { slug: string }) {
                   key={bundle.id}
                   className={`block relative p-6 rounded-3xl border-2 cursor-pointer transition-all duration-200 ${selectedBundle?.id === bundle.id ? 'border-accent bg-bg-subtle shadow-md' : 'border-border-light bg-white hover:border-gray-300'}`}
                 >
-                  <input 
-                    type="radio" 
-                    name="bundle" 
-                    className="sr-only"
-                    checked={selectedBundle?.id === bundle.id}
-                    onChange={() => setSelectedBundle(bundle)}
-                  />
+                  <input type="radio" name="bundle" className="sr-only" checked={selectedBundle?.id === bundle.id} onChange={() => setSelectedBundle(bundle)} />
                   {bundle.badge && (
-                    <span className="absolute -top-3 left-6 bg-brand text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-sm">
-                      {bundle.badge}
-                    </span>
+                    <span className="absolute -top-3 left-6 bg-brand text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-sm">{bundle.badge}</span>
                   )}
                   <div className="flex justify-between items-start mb-3 mt-1">
                     <div className="flex items-center gap-3">
@@ -264,133 +251,94 @@ export default function ProductLanding({ slug }: { slug: string }) {
                   <div className="pl-9">
                     <div className="flex items-baseline gap-2 mb-1">
                       <span className="text-2xl font-display font-bold text-brand">{bundle.price.toLocaleString('fr-FR')} F</span>
-                      {bundle.original_price && (
-                        <span className="text-base text-text-muted line-through">{bundle.original_price.toLocaleString('fr-FR')} F</span>
-                      )}
+                      {bundle.original_price && <span className="text-base text-text-muted line-through">{bundle.original_price.toLocaleString('fr-FR')} F</span>}
                     </div>
                     {bundle.description && <p className="text-sm text-accent font-semibold">{bundle.description}</p>}
                   </div>
                 </label>
               ))}
             </div>
-
-            {/* FORM */}
             <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-[2rem] shadow-floating border border-border-light">
               <h3 className="font-bold text-brand text-xl mb-8">2. Vos coordonnées de livraison</h3>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-brand mb-2">Nom complet</label>
-                  <input 
-                    required 
-                    type="text" 
-                    value={customerName} 
-                    onChange={e => setCustomerName(e.target.value)}
-                    placeholder="Votre nom et prénom"
-                    className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium placeholder:text-text-muted"
-                  />
+                  <input required type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium placeholder:text-text-muted" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-brand mb-2">Numéro de téléphone (WhatsApp conseillé)</label>
-                  <input 
-                    required 
-                    type="tel" 
-                    value={customerPhone} 
-                    onChange={e => setCustomerPhone(e.target.value)}
-                    className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium"
-                  />
+                  <label className="block text-sm font-semibold text-brand mb-2">Numéro de téléphone</label>
+                  <input required type="tel" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-brand mb-2">Ville (Bénin)</label>
                     <div className="relative">
-                      <select 
-                        value={city} 
-                        onChange={e => setCity(e.target.value)}
-                        className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium appearance-none"
-                      >
+                      <select value={city} onChange={e => setCity(e.target.value)} className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium appearance-none">
                         <option value="Cotonou">Cotonou</option>
                         <option value="Abomey-Calavi">Abomey-Calavi</option>
                         <option value="Porto-Novo">Porto-Novo</option>
                         <option value="Parakou">Parakou</option>
                         <option value="Ouidah">Ouidah</option>
-                        <option value="Autre">Autre ville</option>
+                        <option value="Autre">Autre</option>
                       </select>
                       <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted pointer-events-none" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-brand mb-2">Quartier / Repère</label>
-                    <input 
-                      required 
-                      type="text" 
-                      value={address} 
-                      onChange={e => setAddress(e.target.value)}
-                      placeholder="Ex: Akpakpa, pharmacie..."
-                      className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium placeholder:text-text-muted"
-                    />
+                    <input required type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full p-4 bg-bg-subtle border-0 rounded-2xl focus:ring-2 focus:ring-accent outline-none transition-all text-brand font-medium placeholder:text-text-muted" />
                   </div>
                 </div>
-                
                 <div className="pt-8 mt-8 border-t border-border-light">
                   <div className="flex justify-between items-center mb-8">
                     <span className="font-semibold text-text-muted text-lg">Total à payer :</span>
                     <span className="font-display font-extrabold text-3xl text-brand">{selectedBundle?.price.toLocaleString('fr-FR')} FCFA</span>
                   </div>
-                  <button 
-                    type="submit" 
-                    disabled={isSubmitting} 
-                    className="w-full bg-accent hover:bg-accent-hover text-white text-xl font-bold h-16 rounded-2xl transition-all shadow-[0_8px_20px_-8px_rgba(16,185,129,0.5)] hover:shadow-[0_12px_25px_-8px_rgba(16,185,129,0.6)] disabled:opacity-70 flex justify-center items-center gap-3 hover:-translate-y-0.5"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Traitement...
-                      </>
-                    ) : (
-                      'Valider ma commande (COD)'
-                    )}
+                  <button type="submit" disabled={isSubmitting} className="w-full bg-accent hover:bg-accent-hover text-white text-xl font-bold h-16 rounded-2xl transition-all shadow-[0_8px_20px_-8px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 flex justify-center items-center gap-3">
+                    {isSubmitting ? 'Traitement...' : 'Valider ma commande (COD)'}
                   </button>
                   <div className="flex items-center justify-center gap-2 mt-5 text-sm font-medium text-text-muted bg-bg-subtle py-3 rounded-xl">
                     <ShieldCheck className="w-5 h-5 text-accent" />
-                    <span>Vous ne payez rien maintenant. Le paiement se fait à la livraison.</span>
+                    <span>Paiement à la livraison.</span>
                   </div>
                 </div>
               </form>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="py-24 bg-bg-subtle">
+      {/* TESTIMONIALS (MESSY CARDS) */}
+      <section className="py-24 bg-bg-subtle overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 relative z-10">
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-brand mb-4">Elles ont changé de rituel</h2>
             <p className="text-lg text-text-muted">Découvrez ce que nos clientes pensent de {product.title}.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {product.testimonials?.map((t: Testimonial, idx: number) => (
-              <div key={idx} className="bg-white p-8 rounded-3xl shadow-sm border border-border-light flex flex-col justify-between transition-transform hover:-translate-y-1">
-                <div>
-                  <div className="flex text-amber-400 mb-6">
-                    {[...Array(t.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-brand font-medium leading-relaxed text-lg mb-8">"{t.comment}"</p>
-                </div>
-                <div className="flex items-center gap-4 pt-6 border-t border-border-light">
-                  <div className="w-12 h-12 rounded-full bg-brand flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                    {t.handle.charAt(1).toUpperCase()}
-                  </div>
+          <div className="flex flex-wrap justify-center gap-8 lg:gap-12 relative z-20">
+            {product.testimonials?.map((t: Testimonial, idx: number) => {
+              const rotationClasses = ['rotate-messy-1', 'rotate-messy-2', 'rotate-messy-3', 'rotate-messy-4'];
+              const rotateClass = rotationClasses[idx % rotationClasses.length];
+              return (
+                <div key={idx} className={`w-full md:w-[calc(33.333%-2rem)] max-w-sm bg-white p-8 rounded-3xl shadow-sm border border-border-light flex flex-col justify-between transition-all duration-300 hover:rotate-0 hover:-translate-y-2 hover:shadow-xl ${rotateClass}`}>
                   <div>
-                    <p className="font-bold text-brand">{t.handle}</p>
-                    <p className="text-sm text-text-muted">{t.name}</p>
+                    <div className="flex text-amber-400 mb-6">
+                      {[...Array(t.rating || 5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-current" />)}
+                    </div>
+                    <p className="text-brand font-medium leading-relaxed text-lg mb-8">"{t.comment}"</p>
+                  </div>
+                  <div className="flex items-center gap-4 pt-6 border-t border-border-light">
+                    <div className="w-12 h-12 rounded-full bg-brand flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                      {t.handle.charAt(1).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-bold text-brand">{t.handle}</p>
+                      <p className="text-sm text-text-muted">{t.name}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -410,9 +358,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
                     <ChevronDown className="w-5 h-5" />
                   </span>
                 </summary>
-                <div className="px-6 pb-6 pt-2 text-text-muted leading-relaxed font-medium">
-                  {item.answer}
-                </div>
+                <div className="px-6 pb-6 pt-2 text-text-muted leading-relaxed font-medium">{item.answer}</div>
               </details>
             ))}
           </div>
@@ -424,11 +370,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="font-display font-extrabold text-2xl tracking-tighter text-white">uméi</div>
           <div className="text-sm font-medium text-white/60">© {new Date().getFullYear()} Uméi. Tous droits réservés.</div>
-          <div className="flex gap-6 text-sm font-semibold text-white/80">
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
-            <a href="#" className="hover:text-white transition-colors">Livraison (Bénin)</a>
-            <a href="#" className="hover:text-white transition-colors">Conditions</a>
-          </div>
         </div>
       </footer>
 
@@ -438,7 +379,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
           Commander - {product.price.toLocaleString('fr-FR')} F
         </a>
       </div>
-
     </div>
   );
 }
