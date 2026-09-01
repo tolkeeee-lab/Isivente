@@ -45,13 +45,16 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   const status = orderData.status || "pending";
   const createdAt = new Date().toISOString();
 
-  // Objet de commande standard
+  // Objet de commande standard avec tous les alias de colonnes
   let payload: Record<string, any> = {
     order_number: orderNumberStr,
+    name: name,
     customer_name: name,
+    phone: phone,
     customer_phone: phone,
     city: city,
     shipping_city: city,
+    address: address,
     shipping_address: address,
     total_amount: totalAmount,
     quantity: quantity,

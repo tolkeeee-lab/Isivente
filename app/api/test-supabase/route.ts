@@ -17,17 +17,14 @@ export async function GET() {
 
   const randomNum = Math.floor(100000 + Math.random() * 900000);
 
-  // Exact schema: order_number, customer_name, customer_phone, city, shipping_address, total_amount, product_slug, product_title, quantity, status
+  // Exact Supabase columns: order_number, name, phone, city, address, total_amount, quantity, status, created_at
   const testOrder = {
     order_number: "CMD-" + randomNum,
-    customer_name: "Test Client Supabase",
-    customer_phone: "97000000",
+    name: "Test Client Supabase",
+    phone: "97000000",
     city: "Cotonou",
-    shipping_city: "Cotonou",
-    shipping_address: "Haie Vive",
+    address: "Haie Vive",
     total_amount: 14900,
-    product_slug: "umei",
-    product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
     quantity: 1,
     status: "pending",
     created_at: new Date().toISOString()
