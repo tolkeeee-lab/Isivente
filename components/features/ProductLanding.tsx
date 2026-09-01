@@ -102,38 +102,38 @@ export default function ProductLanding({ slug }: { slug: string }) {
         
         {/* TEXTE GEANT EN ARRIERE PLAN */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center z-0 pointer-events-none whitespace-nowrap">
-          <h1 className="font-display font-black text-[18vw] leading-[0.8] text-brutal-dark opacity-90 uppercase mix-blend-overlay">
+          <h1 className="font-display font-black text-[30vw] md:text-[20vw] lg:text-[18vw] leading-[0.75] text-brutal-dark opacity-90 uppercase mix-blend-overlay">
             UMÉI
           </h1>
-          <h2 className="font-display font-black text-[18vw] leading-[0.8] text-brutal-dark opacity-90 uppercase outline-text">
+          <h2 className="font-display font-black text-[25vw] md:text-[18vw] leading-[0.8] text-brutal-dark opacity-90 uppercase outline-text">
             BROSSE
           </h2>
         </div>
 
         {/* PRODUIT CENTRAL */}
-        <div className="relative z-10 mt-16 w-full max-w-[500px] aspect-square flex justify-center items-center">
+        <div className="relative z-10 mt-20 md:mt-16 w-full max-w-[90vw] md:max-w-[500px] aspect-square flex justify-center items-center">
           <img 
             src="/images/brosse-transparente.png" 
             alt="Brosse Uméi"
-            className="w-[120%] max-w-[600px] drop-shadow-[0_40px_40px_rgba(0,0,0,0.4)] hover:scale-105 transition-transform duration-500 cursor-none"
+            className="w-[140%] md:w-[120%] max-w-[400px] md:max-w-[600px] drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)] md:drop-shadow-[0_40px_40px_rgba(0,0,0,0.4)] hover:scale-105 transition-transform duration-500 cursor-none"
           />
           
           {/* BOUTON PULSANT ABSOLU */}
-          <a href="#commander" className="absolute top-[30%] right-[10%] group z-50 hover:scale-110 transition-transform">
+          <a href="#commander" className="absolute top-[25%] right-[5%] md:top-[30%] md:right-[10%] group z-50 hover:scale-110 transition-transform">
             <div className="absolute top-0 left-0 w-full h-full border-4 border-brutal-dark rounded-full animate-pulsate"></div>
-            <div className="w-16 h-16 bg-brutal-accent border-[3px] border-brutal-dark rounded-full flex items-center justify-center shadow-brutal text-brutal-dark group-hover:bg-brutal-light transition-colors">
-              <Hand className="w-8 h-8" />
+            <div className="w-14 h-14 md:w-16 md:h-16 bg-brutal-accent border-[3px] border-brutal-dark rounded-full flex items-center justify-center shadow-[4px_4px_0_0_#000] md:shadow-brutal text-brutal-dark group-hover:bg-brutal-light transition-colors">
+              <Hand className="w-6 h-6 md:w-8 md:h-8" />
             </div>
           </a>
         </div>
 
         {/* PRIX ET CTA FLOTTANT */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-4 w-[90%] max-w-[400px]">
-          <div className="bg-brutal-light border-[3px] border-brutal-dark rounded-2xl p-2 px-6 shadow-brutal flex gap-4 items-center -rotate-2 hover:rotate-0 transition-transform">
-            <span className="font-display font-black text-3xl">{product.price.toLocaleString('fr-FR')} F</span>
-            {product.original_price && <span className="font-bold text-gray-400 line-through text-lg">{product.original_price.toLocaleString('fr-FR')} F</span>}
+        <div className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 md:gap-4 w-[90%] max-w-[400px]">
+          <div className="bg-brutal-light border-[3px] border-brutal-dark rounded-2xl p-2 px-4 md:px-6 shadow-[4px_4px_0_0_#000] md:shadow-brutal flex gap-4 items-center -rotate-2 hover:rotate-0 transition-transform">
+            <span className="font-display font-black text-2xl md:text-3xl">{product.price.toLocaleString('fr-FR')} F</span>
+            {product.original_price && <span className="font-bold text-gray-400 line-through text-base md:text-lg">{product.original_price.toLocaleString('fr-FR')} F</span>}
           </div>
-          <a href="#commander" className="w-full bg-brutal-dark text-brutal-light font-display font-black text-2xl uppercase py-5 rounded-[2rem] text-center shadow-[0_15px_30px_rgba(0,0,0,0.5)] hover:bg-brutal-purple hover:scale-105 transition-all">
+          <a href="#commander" className="w-full bg-brutal-dark text-brutal-light font-display font-black text-xl md:text-2xl uppercase py-4 md:py-5 rounded-[2rem] text-center shadow-[0_10px_20px_rgba(0,0,0,0.5)] md:shadow-[0_15px_30px_rgba(0,0,0,0.5)] hover:bg-brutal-purple hover:scale-105 transition-all">
             Acheter Maintenant
           </a>
         </div>
@@ -157,11 +157,11 @@ export default function ProductLanding({ slug }: { slug: string }) {
       </div>
 
       {/* FEATURES BRUTALISTES */}
-      <section className="py-24 px-6 max-w-6xl mx-auto">
-        <h2 className="font-display font-black text-6xl md:text-8xl mb-16 uppercase leading-none text-center">Pourquoi<br/>craquer ?</h2>
+      <section className="py-20 md:py-24 px-4 md:px-6 max-w-6xl mx-auto">
+        <h2 className="font-display font-black text-5xl md:text-8xl mb-12 md:mb-16 uppercase leading-[0.9] text-center">Pourquoi<br/>craquer ?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {product.features?.map((feat: any, idx: number) => {
-            const rotations = ['-rotate-3', 'rotate-2', '-rotate-2'];
+            const rotations = ['md:-rotate-3', 'md:rotate-2', 'md:-rotate-2'];
             return (
               <div key={idx} className={`bg-brutal-light border-[3px] border-brutal-dark p-8 rounded-[2rem] shadow-brutal ${rotations[idx % 3]} hover:rotate-0 hover:-translate-y-2 transition-all`}>
                 <div className="w-16 h-16 bg-brutal-accent border-2 border-brutal-dark rounded-full flex items-center justify-center mb-6 shadow-brutal">
@@ -176,11 +176,11 @@ export default function ProductLanding({ slug }: { slug: string }) {
       </section>
 
       {/* CHECKOUT BRUTALISTE */}
-      <section id="commander" className="py-24 bg-brutal-dark text-brutal-light border-t-[4px] border-black">
-        <div className="max-w-5xl mx-auto px-6">
-          <h2 className="font-display font-black text-6xl md:text-[6rem] uppercase leading-none text-center mb-16 text-brutal-accent">Commandez.</h2>
+      <section id="commander" className="py-20 md:py-24 bg-brutal-dark text-brutal-light border-t-[4px] border-black">
+        <div className="max-w-5xl mx-auto px-4 md:px-6">
+          <h2 className="font-display font-black text-5xl md:text-[6rem] uppercase leading-[0.9] text-center mb-12 md:mb-16 text-brutal-accent">Commandez.</h2>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12">
             
             {/* OFFRES */}
             <div className="space-y-6">
@@ -207,9 +207,9 @@ export default function ProductLanding({ slug }: { slug: string }) {
             </div>
 
             {/* FORMULAIRE */}
-            <div className="bg-brutal-light text-brutal-dark p-8 md:p-10 rounded-[2rem] border-[3px] border-brutal-dark shadow-brutal rotate-[-1deg]">
-              <h3 className="font-display font-black text-3xl uppercase mb-8">2. Vos Infos</h3>
-              <form onSubmit={handleSubmit} className="space-y-6 font-bold">
+            <div className="bg-brutal-light text-brutal-dark p-6 md:p-10 rounded-[2rem] border-[3px] border-brutal-dark shadow-[8px_8px_0_0_#0F0F0F] md:shadow-brutal md:rotate-[-1deg]">
+              <h3 className="font-display font-black text-2xl md:text-3xl uppercase mb-6 md:mb-8">2. Vos Infos</h3>
+              <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6 font-bold">
                 <div>
                   <label className="block mb-2 uppercase text-sm">Nom complet</label>
                   <input required type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full p-4 bg-white border-2 border-brutal-dark rounded-xl focus:outline-none focus:ring-4 focus:ring-brutal-accent shadow-[4px_4px_0_0_#0F0F0F] transition-all" />
@@ -257,3 +257,4 @@ export default function ProductLanding({ slug }: { slug: string }) {
     </div>
   );
 }
+
