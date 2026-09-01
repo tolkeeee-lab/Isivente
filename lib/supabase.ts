@@ -12,3 +12,5 @@ if (!supabaseAnonKey || supabaseAnonKey === "YOUR_SUPABASE_ANON_KEY") {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Force new build
