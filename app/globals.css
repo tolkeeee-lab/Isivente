@@ -1,21 +1,62 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-}
+  --bg: #FFFFFF;
+  --panel: #F3EEFF;
+  --panel-line: #DFD3FA;
+  --ink: #14121C;
+  --ink-soft: #5B5570;
+  --purple: #7C5CFC;
+  --purple-deep: #5C3FE0;
+  --magenta: #FF3D82;
+  --magenta-deep: #E01F66;
+  --mint: #9FEFC7;
+  --mint-deep: #3FAE7B;
+  --cream: #FBF3E8;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #090d16;
-    --foreground: #f8fafc;
-  }
+  --background: var(--bg);
+  --foreground: var(--ink);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+h1, h2, h3, h4, h5, h6, .display {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Animations */
+@keyframes scroll-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll-left 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll {
+    animation: none;
+  }
+}
+
+/* Base focus styles */
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--purple);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+

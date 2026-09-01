@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+﻿import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
@@ -9,17 +9,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: "#eef2ff",
-          100: "#e0e7ff",
-          500: "#6366f1",
-          600: "#4f46e5",
-          700: "#4338ca",
-          900: "#312e81",
-        }
+        bg: "var(--bg)",
+        panel: "var(--panel)",
+        "panel-line": "var(--panel-line)",
+        ink: "var(--ink)",
+        "ink-soft": "var(--ink-soft)",
+        purple: "var(--purple)",
+        "purple-deep": "var(--purple-deep)",
+        magenta: "var(--magenta)",
+        "magenta-deep": "var(--magenta-deep)",
+        mint: "var(--mint)",
+        "mint-deep": "var(--mint-deep)",
+        cream: "var(--cream)",
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        display: ["Space Grotesk", "sans-serif"],
+      },
+      boxShadow: {
+        sticker: "0 10px 24px -8px rgba(0,0,0,0.3)",
       }
     },
   },
   plugins: [],
 };
 export default config;
+
