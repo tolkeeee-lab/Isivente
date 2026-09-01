@@ -6,17 +6,17 @@
 
 :root {
   --bg: #FFFFFF;
-  --bg-subtle: #F8FAFC;
+  --bg-subtle: #F6F3FA; /* Soft lilac/lavender to match the product image */
   --panel: #F1F5F9;
-  --border-light: #E2E8F0;
+  --border-light: #EBE5F5;
   
-  --text-main: #0F172A;
-  --text-muted: #64748B;
+  --text-main: #1F1533;
+  --text-muted: #6B5E84;
   
-  --brand: #0F172A; /* Dark sleek branding */
-  --brand-light: #334155;
+  --brand: #2A1A4A; /* Deep premium purple */
+  --brand-light: #4A3578;
   
-  --accent: #10B981; /* Emerald green for conversion */
+  --accent: #10B981; /* Emerald green for conversion (WhatsApp style) */
   --accent-hover: #059669;
 
   --background: var(--bg);
