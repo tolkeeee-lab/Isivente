@@ -13,26 +13,30 @@ export async function GET() {
     },
   });
 
-  // Try minimal insert to see what works
-  const minimalOrder = {
-    customer_name: "Test Minimal",
+  const randomNum = Math.floor(100000 + Math.random() * 900000);
+
+  // Test insert with order_number
+  const testOrder = {
+    order_number: "CMD-" + randomNum,
+    customer_name: "Test Validation",
     customer_phone: "97000000",
     shipping_city: "Cotonou",
     shipping_address: "Haie Vive",
     total_amount: 14900,
-    status: "pending"
+    status: "pending",
+    created_at: new Date().toISOString()
   };
 
-  const { data: minData, error: minError } = await supabase
+  const { data: insertData, error: insertError } = await supabase
     .from("orders")
-    .insert([minimalOrder])
+    .insert([testOrder])
     .select();
 
   return NextResponse.json({
-    minimal_insert: {
-      success: !minError,
-      error: minError ? minError.message : null,
-      data: minData
+    insert_with_order_number: {
+      success: !insertError,
+      error: insertError ? insertError : null,
+      data: insertData
     }
   });
 }

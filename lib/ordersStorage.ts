@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 
 export interface OrderItem {
   id?: string;
+  order_number?: string | number;
   product_slug?: string;
   product_title?: string;
   bundle_id?: string;
@@ -26,28 +27,42 @@ function saveToLocalStorage(order: any) {
   } catch {}
 }
 
-/** Sauvegarde une nouvelle commande dans Supabase avec sécurité et repli automatique */
+/** Sauvegarde une nouvelle commande dans Supabase avec sécurité et gestion automatique du numéro de commande */
 export async function saveNewOrder(orderData: OrderItem): Promise<any> {
+  const randomNum = Math.floor(100000 + Math.random() * 900000);
+  const orderNumberStr = "CMD-" + randomNum;
+
   const fullOrder = {
     ...orderData,
+    order_number: orderNumberStr,
     created_at: new Date().toISOString(),
   };
 
   // Sauvegarde locale de secours immédiate
   saveToLocalStorage(fullOrder);
 
-  // 1. Essai d'insertion complète dans Supabase
+  // 1. Premier essai d'insertion avec order_number format texte
   let res = await supabase.from("orders").insert([fullOrder]).select();
 
-  // 2. Si une colonne spécifique comme 'bundle_id' manque dans Supabase, repli sans bundle_id
+  // 2. Si échec de type (ex: order_number attend un entier), essai avec un entier
+  if (res.error && (res.error.message.includes("order_number") || res.error.code === "22P02")) {
+    const integerOrder = {
+      ...fullOrder,
+      order_number: randomNum,
+    };
+    res = await supabase.from("orders").insert([integerOrder]).select();
+  }
+
+  // 3. Si échec sur bundle_id manquant dans Supabase
   if (res.error && res.error.message.includes("bundle_id")) {
     const { bundle_id, ...withoutBundle } = fullOrder;
     res = await supabase.from("orders").insert([withoutBundle]).select();
   }
 
-  // 3. Si toujours une erreur de colonne, repli sur les champs essentiels
+  // 4. Si toujours une erreur de colonnes inconnues, repli sur les colonnes standard avec order_number
   if (res.error && res.error.code === "PGRST204") {
     const coreOrder = {
+      order_number: orderNumberStr,
       customer_name: orderData.customer_name || "Client",
       customer_phone: orderData.customer_phone || "",
       shipping_city: orderData.shipping_city || "",
@@ -59,8 +74,7 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   }
 
   if (res.error) {
-    console.error("Supabase insert error details:", res.error);
-    // Même si Supabase a une erreur de droits, la commande est en sécurité dans LocalStorage
+    console.error("Supabase insert notice:", res.error.message);
   }
 
   return res.data?.[0] || fullOrder;
