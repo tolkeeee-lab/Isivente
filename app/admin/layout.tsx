@@ -15,6 +15,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import OrderRealtimeListener from "@/components/features/OrderRealtimeListener";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -139,6 +140,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Listener Temps Réel & Contrôle Audio */}
+            <OrderRealtimeListener />
+
             <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200/60">
               <div className="relative">
                 <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">

@@ -91,6 +91,15 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
     break;
   }
 
+  // 3. Déclencher l'événement local temps réel pour déclencher l'alerte Cha-Ching et le toast
+  if (typeof window !== "undefined") {
+    try {
+      window.dispatchEvent(
+        new CustomEvent("isivente_new_order", { detail: payload })
+      );
+    } catch {}
+  }
+
   return payload;
 }
 
