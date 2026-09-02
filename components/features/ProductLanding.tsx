@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import { 
@@ -67,21 +67,23 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // ⏱️ Suivi automatique du temps passé sur la page et du taux de clic (Analytics CTR)
-  useEffect(() => {
-    const startTime = Date.now();
-    let hasClicked = false;
+  // ID de session stable — généré UNE SEULE FOIS au montage du composant
+  const sessionIdRef = useRef(
+    "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8)
+  );
+  const startTimeRef = useRef(Date.now());
+  const clickedRef = useRef(false); // flag partagé entre cleanup et beforeunload
 
-    const recordTime = (clicked: boolean = false) => {
-      const durationSeconds = (Date.now() - startTime) / 1000;
-      trackUserSession(slug || "umei", durationSeconds, clicked || hasClicked);
+  useEffect(() => {
+    const save = () => {
+      const duration = (Date.now() - startTimeRef.current) / 1000;
+      trackUserSession(slug || "umei", duration, clickedRef.current, sessionIdRef.current);
     };
 
-    window.addEventListener("beforeunload", () => recordTime(false));
-
+    window.addEventListener("beforeunload", save);
     return () => {
-      recordTime(false);
-      window.removeEventListener("beforeunload", () => recordTime(false));
+      save(); // cleanup React (navigation SPA)
+      window.removeEventListener("beforeunload", save);
     };
   }, [slug]);
 
@@ -116,7 +118,10 @@ export default function ProductLanding({ slug }: { slug: string }) {
       };
 
       await saveNewOrder(orderData);
-      await trackUserSession(slug || "umei", 30, true);
+      // Marquer la session comme cliquée (conversion)
+      clickedRef.current = true;
+      const duration = (Date.now() - startTimeRef.current) / 1000;
+      await trackUserSession(slug || "umei", duration, true, sessionIdRef.current);
       window.location.href = `/p/${slug}/success`;
     } catch (err) {
       console.error("Order error:", err);

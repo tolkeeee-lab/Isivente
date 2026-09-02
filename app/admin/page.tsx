@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllOrders, OrderItem } from "@/lib/ordersStorage";
-import { getAnalyticsStats, AnalyticsStats } from "@/lib/analyticsStorage";
+import { getAnalyticsStats, getAllProductsAnalytics, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
   TrendingUp, 
   ShoppingBag, 
@@ -44,8 +44,9 @@ export default function AdminDashboard() {
     totalClicks: 0,
     ctr: 0,
     avgTimeSpentSeconds: 0,
-    formattedAvgTime: "0s"
+    formattedAvgTime: "—"
   });
+  const [productAnalytics, setProductAnalytics] = useState<ProductAnalyticsStats[]>([]);
   const [recentOrders, setRecentOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
@@ -56,41 +57,38 @@ export default function AdminDashboard() {
       slug: "umei",
       price: 14900,
       image: "/images/umei-hero-real.jpg"
+    },
+    {
+      title: "Purificateur d'Air & Anti-Odeurs EraClean",
+      slug: "eraclean",
+      price: 19900,
+      image: "/images/eraclean-1.jpg"
     }
   ];
 
   useEffect(() => {
     async function fetchData() {
-      const allOrders = await getAllOrders();
-      const analyticsData = await getAnalyticsStats();
-      setAnalytics(analyticsData);
-      
-      let pending = 0;
-      let shipped = 0;
-      let delivered = 0;
-      let cancelled = 0;
-      let revenue = 0;
+      const [allOrders, analyticsData, perProductData] = await Promise.all([
+        getAllOrders(),
+        getAnalyticsStats(),
+        getAllProductsAnalytics(),
+      ]);
 
+      setAnalytics(analyticsData);
+      setProductAnalytics(perProductData);
+      
+      let pending = 0, shipped = 0, delivered = 0, cancelled = 0, revenue = 0;
       allOrders.forEach(order => {
         if (order.status === 'pending') pending++;
         if (order.status === 'shipped') shipped++;
         if (order.status === 'delivered') delivered++;
         if (order.status === 'cancelled') cancelled++;
-        
-        if (order.status === 'delivered' || order.status === 'shipped' || order.status === 'pending') {
+        if (['delivered', 'shipped', 'pending'].includes(order.status || '')) {
           revenue += order.total_amount || 0;
         }
       });
 
-      setStats({
-        totalOrders: allOrders.length,
-        pendingOrders: pending,
-        shippedOrders: shipped,
-        deliveredOrders: delivered,
-        cancelledOrders: cancelled,
-        revenue
-      });
-
+      setStats({ totalOrders: allOrders.length, pendingOrders: pending, shippedOrders: shipped, deliveredOrders: delivered, cancelledOrders: cancelled, revenue });
       setRecentOrders(allOrders.slice(0, 6));
       setLoading(false);
     }
@@ -261,7 +259,7 @@ export default function AdminDashboard() {
 
       </div>
 
-      {/* LIENS DIRECTS DE PRODUITS */}
+      {/* LIENS DIRECTS DE PRODUITS + ANALYTICS PAR PRODUIT */}
       <div className="card-figma p-6 space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div className="flex items-center gap-2.5">
@@ -269,8 +267,8 @@ export default function AdminDashboard() {
               <Package className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h2 className="font-display font-bold text-base text-slate-900">Liens Directs de Vente</h2>
-              <p className="text-xs text-slate-400">Copiez en 1 clic vos liens de campagne à intégrer dans vos publicités</p>
+              <h2 className="font-display font-bold text-base text-slate-900">Performance par Produit</h2>
+              <p className="text-xs text-slate-400">Vues, CTR et temps moyen — données réelles de vos visiteurs</p>
             </div>
           </div>
           <Link href="/admin/products" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors">
@@ -282,53 +280,100 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
           {productsList.map((prod) => {
             const isCopied = copiedSlug === prod.slug;
+            // Analytics réelles pour ce produit
+            const pa = productAnalytics.find(p => p.slug === prod.slug);
+            const views = pa?.totalViews ?? null;
+            const ctr = pa?.ctr ?? null;
+            const avgTime = pa?.formattedAvgTime ?? null;
 
             return (
-              <div 
-                key={prod.slug} 
-                className="p-3.5 rounded-xl border border-slate-200/80 bg-slate-50/50 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors"
+              <div
+                key={prod.slug}
+                className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 flex flex-col gap-3 hover:bg-slate-50 transition-colors"
               >
-                <div className="flex items-center gap-3 overflow-hidden min-w-0">
-                  <img 
-                    src={prod.image} 
-                    alt={prod.title} 
-                    className="w-11 h-11 rounded-lg object-cover shrink-0 border border-slate-200 bg-white" 
-                  />
-                  <div className="min-w-0">
-                    <div className="font-bold text-xs text-slate-900 truncate">{prod.title}</div>
-                    <div className="text-[11px] font-mono text-slate-500 truncate">/p/{prod.slug}</div>
+                {/* Header */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 overflow-hidden min-w-0">
+                    <img
+                      src={prod.image}
+                      alt={prod.title}
+                      className="w-11 h-11 rounded-lg object-cover shrink-0 border border-slate-200 bg-white"
+                    />
+                    <div className="min-w-0">
+                      <div className="font-bold text-xs text-slate-900 truncate">{prod.title}</div>
+                      <div className="text-[11px] font-mono text-slate-500">/p/{prod.slug}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => copyProductLink(prod.slug)}
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-[0.97] ${
+                        isCopied
+                          ? "bg-emerald-600 text-white shadow-sm"
+                          : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900 shadow-xs"
+                      }`}
+                    >
+                      {isCopied ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[1.75]" />}
+                      <span>{isCopied ? "Copié !" : "Copier"}</span>
+                    </button>
+                    <a
+                      href={`/p/${prod.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-xs transition-colors"
+                      title="Aperçu client"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => copyProductLink(prod.slug)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-[0.97] ${
-                      isCopied 
-                        ? "bg-emerald-600 text-white shadow-sm" 
-                        : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900 shadow-xs"
-                    }`}
-                  >
-                    {isCopied ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[1.75]" />}
-                    <span>{isCopied ? "Copié !" : "Copier"}</span>
-                  </button>
-
-                  <a
-                    href={`/p/${prod.slug}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-xs transition-colors"
-                    title="Aperçu client"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                {/* Analytics mini-row */}
+                <div className="flex items-center gap-3 border-t border-slate-200/60 pt-3">
+                  <div className="flex-1 text-center">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Vues</div>
+                    {loading ? (
+                      <div className="h-4 w-10 bg-slate-200 rounded animate-pulse mx-auto" />
+                    ) : (
+                      <div className="font-mono font-bold text-sm tabular-nums text-slate-900">
+                        {views !== null ? new Intl.NumberFormat("fr-FR").format(views) : "—"}
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-px h-8 bg-slate-200" />
+                  <div className="flex-1 text-center">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">CTR</div>
+                    {loading ? (
+                      <div className="h-4 w-10 bg-slate-200 rounded animate-pulse mx-auto" />
+                    ) : (
+                      <div className={`font-mono font-bold text-sm tabular-nums ${
+                        ctr !== null && ctr > 0
+                          ? ctr >= 10 ? "text-emerald-600" : ctr >= 5 ? "text-amber-600" : "text-rose-500"
+                          : "text-slate-400"
+                      }`}>
+                        {ctr !== null && views !== null && views > 0 ? `${ctr.toFixed(1)}%` : "—"}
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-px h-8 bg-slate-200" />
+                  <div className="flex-1 text-center">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Tps Moy.</div>
+                    {loading ? (
+                      <div className="h-4 w-12 bg-slate-200 rounded animate-pulse mx-auto" />
+                    ) : (
+                      <div className="font-mono font-bold text-sm tabular-nums text-slate-900">
+                        {avgTime && views !== null && views > 0 ? avgTime : "—"}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+
 
       {/* TABLEAU DES DERNIÈRES COMMANDES */}
       <div className="card-figma overflow-hidden">

@@ -151,13 +151,23 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // ID de session stable — généré UNE SEULE FOIS au montage du composant
+  const sessionIdRef = useRef(
+    "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8)
+  );
+  const startTimeRef = useRef(Date.now());
+  const clickedRef = useRef(false);
+
   useEffect(() => {
-    const start = Date.now();
-    window.addEventListener("beforeunload", () => {
-      trackUserSession(slug, (Date.now() - start) / 1000, false);
-    });
+    const save = () => {
+      const duration = (Date.now() - startTimeRef.current) / 1000;
+      trackUserSession(slug, duration, clickedRef.current, sessionIdRef.current);
+    };
+
+    window.addEventListener("beforeunload", save);
     return () => {
-      trackUserSession(slug, (Date.now() - start) / 1000, false);
+      save(); // cleanup React (navigation SPA)
+      window.removeEventListener("beforeunload", save);
     };
   }, [slug]);
 
@@ -205,7 +215,10 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
         address,
         status: "pending" as const,
       });
-      await trackUserSession(slug, 30, true);
+      // Marquer la session comme cliquée (conversion)
+      clickedRef.current = true;
+      const duration = (Date.now() - startTimeRef.current) / 1000;
+      await trackUserSession(slug, duration, true, sessionIdRef.current);
       window.location.href = `/p/${slug}/success`;
     } catch {
       alert("Erreur. Veuillez réessayer.");
