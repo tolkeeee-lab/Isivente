@@ -283,13 +283,100 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
       </header>
 
       {/* ════════════════ HERO ════════════════ */}
-      <section className="pt-8 md:pt-16 pb-0 px-4 md:px-8 max-w-6xl mx-auto">
+      <section className="pt-6 md:pt-14 pb-0 px-4 md:px-8 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
 
-          {/* LEFT — copy */}
-          <div className="md:col-span-6 space-y-5 text-center md:text-left">
+          {/* 1. VISUEL PRODUIT & CARROUSEL (EN PREMIER) */}
+          <div id="carousel" className="md:col-span-6 order-1">
+            <div className="relative w-full max-w-sm mx-auto select-none">
+              {/* Badge flottant sur le carrousel */}
+              <div
+                className="inline-flex md:hidden items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border mb-3 bg-white shadow-xs"
+                style={{ borderColor: `${C.accent}30`, color: C.dark }}
+              >
+                <div className="flex text-amber-400">★★★★★</div>
+                <span>4.9 / 5 · +340 clients satisfaits</span>
+              </div>
+
+              {/* Image principale */}
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-square bg-white border border-slate-200/60">
+                <img
+                  key={slide}
+                  src={CAROUSEL_SLIDES[slide].src}
+                  alt={CAROUSEL_SLIDES[slide].alt}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                  style={{ opacity: isAnimating ? 0 : 1 }}
+                />
+
+                {/* Boutons Précédent / Suivant */}
+                <button
+                  type="button"
+                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide - 1); }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  style={{ background: "rgba(255,255,255,0.92)" }}
+                  aria-label="Précédent"
+                >
+                  <ChevronLeft className="w-5 h-5" style={{ color: C.dark }} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide + 1); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  style={{ background: "rgba(255,255,255,0.92)" }}
+                  aria-label="Suivant"
+                >
+                  <ChevronRight className="w-5 h-5" style={{ color: C.dark }} />
+                </button>
+
+                {/* Label indicatif */}
+                <div
+                  className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md whitespace-nowrap"
+                  style={{ background: "rgba(15,23,42,0.65)", color: "white" }}
+                >
+                  {CAROUSEL_SLIDES[slide].label}
+                </div>
+              </div>
+
+              {/* Indicateurs points (Dots) */}
+              <div className="flex justify-center gap-2 mt-4">
+                {CAROUSEL_SLIDES.map((_, i) => (
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
+                    className="rounded-full transition-all duration-300 cursor-pointer"
+                    style={{
+                      width: i === slide ? 24 : 8,
+                      height: 8,
+                      background: i === slide ? C.accent : `${C.accent}35`,
+                    }}
+                    aria-label={`Diapositive ${i + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Miniatures cliquables */}
+              <div className="flex gap-2 mt-3 justify-center">
+                {CAROUSEL_SLIDES.map((s, i) => (
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
+                    className="w-16 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer"
+                    style={{ borderColor: i === slide ? C.accent : "transparent", opacity: i === slide ? 1 : 0.55 }}
+                    aria-label={s.alt}
+                  >
+                    <img src={s.src} alt={s.alt} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 2. TEXTES & ARGUMENTS DE VENTE (EN DEUXIÈME) */}
+          <div className="md:col-span-6 space-y-5 text-center md:text-left order-2">
             <div
-              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold border mx-auto md:mx-0"
+              className="hidden md:inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold border"
               style={{ background: "white", borderColor: `${C.accent}30`, color: C.dark }}
             >
               <div className="flex text-amber-400">★★★★★</div>
@@ -328,7 +415,7 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
               </button>
             </div>
 
-            {/* Badges */}
+            {/* Badges de réassurance */}
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               {["Paiement à la livraison", "Livraison 24–72h", "100% Rechargeable USB"].map((b) => (
                 <span
@@ -342,79 +429,6 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
             </div>
           </div>
 
-          {/* RIGHT — Carousel */}
-          <div id="carousel" className="md:col-span-6">
-            <div className="relative w-full max-w-sm mx-auto select-none">
-              {/* Main image */}
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-square bg-white">
-                <img
-                  key={slide}
-                  src={CAROUSEL_SLIDES[slide].src}
-                  alt={CAROUSEL_SLIDES[slide].alt}
-                  className="w-full h-full object-cover transition-opacity duration-300"
-                  style={{ opacity: isAnimating ? 0 : 1 }}
-                />
-
-                {/* Prev / Next */}
-                <button
-                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide - 1); }}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-                  style={{ background: "rgba(255,255,255,0.92)" }}
-                  aria-label="Précédent"
-                >
-                  <ChevronLeft className="w-5 h-5" style={{ color: C.dark }} />
-                </button>
-                <button
-                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide + 1); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-                  style={{ background: "rgba(255,255,255,0.92)" }}
-                  aria-label="Suivant"
-                >
-                  <ChevronRight className="w-5 h-5" style={{ color: C.dark }} />
-                </button>
-
-                {/* Label */}
-                <div
-                  className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md whitespace-nowrap"
-                  style={{ background: "rgba(15,23,42,0.65)", color: "white" }}
-                >
-                  {CAROUSEL_SLIDES[slide].label}
-                </div>
-              </div>
-
-              {/* Dots */}
-              <div className="flex justify-center gap-2 mt-4">
-                {CAROUSEL_SLIDES.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
-                    className="rounded-full transition-all duration-300 cursor-pointer"
-                    style={{
-                      width: i === slide ? 24 : 8,
-                      height: 8,
-                      background: i === slide ? C.accent : `${C.accent}35`,
-                    }}
-                    aria-label={`Diapositive ${i + 1}`}
-                  />
-                ))}
-              </div>
-
-              {/* Thumbnails */}
-              <div className="flex gap-2 mt-3 justify-center">
-                {CAROUSEL_SLIDES.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
-                    className="w-16 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer"
-                    style={{ borderColor: i === slide ? C.accent : "transparent", opacity: i === slide ? 1 : 0.55 }}
-                    aria-label={s.alt}
-                  >
-                    <img src={s.src} alt={s.alt} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Marquee */}
