@@ -1,9 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { playChaChingSound, requestNotificationPermission, sendDesktopNotification } from "@/lib/soundEffects";
+import { 
+  playOrderSound, 
+  getSavedSoundType, 
+  saveSoundType, 
+  getSavedVolume, 
+  saveVolume, 
+  AVAILABLE_SOUNDS, 
+  SoundType, 
+  requestNotificationPermission, 
+  sendDesktopNotification 
+} from "@/lib/soundEffects";
 import { 
   Bell, 
   Volume2, 
@@ -12,7 +22,10 @@ import {
   X, 
   ArrowRight,
   Sparkles,
-  PhoneCall
+  PhoneCall,
+  Sliders,
+  Check,
+  Play
 } from "lucide-react";
 
 interface RealtimeOrderToast {
@@ -29,10 +42,17 @@ interface RealtimeOrderToast {
 export default function OrderRealtimeListener() {
   const [activeToast, setActiveToast] = useState<RealtimeOrderToast | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [selectedSound, setSelectedSound] = useState<SoundType>("chaching");
+  const [volume, setVolume] = useState<number>(0.8);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [notifGranted, setNotifGranted] = useState(false);
+  const [playingPreview, setPlayingPreview] = useState<SoundType | null>(null);
 
   useEffect(() => {
-    // Vérifier l'état de la permission des notifications
+    // Charger les préférences de son sauvegardées
+    setSelectedSound(getSavedSoundType());
+    setVolume(getSavedVolume());
+
     if (typeof window !== "undefined" && "Notification" in window) {
       setNotifGranted(Notification.permission === "granted");
     }
@@ -49,36 +69,33 @@ export default function OrderRealtimeListener() {
         created_at: new Date().toISOString(),
       };
 
-      // 1. Jouer l'effet sonore de caisse si activé
+      // 1. Jouer le son sélectionné si activé
       if (soundEnabled) {
-        playChaChingSound();
+        playOrderSound();
       }
 
-      // 2. Notification de bureau / smartphone si onglet en arrière-plan
+      // 2. Notification de bureau / smartphone
       const formattedAmount = new Intl.NumberFormat("fr-FR").format(toastData.total_amount) + " FCFA";
       sendDesktopNotification(
         `🎉 Nouvelle commande reçue ! (${formattedAmount})`,
         `${toastData.customer_name} • ${toastData.city} • ${toastData.product_title}`
       );
 
-      // 3. Afficher le toast flottant à l'écran
+      // 3. Afficher le toast flottant
       setActiveToast(toastData);
 
-      // Auto-fermeture après 8 secondes
       const timer = setTimeout(() => {
         setActiveToast(null);
-      }, 8000);
+      }, 9000);
 
       return () => clearTimeout(timer);
     };
 
-    // Écoute des événements locaux
     const localListener = (e: any) => {
       if (e.detail) handleNewOrder(e.detail);
     };
     window.addEventListener("isivente_new_order", localListener);
 
-    // Écoute Supabase Realtime
     const channel = supabase
       .channel("realtime-orders-global")
       .on(
@@ -102,21 +119,38 @@ export default function OrderRealtimeListener() {
     };
   }, [soundEnabled]);
 
+  const handleSoundSelect = (soundId: SoundType) => {
+    setSelectedSound(soundId);
+    saveSoundType(soundId);
+    // Jouer un aperçu immédiat
+    setPlayingPreview(soundId);
+    playOrderSound(soundId, volume);
+    setTimeout(() => setPlayingPreview(null), 800);
+  };
+
+  const handleVolumeChange = (newVol: number) => {
+    setVolume(newVol);
+    saveVolume(newVol);
+  };
+
+  const previewSound = (soundId: SoundType, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPlayingPreview(soundId);
+    playOrderSound(soundId, volume);
+    setTimeout(() => setPlayingPreview(null), 800);
+  };
+
   const enableNotifications = async () => {
     const ok = await requestNotificationPermission();
     setNotifGranted(ok);
-    // Jouer un son test pour débloquer l'AudioContext du navigateur
-    playChaChingSound();
-  };
-
-  const testSound = () => {
-    playChaChingSound();
+    playOrderSound();
   };
 
   return (
     <>
-      {/* BOUTON D'ÉTAT DU SON & NOTIFICATIONS (Fixé dans la barre admin) */}
+      {/* BARRE D'OUTILS SONORE DANS LE HEADER */}
       <div className="flex items-center gap-1.5">
+        {/* Toggle On/Off rapide */}
         <button
           type="button"
           onClick={() => setSoundEnabled(!soundEnabled)}
@@ -125,12 +159,15 @@ export default function OrderRealtimeListener() {
               ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
               : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
           }`}
-          title={soundEnabled ? "Son de caisse activé (cliquez pour couper)" : "Son coupé (cliquez pour activer)"}
+          title={soundEnabled ? "Son activé (cliquez pour couper)" : "Son coupé (cliquez pour activer)"}
         >
           {soundEnabled ? (
             <>
               <Volume2 className="w-4 h-4 text-emerald-600 animate-pulse" />
-              <span className="hidden sm:inline">Son Ca-ching</span>
+              <span className="hidden sm:inline">
+                {AVAILABLE_SOUNDS.find((s) => s.id === selectedSound)?.emoji}{" "}
+                {AVAILABLE_SOUNDS.find((s) => s.id === selectedSound)?.name}
+              </span>
             </>
           ) : (
             <>
@@ -140,34 +177,157 @@ export default function OrderRealtimeListener() {
           )}
         </button>
 
+        {/* Bouton Personnaliser le son ⚙️ */}
+        <button
+          type="button"
+          onClick={() => setShowSettingsModal(true)}
+          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95"
+          title="Modifier la sonnerie d'alerte et le volume"
+        >
+          <Sliders className="w-3.5 h-3.5 text-slate-600" />
+          <span className="hidden md:inline">Changer de son</span>
+        </button>
+
         {!notifGranted && (
           <button
             type="button"
             onClick={enableNotifications}
             className="p-2 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold flex items-center gap-1.5 hover:bg-amber-100 transition-colors cursor-pointer active:scale-95"
-            title="Activer les alertes sonores & notifications du navigateur"
+            title="Activer les alertes push du navigateur"
           >
             <Bell className="w-4 h-4 text-amber-600" />
-            <span className="hidden md:inline">Activer alertes</span>
+            <span className="hidden lg:inline">Activer push</span>
           </button>
         )}
-
-        <button
-          type="button"
-          onClick={testSound}
-          className="p-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95 shadow-xs"
-          title="Tester le son Cha-Ching!"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          <span className="hidden sm:inline">Test son</span>
-        </button>
       </div>
 
-      {/* 🔔 TOAST FLOTTANT DE NOUVELLE COMMANDE (Figma-Grade) */}
+      {/* 🎛️ MODAL FIGMA-GRADE DE PERSONNALISATION SONORE */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-sm animate-fadeIn">
+          <div 
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-[staggerFadeUp_200ms_cubic-bezier(0.16,1,0.3,1)_both] space-y-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header du Modal */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-slate-900 text-white flex items-center justify-center">
+                  <Volume2 className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-base text-slate-900">
+                    Sons des Commandes
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Choisissez le son joué à chaque nouvelle vente
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSettingsModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Slider de Volume */}
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/70 space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                <span>Volume de l&apos;alerte</span>
+                <span className="font-mono text-emerald-600 tabular-nums">
+                  {Math.round(volume * 100)}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={volume}
+                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
+              />
+            </div>
+
+            {/* Liste des 5 Sonorités Disponibles */}
+            <div className="space-y-2">
+              <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400 px-1">
+                Choisir une sonnerie
+              </div>
+
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                {AVAILABLE_SOUNDS.map((s) => {
+                  const isSelected = selectedSound === s.id;
+                  const isPlaying = playingPreview === s.id;
+
+                  return (
+                    <div
+                      key={s.id}
+                      onClick={() => handleSoundSelect(s.id)}
+                      className={`p-3.5 rounded-2xl border-2 transition-all duration-150 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.98] ${
+                        isSelected
+                          ? "bg-emerald-50/50 border-emerald-500 shadow-sm"
+                          : "bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-2xl shrink-0">{s.emoji}</span>
+                        <div className="min-w-0">
+                          <div className="font-bold text-xs text-slate-900 flex items-center gap-2">
+                            <span>{s.name}</span>
+                            {isSelected && (
+                              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-white px-2 py-0.5 rounded-full">
+                                Actif
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-slate-500 truncate">{s.desc}</div>
+                        </div>
+                      </div>
+
+                      {/* Bouton d'écoute Play */}
+                      <button
+                        type="button"
+                        onClick={(e) => previewSound(s.id, e)}
+                        className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1 transition-all ${
+                          isPlaying
+                            ? "bg-slate-900 text-white border-slate-900 scale-105"
+                            : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                        }`}
+                        title="Écouter un extrait"
+                      >
+                        <Play className={`w-3.5 h-3.5 ${isPlaying ? "fill-white text-white" : "text-slate-600"}`} />
+                        <span className="text-[11px]">Écouter</span>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer de confirmation */}
+            <div className="border-t border-slate-100 pt-3 flex items-center justify-between">
+              <span className="text-xs text-slate-400 font-medium">
+                Sauvegardé automatiquement
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowSettingsModal(false)}
+                className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors shadow-sm"
+              >
+                Valider
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🔔 TOAST FLOTTANT DE NOUVELLE COMMANDE */}
       {activeToast && (
         <div className="fixed top-5 right-4 sm:right-6 z-[100] max-w-sm w-[calc(100vw-2rem)] animate-[staggerFadeUp_260ms_cubic-bezier(0.16,1,0.3,1)_both]">
           <div className="bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-slate-700/80 backdrop-blur-xl relative overflow-hidden">
-            {/* Liseré supérieur biseauté */}
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500" />
 
             <div className="flex items-start justify-between gap-3 mb-2.5">
@@ -193,7 +353,6 @@ export default function OrderRealtimeListener() {
               </button>
             </div>
 
-            {/* Corps du toast */}
             <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700/50 space-y-1.5 mb-3">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-slate-100">{activeToast.customer_name}</span>
@@ -208,7 +367,6 @@ export default function OrderRealtimeListener() {
               </div>
             </div>
 
-            {/* Actions rapides */}
             <div className="flex items-center gap-2">
               <Link
                 href="/admin/orders"
