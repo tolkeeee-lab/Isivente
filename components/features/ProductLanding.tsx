@@ -256,8 +256,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
         </div>
 
-        </div>
-
         {/* BANDEAU MARQUEE DÉFILANT */}
         <div className="bg-[#8B6FE0] text-white py-3 overflow-hidden mt-8 md:mt-12 rounded-lg w-full max-w-full">
           <div className="flex whitespace-nowrap animate-marquee font-display font-semibold text-xs sm:text-sm md:text-base">
