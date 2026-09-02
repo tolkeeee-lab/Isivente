@@ -102,6 +102,45 @@ export default function OrdersPage() {
         </button>
       </div>
 
+      {/* 📊 RUBAN HORIZONTAL DÉFILABLE DES STATUTS */}
+      <div className="relative -mx-2 px-2">
+        <div className="flex items-stretch gap-3 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
+          <div className="card-figma p-3.5 min-w-[180px] shrink-0 snap-start flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total</div>
+              <div className="text-lg font-bold font-mono text-slate-900">{orders.length}</div>
+            </div>
+            <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
+              ∑
+            </div>
+          </div>
+
+          <div className="card-figma p-3.5 min-w-[180px] shrink-0 snap-start flex items-center justify-between border-amber-200/70 bg-amber-50/20">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">En attente</div>
+              <div className="text-lg font-bold font-mono text-amber-700">{getStatusCount("pending")}</div>
+            </div>
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+          </div>
+
+          <div className="card-figma p-3.5 min-w-[180px] shrink-0 snap-start flex items-center justify-between border-sky-200/70 bg-sky-50/20">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-sky-700">En livraison</div>
+              <div className="text-lg font-bold font-mono text-sky-700">{getStatusCount("shipped")}</div>
+            </div>
+            <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
+          </div>
+
+          <div className="card-figma p-3.5 min-w-[180px] shrink-0 snap-start flex items-center justify-between border-emerald-200/70 bg-emerald-50/20">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Livrées</div>
+              <div className="text-lg font-bold font-mono text-emerald-700">{getStatusCount("delivered")}</div>
+            </div>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+          </div>
+        </div>
+      </div>
+
       {/* RECHERCHE ET ONGLETS DE FILTRES */}
       <div className="card-figma p-4 sm:p-5 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4">
         

@@ -170,93 +170,116 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        {/* KPI 1 : CHIFFRE D'AFFAIRES */}
-        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Chiffre d'Affaires</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100/60">
-              <TrendingUp className="w-4 h-4 stroke-[2]" />
+      {/* 📊 KPI BAR : RUBAN HORIZONTAL DÉFILABLE & COMPACT */}
+      <div className="relative -mx-2 px-2">
+        <div className="flex items-stretch gap-3.5 overflow-x-auto pb-2 pt-0.5 scrollbar-none snap-x snap-mandatory">
+          
+          {/* KPI 1 : CHIFFRE D'AFFAIRES */}
+          <div className="card-figma p-4 min-w-[240px] sm:min-w-[260px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Chiffre d&apos;Affaires</span>
+              <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+                <TrendingUp className="w-3.5 h-3.5 stroke-[2]" />
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-7 w-28 rounded-lg skeleton-shimmer my-1" />
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+                {new Intl.NumberFormat("fr-FR").format(stats.revenue)} <span className="text-xs font-sans font-normal text-slate-400">FCFA</span>
+              </div>
+            )}
+            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Encaissé / En cours</span>
+              <span className="font-semibold text-emerald-600 font-mono">100% COD</span>
             </div>
           </div>
-          {loading ? (
-            <div className="h-8 w-32 rounded-lg skeleton-shimmer mb-1" />
-          ) : (
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
-              {new Intl.NumberFormat("fr-FR").format(stats.revenue)} <span className="text-xs font-sans font-normal text-slate-400">FCFA</span>
-            </div>
-          )}
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-            <span>Encaissé & en livraison</span>
-            <span className="font-semibold text-emerald-600 font-mono tabular-nums">100% COD</span>
-          </div>
-        </div>
 
-        {/* KPI 2 : COMMANDES TOTALES */}
-        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Volume Commandes</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100/60">
-              <ShoppingBag className="w-4 h-4 stroke-[2]" />
+          {/* KPI 2 : COMMANDES TOTALES */}
+          <div className="card-figma p-4 min-w-[220px] sm:min-w-[240px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Commandes</span>
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+                <ShoppingBag className="w-3.5 h-3.5 stroke-[2]" />
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-7 w-16 rounded-lg skeleton-shimmer my-1" />
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+                {stats.totalOrders}
+              </div>
+            )}
+            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>À traiter :</span>
+              <span className="font-semibold text-amber-600 font-mono">{stats.pendingOrders} en attente</span>
             </div>
           </div>
-          {loading ? (
-            <div className="h-8 w-24 rounded-lg skeleton-shimmer mb-1" />
-          ) : (
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
-              {stats.totalOrders}
-            </div>
-          )}
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-            <span>À confirmer :</span>
-            <span className="font-semibold text-amber-600 font-mono tabular-nums">{stats.pendingOrders} en attente</span>
-          </div>
-        </div>
 
-        {/* KPI 3 : TAUX DE CLICS (CTR) */}
-        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Taux de Clics (CTR)</span>
-            <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center border border-violet-100/60">
-              <MousePointerClick className="w-4 h-4 stroke-[2]" />
+          {/* KPI 3 : LIVRÉES & ENCAISSÉES */}
+          <div className="card-figma p-4 min-w-[220px] sm:min-w-[240px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Livrées & Encaissées</span>
+              <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100">
+                <CheckCircle2 className="w-3.5 h-3.5 stroke-[2]" />
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-7 w-16 rounded-lg skeleton-shimmer my-1" />
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+                {stats.deliveredOrders}
+              </div>
+            )}
+            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>En cours livraison :</span>
+              <span className="font-semibold text-sky-600 font-mono">{stats.shippedOrders} colis</span>
             </div>
           </div>
-          {loading ? (
-            <div className="h-8 w-20 rounded-lg skeleton-shimmer mb-1" />
-          ) : (
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
-              {analytics.ctr}<span className="text-base text-slate-400 font-sans">%</span>
-            </div>
-          )}
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-            <span>Visites totales :</span>
-            <span className="font-semibold text-slate-700 font-mono tabular-nums">{analytics.totalViews} vues</span>
-          </div>
-        </div>
 
-        {/* KPI 4 : TEMPS MOYEN */}
-        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Temps Moyen Passé</span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100/60">
-              <Timer className="w-4 h-4 stroke-[2]" />
+          {/* KPI 4 : TAUX DE CLICS (CTR) */}
+          <div className="card-figma p-4 min-w-[220px] sm:min-w-[240px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">CTR (Conversion)</span>
+              <div className="w-7 h-7 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center border border-violet-100">
+                <MousePointerClick className="w-3.5 h-3.5 stroke-[2]" />
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-7 w-16 rounded-lg skeleton-shimmer my-1" />
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+                {analytics.ctr}<span className="text-sm text-slate-400 font-sans">%</span>
+              </div>
+            )}
+            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Clics / Vues :</span>
+              <span className="font-semibold text-slate-700 font-mono">{analytics.totalClicks} / {analytics.totalViews}</span>
             </div>
           </div>
-          {loading ? (
-            <div className="h-8 w-20 rounded-lg skeleton-shimmer mb-1" />
-          ) : (
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
-              {analytics.formattedAvgTime}
-            </div>
-          )}
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-            <span>Rétention :</span>
-            <span className="font-semibold text-slate-700">Page produit</span>
-          </div>
-        </div>
 
+          {/* KPI 5 : TEMPS MOYEN PASSÉ */}
+          <div className="card-figma p-4 min-w-[220px] sm:min-w-[240px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Temps Moyen</span>
+              <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
+                <Timer className="w-3.5 h-3.5 stroke-[2]" />
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-7 w-16 rounded-lg skeleton-shimmer my-1" />
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+                {analytics.formattedAvgTime}
+              </div>
+            )}
+            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Engagement :</span>
+              <span className="font-semibold text-slate-700">Visiteurs réels</span>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       {/* LIENS DIRECTS DE PRODUITS + ANALYTICS PAR PRODUIT */}
