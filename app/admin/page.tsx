@@ -27,7 +27,10 @@ interface Stats {
   shippedOrders: number;
   deliveredOrders: number;
   cancelledOrders: number;
-  revenue: number;
+  revenue: number; // CA total engagé
+  deliveredRevenue: number; // CA réel encaissé
+  shippedRevenue: number; // CA en cours de livraison
+  pendingRevenue: number; // CA à confirmer
 }
 
 export default function AdminDashboard() {
@@ -37,7 +40,10 @@ export default function AdminDashboard() {
     shippedOrders: 0,
     deliveredOrders: 0,
     cancelledOrders: 0,
-    revenue: 0
+    revenue: 0,
+    deliveredRevenue: 0,
+    shippedRevenue: 0,
+    pendingRevenue: 0,
   });
   const [analytics, setAnalytics] = useState<AnalyticsStats>({
     totalViews: 0,
@@ -47,6 +53,7 @@ export default function AdminDashboard() {
     formattedAvgTime: "—"
   });
   const [productAnalytics, setProductAnalytics] = useState<ProductAnalyticsStats[]>([]);
+  const [productFinancials, setProductFinancials] = useState<Record<string, { totalOrders: number; deliveredOrders: number; deliveredRevenue: number; totalRevenue: number }>>({});
   const [recentOrders, setRecentOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
@@ -77,18 +84,54 @@ export default function AdminDashboard() {
       setAnalytics(analyticsData);
       setProductAnalytics(perProductData);
       
-      let pending = 0, shipped = 0, delivered = 0, cancelled = 0, revenue = 0;
+      let pending = 0, shipped = 0, delivered = 0, cancelled = 0;
+      let totalRev = 0, deliveredRev = 0, shippedRev = 0, pendingRev = 0;
+      const productMap: Record<string, { totalOrders: number; deliveredOrders: number; deliveredRevenue: number; totalRevenue: number }> = {};
+
       allOrders.forEach(order => {
-        if (order.status === 'pending') pending++;
-        if (order.status === 'shipped') shipped++;
-        if (order.status === 'delivered') delivered++;
-        if (order.status === 'cancelled') cancelled++;
+        const pSlug = order.product_slug || "umei";
+        if (!productMap[pSlug]) {
+          productMap[pSlug] = { totalOrders: 0, deliveredOrders: 0, deliveredRevenue: 0, totalRevenue: 0 };
+        }
+        productMap[pSlug].totalOrders++;
+
+        const amt = order.total_amount || 0;
+
+        if (order.status === 'pending') {
+          pending++;
+          pendingRev += amt;
+          productMap[pSlug].totalRevenue += amt;
+        } else if (order.status === 'shipped') {
+          shipped++;
+          shippedRev += amt;
+          productMap[pSlug].totalRevenue += amt;
+        } else if (order.status === 'delivered') {
+          delivered++;
+          deliveredRev += amt;
+          productMap[pSlug].deliveredOrders++;
+          productMap[pSlug].deliveredRevenue += amt;
+          productMap[pSlug].totalRevenue += amt;
+        } else if (order.status === 'cancelled') {
+          cancelled++;
+        }
+
         if (['delivered', 'shipped', 'pending'].includes(order.status || '')) {
-          revenue += order.total_amount || 0;
+          totalRev += amt;
         }
       });
 
-      setStats({ totalOrders: allOrders.length, pendingOrders: pending, shippedOrders: shipped, deliveredOrders: delivered, cancelledOrders: cancelled, revenue });
+      setProductFinancials(productMap);
+      setStats({ 
+        totalOrders: allOrders.length, 
+        pendingOrders: pending, 
+        shippedOrders: shipped, 
+        deliveredOrders: delivered, 
+        cancelledOrders: cancelled, 
+        revenue: totalRev,
+        deliveredRevenue: deliveredRev,
+        shippedRevenue: shippedRev,
+        pendingRevenue: pendingRev,
+      });
       setRecentOrders(allOrders.slice(0, 6));
       setLoading(false);
     }
@@ -174,11 +217,56 @@ export default function AdminDashboard() {
       <div className="relative -mx-2 px-2">
         <div className="flex items-stretch gap-3.5 overflow-x-auto pb-2 pt-0.5 scrollbar-none snap-x snap-mandatory">
           
-          {/* KPI 1 : CHIFFRE D'AFFAIRES */}
+          {/* KPI 1 : CA RÉEL ENCAISSÉ (LIVRÉES & PAYÉES) */}
+          <div className="card-figma p-4 min-w-[260px] sm:min-w-[280px] shrink-0 snap-start flex flex-col justify-between border-emerald-300/80 bg-emerald-50/20 hover:border-emerald-400 hover:-translate-y-0.5 transition-all duration-150">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>CA Réel Encaissé (Livrées)</span>
+              </span>
+              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center border border-emerald-200">
+                <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-7 w-32 rounded-lg skeleton-shimmer my-1" />
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-emerald-950">
+                {new Intl.NumberFormat("fr-FR").format(stats.deliveredRevenue)} <span className="text-xs font-sans font-normal text-emerald-700">FCFA</span>
+              </div>
+            )}
+            <div className="mt-2.5 pt-2 border-t border-emerald-200/60 flex items-center justify-between text-[11px] text-emerald-800">
+              <span>{stats.deliveredOrders} {stats.deliveredOrders > 1 ? "commandes livrées" : "commande livrée"}</span>
+              <span className="font-semibold font-mono">100% Encaissé</span>
+            </div>
+          </div>
+
+          {/* KPI 2 : CA EN COURS DE LIVRAISON */}
+          <div className="card-figma p-4 min-w-[240px] sm:min-w-[260px] shrink-0 snap-start flex flex-col justify-between border-sky-200/70 bg-sky-50/15 hover:border-sky-300 hover:-translate-y-0.5 transition-all duration-150">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-sky-700">CA En Livraison</span>
+              <div className="w-7 h-7 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center border border-sky-200">
+                <Truck className="w-3.5 h-3.5 stroke-[2]" />
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-7 w-28 rounded-lg skeleton-shimmer my-1" />
+            ) : (
+              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+                {new Intl.NumberFormat("fr-FR").format(stats.shippedRevenue)} <span className="text-xs font-sans font-normal text-slate-400">FCFA</span>
+              </div>
+            )}
+            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Colis sur le terrain :</span>
+              <span className="font-semibold text-sky-600 font-mono">{stats.shippedOrders} en cours</span>
+            </div>
+          </div>
+
+          {/* KPI 3 : CA TOTAL ENGAGÉ */}
           <div className="card-figma p-4 min-w-[240px] sm:min-w-[260px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Chiffre d&apos;Affaires</span>
-              <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">CA Total Engagé</span>
+              <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200">
                 <TrendingUp className="w-3.5 h-3.5 stroke-[2]" />
               </div>
             </div>
@@ -190,50 +278,8 @@ export default function AdminDashboard() {
               </div>
             )}
             <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-              <span>Encaissé / En cours</span>
-              <span className="font-semibold text-emerald-600 font-mono">100% COD</span>
-            </div>
-          </div>
-
-          {/* KPI 2 : COMMANDES TOTALES */}
-          <div className="card-figma p-4 min-w-[220px] sm:min-w-[240px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Commandes</span>
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
-                <ShoppingBag className="w-3.5 h-3.5 stroke-[2]" />
-              </div>
-            </div>
-            {loading ? (
-              <div className="h-7 w-16 rounded-lg skeleton-shimmer my-1" />
-            ) : (
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
-                {stats.totalOrders}
-              </div>
-            )}
-            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-              <span>À traiter :</span>
+              <span>{stats.totalOrders} commandes totales</span>
               <span className="font-semibold text-amber-600 font-mono">{stats.pendingOrders} en attente</span>
-            </div>
-          </div>
-
-          {/* KPI 3 : LIVRÉES & ENCAISSÉES */}
-          <div className="card-figma p-4 min-w-[220px] sm:min-w-[240px] shrink-0 snap-start flex flex-col justify-between hover:border-slate-300 hover:-translate-y-0.5 transition-all duration-150">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Livrées & Encaissées</span>
-              <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100">
-                <CheckCircle2 className="w-3.5 h-3.5 stroke-[2]" />
-              </div>
-            </div>
-            {loading ? (
-              <div className="h-7 w-16 rounded-lg skeleton-shimmer my-1" />
-            ) : (
-              <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
-                {stats.deliveredOrders}
-              </div>
-            )}
-            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-              <span>En cours livraison :</span>
-              <span className="font-semibold text-sky-600 font-mono">{stats.shippedOrders} colis</span>
             </div>
           </div>
 
@@ -291,7 +337,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h2 className="font-display font-bold text-base text-slate-900">Performance par Produit</h2>
-              <p className="text-xs text-slate-400">Vues, CTR et temps moyen — données réelles de vos visiteurs</p>
+              <p className="text-xs text-slate-400">CA Encaissé réel, commandes, CTR et temps moyen par produit</p>
             </div>
           </div>
           <Link href="/admin/products" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors">
@@ -303,9 +349,8 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
           {productsList.map((prod) => {
             const isCopied = copiedSlug === prod.slug;
-            // Analytics réelles pour ce produit
             const pa = productAnalytics.find(p => p.slug === prod.slug);
-            const views = pa?.totalViews ?? null;
+            const fin = productFinancials[prod.slug] || { totalOrders: 0, deliveredOrders: 0, deliveredRevenue: 0, totalRevenue: 0 };
             const ctr = pa?.ctr ?? null;
             const avgTime = pa?.formattedAvgTime ?? null;
 
@@ -352,43 +397,33 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Analytics mini-row */}
-                <div className="flex items-center gap-3 border-t border-slate-200/60 pt-3">
-                  <div className="flex-1 text-center">
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Vues</div>
-                    {loading ? (
-                      <div className="h-4 w-10 bg-slate-200 rounded animate-pulse mx-auto" />
-                    ) : (
-                      <div className="font-mono font-bold text-sm tabular-nums text-slate-900">
-                        {views !== null ? new Intl.NumberFormat("fr-FR").format(views) : "—"}
-                      </div>
-                    )}
+                {/* Métriques Financières & Analytics Produit */}
+                <div className="grid grid-cols-4 gap-2 pt-2.5 border-t border-slate-200/60 text-center">
+                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                    <div className="text-[10px] uppercase font-bold text-emerald-600 truncate">CA Livré</div>
+                    <div className="text-xs font-bold font-mono text-emerald-700 tabular-nums">
+                      {new Intl.NumberFormat("fr-FR").format(fin.deliveredRevenue)} F
+                    </div>
                   </div>
-                  <div className="w-px h-8 bg-slate-200" />
-                  <div className="flex-1 text-center">
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">CTR</div>
-                    {loading ? (
-                      <div className="h-4 w-10 bg-slate-200 rounded animate-pulse mx-auto" />
-                    ) : (
-                      <div className={`font-mono font-bold text-sm tabular-nums ${
-                        ctr !== null && ctr > 0
-                          ? ctr >= 10 ? "text-emerald-600" : ctr >= 5 ? "text-amber-600" : "text-rose-500"
-                          : "text-slate-400"
-                      }`}>
-                        {ctr !== null && views !== null && views > 0 ? `${ctr.toFixed(1)}%` : "—"}
-                      </div>
-                    )}
+                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                    <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Livrées</div>
+                    <div className="text-xs font-bold font-mono text-slate-900 tabular-nums">
+                      {fin.deliveredOrders} / {fin.totalOrders}
+                    </div>
                   </div>
-                  <div className="w-px h-8 bg-slate-200" />
-                  <div className="flex-1 text-center">
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Tps Moy.</div>
-                    {loading ? (
-                      <div className="h-4 w-12 bg-slate-200 rounded animate-pulse mx-auto" />
-                    ) : (
-                      <div className="font-mono font-bold text-sm tabular-nums text-slate-900">
-                        {avgTime && views !== null && views > 0 ? avgTime : "—"}
-                      </div>
-                    )}
+                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                    <div className="text-[10px] uppercase font-bold text-slate-400 truncate">CTR</div>
+                    <div className={`text-xs font-bold font-mono tabular-nums ${
+                      ctr !== null && ctr > 0 ? "text-violet-700" : "text-slate-400"
+                    }`}>
+                      {ctr !== null ? `${ctr}%` : "—"}
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                    <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Tps Moy.</div>
+                    <div className="text-xs font-bold font-mono text-slate-700 tabular-nums">
+                      {avgTime || "—"}
+                    </div>
                   </div>
                 </div>
               </div>
