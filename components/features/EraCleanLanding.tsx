@@ -73,19 +73,29 @@ const BUNDLES: Bundle[] = [
 
 const CAROUSEL_SLIDES = [
   {
-    src: "/images/eraclean-1.jpg",
-    alt: "EraClean — Vue produit studio, aluminium brossé argent",
-    label: "Design aluminium premium",
+    src: "/images/eraclean-studio.jpg",
+    alt: "Purificateur EraClean™ — Finition aluminium brossé premium",
+    label: "Design aluminium brossé",
   },
   {
-    src: "/images/eraclean-2.jpg",
-    alt: "EraClean dans le réfrigérateur avec légumes frais",
-    label: "Parfait pour le frigo",
+    src: "/images/eraclean-frigo.jpg",
+    alt: "EraClean™ dans le réfrigérateur avec légumes frais",
+    label: "1. Réfrigérateur & Aliments",
   },
   {
-    src: "/images/eraclean-3.jpg",
-    alt: "EraClean dans la salle de bain, LED bleue active",
-    label: "Polyvalent : WC & salle de bain",
+    src: "/images/eraclean-sdb.jpg",
+    alt: "EraClean™ en salle de bain avec diffusion active d'ozone",
+    label: "2. Salle de bain & WC",
+  },
+  {
+    src: "/images/eraclean-voiture.jpg",
+    alt: "EraClean™ dans l'habitacle d'une voiture",
+    label: "3. Habitacle Voiture",
+  },
+  {
+    src: "/images/eraclean-dressing.jpg",
+    alt: "EraClean™ dans un dressing et armoire à vêtements",
+    label: "4. Dressing & Chaussures",
   },
 ];
 
@@ -617,29 +627,65 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
             </div>
           </div>
 
-          {/* ════════ 4 ZONES D'UTILISATION ════════ */}
+          {/* ════════ 4 ZONES D'UTILISATION AVEC VRAIES PHOTOS ════════ */}
           <div>
             <div className="text-center mb-8">
-              <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: C.accent }}>Un Appareil, 4 Usages</p>
+              <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: C.accent }}>Un Seul Appareil, 4 Usages Indispensables</p>
               <h3 className="font-display font-bold text-xl sm:text-2xl" style={{ color: C.dark }}>
-                Où utiliser votre purificateur EraClean ?
+                Où utiliser votre purificateur EraClean™ ?
               </h3>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-lg mx-auto">
+                Compact, rechargeable et autonome : déplacez-le partout selon vos besoins du moment.
+              </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "1. Réfrigérateur", desc: "Neutralise poisson fumé, piments et condiments.", bg: "#EFF6FF", border: "#BFDBFE" },
-                { label: "2. WC & Salle de bain", desc: "Élimine l'odeur d'humidité et d'égout en continu.", bg: "#F0FDF4", border: "#BBF7D0" },
-                { label: "3. Armoire à chaussures", desc: "Détruit les bactéries de transpiration dans le meuble.", bg: "#FFFBEB", border: "#FDE68A" },
-                { label: "4. Habitacle Voiture", desc: "Assainit l'air confiné, climatisé et sans aération.", bg: "#FAF5FF", border: "#E9D5FF" },
+                { 
+                  img: "/images/eraclean-frigo.jpg",
+                  label: "1. Réfrigérateur", 
+                  desc: "Neutralise poisson fumé, piment et prolonge la fraîcheur des légumes.", 
+                  badge: "Anti-odeurs 24h"
+                },
+                { 
+                  img: "/images/eraclean-sdb.jpg",
+                  label: "2. Salle de bain & WC", 
+                  desc: "Élimine les odeurs d'humidité, d'égout et de canalisation en continu.", 
+                  badge: "Air assaini"
+                },
+                { 
+                  img: "/images/eraclean-dressing.jpg",
+                  label: "3. Dressing & Armoire", 
+                  desc: "Détruit les bactéries de transpiration et évite l'odeur de moisi.", 
+                  badge: "Fraîcheur linge"
+                },
+                { 
+                  img: "/images/eraclean-voiture.jpg",
+                  label: "4. Habitacle Voiture", 
+                  desc: "Assainit l'air confiné, la clim et les odeurs persistantes dans l'auto.", 
+                  badge: "Anti-air confiné"
+                },
               ].map((zone) => (
                 <div
                   key={zone.label}
-                  className="rounded-2xl p-4 border text-left flex flex-col justify-between"
-                  style={{ background: zone.bg, borderColor: zone.border }}
+                  className="rounded-2xl overflow-hidden border border-slate-200/80 bg-white shadow-sm flex flex-col hover:-translate-y-1 transition-all duration-200"
                 >
-                  <div className="font-bold text-xs sm:text-sm mb-1" style={{ color: C.dark }}>{zone.label}</div>
-                  <div className="text-[11px] leading-relaxed text-slate-600">{zone.desc}</div>
+                  <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
+                    <img
+                      src={zone.img}
+                      alt={zone.label}
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute top-2.5 right-2.5 bg-slate-900/85 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {zone.badge}
+                    </span>
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="font-bold text-sm mb-1" style={{ color: C.dark }}>{zone.label}</div>
+                      <p className="text-xs leading-relaxed text-slate-600">{zone.desc}</p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
