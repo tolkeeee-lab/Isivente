@@ -173,14 +173,47 @@ export default function ProductLanding({ slug }: { slug: string }) {
         </nav>
       </header>
 
-      {/* 🚀 HERO SECTION EXACTE - BIEN CENTRÉE ET SANS AUCUN DÉBORDEMENT */}
+      {/* 🚀 HERO SECTION EXACTE - IMAGE UNIQUE EN PREMIER PUIS ARGUMENTS DE VENTE */}
       <section className="pt-6 md:pt-14 pb-0 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
           
-          {/* GAUCHE : TEXTES ÉMOTIONNELS */}
-          <div className="md:col-span-7 space-y-5 text-center md:text-left flex flex-col items-center md:items-start">
+          {/* 1. VRAIE PHOTO DU PRODUIT AVEC STICKERS (EN PREMIER) */}
+          <div className="md:col-span-5 flex justify-center items-center pt-2 md:pt-0 order-1">
+            <div className="relative w-full max-w-[310px] sm:max-w-[360px] md:max-w-[400px] mx-auto px-2 select-none">
+              
+              {/* Badge avis affiché au-dessus sur mobile */}
+              <div className="inline-flex md:hidden items-center gap-2 bg-white/90 border border-[#8B6FE0]/20 px-3 py-1 rounded-full shadow-xs mb-3">
+                <div className="flex text-amber-400 text-xs">★★★★★</div>
+                <span className="text-xs font-bold text-[#241B36]">4.9/5 (+1420 femmes comblées)</span>
+              </div>
+
+              {/* Conteneur image */}
+              <div className="relative">
+                {/* STICKER 1 HAUT GAUCHE */}
+                <div className="absolute -top-2 left-0 sm:-left-4 w-[90px] h-[90px] sm:w-[105px] sm:h-[105px] bg-[#A8E6C9] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] -rotate-12 z-20 pointer-events-none">
+                  3-en-1 vapeur + huile + clic
+                </div>
+
+                {/* IMAGE RÉELLE */}
+                <img 
+                  src="/images/umei-hero-real.jpg" 
+                  alt="Brosse vapeur uméi en action, jet de vapeur visible" 
+                  className="rounded-[28px] sm:rounded-[32px] w-full shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] object-cover"
+                />
+
+                {/* STICKER 2 BAS DROITE */}
+                <div className="absolute -bottom-2 right-0 sm:-right-4 w-[80px] h-[80px] sm:w-[88px] sm:h-[88px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] rotate-12 z-20 pointer-events-none">
+                  Sans chaleur agressive
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* 2. TEXTES ÉMOTIONNELS & CTA (EN DEUXIÈME) */}
+          <div className="md:col-span-7 space-y-5 text-center md:text-left flex flex-col items-center md:items-start order-2">
             
-            <div className="inline-flex items-center gap-2 bg-white/80 border border-[#8B6FE0]/20 px-3.5 py-1 rounded-full shadow-sm mx-auto md:mx-0">
+            <div className="hidden md:inline-flex items-center gap-2 bg-white/80 border border-[#8B6FE0]/20 px-3.5 py-1 rounded-full shadow-sm">
               <div className="flex text-amber-400 text-xs">
                 ★★★★★
               </div>
@@ -228,30 +261,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
               </span>
             </div>
 
-          </div>
-
-          {/* DROITE : VRAIE PHOTO DU PRODUIT AVEC STICKERS CONFINÉS DANS L'ÉCRAN */}
-          <div className="md:col-span-5 flex justify-center items-center pt-4 md:pt-0">
-            <div className="relative w-full max-w-[310px] sm:max-w-[360px] md:max-w-[400px] mx-auto px-2 select-none">
-              
-              {/* STICKER 1 HAUT GAUCHE */}
-              <div className="absolute -top-2 left-0 sm:-left-4 w-[90px] h-[90px] sm:w-[105px] sm:h-[105px] bg-[#A8E6C9] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] -rotate-12 z-20 pointer-events-none">
-                3-en-1 vapeur + huile + clic
-              </div>
-
-              {/* IMAGE RÉELLE */}
-              <img 
-                src="/images/umei-hero-real.jpg" 
-                alt="Brosse vapeur uméi en action, jet de vapeur visible" 
-                className="rounded-[28px] sm:rounded-[32px] w-full shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] object-cover"
-              />
-
-              {/* STICKER 2 BAS DROITE */}
-              <div className="absolute -bottom-2 right-0 sm:-right-4 w-[80px] h-[80px] sm:w-[88px] sm:h-[88px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] rotate-12 z-20 pointer-events-none">
-                Sans chaleur agressive
-              </div>
-
-            </div>
           </div>
 
         </div>
