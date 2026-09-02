@@ -1,9 +1,25 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { getAllOrders, OrderItem } from "@/lib/ordersStorage";
 import { getAnalyticsStats, AnalyticsStats } from "@/lib/analyticsStorage";
-import { TrendingUp, ShoppingBag, Clock, Truck, MousePointerClick, Timer, Eye, Copy, Check, ExternalLink, Package } from "lucide-react";
+import { 
+  TrendingUp, 
+  ShoppingBag, 
+  MousePointerClick, 
+  Timer, 
+  Copy, 
+  Check, 
+  ExternalLink, 
+  Package,
+  ArrowUpRight,
+  Clock,
+  Truck,
+  CheckCircle2,
+  XCircle,
+  ChevronRight
+} from "lucide-react";
 
 interface Stats {
   totalOrders: number;
@@ -75,7 +91,7 @@ export default function AdminDashboard() {
         revenue
       });
 
-      setRecentOrders(allOrders.slice(0, 5));
+      setRecentOrders(allOrders.slice(0, 6));
       setLoading(false);
     }
     fetchData();
@@ -85,125 +101,216 @@ export default function AdminDashboard() {
     const url = `${window.location.origin}/p/${slug}`;
     navigator.clipboard.writeText(url);
     setCopiedSlug(slug);
-    setTimeout(() => setCopiedSlug(null), 2500);
+    setTimeout(() => setCopiedSlug(null), 2000);
   };
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-800 rounded-full animate-spin"></div>
-    </div>
-  );
+  const getStatusBadge = (status?: string) => {
+    switch (status) {
+      case "pending":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            À confirmer
+          </span>
+        );
+      case "shipped":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200/60">
+            <Truck className="w-3 h-3 stroke-[2]" />
+            En livraison
+          </span>
+        );
+      case "delivered":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+            <CheckCircle2 className="w-3 h-3 stroke-[2]" />
+            Livrée & Encaissée
+          </span>
+        );
+      case "cancelled":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">
+            <XCircle className="w-3 h-3 stroke-[2]" />
+            Annulée
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            En attente
+          </span>
+        );
+    }
+  };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="font-display font-semibold text-3xl mb-1 text-premium-dark">Vue d'ensemble</h1>
-        <p className="text-gray-500 font-light text-sm">Suivez l'activité des ventes, l'engagement et vos liens de produits.</p>
-      </div>
-
-      {/* KPI GRID - DÉFILEMENT HORIZONTAL REORGANISÉ SUR MOBILE */}
-      <div>
-        <div className="flex items-center justify-between mb-3 md:hidden">
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400">📊 Métriques (Glisser horizontalement)</span>
-          <span className="text-[11px] text-purple-600 font-semibold">← Glisser →</span>
+    <div className="space-y-8 animate-[staggerFadeUp_240ms_cubic-bezier(0.16,1,0.3,1)_both]">
+      
+      {/* PAGE TITLE & SUBTITLE */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 mb-1">
+            Tableau de Bord
+          </div>
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+            Vue d'ensemble de l'activité
+          </h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+            Suivi des encaissements, performance des campagnes et dispatch des commandes.
+          </p>
         </div>
 
-        <div className="flex overflow-x-auto snap-x md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 pb-3 md:pb-0 scrollbar-none">
-          
-          {/* 1. CHIFFRE D'AFFAIRES */}
-          <div className="min-w-[260px] sm:min-w-[280px] snap-center bg-white p-5 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="text-gray-500 font-medium text-xs sm:text-sm">Chiffre d'affaires</h3>
-              <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-green-600" />
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-display font-bold text-premium-dark">{stats.revenue.toLocaleString('fr-FR')} F</div>
-            <p className="text-[11px] text-gray-400 mt-1">Encaissé & en livraison</p>
-          </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/orders"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-white shadow-sm hover:bg-slate-800 transition-all duration-150 active:scale-[0.98]"
+          >
+            <ShoppingBag className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Traiter les commandes</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      </div>
 
-          {/* 2. COMMANDES TOTALES */}
-          <div className="min-w-[260px] sm:min-w-[280px] snap-center bg-white p-5 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="text-gray-500 font-medium text-xs sm:text-sm">Commandes Totales</h3>
-              <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center">
-                <ShoppingBag className="w-4 h-4 text-purple-700" />
-              </div>
+      {/* KPI GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        {/* KPI 1 : CHIFFRE D'AFFAIRES */}
+        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Chiffre d'Affaires</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100/60">
+              <TrendingUp className="w-4 h-4 stroke-[2]" />
             </div>
-            <div className="text-2xl sm:text-3xl font-display font-bold text-premium-dark">{stats.totalOrders}</div>
-            <p className="text-[11px] text-purple-600 font-medium mt-1">{stats.pendingOrders} à confirmer</p>
           </div>
-
-          {/* 3. TAUX DE CLICS (CTR) */}
-          <div className="min-w-[260px] sm:min-w-[280px] snap-center bg-white p-5 rounded-3xl border border-purple-100 shadow-[0_8px_30px_rgba(139,111,224,0.08)] flex flex-col justify-between bg-gradient-to-br from-white to-purple-50/40">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="text-purple-900 font-bold text-xs sm:text-sm">Taux de Clics (CTR)</h3>
-              <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center">
-                <MousePointerClick className="w-4 h-4 text-purple-700" />
-              </div>
+          {loading ? (
+            <div className="h-8 w-32 rounded-lg skeleton-shimmer mb-1" />
+          ) : (
+            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+              {new Intl.NumberFormat("fr-FR").format(stats.revenue)} <span className="text-xs font-sans font-normal text-slate-400">FCFA</span>
             </div>
-            <div className="text-2xl sm:text-3xl font-display font-extrabold text-purple-900">
-              {analytics.ctr}%
-            </div>
-            <p className="text-[11px] text-gray-500 mt-1">
-              {analytics.totalClicks} clics sur {analytics.totalViews} visites
-            </p>
+          )}
+          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+            <span>Encaissé & en livraison</span>
+            <span className="font-semibold text-emerald-600 font-mono tabular-nums">100% COD</span>
           </div>
+        </div>
 
-          {/* 4. TEMPS MOYEN PASSÉ */}
-          <div className="min-w-[260px] sm:min-w-[280px] snap-center bg-white p-5 rounded-3xl border border-purple-100 shadow-[0_8px_30px_rgba(139,111,224,0.08)] flex flex-col justify-between bg-gradient-to-br from-white to-pink-50/30">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="text-purple-900 font-bold text-xs sm:text-sm">Temps Moyen Passé</h3>
-              <div className="w-9 h-9 rounded-full bg-pink-100 flex items-center justify-center">
-                <Timer className="w-4 h-4 text-pink-600" />
-              </div>
+        {/* KPI 2 : COMMANDES TOTALES */}
+        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Volume Commandes</span>
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100/60">
+              <ShoppingBag className="w-4 h-4 stroke-[2]" />
             </div>
-            <div className="text-2xl sm:text-3xl font-display font-extrabold text-pink-900">
+          </div>
+          {loading ? (
+            <div className="h-8 w-24 rounded-lg skeleton-shimmer mb-1" />
+          ) : (
+            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+              {stats.totalOrders}
+            </div>
+          )}
+          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+            <span>À confirmer :</span>
+            <span className="font-semibold text-amber-600 font-mono tabular-nums">{stats.pendingOrders} en attente</span>
+          </div>
+        </div>
+
+        {/* KPI 3 : TAUX DE CLICS (CTR) */}
+        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Taux de Clics (CTR)</span>
+            <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center border border-violet-100/60">
+              <MousePointerClick className="w-4 h-4 stroke-[2]" />
+            </div>
+          </div>
+          {loading ? (
+            <div className="h-8 w-20 rounded-lg skeleton-shimmer mb-1" />
+          ) : (
+            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+              {analytics.ctr}<span className="text-base text-slate-400 font-sans">%</span>
+            </div>
+          )}
+          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+            <span>Visites totales :</span>
+            <span className="font-semibold text-slate-700 font-mono tabular-nums">{analytics.totalViews} vues</span>
+          </div>
+        </div>
+
+        {/* KPI 4 : TEMPS MOYEN */}
+        <div className="card-figma p-5 flex flex-col justify-between hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Temps Moyen Passé</span>
+            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100/60">
+              <Timer className="w-4 h-4 stroke-[2]" />
+            </div>
+          </div>
+          {loading ? (
+            <div className="h-8 w-20 rounded-lg skeleton-shimmer mb-1" />
+          ) : (
+            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
               {analytics.formattedAvgTime}
             </div>
-            <p className="text-[11px] text-gray-500 mt-1">
-              Durée moyenne par visiteur
-            </p>
+          )}
+          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+            <span>Rétention :</span>
+            <span className="font-semibold text-slate-700">Page produit</span>
           </div>
-
         </div>
+
       </div>
 
-      {/* LIENS DIRECTS DE PRODUITS AVEC BOUTON COPIER */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="font-display font-semibold text-lg text-premium-dark flex items-center gap-2">
-            <Package className="w-5 h-5 text-purple-700" />
-            <span>Vos Liens Produits Directs (Option Copier)</span>
-          </h2>
-          <a href="/admin/products" className="text-xs font-bold text-purple-700 hover:underline">
-            Voir le catalogue
-          </a>
+      {/* LIENS DIRECTS DE PRODUITS */}
+      <div className="card-figma p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+              <Package className="w-3.5 h-3.5" />
+            </div>
+            <div>
+              <h2 className="font-display font-bold text-base text-slate-900">Liens Directs de Vente</h2>
+              <p className="text-xs text-slate-400">Copiez en 1 clic vos liens de campagne à intégrer dans vos publicités</p>
+            </div>
+          </div>
+          <Link href="/admin/products" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors">
+            <span>Gérer le catalogue</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
           {productsList.map((prod) => {
             const isCopied = copiedSlug === prod.slug;
-            const fullUrl = typeof window !== "undefined" ? `${window.location.origin}/p/${prod.slug}` : `/p/${prod.slug}`;
 
             return (
-              <div key={prod.slug} className="p-4 rounded-2xl border border-purple-100 bg-purple-50/40 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <img src={prod.image} alt={prod.title} className="w-12 h-12 rounded-xl object-cover shrink-0 border border-purple-100" />
-                  <div className="overflow-hidden">
-                    <div className="font-bold text-xs sm:text-sm text-premium-dark truncate">{prod.title}</div>
-                    <div className="text-[11px] font-mono text-purple-900 truncate">/p/{prod.slug}</div>
+              <div 
+                key={prod.slug} 
+                className="p-3.5 rounded-xl border border-slate-200/80 bg-slate-50/50 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors"
+              >
+                <div className="flex items-center gap-3 overflow-hidden min-w-0">
+                  <img 
+                    src={prod.image} 
+                    alt={prod.title} 
+                    className="w-11 h-11 rounded-lg object-cover shrink-0 border border-slate-200 bg-white" 
+                  />
+                  <div className="min-w-0">
+                    <div className="font-bold text-xs text-slate-900 truncate">{prod.title}</div>
+                    <div className="text-[11px] font-mono text-slate-500 truncate">/p/{prod.slug}</div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
+                    type="button"
                     onClick={() => copyProductLink(prod.slug)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
-                      isCopied ? "bg-emerald-600 text-white" : "bg-white text-purple-800 border border-purple-200 hover:bg-purple-100 shadow-sm"
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-[0.97] ${
+                      isCopied 
+                        ? "bg-emerald-600 text-white shadow-sm" 
+                        : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900 shadow-xs"
                     }`}
                   >
-                    {isCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {isCopied ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[1.75]" />}
                     <span>{isCopied ? "Copié !" : "Copier"}</span>
                   </button>
 
@@ -211,8 +318,8 @@ export default function AdminDashboard() {
                     href={`/p/${prod.slug}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-1.5 rounded-lg bg-white border border-purple-200 text-purple-800 hover:bg-purple-100 shadow-sm"
-                    title="Voir la page client"
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-xs transition-colors"
+                    title="Aperçu client"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
@@ -223,40 +330,72 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* RECENT ORDERS TABLE */}
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden">
-        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="font-display font-semibold text-xl text-premium-dark">Dernières commandes</h2>
-          <a href="/admin/orders" className="text-sm font-bold text-purple-700 hover:underline">Voir tout</a>
+      {/* TABLEAU DES DERNIÈRES COMMANDES */}
+      <div className="card-figma overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div>
+            <h2 className="font-display font-bold text-lg text-slate-900">Dernières Commandes Enregistrées</h2>
+            <p className="text-xs text-slate-400">Flux temps réel des nouvelles demandes clients</p>
+          </div>
+          <Link 
+            href="/admin/orders" 
+            className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1 transition-colors"
+          >
+            <span>Voir toutes les commandes ({stats.totalOrders})</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-wider">
-                <th className="px-6 py-4">Client</th>
-                <th className="px-6 py-4">Ville</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4">Montant</th>
-                <th className="px-6 py-4">Statut</th>
+              <tr className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <th className="py-3 px-5">Client</th>
+                <th className="py-3 px-5">Destination</th>
+                <th className="py-3 px-5">Date</th>
+                <th className="py-3 px-5 text-right">Montant</th>
+                <th className="py-3 px-5 text-center">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-xs sm:text-sm">
-              {recentOrders.length === 0 ? (
+            <tbody className="divide-y divide-slate-100 text-xs">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="py-4 px-5"><div className="h-4 w-28 bg-slate-200 rounded" /></td>
+                    <td className="py-4 px-5"><div className="h-4 w-20 bg-slate-200 rounded" /></td>
+                    <td className="py-4 px-5"><div className="h-4 w-16 bg-slate-200 rounded" /></td>
+                    <td className="py-4 px-5 text-right"><div className="h-4 w-20 bg-slate-200 rounded ml-auto" /></td>
+                    <td className="py-4 px-5 text-center"><div className="h-5 w-24 bg-slate-200 rounded-full mx-auto" /></td>
+                  </tr>
+                ))
+              ) : recentOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">Aucune commande récente</td>
+                  <td colSpan={5} className="py-10 text-center text-slate-400">
+                    Aucune commande enregistrée pour le moment.
+                  </td>
                 </tr>
               ) : (
-                recentOrders.map(order => (
-                  <tr key={order.id || Math.random()} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4 font-bold text-premium-dark">{order.customer_name}</td>
-                    <td className="px-6 py-4 text-gray-500">{order.shipping_city || order.city}</td>
-                    <td className="px-6 py-4 text-gray-500">{new Date(order.created_at || Date.now()).toLocaleDateString('fr-FR')}</td>
-                    <td className="px-6 py-4 font-extrabold text-premium-dark">{(order.total_amount || 0).toLocaleString('fr-FR')} F</td>
-                    <td className="px-6 py-4">
-                      {order.status === 'pending' && <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">En attente</span>}
-                      {order.status === 'shipped' && <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">En cours</span>}
-                      {order.status === 'delivered' && <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Livrée</span>}
-                      {order.status === 'cancelled' && <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Annulée</span>}
+                recentOrders.map((order, index) => (
+                  <tr 
+                    key={order.id || index} 
+                    className="hover:bg-slate-50/70 transition-colors"
+                    style={{ animationDelay: `${index * 35}ms` }}
+                  >
+                    <td className="py-3.5 px-5">
+                      <div className="font-semibold text-slate-900">{order.customer_name || "Client anonyme"}</div>
+                      <div className="text-[11px] text-slate-400 font-mono">{order.customer_phone || "-"}</div>
+                    </td>
+                    <td className="py-3.5 px-5 text-slate-600 font-medium">
+                      {order.shipping_city || order.city || "Non précisé"}
+                    </td>
+                    <td className="py-3.5 px-5 text-slate-400 font-mono text-[11px]">
+                      {new Date(order.created_at || Date.now()).toLocaleDateString("fr-FR")}
+                    </td>
+                    <td className="py-3.5 px-5 text-right font-mono font-bold text-slate-900 tabular-nums">
+                      {new Intl.NumberFormat("fr-FR").format(order.total_amount || 0)} FCFA
+                    </td>
+                    <td className="py-3.5 px-5 text-center">
+                      {getStatusBadge(order.status)}
                     </td>
                   </tr>
                 ))
@@ -265,6 +404,7 @@ export default function AdminDashboard() {
           </table>
         </div>
       </div>
+
     </div>
   );
 }
