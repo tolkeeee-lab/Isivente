@@ -7,6 +7,8 @@ import {
   Check, 
   ArrowRight, 
   ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
   Sparkles,
   Droplets,
   HeartHandshake,
@@ -57,8 +59,28 @@ const BUNDLES: ProductBundle[] = [
   }
 ];
 
+const UMEI_SLIDES = [
+  {
+    src: "/images/umei-hero-real.jpg",
+    alt: "Brosse démêlante vapeur Uméi 3-en-1 en action",
+    label: "Technologie micro-brume hydratante",
+  },
+  {
+    src: "/images/brosse-umei-vapeur.jpg",
+    alt: "Détail de la brume d'eau et réservoir d'huile",
+    label: "3-en-1 : Vapeur + Huile + Clic",
+  },
+  {
+    src: "/images/umei-clic-real.jpg",
+    alt: "Bouton clic libérateur et picots doux anti-casse",
+    label: "Clic libérateur sans douleur",
+  },
+];
+
 export default function ProductLanding({ slug }: { slug: string }) {
   const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[1]);
+  const [slide, setSlide] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
@@ -66,6 +88,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ID de session stable — généré UNE SEULE FOIS au montage du composant
   const sessionIdRef = useRef(
@@ -73,6 +96,24 @@ export default function ProductLanding({ slug }: { slug: string }) {
   );
   const startTimeRef = useRef(Date.now());
   const clickedRef = useRef(false); // flag partagé entre cleanup et beforeunload
+
+  const goToSlide = React.useCallback(
+    (idx: number) => {
+      if (isAnimating) return;
+      setIsAnimating(true);
+      setSlide((idx + UMEI_SLIDES.length) % UMEI_SLIDES.length);
+      setTimeout(() => setIsAnimating(false), 350);
+    },
+    [isAnimating]
+  );
+
+  // Auto-play du carrousel
+  useEffect(() => {
+    autoplayRef.current = setInterval(() => goToSlide(slide + 1), 4500);
+    return () => {
+      if (autoplayRef.current) clearInterval(autoplayRef.current);
+    };
+  }, [slide, goToSlide]);
 
   useEffect(() => {
     const save = () => {
@@ -173,14 +214,103 @@ export default function ProductLanding({ slug }: { slug: string }) {
         </nav>
       </header>
 
-      {/* 🚀 HERO SECTION EXACTE - BIEN CENTRÉE ET SAN NUL DÉBORDEMENT */}
+      {/* 🚀 HERO SECTION EXACTE - CARROUSEL EN 1ER PUIS ARGUMENTS DE VENTE */}
       <section className="pt-6 md:pt-14 pb-0 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
           
-          {/* GAUCHE : TEXTES ÉMOTIONNELS */}
-          <div className="md:col-span-7 space-y-5 text-center md:text-left flex flex-col items-center md:items-start">
+          {/* 1. CARROUSEL VISUEL INTERACTIF (EN PREMIER) */}
+          <div id="carousel" className="md:col-span-5 flex justify-center items-center order-1">
+            <div className="relative w-full max-w-[320px] sm:max-w-[360px] md:max-w-[400px] mx-auto select-none">
+              
+              {/* Badge avis mobile au-dessus */}
+              <div className="inline-flex md:hidden items-center gap-2 bg-white/90 border border-[#8B6FE0]/20 px-3 py-1 rounded-full shadow-xs mb-3">
+                <div className="flex text-amber-400 text-xs">★★★★★</div>
+                <span className="text-xs font-bold text-[#241B36]">4.9/5 (+1420 femmes comblées)</span>
+              </div>
+
+              {/* Conteneur principal de l'image avec stickers */}
+              <div className="relative rounded-[28px] sm:rounded-[32px] overflow-hidden shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] aspect-square bg-[#241B36]/5 border border-[#8B6FE0]/20">
+                
+                {/* Sticker flottant haut gauche */}
+                <div className="absolute top-3 left-3 bg-[#A8E6C9] text-[#241B36] rounded-full px-2.5 py-1 text-center font-display font-bold text-[10px] sm:text-[11px] leading-tight shadow-md -rotate-6 z-20 pointer-events-none">
+                  3-en-1 vapeur + huile + clic
+                </div>
+
+                <img 
+                  key={slide}
+                  src={UMEI_SLIDES[slide].src} 
+                  alt={UMEI_SLIDES[slide].alt} 
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                  style={{ opacity: isAnimating ? 0 : 1 }}
+                />
+
+                {/* Boutons Précédent / Suivant */}
+                <button
+                  type="button"
+                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide - 1); }}
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer z-20"
+                  style={{ background: "rgba(255,255,255,0.92)" }}
+                  aria-label="Précédent"
+                >
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#241B36]" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide + 1); }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer z-20"
+                  style={{ background: "rgba(255,255,255,0.92)" }}
+                  aria-label="Suivant"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#241B36]" />
+                </button>
+
+                {/* Label de la slide */}
+                <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[11px] font-bold backdrop-blur-md whitespace-nowrap bg-[#241B36]/75 text-white z-20">
+                  {UMEI_SLIDES[slide].label}
+                </div>
+              </div>
+
+              {/* Indicateurs points (Dots) */}
+              <div className="flex justify-center gap-1.5 mt-3.5">
+                {UMEI_SLIDES.map((_, i) => (
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
+                    className="rounded-full transition-all duration-300 cursor-pointer"
+                    style={{
+                      width: i === slide ? 22 : 7,
+                      height: 7,
+                      background: i === slide ? "#FF5C93" : "rgba(139,111,224,0.35)",
+                    }}
+                    aria-label={`Diapositive ${i + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Miniatures cliquables */}
+              <div className="flex gap-2 mt-2.5 justify-center">
+                {UMEI_SLIDES.map((s, i) => (
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer"
+                    style={{ borderColor: i === slide ? "#FF5C93" : "transparent", opacity: i === slide ? 1 : 0.55 }}
+                    aria-label={s.alt}
+                  >
+                    <img src={s.src} alt={s.alt} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+
+            </div>
+          </div>
+
+          {/* 2. TEXTES ÉMOTIONNELS & CTA (EN DEUXIÈME) */}
+          <div className="md:col-span-7 space-y-5 text-center md:text-left flex flex-col items-center md:items-start order-2">
             
-            <div className="inline-flex items-center gap-2 bg-white/80 border border-[#8B6FE0]/20 px-3.5 py-1 rounded-full shadow-sm mx-auto md:mx-0">
+            <div className="hidden md:inline-flex items-center gap-2 bg-white/80 border border-[#8B6FE0]/20 px-3.5 py-1 rounded-full shadow-sm">
               <div className="flex text-amber-400 text-xs">
                 ★★★★★
               </div>
@@ -228,30 +358,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
               </span>
             </div>
 
-          </div>
-
-          {/* DROITE : VRAIE PHOTO DU PRODUIT AVEC STICKERS CONFINÉS DANS L'ÉCRAN */}
-          <div className="md:col-span-5 flex justify-center items-center pt-4 md:pt-0">
-            <div className="relative w-full max-w-[310px] sm:max-w-[360px] md:max-w-[400px] mx-auto px-2">
-              
-              {/* STICKER 1 HAUT GAUCHE */}
-              <div className="absolute -top-2 left-0 sm:-left-4 w-[90px] h-[90px] sm:w-[105px] sm:h-[105px] bg-[#A8E6C9] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] -rotate-12 z-20 pointer-events-none">
-                3-en-1 vapeur + huile + clic
-              </div>
-
-              {/* IMAGE RÉELLE */}
-              <img 
-                src="/images/umei-hero-real.jpg" 
-                alt="Brosse vapeur uméi en action, jet de vapeur visible" 
-                className="rounded-[28px] sm:rounded-[32px] w-full shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] object-cover"
-              />
-
-              {/* STICKER 2 BAS DROITE */}
-              <div className="absolute -bottom-2 right-0 sm:-right-4 w-[80px] h-[80px] sm:w-[88px] sm:h-[88px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] rotate-12 z-20 pointer-events-none">
-                Sans chaleur agressive
-              </div>
-
-            </div>
           </div>
 
         </div>
