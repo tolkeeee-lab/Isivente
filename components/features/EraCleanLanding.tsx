@@ -417,10 +417,10 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
 
             {/* Badges de réassurance */}
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-              {["Paiement à la livraison", "Livraison 24–72h", "100% Rechargeable USB"].map((b) => (
+              {["💵 Paiement à la livraison", "🚚 Livraison 24h–48h", "⚡ 100% Rechargeable USB"].map((b) => (
                 <span
                   key={b}
-                  className="text-xs font-semibold py-1.5 px-3 rounded-full border"
+                  className="text-xs font-semibold py-1.5 px-3 rounded-full border shadow-xs"
                   style={{ background: "white", borderColor: `${C.accent}20`, color: C.text }}
                 >
                   {b}
@@ -451,37 +451,38 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* ════════════════ VIDÉO PLACEHOLDER ════════════════ */}
-      <section id="comment" className="py-16 px-4 md:px-8 max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: C.accent }}>Démonstration</p>
+      {/* ════════════════ VIDÉO DÉMONSTRATION RÉELLE ════════════════ */}
+      <section id="comment" className="py-14 md:py-20 px-4 md:px-8 max-w-4xl mx-auto">
+        <div className="text-center mb-6 md:mb-8">
+          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: C.accent }}>Démonstration Vidéo</p>
           <h2 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: C.dark }}>
-            Voyez l&apos;EraClean en action
+            Voyez l&apos;EraClean en action réelle
           </h2>
-          <p className="mt-2 text-sm md:text-base" style={{ color: C.muted }}>
-            Comment les micro-décharges d&apos;ozone neutralisent les odeurs en profondeur.
+          <p className="mt-2 text-xs sm:text-sm md:text-base max-w-lg mx-auto" style={{ color: C.muted }}>
+            Regardez comment le purificateur assainit et neutralise les odeurs instantanément.
           </p>
         </div>
 
-        {/* Video placeholder card */}
+        {/* Lecteur Vidéo Réel */}
         <div
-          className="relative rounded-3xl overflow-hidden aspect-video flex items-center justify-center shadow-xl border"
-          style={{ background: C.dark, borderColor: `${C.accent}30` }}
+          className="relative rounded-3xl overflow-hidden shadow-2xl border bg-slate-900 aspect-video max-w-3xl mx-auto"
+          style={{ borderColor: `${C.accent}30` }}
         >
-          <img
-            src="/images/eraclean-2.jpg"
-            alt="Aperçu vidéo EraClean"
-            className="absolute inset-0 w-full h-full object-cover opacity-40"
-          />
-          <div className="relative z-10 flex flex-col items-center gap-3">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center shadow-2xl cursor-pointer hover:scale-105 active:scale-95 transition-transform"
-              style={{ background: C.accent }}
-            >
-              <Play className="w-7 h-7 text-white fill-white ml-1" />
-            </div>
-            <span className="text-white text-sm font-semibold opacity-80">Vidéo de démonstration — bientôt disponible</span>
+          <div className="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 z-10">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span>Test en direct</span>
           </div>
+
+          <video
+            src="/videos/eraclean-demo.mp4"
+            poster="/images/eraclean-2.jpg"
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full h-full object-cover"
+          >
+            Votre navigateur ne supporte pas la lecture de vidéo HTML5.
+          </video>
         </div>
       </section>
 
