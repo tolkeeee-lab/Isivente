@@ -112,24 +112,28 @@ const REVIEWS = [
 
 const FAQS = [
   {
-    q: "Est-ce que ça fonctionne vraiment sur les odeurs de piment et poisson fumé ?",
-    a: "Oui. L'ozone produit par micro-décharges électriques oxyde et neutralise les molécules odorantes à la source — piment, poisson fumé, condiments, humidité. Résultats visibles en 24 à 48 heures.",
+    q: "Quelle est la durée de vie réelle de l'appareil ?",
+    a: "L'appareil est garanti pour plus de 10 ans d'utilisation. Son module de décharges électriques à froid est inusable et ne nécessite aucun filtre, pastille ni cartouche à remplacer.",
   },
   {
-    q: "Comment recharger l'appareil ?",
-    a: "Avec n'importe quel câble USB-C (inclus). Une charge complète dure 8 à 12 heures de fonctionnement. Zéro cartouche, zéro frais récurrents.",
+    q: "Est-ce que ça fonctionne vraiment sur les odeurs fortes (piment, poisson fumé, humidité) ?",
+    a: "Oui. Contrairement aux désodorisants qui masquent les odeurs avec des parfums chimiques, l'ozone oxyde et détruit directement 99.8% des molécules odorantes et des bactéries à la source. Résultats nets en 24h.",
   },
   {
-    q: "Peut-on l'utiliser dans la voiture ou une armoire à chaussures ?",
-    a: "Absolument. L'EraClean fonctionne dans tout espace fermé : réfrigérateur, WC, armoire, voiture, vestiaire. C'est sa polyvalence qui en fait un indispensable.",
+    q: "Comment recharger l'appareil et quelle est son autonomie ?",
+    a: "Grâce à son câble USB-C fourni, une charge complète de 2h offre jusqu'à 30 jours de fonctionnement continu en mode veille automatique.",
   },
   {
-    q: "Comment se passe la livraison et le paiement ?",
-    a: "Livraison sous 24 à 72 heures à Cotonou, Calavi et Porto-Novo. Vous payez en espèces ou par Mobile Money (MTN MoMo / Moov) à la réception du colis. Aucun paiement avant livraison.",
+    q: "Peut-on l'utiliser dans la voiture, les WC ou une armoire à chaussures ?",
+    a: "Absolument. L'EraClean s'utilise dans tout espace confiné jusqu'à 10m³ : réfrigérateur, toilettes, dressing à chaussures, placard ou habitacle de voiture.",
   },
   {
-    q: "Est-ce dangereux pour les aliments ou la santé ?",
-    a: "Non. La concentration d'ozone produite est inférieure aux seuils réglementaires et se dissipe naturellement en quelques minutes. L'appareil est certifié pour un usage alimentaire.",
+    q: "Comment se déroule la livraison au Bénin ?",
+    a: "Livraison express en 24h à 48h à Cotonou, Calavi, Porto-Novo et environs. Vous payez en espèces ou via Mobile Money (MTN MoMo / Moov) uniquement après vérification du colis à la livraison.",
+  },
+  {
+    q: "Est-ce sans danger pour les aliments ?",
+    a: "Totalement. La micro-émission d'ozone est strictement calibrée selon les normes de sécurité alimentaire et se retransforme en oxygène naturel sans laisser aucun résidu.",
   },
 ];
 
@@ -487,48 +491,183 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
       </section>
 
       {/* ════════════════ BÉNÉFICES ════════════════ */}
+      {/* ════════════════ BÉNÉFICES & 10 ANS DE DURÉE DE VIE ════════════════ */}
       <section
         className="py-16 px-4 md:px-8"
         style={{ background: "white" }}
       >
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: C.accent }}>Pourquoi EraClean</p>
-            <h2 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: C.dark }}>
-              Pas juste un désodorisant. Une technologie.
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              { icon: Wind, title: "Neutralisation totale", desc: "Élimine poisson fumé, piment, humidité à la source par oxydation ozone." },
-              { icon: RefreshCw, title: "Conservation 2× plus longue", desc: "Détruit les bactéries responsables du pourrissement. Moins de gaspillage." },
-              { icon: Usb, title: "Rechargeable USB — 0 recharge", desc: "Pas de cartouche à racheter. Un câble USB-C suffit. Fonctionnel indéfiniment." },
-              { icon: Zap, title: "Technologie ozone active", desc: "Micro-décharges électriques produisant de l'ozone — certifié alimentaire." },
-              { icon: ShieldCheck, title: "2-en-1 : frigo & WC", desc: "Fonctionne partout : réfrigérateur, WC, armoire à chaussures, voiture." },
-              { icon: Star, title: "COD Bénin — MTN / Moov", desc: "Paiement à la livraison. Espèces ou Mobile Money. Aucune avance requise." },
-            ].map(({ icon: Icon, title, desc }, i) => (
-              <div
-                key={title}
-                className="rounded-2xl p-5 border flex gap-4 items-start"
-                style={{
-                  background: C.silver,
-                  borderColor: `${C.accent}15`,
-                  animationDelay: `${i * 35}ms`,
-                }}
-              >
+        <div className="max-w-5xl mx-auto space-y-16">
+          
+          {/* Header bénéfices */}
+          <div>
+            <div className="text-center mb-10">
+              <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: C.accent }}>Technologie Sans Consommable</p>
+              <h2 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: C.dark }}>
+                10 ans d&apos;utilisation continue. Zéro filtre à racheter.
+              </h2>
+              <p className="mt-2 text-sm text-slate-500 max-w-xl mx-auto">
+                Contrairement aux charbons et désodorisants jetables, le module d&apos;ozone à décharge solide est inusable et fonctionne pendant plus de 10 ans.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[
+                { icon: ShieldCheck, title: "10 ans de durée de vie", desc: "Module à micro-décharges inusable. Un seul investissement pour une décennie de tranquillité." },
+                { icon: Wind, title: "Neutralisation totale", desc: "Élimine poisson fumé, piment, humidité à la source par oxydation d'ozone actif." },
+                { icon: RefreshCw, title: "Conservation 2× plus longue", desc: "Détruit 99.8% des bactéries responsables du pourrissement prématuré des légumes et fruits." },
+                { icon: Usb, title: "100% Rechargeable USB-C", desc: "Zéro cartouche, zéro produit chimique. Une charge complète assure jusqu'à 30 jours en mode veille." },
+                { icon: Zap, title: "Certifié alimentaire & sain", desc: "Sans danger pour la santé et les aliments. L'ozone se transforme naturellement en oxygène pur." },
+                { icon: Star, title: "Paiement COD au Bénin", desc: "Livraison 24h–48h à Cotonou, Calavi et Porto-Novo. Vous réglez à la réception." },
+              ].map(({ icon: Icon, title, desc }, i) => (
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: `${C.accent}15` }}
+                  key={title}
+                  className="rounded-2xl p-5 border flex gap-4 items-start hover:-translate-y-0.5 transition-all duration-200"
+                  style={{
+                    background: C.silver,
+                    borderColor: `${C.accent}15`,
+                    animationDelay: `${i * 35}ms`,
+                  }}
                 >
-                  <Icon className="w-5 h-5" style={{ color: C.accent }} strokeWidth={1.75} />
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: `${C.accent}15` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: C.accent }} strokeWidth={1.75} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm mb-1" style={{ color: C.dark }}>{title}</p>
+                    <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{desc}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-sm mb-1" style={{ color: C.dark }}>{title}</p>
-                  <p className="text-xs leading-relaxed" style={{ color: C.muted }}>{desc}</p>
+              ))}
+            </div>
+          </div>
+
+          {/* ════════ TABLEAU COMPARATIF : ÉCONOMIES SUR 10 ANS ════════ */}
+          <div className="rounded-3xl p-6 sm:p-8 border shadow-lg" style={{ background: C.silver, borderColor: `${C.accent}20` }}>
+            <div className="text-center max-w-xl mx-auto mb-8">
+              <span className="inline-block text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider text-white mb-2" style={{ background: C.accent }}>
+                Calcul de Rentabilité
+              </span>
+              <h3 className="font-display font-bold text-xl sm:text-2xl" style={{ color: C.dark }}>
+                Pourquoi continuer à jeter votre argent chaque mois ?
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                Comparatif réel des coûts sur 10 ans d&apos;utilisation.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Option Classique Perdante */}
+              <div className="bg-white rounded-2xl p-5 border border-rose-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-rose-600">Méthodes Jetables</span>
+                  <span className="text-xs text-rose-500 font-semibold font-mono">❌ Coûteux & Inefficace</span>
+                </div>
+                <div className="font-bold text-base text-slate-800">Désodorisants chimiques & Charbons</div>
+                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
+                  <li className="flex items-start gap-2">
+                    <span className="text-rose-500 font-bold">✕</span>
+                    <span>Masque temporairement l&apos;odeur sans détruire les bactéries</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-rose-500 font-bold">✕</span>
+                    <span>Nécessite de racheter des recharges tous les mois (~3 000 F/mois)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-rose-500 font-bold">✕</span>
+                    <span>Ne prolonge pas la durée de vie des aliments au frigo</span>
+                  </li>
+                </ul>
+                <div className="border-t border-dashed border-slate-200 pt-3 flex justify-between items-baseline">
+                  <span className="text-xs text-slate-500">Coût estimé sur 10 ans :</span>
+                  <span className="font-mono font-bold text-base text-rose-600 tabular-nums">~360 000 FCFA</span>
                 </div>
               </div>
-            ))}
+
+              {/* Option Gagnante EraClean */}
+              <div className="rounded-2xl p-5 border-2 space-y-3 relative shadow-md" style={{ background: "white", borderColor: C.accent }}>
+                <div className="absolute -top-3 right-4 bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  Choix Intelligent
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: C.accent }}>Technologie EraClean™</span>
+                  <span className="text-xs text-emerald-600 font-semibold font-mono">✓ Rentabilisé en 2 mois</span>
+                </div>
+                <div className="font-bold text-base" style={{ color: C.dark }}>Purificateur Ozone 10 Ans</div>
+                <ul className="text-xs text-slate-600 space-y-2 border-t border-slate-100 pt-3">
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold">✓</span>
+                    <span><strong>Détruit 99.8% des odeurs et bactéries</strong> à la source</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold">✓</span>
+                    <span><strong>Zéro dépense supplémentaire</strong> pendant 10 ans (100% USB)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold">✓</span>
+                    <span><strong>Garde les fruits & légumes frais 2× plus longtemps</strong></span>
+                  </li>
+                </ul>
+                <div className="border-t border-dashed border-slate-200 pt-3 flex justify-between items-baseline">
+                  <span className="text-xs text-slate-500">Paiement unique à vie :</span>
+                  <span className="font-mono font-bold text-lg text-emerald-600 tabular-nums">19 900 FCFA</span>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* ════════ 4 ZONES D'UTILISATION ════════ */}
+          <div>
+            <div className="text-center mb-8">
+              <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: C.accent }}>Un Appareil, 4 Usages</p>
+              <h3 className="font-display font-bold text-xl sm:text-2xl" style={{ color: C.dark }}>
+                Où utiliser votre purificateur EraClean ?
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+              {[
+                { label: "1. Réfrigérateur", desc: "Neutralise poisson fumé, piments et condiments.", bg: "#EFF6FF", border: "#BFDBFE" },
+                { label: "2. WC & Salle de bain", desc: "Élimine l'odeur d'humidité et d'égout en continu.", bg: "#F0FDF4", border: "#BBF7D0" },
+                { label: "3. Armoire à chaussures", desc: "Détruit les bactéries de transpiration dans le meuble.", bg: "#FFFBEB", border: "#FDE68A" },
+                { label: "4. Habitacle Voiture", desc: "Assainit l'air confiné, climatisé et sans aération.", bg: "#FAF5FF", border: "#E9D5FF" },
+              ].map((zone) => (
+                <div
+                  key={zone.label}
+                  className="rounded-2xl p-4 border text-left flex flex-col justify-between"
+                  style={{ background: zone.bg, borderColor: zone.border }}
+                >
+                  <div className="font-bold text-xs sm:text-sm mb-1" style={{ color: C.dark }}>{zone.label}</div>
+                  <div className="text-[11px] leading-relaxed text-slate-600">{zone.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ════════ CONTENU DU COFFRET ════════ */}
+          <div className="border-t border-slate-200/80 pt-10">
+            <div className="bg-white rounded-2xl p-6 border flex flex-col md:flex-row items-center justify-between gap-6" style={{ borderColor: `${C.accent}20` }}>
+              <div className="space-y-1 text-center md:text-left">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Contenu du Colis</span>
+                <h4 className="font-display font-bold text-lg" style={{ color: C.dark }}>Ce que vous recevez à la livraison :</h4>
+                <p className="text-xs text-slate-500">Votre colis est scellé et vérifiable devant le livreur avant paiement.</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full md:w-auto">
+                {[
+                  "1x Purificateur EraClean™ Alu",
+                  "1x Câble USB-C renforcé",
+                  "1x Manuel d'utilisation FR",
+                  "1x Garantie Sérénité 10 ans",
+                ].map((item) => (
+                  <div key={item} className="bg-slate-50 border border-slate-200/60 rounded-xl p-2.5 text-center text-xs font-semibold text-slate-700 flex items-center justify-center">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
