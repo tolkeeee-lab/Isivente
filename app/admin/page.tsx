@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAllOrders, deleteOrder, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, deleteOrder, clearAllOrders, OrderItem } from "@/lib/ordersStorage";
 import { getAnalyticsStats, getAllProductsAnalytics, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
   TrendingUp, 
@@ -215,6 +215,38 @@ export default function AdminDashboard() {
         </div>
 
         <div className="flex items-center gap-2">
+          {stats.totalOrders > 0 && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!confirm("Remettre immédiatement le compteur à 0 FCFA et effacer les commandes de test ?")) return;
+                try {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  await clearAllOrders();
+                } catch {}
+                setStats({
+                  totalOrders: 0,
+                  pendingOrders: 0,
+                  shippedOrders: 0,
+                  deliveredOrders: 0,
+                  cancelledOrders: 0,
+                  revenue: 0,
+                  deliveredRevenue: 0,
+                  shippedRevenue: 0,
+                  pendingRevenue: 0,
+                });
+                setRecentOrders([]);
+                setProductFinancials({});
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-all duration-150 active:scale-[0.98] cursor-pointer"
+              title="Remettre tous les compteurs à 0 FCFA"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+              <span>Vider à 0 FCFA</span>
+            </button>
+          )}
+
           <Link
             href="/admin/orders"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-white shadow-sm hover:bg-slate-800 transition-all duration-150 active:scale-[0.98]"
