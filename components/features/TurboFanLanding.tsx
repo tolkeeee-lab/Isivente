@@ -19,6 +19,9 @@ import {
   Sparkles,
   Smartphone,
   Flame,
+  MessageCircle,
+  PackageCheck,
+  ShieldCheck,
 } from "lucide-react";
 
 /* ─────────────────────────────────────────── TYPES & DATA */
@@ -233,6 +236,10 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         shipping_address: address.trim(),
         status: "pending",
       });
+
+      // Marquer la session comme convertie
+      const sessId = sessionIdRef.current || ("sess_" + Date.now());
+      trackUserSession(slug, 0, true, sessId);
 
       setOrderInfo(order);
       setSubmitted(true);
@@ -662,18 +669,74 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         <div id="confirmation" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xl">
           
           {submitted ? (
-            <div className="text-center py-8 space-y-4 animate-fadeIn">
+            <div className="text-center py-6 sm:py-8 space-y-5 animate-fadeIn max-w-lg mx-auto">
               <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
                 <Check className="w-8 h-8 stroke-[3]" />
               </div>
-              <h3 className="font-display font-extrabold text-2xl text-slate-900">
-                Commande Validée avec Succès !
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                Merci <strong>{name}</strong> ! Votre commande du <strong>{selected.name}</strong> ({fmt(selected.price)}) a été enregistrée. Notre service de livraison vous contactera sous peu au <strong>{phone}</strong> pour convenir du lieu exact de remise.
-              </p>
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 max-w-xs mx-auto text-xs font-mono text-slate-600">
-                📦 Référence : {orderInfo?.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000)}
+
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                  Commande Enregistrée avec Succès
+                </span>
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
+                  Félicitations {name} !
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                  Votre commande du <strong>{selected.name}</strong> ({fmt(selected.price)}) est bien prise en compte. Notre équipe vous contactera au <strong>{phone}</strong> pour convenir de la remise du colis.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700 flex items-center justify-between">
+                <span className="text-slate-400 font-sans">Référence :</span>
+                <strong>{orderInfo?.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000)}</strong>
+              </div>
+
+              {/* 3 ÉTAPES CLAIRES */}
+              <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 sm:p-5 text-left space-y-2.5 text-xs text-slate-700">
+                <div className="font-bold text-[11px] uppercase tracking-wider text-emerald-900 mb-1">
+                  Prochaines étapes :
+                </div>
+                <div className="flex gap-2.5 items-start">
+                  <span className="w-5 h-5 rounded-full bg-emerald-200 text-emerald-900 font-bold flex items-center justify-center shrink-0 text-[10px]">1</span>
+                  <div>
+                    <span className="font-bold text-slate-900">Appel ou message de confirmation :</span>
+                    <p className="text-slate-500 text-[11px]">Notre service logistique vous contacte pour confirmer votre lieu exact.</p>
+                  </div>
+                </div>
+                <div className="flex gap-2.5 items-start">
+                  <span className="w-5 h-5 rounded-full bg-emerald-200 text-emerald-900 font-bold flex items-center justify-center shrink-0 text-[10px]">2</span>
+                  <div>
+                    <span className="font-bold text-slate-900">Livraison express 24h–48h :</span>
+                    <p className="text-slate-500 text-[11px]">Le livreur vous apporte votre colis à {city} et environs.</p>
+                  </div>
+                </div>
+                <div className="flex gap-2.5 items-start">
+                  <span className="w-5 h-5 rounded-full bg-emerald-200 text-emerald-900 font-bold flex items-center justify-center shrink-0 text-[10px]">3</span>
+                  <div>
+                    <span className="font-bold text-slate-900">Vérification & Paiement à la réception :</span>
+                    <p className="text-slate-500 text-[11px]">Vous vérifiez le colis et payez au livreur en espèces ou Mobile Money.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* BOUTON WHATSAPP ACCÉLÉRATION */}
+              <div className="space-y-2.5 pt-2">
+                <a
+                  href={`https://wa.me/2290192901817?text=${encodeURIComponent(
+                    `Bonjour Isivente ! Je viens de commander le ${selected.name} (${fmt(selected.price)}) pour ${name} (${phone}, ${city}). Réf: ${orderInfo?.order_number || "En cours"}. Je souhaite accélérer et confirmer ma livraison.`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-sm py-4 px-6 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98]"
+                >
+                  <MessageCircle className="w-5 h-5 fill-white text-[#25D366]" />
+                  <span>Accélérer ma livraison sur WhatsApp</span>
+                </a>
+
+                <div className="flex items-center justify-center gap-4 pt-3 text-[11px] text-slate-400">
+                  <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Colis Garanti</span>
+                  <span className="flex items-center gap-1"><PackageCheck className="w-3.5 h-3.5 text-emerald-600" /> Paiement à la réception</span>
+                </div>
               </div>
             </div>
           ) : (
@@ -824,8 +887,41 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* 📱 STICKY MOBILE BAR */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-2.5 px-4 shadow-[0_-8px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-2 max-w-full overflow-hidden">
+        <div>
+          <div className="text-[10px] text-slate-500 font-bold">Total à la livraison :</div>
+          <div className="font-display font-extrabold text-base text-emerald-600 leading-none">
+            {fmt(selected.price)}
+          </div>
+        </div>
+        <button
+          onClick={handleCtaClick}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <span>Commander</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* 💬 BOUTON FLOATING WHATSAPP ASSISTANCE (+229 01 92 90 18 17) */}
+      <a
+        href={`https://wa.me/2290192901817?text=${encodeURIComponent(
+          "Bonjour ! J'ai une question concernant le ventilateur TurboFan™ Max 3-en-1."
+        )}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-16 md:bottom-6 right-4 z-40 bg-[#25D366] hover:bg-[#1EBE5D] text-white p-3.5 rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 flex items-center justify-center cursor-pointer border-2 border-white group"
+        title="Besoin d'aide ? Écrivez-nous sur WhatsApp (+229 01 92 90 18 17)"
+      >
+        <MessageCircle className="w-6 h-6 fill-white text-[#25D366]" />
+        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-bold pl-0 group-hover:pl-2">
+          WhatsApp Direct
+        </span>
+      </a>
+
       {/* ════════════════ FOOTER ════════════════ */}
-      <footer className="bg-slate-950 text-white py-10 px-4 text-center border-t border-slate-800 space-y-3">
+      <footer className="bg-slate-950 text-white py-10 px-4 text-center border-t border-slate-800 space-y-3 pb-24 md:pb-10">
         <div className="font-display font-bold text-base">TurboFan™ Max Bénin</div>
         <p className="text-xs text-slate-400 max-w-sm mx-auto">
           Distribué par Isivente • Service client WhatsApp : +229 01 92 90 18 17

@@ -63,14 +63,34 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
   // 1. Sauvegarde locale de sécurité
   saveToLocalStorage({ ...payload, id: "local_" + Date.now() });
 
-  // 2. Insertion dans Supabase avec boucle de repli automatique en cas de colonne manquante
+  // 2. Déclencher immédiatement l'événement local & cross-tab (BroadcastChannel / window / storage)
+  if (typeof window !== "undefined") {
+    try {
+      window.dispatchEvent(
+        new CustomEvent("isivente_new_order", { detail: payload })
+      );
+      // Cross-tab broadcast pour réveiller le dashboard admin dans un autre onglet
+      if ("BroadcastChannel" in window) {
+        const bc = new BroadcastChannel("isivente_orders_channel");
+        bc.postMessage({ type: "new_order", data: payload });
+        bc.close();
+      }
+      localStorage.setItem("isivente_last_order_trigger", JSON.stringify({ ...payload, _t: Date.now() }));
+    } catch (e) {
+      console.warn("Realtime local trigger error:", e);
+    }
+  }
+
+  // 3. Insertion dans Supabase avec boucle de repli automatique en cas de colonne manquante
   let attempts = 0;
+  let finalResult = payload;
   while (attempts < 5) {
     attempts++;
     const res = await supabase.from("orders").insert([payload]).select();
 
     if (!res.error) {
-      return res.data?.[0] || payload;
+      finalResult = res.data?.[0] || payload;
+      break;
     }
 
     // Si une colonne n'existe pas dans la table Supabase, la retirer et réessayer
@@ -91,16 +111,7 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
     break;
   }
 
-  // 3. Déclencher l'événement local temps réel pour déclencher l'alerte Cha-Ching et le toast
-  if (typeof window !== "undefined") {
-    try {
-      window.dispatchEvent(
-        new CustomEvent("isivente_new_order", { detail: payload })
-      );
-    } catch {}
-  }
-
-  return payload;
+  return finalResult;
 }
 
 /** Normalise un objet commande pour le Dashboard */

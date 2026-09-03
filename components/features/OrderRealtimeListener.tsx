@@ -57,13 +57,20 @@ export default function OrderRealtimeListener() {
       setNotifGranted(Notification.permission === "granted");
     }
 
+    const seenOrdersRef = new Set<string>();
+
     const handleNewOrder = (order: any) => {
+      const orderKey = String(order.id || order.order_number || order.created_at || (order.customer_phone + order.total_amount));
+      if (seenOrdersRef.has(orderKey)) return;
+      seenOrdersRef.add(orderKey);
+      setTimeout(() => seenOrdersRef.delete(orderKey), 10000);
+
       const toastData: RealtimeOrderToast = {
         id: order.id || String(Date.now()),
-        order_number: order.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000),
+        order_number: String(order.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000)),
         customer_name: order.customer_name || "Client",
         customer_phone: order.customer_phone || "",
-        total_amount: order.total_amount || 14900,
+        total_amount: Number(order.total_amount) || 14900,
         product_title: order.product_title || "Nouvelle commande",
         city: order.city || order.shipping_city || "Cotonou",
         created_at: new Date().toISOString(),
@@ -96,6 +103,28 @@ export default function OrderRealtimeListener() {
     };
     window.addEventListener("isivente_new_order", localListener);
 
+    // Cross-tab BroadcastChannel listener
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      bc = new BroadcastChannel("isivente_orders_channel");
+      bc.onmessage = (event) => {
+        if (event.data?.type === "new_order" && event.data?.data) {
+          handleNewOrder(event.data.data);
+        }
+      };
+    }
+
+    // Storage cross-tab fallback
+    const storageListener = (e: StorageEvent) => {
+      if (e.key === "isivente_last_order_trigger" && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          handleNewOrder(parsed);
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", storageListener);
+
     const channel = supabase
       .channel("realtime-orders-global")
       .on(
@@ -115,6 +144,8 @@ export default function OrderRealtimeListener() {
 
     return () => {
       window.removeEventListener("isivente_new_order", localListener);
+      window.removeEventListener("storage", storageListener);
+      if (bc) bc.close();
       supabase.removeChannel(channel);
     };
   }, [soundEnabled]);
