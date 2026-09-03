@@ -1,5 +1,5 @@
 // Isivente PWA Service Worker
-const CACHE_NAME = "isivente-cache-v1";
+const CACHE_NAME = "isivente-cache-v2";
 const OFFLINE_URLS = [
   "/admin",
   "/manifest.json",

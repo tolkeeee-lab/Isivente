@@ -73,8 +73,30 @@ export default function OrdersPage() {
 
     setLoading(true);
     await clearAllOrders();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("isivente_orders_store");
+      localStorage.removeItem("isivente_last_order_trigger");
+    }
     setOrders([]);
     setLoading(false);
+  };
+
+  const handleForceReset = async () => {
+    if (!confirm("Vider complètement tout l'historique et forcer le rafraîchissement du cache ?")) return;
+    setLoading(true);
+    await clearAllOrders();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("isivente_orders_store");
+      localStorage.removeItem("isivente_last_order_trigger");
+      sessionStorage.clear();
+      if ("caches" in window) {
+        try {
+          const names = await caches.keys();
+          await Promise.all(names.map(n => caches.delete(n)));
+        } catch {}
+      }
+      window.location.reload();
+    }
   };
 
   const filteredOrders = orders.filter(order => {
@@ -128,10 +150,10 @@ export default function OrdersPage() {
           {orders.length > 0 && (
             <button
               type="button"
-              onClick={handleClearAll}
+              onClick={handleForceReset}
               disabled={loading}
               className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 px-3 py-2 rounded-xl text-xs font-semibold shadow-2xs transition-all active:scale-[0.97] cursor-pointer"
-              title="Supprimer toutes les commandes de test"
+              title="Supprimer définitivement toutes les commandes et vider le cache"
             >
               <Eraser className="w-3.5 h-3.5 text-rose-600" />
               <span>Vider les tests</span>
