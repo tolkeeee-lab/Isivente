@@ -162,8 +162,19 @@ export async function getAllOrders(): Promise<OrderItem[]> {
   let localOrders: any[] = [];
   if (typeof window !== "undefined") {
     try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) localOrders = JSON.parse(raw);
+      // Vérifier toutes les clés potentielles
+      const keys = [LOCAL_STORAGE_KEY, "orders", "isivente_orders", "local_orders", "_serverOrdersStore"];
+      for (const k of keys) {
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              localOrders.push(...parsed);
+            }
+          } catch {}
+        }
+      }
     } catch {}
   }
 
@@ -227,24 +238,31 @@ export async function deleteOrder(orderId?: string, orderNumber?: string | numbe
     } catch {}
   }
 
-  // 3. Suppression dans LocalStorage
+  // 3. Suppression dans LocalStorage sur toutes les clés possibles
   if (typeof window !== "undefined") {
     try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (raw) {
-        const list = JSON.parse(raw);
-        const filtered = list.filter((o: any) => {
-          const oId = String(o.id || o._id || "");
-          const oNum = String(o.order_number || "");
-          const oPhone = String(o.customer_phone || o.phone || "");
-          const oDate = String(o.created_at || "");
+      const keys = [LOCAL_STORAGE_KEY, "orders", "isivente_orders", "local_orders", "_serverOrdersStore"];
+      for (const k of keys) {
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          try {
+            const list = JSON.parse(raw);
+            if (Array.isArray(list)) {
+              const filtered = list.filter((o: any) => {
+                const oId = String(o.id || o._id || "");
+                const oNum = String(o.order_number || "");
+                const oPhone = String(o.customer_phone || o.phone || "");
+                const oDate = String(o.created_at || "");
 
-          if (targetId && (oId === targetId || oNum === targetId)) return false;
-          if (targetNum && (oNum === targetNum || oId === targetNum)) return false;
-          if (orderData?.customer_phone && orderData?.created_at && oPhone === orderData.customer_phone && oDate === orderData.created_at) return false;
-          return true;
-        });
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
+                if (targetId && (oId === targetId || oNum === targetId)) return false;
+                if (targetNum && (oNum === targetNum || oId === targetNum)) return false;
+                if (orderData?.customer_phone && orderData?.created_at && oPhone === orderData.customer_phone && oDate === orderData.created_at) return false;
+                return true;
+              });
+              localStorage.setItem(k, JSON.stringify(filtered));
+            }
+          } catch {}
+        }
       }
     } catch (e) {
       console.warn("LocalStorage delete notice:", e);
