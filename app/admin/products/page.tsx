@@ -99,12 +99,12 @@ export default function ProductsPage() {
       id: "stabilisateur-default",
       title: "Stabilisateur Pro-Mobile Z3 Zoom™",
       slug: "stabilisateur",
-      price: 19900,
+      price: 49900,
       image_url: "/images/stabilisateur-hero.jpg",
       bundles: [
-        { name: "Pack Solo Créateur (1 Kit)", price: 19900 },
-        { name: "Pack Duo Studio (2 Kits)", price: 34900 },
-        { name: "Pack Pro Équipe & Vidéaste (3 Kits)", price: 49900 }
+        { name: "Pack Solo Créateur (1 Kit)", price: 49900 },
+        { name: "Pack Duo Studio (2 Kits)", price: 89900 },
+        { name: "Pack Pro Équipe & Vidéaste (3 Kits)", price: 129900 }
       ]
     }
   ];

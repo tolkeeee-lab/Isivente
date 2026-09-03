@@ -87,7 +87,7 @@ export default function AdminDashboard() {
     {
       title: "Stabilisateur Trépied Z3 Zoom™",
       slug: "stabilisateur",
-      price: 19900,
+      price: 49900,
       image: "/images/stabilisateur-hero.jpg"
     }
   ];
