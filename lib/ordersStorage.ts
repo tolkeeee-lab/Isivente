@@ -123,18 +123,20 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
 
 /** Normalise un objet commande pour le Dashboard */
 function normalizeOrder(o: any): OrderItem {
+  const stableId = String(o.id || o._id || o.order_number || `ord_${o.created_at || ""}_${o.customer_phone || ""}`);
   return {
     ...o,
-    order_number: o.order_number || ("CMD-" + (o.id || "000").substring(0, 6)),
+    id: stableId,
+    order_number: o.order_number || ("CMD-" + stableId.substring(0, 6)),
     customer_name: o.customer_name || o.name || "Client",
     customer_phone: o.customer_phone || o.phone || "",
     shipping_city: o.city || o.shipping_city || "Cotonou",
     city: o.city || o.shipping_city || "Cotonou",
     shipping_address: o.address || o.shipping_address || "",
     address: o.address || o.shipping_address || "",
-    total_amount: o.total_amount || o.amount || 14900,
+    total_amount: Number(o.total_amount || o.amount || 14900),
     product_title: o.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1",
-    quantity: o.quantity || 1,
+    quantity: Number(o.quantity || 1),
     status: o.status || "pending",
     created_at: o.created_at || new Date().toISOString()
   };
@@ -168,12 +170,12 @@ export async function getAllOrders(): Promise<OrderItem[]> {
   const map = new Map<string, OrderItem>();
   dbOrders.forEach((o) => {
     const normalized = normalizeOrder(o);
-    const key = normalized.id || `${normalized.customer_phone}_${normalized.created_at}`;
+    const key = String(normalized.id || normalized.order_number || `${normalized.customer_phone}_${normalized.created_at}`);
     map.set(key, normalized);
   });
   localOrders.forEach((o) => {
     const normalized = normalizeOrder(o);
-    const key = normalized.id || `${normalized.customer_phone}_${normalized.created_at}`;
+    const key = String(normalized.id || normalized.order_number || `${normalized.customer_phone}_${normalized.created_at}`);
     if (!map.has(key)) map.set(key, normalized);
   });
 
@@ -197,28 +199,20 @@ export async function updateOrderStatus(orderId: string, newStatus: string): Pro
 }
 
 /** Supprime définitivement une commande de Supabase et du LocalStorage */
-export async function deleteOrder(orderId?: string, orderNumber?: string | number): Promise<boolean> {
-  // 1. Suppression dans Supabase
-  if (orderId && !orderId.startsWith("local_")) {
-    try {
-      await supabase
-        .from("orders")
-        .delete()
-        .eq("id", orderId);
-    } catch (err) {
-      console.warn("Supabase delete by id notice:", err);
-    }
-  }
+export async function deleteOrder(orderId?: string, orderNumber?: string | number, orderData?: Partial<OrderItem>): Promise<boolean> {
+  const targetId = orderId ? String(orderId) : "";
+  const targetNum = orderNumber ? String(orderNumber) : "";
 
-  if (orderNumber) {
-    try {
-      await supabase
-        .from("orders")
-        .delete()
-        .eq("order_number", String(orderNumber));
-    } catch (err) {
-      console.warn("Supabase delete by number notice:", err);
+  // 1. Suppression dans Supabase
+  try {
+    if (targetId && !targetId.startsWith("local_") && !targetId.startsWith("ord_")) {
+      await supabase.from("orders").delete().eq("id", targetId);
     }
+    if (targetNum) {
+      await supabase.from("orders").delete().eq("order_number", targetNum);
+    }
+  } catch (err) {
+    console.warn("Supabase delete notice:", err);
   }
 
   // 2. Suppression dans LocalStorage
@@ -228,14 +222,35 @@ export async function deleteOrder(orderId?: string, orderNumber?: string | numbe
       if (raw) {
         const list = JSON.parse(raw);
         const filtered = list.filter((o: any) => {
-          if (orderId && (o.id === orderId || o._id === orderId)) return false;
-          if (orderNumber && String(o.order_number) === String(orderNumber)) return false;
+          const oId = String(o.id || o._id || "");
+          const oNum = String(o.order_number || "");
+          const oPhone = String(o.customer_phone || o.phone || "");
+          const oDate = String(o.created_at || "");
+
+          if (targetId && (oId === targetId || oNum === targetId)) return false;
+          if (targetNum && (oNum === targetNum || oId === targetNum)) return false;
+          if (orderData?.customer_phone && orderData?.created_at && oPhone === orderData.customer_phone && oDate === orderData.created_at) return false;
           return true;
         });
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
       }
-    } catch {}
+    } catch (e) {
+      console.warn("LocalStorage delete notice:", e);
+    }
   }
 
+  return true;
+}
+
+/** Supprime toutes les commandes (utile pour nettoyer les tests) */
+export async function clearAllOrders(): Promise<boolean> {
+  try {
+    await supabase.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+  } catch {}
+
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    localStorage.removeItem("isivente_last_order_trigger");
+  }
   return true;
 }

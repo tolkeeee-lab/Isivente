@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllOrders, updateOrderStatus as updateStorageStatus, deleteOrder, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, updateOrderStatus as updateStorageStatus, deleteOrder, clearAllOrders, OrderItem } from "@/lib/ordersStorage";
 import { 
   Search, 
   Phone, 
@@ -16,7 +16,8 @@ import {
   Clock,
   ExternalLink,
   ChevronDown,
-  Trash2
+  Trash2,
+  Eraser
 } from "lucide-react";
 
 export default function OrdersPage() {
@@ -52,11 +53,28 @@ export default function OrdersPage() {
       return;
     }
 
-    const key = order.id || String(order.order_number);
+    const key = String(order.id || order.order_number);
     setDeletingId(key);
-    await deleteOrder(order.id, order.order_number);
-    setOrders(prev => prev.filter(o => o.id !== order.id && String(o.order_number) !== String(order.order_number)));
+    await deleteOrder(order.id, order.order_number, order);
+    setOrders(prev => prev.filter(o => {
+      if (order.id && o.id === order.id) return false;
+      if (order.order_number && String(o.order_number) === String(order.order_number)) return false;
+      if (o.created_at === order.created_at && o.customer_phone === order.customer_phone) return false;
+      return true;
+    }));
     setDeletingId(null);
+  };
+
+  const handleClearAll = async () => {
+    if (orders.length === 0) return;
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer TOUTES les ${orders.length} commandes de test ? Cette action est irréversible.`)) {
+      return;
+    }
+
+    setLoading(true);
+    await clearAllOrders();
+    setOrders([]);
+    setLoading(false);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -106,15 +124,30 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={fetchOrders}
-          disabled={loading}
-          className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 stroke-[2] ${loading ? 'animate-spin text-indigo-600' : 'text-slate-500'}`} />
-          <span>Actualiser</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {orders.length > 0 && (
+            <button
+              type="button"
+              onClick={handleClearAll}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 px-3 py-2 rounded-xl text-xs font-semibold shadow-2xs transition-all active:scale-[0.97] cursor-pointer"
+              title="Supprimer toutes les commandes de test"
+            >
+              <Eraser className="w-3.5 h-3.5 text-rose-600" />
+              <span>Vider les tests</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={fetchOrders}
+            disabled={loading}
+            className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 stroke-[2] ${loading ? 'animate-spin text-indigo-600' : 'text-slate-500'}`} />
+            <span>Actualiser</span>
+          </button>
+        </div>
       </div>
 
       {/* 📊 RUBAN HORIZONTAL DÉFILABLE DES STATUTS */}
