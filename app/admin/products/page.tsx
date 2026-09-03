@@ -58,6 +58,30 @@ export default function ProductsPage() {
         { name: "Pack Sérénité Duo (2 Brosses)", price: 24900 },
         { name: "Pack Famille (3 Brosses)", price: 34900 }
       ]
+    },
+    {
+      id: "eraclean-default",
+      title: "Purificateur d'Air & Anti-Odeurs EraClean™",
+      slug: "eraclean",
+      price: 19900,
+      image_url: "/images/eraclean-studio.jpg",
+      bundles: [
+        { name: "Pack Solo (1 Appareil)", price: 19900 },
+        { name: "Pack Duo Frigo + WC (2 Appareils)", price: 32900 },
+        { name: "Pack Grand Ménage (3 Appareils)", price: 44900 }
+      ]
+    },
+    {
+      id: "turbofan-default",
+      title: "Ventilateur Ceinture & Powerbank TurboFan™ Max",
+      slug: "turbofan",
+      price: 16900,
+      image_url: "/images/turbofan-studio.jpg",
+      bundles: [
+        { name: "Pack Solo Fraîcheur (1 TurboFan)", price: 16900 },
+        { name: "Pack Duo (2 TurboFans)", price: 27900 },
+        { name: "Pack Famille / Chantier (3 TurboFans)", price: 37900 }
+      ]
     }
   ];
 

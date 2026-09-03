@@ -66,10 +66,16 @@ export default function AdminDashboard() {
       image: "/images/umei-hero-real.jpg"
     },
     {
-      title: "Purificateur d'Air & Anti-Odeurs EraClean",
+      title: "Purificateur d'Air EraClean™ 10 Ans",
       slug: "eraclean",
       price: 19900,
-      image: "/images/eraclean-1.jpg"
+      image: "/images/eraclean-studio.jpg"
+    },
+    {
+      title: "Ventilateur Ceinture & Powerbank TurboFan™",
+      slug: "turbofan",
+      price: 16900,
+      image: "/images/turbofan-studio.jpg"
     }
   ];
 
@@ -346,7 +352,7 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
           {productsList.map((prod) => {
             const isCopied = copiedSlug === prod.slug;
             const pa = productAnalytics.find(p => p.slug === prod.slug);
