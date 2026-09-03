@@ -265,8 +265,30 @@ export async function clearAllOrders(): Promise<boolean> {
     try {
       fetch("/api/orders?clearAll=true", { method: "DELETE" }).catch(() => {});
     } catch {}
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    localStorage.removeItem("isivente_last_order_trigger");
+
+    // Nettoyage absolu du stockage local du navigateur
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch {}
+
+    // Nettoyage des caches Service Worker
+    if ("caches" in window) {
+      try {
+        const names = await caches.keys();
+        await Promise.all(names.map((n) => caches.delete(n)));
+      } catch {}
+    }
+
+    // Nettoyage IndexedDB
+    if ("indexedDB" in window && indexedDB.databases) {
+      try {
+        const dbs = await indexedDB.databases();
+        dbs.forEach((db) => {
+          if (db.name) indexedDB.deleteDatabase(db.name);
+        });
+      } catch {}
+    }
   }
   return true;
 }

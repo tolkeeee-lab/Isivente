@@ -208,16 +208,11 @@ export default function OrderRealtimeListener() {
     if (!confirm("Voulez-vous supprimer définitivement toutes les commandes de test et vider le cache ?")) return;
     await clearAllOrders();
     if (typeof window !== "undefined") {
-      localStorage.removeItem("isivente_orders_store");
-      localStorage.removeItem("isivente_last_order_trigger");
-      sessionStorage.clear();
-      if ("caches" in window) {
-        try {
-          const names = await caches.keys();
-          await Promise.all(names.map(n => caches.delete(n)));
-        } catch {}
-      }
-      window.location.reload();
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch {}
+      window.location.href = window.location.pathname + "?reset=" + Date.now();
     }
   };
 
