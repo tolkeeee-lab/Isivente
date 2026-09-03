@@ -76,6 +76,13 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
         bc.close();
       }
       localStorage.setItem("isivente_last_order_trigger", JSON.stringify({ ...payload, _t: Date.now() }));
+      
+      // Déclencher le webhook de notification mobile (Telegram / WhatsApp)
+      fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order: payload }),
+      }).catch(() => {});
     } catch (e) {
       console.warn("Realtime local trigger error:", e);
     }
