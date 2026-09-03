@@ -5,6 +5,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { 
   playOrderSound, 
+  unlockAudio,
   getSavedSoundType, 
   saveSoundType, 
   getSavedVolume, 
@@ -177,14 +178,54 @@ export default function OrderRealtimeListener() {
     playOrderSound();
   };
 
+  const triggerTestOrder = () => {
+    unlockAudio();
+    const testOrder = {
+      id: "demo_" + Date.now(),
+      order_number: "CMD-" + Math.floor(100000 + Math.random() * 900000),
+      customer_name: "Gérard Dossou",
+      customer_phone: "01 97 22 33 44",
+      total_amount: 27900,
+      product_title: "Pack Duo (2x TurboFan™ Max)",
+      city: "Cotonou (Fidjrossé)",
+      created_at: new Date().toISOString(),
+    };
+
+    if (soundEnabled) {
+      playOrderSound(selectedSound, volume);
+    }
+    sendDesktopNotification(
+      `🎉 Nouvelle commande reçue ! (27 900 FCFA)`,
+      `Gérard Dossou • Cotonou • Pack Duo TurboFan™ Max`
+    );
+    setActiveToast(testOrder);
+    setTimeout(() => setActiveToast(null), 9000);
+  };
+
   return (
     <>
       {/* BARRE D'OUTILS SONORE DANS LE HEADER */}
       <div className="flex items-center gap-1.5">
+        {/* Bouton Testeur Direct */}
+        <button
+          type="button"
+          onClick={triggerTestOrder}
+          className="px-2.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+          title="Tester le son Cha-Ching et le toast de notification"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+          <span className="hidden sm:inline">Tester l&apos;alerte</span>
+        </button>
+
         {/* Toggle On/Off rapide */}
         <button
           type="button"
-          onClick={() => setSoundEnabled(!soundEnabled)}
+          onClick={() => {
+            unlockAudio();
+            const next = !soundEnabled;
+            setSoundEnabled(next);
+            if (next) playOrderSound(selectedSound, volume);
+          }}
           className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 active:scale-95 cursor-pointer ${
             soundEnabled
               ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
@@ -211,7 +252,10 @@ export default function OrderRealtimeListener() {
         {/* Bouton Personnaliser le son ⚙️ */}
         <button
           type="button"
-          onClick={() => setShowSettingsModal(true)}
+          onClick={() => {
+            unlockAudio();
+            setShowSettingsModal(true);
+          }}
           className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95"
           title="Modifier la sonnerie d'alerte et le volume"
         >
