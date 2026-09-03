@@ -26,8 +26,10 @@ import {
   PhoneCall,
   Sliders,
   Check,
-  Play
+  Play,
+  Trash2
 } from "lucide-react";
+import { clearAllOrders } from "@/lib/ordersStorage";
 
 interface RealtimeOrderToast {
   id: string;
@@ -202,10 +204,38 @@ export default function OrderRealtimeListener() {
     setTimeout(() => setActiveToast(null), 9000);
   };
 
+  const handleHardPurge = async () => {
+    if (!confirm("Voulez-vous supprimer définitivement toutes les commandes de test et vider le cache ?")) return;
+    await clearAllOrders();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("isivente_orders_store");
+      localStorage.removeItem("isivente_last_order_trigger");
+      sessionStorage.clear();
+      if ("caches" in window) {
+        try {
+          const names = await caches.keys();
+          await Promise.all(names.map(n => caches.delete(n)));
+        } catch {}
+      }
+      window.location.reload();
+    }
+  };
+
   return (
     <>
       {/* BARRE D'OUTILS SONORE DANS LE HEADER */}
       <div className="flex items-center gap-1.5">
+        {/* Bouton Nettoyage Cache & Tests Direct */}
+        <button
+          type="button"
+          onClick={handleHardPurge}
+          className="px-2.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+          title="Vider toutes les commandes de test et purger le cache"
+        >
+          <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+          <span className="hidden md:inline">Vider les tests</span>
+        </button>
+
         {/* Bouton Testeur Direct */}
         <button
           type="button"

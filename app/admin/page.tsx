@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAllOrders, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, deleteOrder, OrderItem } from "@/lib/ordersStorage";
 import { getAnalyticsStats, getAllProductsAnalytics, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
   TrendingUp, 
@@ -18,7 +18,8 @@ import {
   Truck,
   CheckCircle2,
   XCircle,
-  ChevronRight
+  ChevronRight,
+  Trash2
 } from "lucide-react";
 
 interface Stats {
@@ -470,6 +471,7 @@ export default function AdminDashboard() {
                 <th className="py-3 px-5">Date</th>
                 <th className="py-3 px-5 text-right">Montant</th>
                 <th className="py-3 px-5 text-center">Statut</th>
+                <th className="py-3 px-5 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
@@ -481,11 +483,12 @@ export default function AdminDashboard() {
                     <td className="py-4 px-5"><div className="h-4 w-16 bg-slate-200 rounded" /></td>
                     <td className="py-4 px-5 text-right"><div className="h-4 w-20 bg-slate-200 rounded ml-auto" /></td>
                     <td className="py-4 px-5 text-center"><div className="h-5 w-24 bg-slate-200 rounded-full mx-auto" /></td>
+                    <td className="py-4 px-5 text-center"><div className="h-5 w-8 bg-slate-200 rounded mx-auto" /></td>
                   </tr>
                 ))
               ) : recentOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-slate-400">
+                  <td colSpan={6} className="py-10 text-center text-slate-400">
                     Aucune commande enregistrée pour le moment.
                   </td>
                 </tr>
@@ -511,6 +514,20 @@ export default function AdminDashboard() {
                     </td>
                     <td className="py-3.5 px-5 text-center">
                       {getStatusBadge(order.status)}
+                    </td>
+                    <td className="py-3.5 px-5 text-center">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!confirm(`Supprimer la commande de ${order.customer_name} ?`)) return;
+                          await deleteOrder(order.id, order.order_number, order);
+                          setRecentOrders(prev => prev.filter(o => o.id !== order.id && o.created_at !== order.created_at));
+                        }}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors active:scale-90 cursor-pointer"
+                        title="Supprimer cette commande"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </td>
                   </tr>
                 ))
