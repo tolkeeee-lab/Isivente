@@ -412,6 +412,34 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         </div>
       </div>
 
+      {/* ════════════════ VIDÉO DE DÉMONSTRATION ════════════════ */}
+      <section className="py-12 px-4 md:px-8 max-w-4xl mx-auto space-y-5">
+        <div className="text-center max-w-lg mx-auto">
+          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/60">
+            Démonstration Vidéo
+          </span>
+          <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
+            Voyez-le en Action
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Découvrez la puissance du TurboFan™ Max en conditions réelles.
+          </p>
+        </div>
+
+        <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 bg-slate-950">
+          <video
+            className="w-full h-auto block"
+            controls
+            playsInline
+            preload="metadata"
+            poster="/images/turbofan-studio.jpg"
+          >
+            <source src="/videos/turbofan-demo.mp4" type="video/mp4" />
+            Votre navigateur ne supporte pas la lecture vidéo.
+          </video>
+        </div>
+      </section>
+
       {/* ════════════════ LES 3 MODES D'USAGE EN IMAGES RÉELLES ════════════════ */}
       <section className="py-14 px-4 md:px-8 max-w-5xl mx-auto space-y-10">
         
