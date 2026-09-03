@@ -82,6 +82,18 @@ export default function ProductsPage() {
         { name: "Pack Duo (2 TurboFans)", price: 27900 },
         { name: "Pack Famille / Chantier (3 TurboFans)", price: 37900 }
       ]
+    },
+    {
+      id: "peeler-default",
+      title: "Éplucheur Automatique ChefPeel™ Pro",
+      slug: "peeler",
+      price: 14900,
+      image_url: "/images/peeler-hero.jpg",
+      bundles: [
+        { name: "Pack Découverte Cuisine (1 Appareil)", price: 14900 },
+        { name: "Pack Duo Sérénité (2 Appareils)", price: 24900 },
+        { name: "Pack Traiteur / Famille (3 Appareils)", price: 34900 }
+      ]
     }
   ];
 

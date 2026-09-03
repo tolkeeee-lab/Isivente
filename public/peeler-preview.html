@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChefPeel™ Pro — Éplucheur Automatique Multifonction & Épluche-Ail | Isivente Bénin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0047AB;
+      --primary-dark: #003380;
+      --accent: #F59E0B;
+      --dark: #0B1E3F;
+      --slate: #475569;
+      --bg: #FDFBF7;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .top-bar {
+      background: var(--dark);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      padding: 8px 16px;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #E2E8F0;
+      padding: 12px 24px;
+      z-index: 50;
+    }
+    .header-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--dark);
+      text-decoration: none;
+    }
+    .logo span { color: var(--primary); }
+    .btn-header {
+      background: var(--primary);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.15s;
+    }
+    .hero {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+    @media(min-width: 768px) {
+      .hero { grid-template-columns: 1fr 1.1fr; }
+    }
+    .hero-img-box {
+      background: #fff;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
+      border: 1px solid #E2E8F0;
+      position: relative;
+    }
+    .hero-img-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+    .hero-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(11,30,63,0.9);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+    .hero-badge-right {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+    }
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      line-height: 1.15;
+      font-weight: 800;
+      margin: 12px 0;
+      color: var(--dark);
+    }
+    @media(min-width: 640px) { .hero-title { font-size: 42px; } }
+    .hero-title span.c-blue { color: var(--primary); }
+    .hero-title span.c-amber { color: #D97706; }
+    .hero-lede {
+      font-size: 15px;
+      color: var(--slate);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .btn-main {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 16px 32px;
+      border-radius: 16px;
+      text-decoration: none;
+      box-shadow: 0 12px 28px -8px rgba(0,71,171,0.4);
+      transition: all 0.2s;
+    }
+    .btn-main:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    .features-grid {
+      max-width: 1080px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 10px 25px -10px rgba(0,0,0,0.05);
+    }
+    .feature-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .feature-body { padding: 20px; }
+    .feature-title { font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+    .feature-desc { font-size: 13px; color: var(--slate); line-height: 1.5; }
+    .footer {
+      background: var(--dark);
+      color: #94A3B8;
+      text-align: center;
+      padding: 36px 20px;
+      font-size: 12px;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    ⚡ LIVRAISON EXPRESS 24H–48H AU BÉNIN • PAIEMENT 100% À LA RÉCEPTION DU COLIS
+  </div>
+
+  <header>
+    <div class="header-wrap">
+      <a href="#" class="logo">ChefPeel<span>™ Pro</span></a>
+      <a href="#commander" class="btn-header">Commander — 14 900 F</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-img-box">
+        <div class="hero-badge">Ail • Pomme de terre • Pomme</div>
+        <div class="hero-badge-right">Batterie 1300 mAh</div>
+        <img src="/images/peeler-hero.jpg" alt="ChefPeel Pro">
+      </div>
+
+      <div>
+        <div style="font-size: 12px; font-weight: 700; color: #D97706; text-transform: uppercase;">★★★★★ 4.9/5 (+1 150 avis au Bénin)</div>
+        <h1 class="hero-title">
+          L'épluchage automatique, <span class="c-blue">plus simple</span> et <span class="c-amber">sans effort.</span>
+        </h1>
+        <p class="hero-lede">
+          Fini la corvée d'éplucher l'ail à la main et les doigts qui sentent pendant des jours ! En 1 seul clic, épluchez instantanément vos gousses d'ail, pommes de terre, pommes et légumes.
+        </p>
+        <a href="#commander" class="btn-main">
+          Commander maintenant — 14 900 FCFA
+        </a>
+      </div>
+    </section>
+
+    <section class="features-grid">
+      <div class="feature-card">
+        <img src="/images/peeler-avant-apres.jpg" alt="Avant Après">
+        <div class="feature-body">
+          <div class="feature-title">1. Zéro Odeur & Ail Intact</div>
+          <p class="feature-desc">Retire délicatement la peau sans écraser la chair. Vos doigts restent parfaitement propres et sans odeur tenace.</p>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <img src="/images/peeler-comment.jpg" alt="Comment ça marche">
+        <div class="feature-body">
+          <div class="feature-title">2. Prêt en 3 Étapes Express</div>
+          <p class="feature-desc">Placez les aliments, appuyez sur le bouton, récupérez vos ingrédients prêts à cuisiner en quelques secondes.</p>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <img src="/images/peeler-usages.jpg" alt="Une machine plusieurs usages">
+        <div class="feature-body">
+          <div class="feature-title">3. Rechargeable USB & 100% Hygiénique</div>
+          <p class="feature-desc">Batterie intégrée 1300 mAh, bol amovible lavable en 30 secondes sous le robinet. Garantie 1 an incluse.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p><strong>ChefPeel™ Pro Bénin</strong> • Distribué par Isivente • WhatsApp : +229 01 92 90 18 17</p>
+    <p style="margin-top: 8px;">Paiement à la livraison après inspection du colis en espèces ou Mobile Money (MTN / Moov).</p>
+  </footer>
+
+</body>
+</html>
