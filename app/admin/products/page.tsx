@@ -94,6 +94,18 @@ export default function ProductsPage() {
         { name: "Pack Duo Sérénité (2 Appareils)", price: 24900 },
         { name: "Pack Traiteur / Famille (3 Appareils)", price: 34900 }
       ]
+    },
+    {
+      id: "stabilisateur-default",
+      title: "Stabilisateur Pro-Mobile Z3 Zoom™",
+      slug: "stabilisateur",
+      price: 19900,
+      image_url: "/images/stabilisateur-hero.jpg",
+      bundles: [
+        { name: "Pack Solo Créateur (1 Kit)", price: 19900 },
+        { name: "Pack Duo Studio (2 Kits)", price: 34900 },
+        { name: "Pack Pro Équipe & Vidéaste (3 Kits)", price: 49900 }
+      ]
     }
   ];
 

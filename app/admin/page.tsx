@@ -83,6 +83,12 @@ export default function AdminDashboard() {
       slug: "peeler",
       price: 14900,
       image: "/images/peeler-hero.jpg"
+    },
+    {
+      title: "Stabilisateur Trépied Z3 Zoom™",
+      slug: "stabilisateur",
+      price: 19900,
+      image: "/images/stabilisateur-hero.jpg"
     }
   ];
 
@@ -391,7 +397,7 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
           {productsList.map((prod) => {
             const isCopied = copiedSlug === prod.slug;
             const pa = productAnalytics.find(p => p.slug === prod.slug);
