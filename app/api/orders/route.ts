@@ -145,3 +145,42 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+// 4. DELETE ORDER OR CLEAR ALL
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+    const clearAll = url.searchParams.get("clearAll");
+
+    // Purge totale mémoire serveur
+    if (clearAll === "true") {
+      global._serverOrdersStore = [];
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        try {
+          await supabase.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+        } catch {}
+      }
+      return NextResponse.json({ success: true, message: "Mémoire serveur et base de données purgées" });
+    }
+
+    // Suppression unitaire mémoire serveur
+    if (id) {
+      if (global._serverOrdersStore) {
+        global._serverOrdersStore = global._serverOrdersStore.filter((o) => o.id !== id && o.order_number !== id);
+      }
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        try {
+          await supabase.from("orders").delete().eq("id", id);
+        } catch {}
+      }
+      return NextResponse.json({ success: true, id });
+    }
+
+    return NextResponse.json({ success: false, error: "ID ou paramètre clearAll requis" }, { status: 400 });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

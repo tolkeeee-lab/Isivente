@@ -198,7 +198,7 @@ export async function updateOrderStatus(orderId: string, newStatus: string): Pro
   }
 }
 
-/** Supprime définitivement une commande de Supabase et du LocalStorage */
+/** Supprime définitivement une commande de Supabase, du Serveur et du LocalStorage */
 export async function deleteOrder(orderId?: string, orderNumber?: string | number, orderData?: Partial<OrderItem>): Promise<boolean> {
   const targetId = orderId ? String(orderId) : "";
   const targetNum = orderNumber ? String(orderNumber) : "";
@@ -215,7 +215,19 @@ export async function deleteOrder(orderId?: string, orderNumber?: string | numbe
     console.warn("Supabase delete notice:", err);
   }
 
-  // 2. Suppression dans LocalStorage
+  // 2. Suppression côté serveur (API Route)
+  if (typeof window !== "undefined") {
+    try {
+      if (targetId) {
+        fetch(`/api/orders?id=${encodeURIComponent(targetId)}`, { method: "DELETE" }).catch(() => {});
+      }
+      if (targetNum) {
+        fetch(`/api/orders?id=${encodeURIComponent(targetNum)}`, { method: "DELETE" }).catch(() => {});
+      }
+    } catch {}
+  }
+
+  // 3. Suppression dans LocalStorage
   if (typeof window !== "undefined") {
     try {
       const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -248,7 +260,11 @@ export async function clearAllOrders(): Promise<boolean> {
     await supabase.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   } catch {}
 
+  // Purge serveur
   if (typeof window !== "undefined") {
+    try {
+      fetch("/api/orders?clearAll=true", { method: "DELETE" }).catch(() => {});
+    } catch {}
     localStorage.removeItem(LOCAL_STORAGE_KEY);
     localStorage.removeItem("isivente_last_order_trigger");
   }
