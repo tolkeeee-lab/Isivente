@@ -195,3 +195,47 @@ export async function updateOrderStatus(orderId: string, newStatus: string): Pro
     console.error("Supabase update error:", error);
   }
 }
+
+/** Supprime définitivement une commande de Supabase et du LocalStorage */
+export async function deleteOrder(orderId?: string, orderNumber?: string | number): Promise<boolean> {
+  // 1. Suppression dans Supabase
+  if (orderId && !orderId.startsWith("local_")) {
+    try {
+      await supabase
+        .from("orders")
+        .delete()
+        .eq("id", orderId);
+    } catch (err) {
+      console.warn("Supabase delete by id notice:", err);
+    }
+  }
+
+  if (orderNumber) {
+    try {
+      await supabase
+        .from("orders")
+        .delete()
+        .eq("order_number", String(orderNumber));
+    } catch (err) {
+      console.warn("Supabase delete by number notice:", err);
+    }
+  }
+
+  // 2. Suppression dans LocalStorage
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (raw) {
+        const list = JSON.parse(raw);
+        const filtered = list.filter((o: any) => {
+          if (orderId && (o.id === orderId || o._id === orderId)) return false;
+          if (orderNumber && String(o.order_number) === String(orderNumber)) return false;
+          return true;
+        });
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(filtered));
+      }
+    } catch {}
+  }
+
+  return true;
+}

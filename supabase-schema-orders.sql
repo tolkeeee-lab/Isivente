@@ -36,5 +36,9 @@ CREATE POLICY "Allow public update on orders" ON public.orders
     FOR UPDATE TO anon, authenticated
     USING (true);
 
+CREATE POLICY "Allow public delete on orders" ON public.orders
+    FOR DELETE TO anon, authenticated
+    USING (true);
+
 -- Activer la réplication Realtime pour les alertes instantanées
 ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllOrders, updateOrderStatus as updateStorageStatus, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, updateOrderStatus as updateStorageStatus, deleteOrder, OrderItem } from "@/lib/ordersStorage";
 import { 
   Search, 
   Phone, 
@@ -15,7 +15,8 @@ import {
   XCircle,
   Clock,
   ExternalLink,
-  ChevronDown
+  ChevronDown,
+  Trash2
 } from "lucide-react";
 
 export default function OrdersPage() {
@@ -24,6 +25,7 @@ export default function OrdersPage() {
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -42,6 +44,19 @@ export default function OrdersPage() {
     await updateStorageStatus(id, newStatus);
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
     setUpdatingId(null);
+  };
+
+  const handleDelete = async (order: OrderItem) => {
+    const ref = order.order_number || "cette commande";
+    if (!confirm(`Supprimer définitivement la commande ${ref} (${order.customer_name}) ?`)) {
+      return;
+    }
+
+    const key = order.id || String(order.order_number);
+    setDeletingId(key);
+    await deleteOrder(order.id, order.order_number);
+    setOrders(prev => prev.filter(o => o.id !== order.id && String(o.order_number) !== String(order.order_number)));
+    setDeletingId(null);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -200,6 +215,7 @@ export default function OrdersPage() {
                 <th className="py-3.5 px-5 text-right">Montant</th>
                 <th className="py-3.5 px-5">Date</th>
                 <th className="py-3.5 px-5 text-center">Statut Commande</th>
+                <th className="py-3.5 px-5 text-center">Action</th>
               </tr>
             </thead>
 
@@ -214,11 +230,12 @@ export default function OrdersPage() {
                     <td className="py-4 px-5 text-right"><div className="h-4 w-20 bg-slate-200 rounded ml-auto" /></td>
                     <td className="py-4 px-5"><div className="h-4 w-16 bg-slate-200 rounded" /></td>
                     <td className="py-4 px-5 text-center"><div className="h-6 w-28 bg-slate-200 rounded-full mx-auto" /></td>
+                    <td className="py-4 px-5 text-center"><div className="h-6 w-8 bg-slate-200 rounded mx-auto" /></td>
                   </tr>
                 ))
               ) : filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-14 text-center text-slate-400 font-medium">
+                  <td colSpan={8} className="py-14 text-center text-slate-400 font-medium">
                     Aucune commande ne correspond aux critères sélectionnés.
                   </td>
                 </tr>
@@ -318,6 +335,19 @@ export default function OrdersPage() {
                           <option value="delivered">Livrée & Encaissée</option>
                           <option value="cancelled">Annulée</option>
                         </select>
+                      </td>
+
+                      {/* 8. SUPPRESSION DÉFINITIVE */}
+                      <td className="py-3.5 px-5 text-center whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(order)}
+                          disabled={deletingId === (order.id || String(order.order_number))}
+                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-all duration-150 active:scale-90 cursor-pointer disabled:opacity-40"
+                          title="Supprimer définitivement cette commande"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </td>
 
                     </tr>
