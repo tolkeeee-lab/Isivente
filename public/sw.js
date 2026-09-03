@@ -59,3 +59,39 @@ self.addEventListener("fetch", (event) => {
       })
   );
 });
+
+// Écouteur de clic sur la notification mobile pour ouvrir le dashboard
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes("/admin") && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow("/admin");
+      }
+    })
+  );
+});
+
+// Écouteur d'affichage de notification depuis le Service Worker
+self.addEventListener("push", (event) => {
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      const title = data.title || "🎉 Nouvelle Commande Isivente !";
+      const options = {
+        body: data.body || "Vous avez reçu une nouvelle commande.",
+        icon: "/icons/icon-192x192.png",
+        badge: "/icons/icon-192x192.png",
+        vibrate: [200, 100, 200, 100, 200],
+        tag: "order_" + Date.now(),
+        data: { url: "/admin" }
+      };
+      event.waitUntil(self.registration.showNotification(title, options));
+    } catch {}
+  }
+});

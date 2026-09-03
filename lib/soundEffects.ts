@@ -329,17 +329,44 @@ export async function requestNotificationPermission(): Promise<boolean> {
 }
 
 /**
- * Déclenche une notification système de bureau/mobile
+ * Déclenche une notification système de bureau/mobile avec support Service Worker PWA
  */
 export function sendDesktopNotification(title: string, body: string, icon?: string) {
   if (typeof window === "undefined" || !("Notification" in window)) return;
+  
   if (Notification.permission === "granted") {
-    try {
-      new Notification(title, {
-        body,
-        icon: icon || "/icons/icon-192x192.png",
-        badge: "/icons/icon-192x192.png",
-      });
-    } catch {}
+    const iconUrl = icon || "/icons/icon-192x192.png";
+    const options = {
+      body,
+      icon: iconUrl,
+      badge: iconUrl,
+      vibrate: [200, 100, 200, 100, 200],
+      tag: "order_" + Date.now(),
+      requireInteraction: true,
+    };
+
+    // 1. Essayer via le Service Worker PWA (nécessaire sur mobile / Android / PWA)
+    if ("serviceWorker" in navigator && navigator.serviceWorker.ready) {
+      navigator.serviceWorker.ready
+        .then((registration) => {
+          registration.showNotification(title, options);
+        })
+        .catch(() => {
+          // Fallback natif direct
+          try {
+            new Notification(title, options);
+          } catch {}
+        });
+    } else {
+      // 2. Fallback direct Window Notification
+      try {
+        new Notification(title, options);
+      } catch {}
+    }
+
+    // 3. Vibreur direct du smartphone
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate([150, 80, 150, 80, 300]);
+    }
   }
 }
