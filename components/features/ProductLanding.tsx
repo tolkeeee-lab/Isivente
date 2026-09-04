@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
   Check,
   ArrowRight,
@@ -57,6 +58,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [customerPhone2, setCustomerPhone2] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
+  const [includeBump, setIncludeBump] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -149,6 +151,9 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
   const selectedBundle = product?.bundles?.[selectedBundleIdx] || null;
+  const upsellConfig = getProductUpsellConfig(slug, product?.title, product?.price);
+  const bumpPrice = includeBump && upsellConfig.bump ? upsellConfig.bump.price : 0;
+  const totalWithBump = (selectedBundle ? selectedBundle.price : (product?.price || 0)) + bumpPrice;
 
   /* ─── Order submission ─── */
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,12 +166,14 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
     setIsSubmitting(true);
     try {
-      await saveNewOrder({
+      const finalBundleName = selectedBundle.name + (includeBump && upsellConfig.bump ? ` + [BUMP] ${upsellConfig.bump.title}` : "");
+
+      const createdOrder = await saveNewOrder({
         product_slug: slug,
         product_title: product.title,
-        bundle_name: selectedBundle.name,
+        bundle_name: finalBundleName,
         quantity: selectedBundle.quantity || 1,
-        total_amount: selectedBundle.price,
+        total_amount: totalWithBump,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
         shipping_city: city,
@@ -180,7 +187,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
       trackPurchase({
         content_name: product.title,
         content_ids: [slug],
-        value: selectedBundle.price,
+        value: totalWithBump,
         currency: "XOF",
         num_items: selectedBundle.quantity || 1,
       });
@@ -188,7 +195,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
       try {
         sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
           title: product.title,
-          price: selectedBundle.price,
+          price: totalWithBump,
           quantity: selectedBundle.quantity || 1,
         }));
       } catch {}
@@ -196,7 +203,13 @@ export default function ProductLanding({ slug }: { slug: string }) {
       clickedRef.current = true;
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
-      window.location.href = `/p/${slug}/success?phone=${encodeURIComponent(customerPhone)}`;
+
+      const orderRef = createdOrder?.order_number || "";
+      if (upsellConfig.upsell) {
+        window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}`;
+      } else {
+        window.location.href = `/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}`;
+      }
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
@@ -597,6 +610,50 @@ export default function ProductLanding({ slug }: { slug: string }) {
               </div>
             </div>
 
+            {/* ORDER BUMP OPTIONNEL PRE-PURCHASE */}
+            {upsellConfig.bump && (
+              <div 
+                onClick={() => setIncludeBump(!includeBump)}
+                className={`p-4 rounded-2xl border-2 transition-all duration-150 cursor-pointer select-none ${
+                  includeBump
+                    ? "bg-amber-50/90 border-amber-400 shadow-sm ring-2 ring-amber-400/20"
+                    : "bg-slate-50/80 border-dashed border-slate-300 hover:border-slate-400 hover:bg-slate-50"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="pt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={includeBump}
+                      onChange={(e) => setIncludeBump(e.target.checked)}
+                      className="w-5 h-5 rounded-md text-amber-600 focus:ring-amber-500 border-slate-300 cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md">
+                        {upsellConfig.bump.badge || "OFFRE EXCLUSIVE"}
+                      </span>
+                      <span className="font-bold text-xs text-slate-900">
+                        {upsellConfig.bump.title}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-snug">
+                      {upsellConfig.bump.subtitle}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2 font-mono text-xs">
+                      <span className="line-through text-slate-400 tabular-nums">
+                        {fmt(upsellConfig.bump.originalPrice)} FCFA
+                      </span>
+                      <span className="font-bold text-emerald-700 tabular-nums">
+                        +{fmt(upsellConfig.bump.price)} FCFA
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Submit */}
             <button
               type="submit"
@@ -610,8 +667,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
                 <>
                   <Check className="w-5 h-5 stroke-[3]" />
                   <span>
-                    Confirmer Ma Commande (
-                    {selectedBundle ? fmt(selectedBundle.price) : fmt(product.price)} FCFA)
+                    Confirmer Ma Commande ({fmt(totalWithBump)} FCFA)
                   </span>
                 </>
               )}

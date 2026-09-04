@@ -117,12 +117,13 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         status: 'pending' as const
       };
 
-      await saveNewOrder(orderData);
+      const res = await saveNewOrder(orderData);
       // Marquer la session comme cliquée (conversion)
       clickedRef.current = true;
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug || "umei", duration, true, sessionIdRef.current);
-      window.location.href = `/p/${slug}/success`;
+      const orderNum = res?.order_number || "";
+      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}`;
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");

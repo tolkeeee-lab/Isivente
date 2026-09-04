@@ -214,9 +214,9 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
     }
     setSubmitting(true);
     try {
-      await saveNewOrder({
-        product_slug: slug,
-        product_title: "Purificateur d'Air & Anti-Odeurs EraClean",
+      const res = await saveNewOrder({
+        product_slug: "eraclean",
+        product_title: "Purificateur d'Air & Anti-Odeurs EraClean™",
         bundle_id: selected.id,
         bundle_name: selected.name,
         quantity: selected.quantity,
@@ -233,7 +233,8 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
       clickedRef.current = true;
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
-      window.location.href = `/p/${slug}/success`;
+      const orderNum = res?.order_number || "";
+      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone)}`;
     } catch {
       alert("Erreur. Veuillez réessayer.");
       setSubmitting(false);

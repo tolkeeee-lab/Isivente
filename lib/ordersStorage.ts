@@ -209,6 +209,77 @@ export async function updateOrderStatus(orderId: string, newStatus: string): Pro
   }
 }
 
+/**
+ * Met à jour une commande existante lors de l'acceptation d'un Upsell ou d'un Downsell
+ */
+export async function upgradeOrderWithUpsell(
+  orderRef: string,
+  additionalAmount: number,
+  addedItemTitle: string
+): Promise<boolean> {
+  if (!orderRef || additionalAmount <= 0) return false;
+
+  try {
+    // 1. Récupérer la commande dans Supabase
+    const isId = orderRef.includes("-") && orderRef.length > 30; // UUID check
+    let query = supabase.from("orders").select("*");
+    if (isId) {
+      query = query.eq("id", orderRef);
+    } else {
+      query = query.eq("order_number", orderRef);
+    }
+
+    const { data, error } = await query.single();
+    if (data && !error) {
+      const newAmount = (data.total_amount || 0) + additionalAmount;
+      const newBundle = `${data.bundle_name || "Pack initial"} + [OFFRE VIP] ${addedItemTitle}`;
+
+      await supabase
+        .from("orders")
+        .update({
+          total_amount: newAmount,
+          bundle_name: newBundle,
+        })
+        .eq("id", data.id);
+    }
+
+    // 2. Mettre à jour le LocalStorage de secours
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (raw) {
+        try {
+          const list = JSON.parse(raw);
+          const updated = list.map((o: any) => {
+            if (o.order_number === orderRef || o.id === orderRef) {
+              return {
+                ...o,
+                total_amount: (o.total_amount || 0) + additionalAmount,
+                bundle_name: `${o.bundle_name || "Pack initial"} + [OFFRE VIP] ${addedItemTitle}`,
+              };
+            }
+            return o;
+          });
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+        } catch {}
+      }
+
+      // Notifier le tableau de bord
+      try {
+        if ("BroadcastChannel" in window) {
+          const bc = new BroadcastChannel("isivente_orders_channel");
+          bc.postMessage({ type: "order_updated", orderRef });
+          bc.close();
+        }
+      } catch {}
+    }
+
+    return true;
+  } catch (err) {
+    console.error("upgradeOrderWithUpsell error:", err);
+    return false;
+  }
+}
+
 /** Supprime définitivement une commande de Supabase, du Serveur et du LocalStorage */
 export async function deleteOrder(orderId?: string, orderNumber?: string | number, orderData?: Partial<OrderItem>): Promise<boolean> {
   const targetId = orderId ? String(orderId) : "";
