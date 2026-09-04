@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -40,6 +40,7 @@ interface ProductData {
   price: number;
   original_price?: number;
   image_url: string;
+  images?: Array<{ url: string; alt?: string } | string>;
   bundles: ProductBundle[];
   whatsapp_number?: string;
   features?: { icon?: string; title: string; description: string }[];
@@ -62,6 +63,24 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [includeBump, setIncludeBump] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [activeImgIdx, setActiveImgIdx] = useState(0);
+
+  const imagesList = useMemo(() => {
+    if (!product) return [];
+    if (product.images && product.images.length > 0) {
+      return product.images.map((img: any) => (typeof img === "string" ? img : img.url));
+    }
+    return product.image_url ? [product.image_url] : ["/images/default-hero.jpg"];
+  }, [product]);
+
+  // Autoplay carrousel photos toutes les 4.5s
+  useEffect(() => {
+    if (imagesList.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveImgIdx((prev) => (prev + 1) % imagesList.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [imagesList.length]);
 
   // Analytics
   const sessionIdRef = useRef(
@@ -329,19 +348,37 @@ export default function ProductLanding({ slug }: { slug: string }) {
       <section className="pt-8 md:pt-16 pb-0 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
 
-          {/* Image */}
-          <div className="md:col-span-5 flex justify-center items-center order-1">
-            <div className="relative w-full max-w-[340px] sm:max-w-[400px] mx-auto">
+          {/* Image / Carrousel */}
+          <div className="md:col-span-5 flex flex-col justify-center items-center order-1 gap-3">
+            <div className="relative w-full max-w-[340px] sm:max-w-[400px] mx-auto overflow-hidden rounded-[28px]">
               <img
-                src={product.image_url}
+                key={activeImgIdx}
+                src={imagesList[activeImgIdx] || product.image_url}
                 alt={product.title}
-                className="rounded-[28px] w-full shadow-[0_20px_50px_-20px_rgba(0,0,0,0.15)] object-cover border border-slate-200/60"
+                className="rounded-[28px] w-full aspect-square shadow-[0_20px_50px_-20px_rgba(0,0,0,0.15)] object-cover border border-slate-200/60 transition-all duration-300 animate-[fadeIn_200ms_ease-in-out]"
               />
               {/* Price badge */}
               <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md border border-slate-200 px-3 py-1.5 rounded-full text-sm font-mono font-bold text-indigo-700 shadow-sm tabular-nums">
                 {fmt(product.price)} FCFA
               </div>
             </div>
+
+            {/* Pagination dots if multiple images */}
+            {imagesList.length > 1 && (
+              <div className="flex items-center gap-2">
+                {imagesList.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImgIdx(idx)}
+                    className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
+                      activeImgIdx === idx ? "w-7 bg-indigo-600" : "w-2 bg-slate-300 hover:bg-slate-400"
+                    }`}
+                    aria-label={`Photo ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Text content */}

@@ -158,6 +158,14 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  // Autoplay carrousel d'images HD toutes les 4.5s
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
   const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
   const startTimeRef = useRef(Date.now());
   const clickedRef = useRef(false);

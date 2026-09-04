@@ -207,19 +207,35 @@ export default function PeelerLanding({ slug }: { slug: string }) {
     document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
   }, [slug]);
 
-  const nextSlide = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setSlide((s) => (s + 1) % CAROUSEL_SLIDES.length);
-    setTimeout(() => setIsAnimating(false), 250);
-  };
+  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const prevSlide = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setSlide((s) => (s - 1 + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
-    setTimeout(() => setIsAnimating(false), 250);
-  };
+  const goToSlide = useCallback(
+    (idx: number) => {
+      if (isAnimating) return;
+      setIsAnimating(true);
+      setSlide((idx + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
+      setTimeout(() => setIsAnimating(false), 300);
+    },
+    [isAnimating]
+  );
+
+  const nextSlide = useCallback(() => {
+    goToSlide(slide + 1);
+  }, [goToSlide, slide]);
+
+  const prevSlide = useCallback(() => {
+    goToSlide(slide - 1);
+  }, [goToSlide, slide]);
+
+  useEffect(() => {
+    autoplayRef.current = setInterval(() => {
+      goToSlide(slide + 1);
+    }, 4500);
+
+    return () => {
+      if (autoplayRef.current) clearInterval(autoplayRef.current);
+    };
+  }, [slide, goToSlide]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -349,7 +365,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
                 <button
                   key={s.label}
                   type="button"
-                  onClick={() => setSlide(idx)}
+                  onClick={() => goToSlide(idx)}
                   className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
                     slide === idx ? "w-8 bg-[#0047AB]" : "w-2 bg-slate-300 hover:bg-slate-400"
                   }`}

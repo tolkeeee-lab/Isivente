@@ -204,19 +204,28 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
     document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
   }, [slug]);
 
-  const nextSlide = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setSlide((s) => (s + 1) % CAROUSEL_SLIDES.length);
-    setTimeout(() => setIsAnimating(false), 250);
-  };
+  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const prevSlide = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setSlide((s) => (s - 1 + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
-    setTimeout(() => setIsAnimating(false), 250);
-  };
+  const goToSlide = useCallback(
+    (idx: number) => {
+      if (isAnimating) return;
+      setIsAnimating(true);
+      setSlide((idx + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
+      setTimeout(() => setIsAnimating(false), 350);
+    },
+    [isAnimating]
+  );
+
+  /* Auto-play régulier 4.5s comme EraClean */
+  useEffect(() => {
+    autoplayRef.current = setInterval(() => goToSlide(slide + 1), 4500);
+    return () => {
+      if (autoplayRef.current) clearInterval(autoplayRef.current);
+    };
+  }, [slide, goToSlide]);
+
+  const nextSlide = () => goToSlide(slide + 1);
+  const prevSlide = () => goToSlide(slide - 1);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
