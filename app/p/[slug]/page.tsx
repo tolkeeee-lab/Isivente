@@ -3,6 +3,7 @@ import EraCleanLanding from "@/components/features/EraCleanLanding";
 import TurboFanLanding from "@/components/features/TurboFanLanding";
 import PeelerLanding from "@/components/features/PeelerLanding";
 import StabilizerLanding from "@/components/features/StabilizerLanding";
+import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -21,6 +22,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (slug === "stabilisateur" || slug === "trepied" || slug === "gimbal" || slug === "z3") {
     return <StabilizerLanding slug="stabilisateur" />;
+  }
+
+  if (slug === "veilleuse" || slug === "projecteur" || slug === "galaxie" || slug === "friosz" || slug === "veilleuse-3d") {
+    return <VeilleuseLanding slug="veilleuse" />;
   }
 
   return <ProductLanding slug={slug} />;
