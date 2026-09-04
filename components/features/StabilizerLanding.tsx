@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
 interface ProductBundle {
   id: string;
@@ -136,6 +138,10 @@ const FAQ_ITEMS = [
 
 export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: string }) {
   const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[1]);
+  const [includeBump, setIncludeBump] = useState(false);
+  const upsellConfig = getProductUpsellConfig(slug || "stabilisateur");
+  const bumpOffer = upsellConfig?.bump;
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -165,7 +171,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
   }, [slug]);
 
   const scrollToOrder = () => {
-    const el = document.getElementById("order-form-section");
+    const el = document.getElementById("commander");
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -178,13 +184,17 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
 
     setIsSubmitting(true);
     try {
+      const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
+      const finalTotal = selectedBundle.price + bumpPrice;
+      const finalBundleName = selectedBundle.name + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+
       const orderPayload = {
         product_slug: slug,
         product_title: "Stabilisateur Pro-Mobile Z3 Zoom™",
         bundle_id: selectedBundle.id,
-        bundle_name: selectedBundle.name,
+        bundle_name: finalBundleName,
         quantity: selectedBundle.quantity,
-        total_amount: selectedBundle.price,
+        total_amount: finalTotal,
         customer_name: customerName || "Client",
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
         shipping_city: city || "Cotonou",
@@ -199,13 +209,11 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
 
-      setOrderInfo(res || orderPayload);
-      setOrderSuccess(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const orderNum = res?.order_number || "";
+      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}`;
     } catch (err) {
       console.error("Order error:", err);
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -560,131 +568,31 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
           </div>
         </section>
 
-        {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE COD LIGHT */}
-        <section id="order-form-section" className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-xl max-w-2xl mx-auto">
-          <div className="text-center space-y-2 mb-8">
-            <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              Livraison Express Bénin (24h - 48h)
-            </span>
-            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
-              Commandez maintenant, payez à la livraison
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm">
-              Remplissez ce formulaire en 30 secondes. Notre livreur vous contactera avant de passer.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* RÉCAPITULATIF PACK SÉLECTIONNÉ */}
-            <div className="bg-slate-50 border border-amber-300 p-4 rounded-2xl flex items-center justify-between shadow-sm">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-amber-700 font-bold">Pack sélectionné</span>
-                <div className="font-bold text-sm text-slate-900">{selectedBundle.name}</div>
-              </div>
-              <div className="font-mono font-bold text-lg text-amber-600">
-                {new Intl.NumberFormat("fr-FR").format(selectedBundle.price)} FCFA
-              </div>
-            </div>
-
-            {/* NOM & PRÉNOM */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Nom & Prénom <span className="text-amber-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Ex : Koffi Mensah"
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all font-medium"
-              />
-            </div>
-
-            {/* NUMÉRO DE TÉLÉPHONE (WHATSAPP / APPEL) */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Numéro de Téléphone (WhatsApp / Appel Livreur) <span className="text-amber-500">*</span>
-              </label>
-              <input
-                type="tel"
-                required
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                placeholder="Ex : 01 97 00 00 00"
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all font-mono font-semibold"
-              />
-            </div>
-
-            {/* DEUXIÈME NUMÉRO OPTIONNEL */}
-            <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1.5">
-                Deuxième numéro en cas d&apos;indisponibilité (Optionnel)
-              </label>
-              <input
-                type="tel"
-                value={customerPhone2}
-                onChange={(e) => setCustomerPhone2(e.target.value)}
-                placeholder="Ex : 01 95 00 00 00"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-slate-400 transition-all font-mono"
-              />
-            </div>
-
-            {/* VILLE & QUARTIER */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Ville / Commune <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Ex : Cotonou, Calavi, Parakou..."
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all font-medium"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Quartier & Précision Adresse <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Ex : Fidjrossé, près du carrefour..."
-                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all font-medium"
-                />
-              </div>
-            </div>
-
-            {/* BOUTON DE SOUMISSION COD */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-amber-500/25 active:scale-[0.98] transition-all text-sm uppercase tracking-wider cursor-pointer disabled:opacity-50 mt-4"
-            >
-              {isSubmitting ? (
-                <span>Enregistrement en cours...</span>
-              ) : (
-                <>
-                  <Check className="w-5 h-5 stroke-[3]" />
-                  <span>Confirmer Ma Commande ({new Intl.NumberFormat("fr-FR").format(selectedBundle.price)} FCFA)</span>
-                </>
-              )}
-            </button>
-
-            <div className="text-center text-[11px] text-slate-500 pt-2 flex items-center justify-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Garantie Satisfait ou Échangé sous 14 jours • Paiement à la réception</span>
-            </div>
-
-          </form>
-        </section>
+        {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI) */}
+        <UmeiStyleOrderSection
+          productSlug={slug}
+          productTitle="Stabilisateur Pro-Mobile Z3 Zoom™"
+          bundles={BUNDLES}
+          selectedBundle={selectedBundle}
+          onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
+          customerName={customerName}
+          setCustomerName={setCustomerName}
+          customerPhone={customerPhone}
+          setCustomerPhone={setCustomerPhone}
+          customerPhone2={customerPhone2}
+          setCustomerPhone2={setCustomerPhone2}
+          city={city}
+          setCity={setCity}
+          address={address}
+          setAddress={setAddress}
+          includeBump={includeBump}
+          setIncludeBump={setIncludeBump}
+          bumpOffer={bumpOffer}
+          isSubmitting={isSubmitting}
+          onSubmit={handleSubmit}
+          accentColor="#F59E0B"
+          whatsappNumber="2290192901817"
+        />
 
         {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
         <section className="space-y-6 pt-4">
@@ -743,18 +651,6 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
         </section>
 
       </main>
-
-      {/* 🌟 BOUTON FLOTTANT WHATSAPP ASSISTANCE */}
-      <a
-        href="https://wa.me/2290192901817?text=Bonjour%20Isivente%2C%20j%27ai%20une%20question%20sur%20le%20Stabilisateur%20Z3%20Zoom"
-        target="_blank"
-        rel="noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 p-4 rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs tracking-wide transition-all duration-150 active:scale-90 hover:scale-105"
-        title="Discuter avec un conseiller sur WhatsApp"
-      >
-        <MessageSquare className="w-5 h-5 fill-current" />
-        <span className="hidden sm:inline">Besoin d&apos;aide ?</span>
-      </a>
 
       {/* 🌟 FOOTER */}
       <footer className="border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-600 space-y-2">

@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import { 
   Check, 
   ArrowRight, 
@@ -59,6 +61,10 @@ const BUNDLES: ProductBundle[] = [
 
 export default function UmeiLanding({ slug }: { slug: string }) {
   const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[1]);
+  const [includeBump, setIncludeBump] = useState(false);
+  const upsellConfig = getProductUpsellConfig(slug || "umei");
+  const bumpOffer = upsellConfig?.bump;
+
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
@@ -101,13 +107,17 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
     setIsSubmitting(true);
     try {
+      const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
+      const finalTotal = selectedBundle.price + bumpPrice;
+      const finalBundleName = selectedBundle.name + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+
       const orderData = {
         product_slug: slug || "umei",
         product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
         bundle_id: selectedBundle.id,
-        bundle_name: selectedBundle.name,
+        bundle_name: finalBundleName,
         quantity: selectedBundle.quantity,
-        total_amount: selectedBundle.price,
+        total_amount: finalTotal,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
         shipping_city: city,
@@ -407,181 +417,31 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 📝 FORMULAIRE DE COMMANDE DIRECT (COD MOBILE-FIRST & CENTRÉ) */}
-      <section id="commander" className="py-10 px-3 sm:px-6 md:px-8 max-w-[860px] mx-auto w-full overflow-hidden">
-        <div className="bg-gradient-to-b from-white to-[#F5F0FC] rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 md:p-10 shadow-[0_20px_50px_-15px_rgba(139,111,224,0.35)] border-2 border-[#B9A6F0]">
-          
-          <div className="text-center mb-6 sm:mb-8">
-            <span className="bg-gradient-to-r from-[#FF5C93] to-[#8B6FE0] text-white text-[10.5px] sm:text-[11.5px] font-extrabold uppercase tracking-wider py-1 px-3 sm:px-4 rounded-full inline-block mb-2.5">
-              ⚡ Paiement à la livraison
-            </span>
-            <h2 className="font-display font-bold text-xl sm:text-3xl text-[#241B36] mb-1.5">
-              Passe ta commande en 30 secondes
-            </h2>
-            <p className="text-[#6B5F87] text-xs sm:text-sm font-medium max-w-md mx-auto">
-              Remplis simplement tes coordonnées. Tu règleras directement en espèces au livreur après réception de ton colis.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-            
-            {/* CHOIX DES PACKS */}
-            <div>
-              <label className="font-bold text-xs sm:text-sm text-[#241B36] block mb-2.5 text-left">
-                1. Choisis ton pack :
-              </label>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {BUNDLES.map((b) => (
-                  <div
-                    key={b.id}
-                    onClick={() => setSelectedBundle(b)}
-                    className={`border-2 rounded-2xl p-3.5 text-center cursor-pointer relative transition-all ${
-                      selectedBundle.id === b.id
-                        ? "border-[#FF5C93] bg-[#FF5C93]/5 shadow-[0_8px_20px_-8px_rgba(255,92,147,0.35)] scale-[1.01]"
-                        : "border-[#E5DEFA] bg-white hover:border-[#B9A6F0]"
-                    }`}
-                  >
-                    {b.badge && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF5C93] text-white text-[9.5px] sm:text-[10px] font-extrabold py-0.5 px-2.5 rounded-full whitespace-nowrap">
-                        {b.badge}
-                      </span>
-                    )}
-                    <div className="font-display font-bold text-xs sm:text-[14px] text-[#241B36] mt-1">
-                      {b.name}
-                    </div>
-                    <div className="font-display font-extrabold text-xl sm:text-2xl text-[#FF5C93] my-0.5">
-                      {b.price.toLocaleString("fr-FR")} F
-                    </div>
-                    <div className="text-[11px] text-[#6B5F87] line-through font-medium">
-                      {b.original_price.toLocaleString("fr-FR")} F
-                    </div>
-                    <div className="text-[10.5px] text-[#6B5F87] mt-1 font-medium">
-                      {b.description}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* COORDONNÉES */}
-            <div>
-              <label className="font-bold text-xs sm:text-sm text-[#241B36] block mb-2.5 text-left">
-                2. Tes informations de livraison :
-              </label>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1 text-left">
-                  <label className="text-[11px] sm:text-xs font-bold text-[#241B36]">
-                    Ton Nom & Prénom <span className="text-[#FF5C93]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="Ex: Amina Gomez"
-                    className="w-full p-3 rounded-xl border border-[#D8CBEF] text-xs sm:text-sm bg-white text-[#241B36] focus:border-[#FF5C93] outline-none transition-colors"
-                  />
-                </div>
-
-                <div className="space-y-1 text-left">
-                  <label className="text-[11px] sm:text-xs font-bold text-[#241B36]">
-                    Téléphone WhatsApp (Principal) <span className="text-[#FF5C93]">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="Ex: 97 00 00 00"
-                    className="w-full p-3 rounded-xl border border-[#D8CBEF] text-xs sm:text-sm bg-white text-[#241B36] focus:border-[#FF5C93] outline-none transition-colors"
-                  />
-                </div>
-
-                <div className="space-y-1 text-left">
-                  <label className="text-[11px] sm:text-xs font-bold text-[#241B36]">
-                    Deuxième Numéro (Au cas où)
-                  </label>
-                  <input
-                    type="tel"
-                    value={customerPhone2}
-                    onChange={(e) => setCustomerPhone2(e.target.value)}
-                    placeholder="Ex: 95 00 00 00"
-                    className="w-full p-3 rounded-xl border border-[#D8CBEF] text-xs sm:text-sm bg-white text-[#241B36] focus:border-[#FF5C93] outline-none transition-colors"
-                  />
-                </div>
-
-                <div className="space-y-1 text-left">
-                  <label className="text-[11px] sm:text-xs font-bold text-[#241B36]">
-                    Ville de livraison <span className="text-[#FF5C93]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    placeholder="Ex: Cotonou, Calavi, Porto-Novo..."
-                    className="w-full p-3 rounded-xl border border-[#D8CBEF] text-xs sm:text-sm bg-white text-[#241B36] focus:border-[#FF5C93] outline-none transition-colors"
-                  />
-                </div>
-
-                <div className="sm:col-span-2 space-y-1 text-left">
-                  <label className="text-[11px] sm:text-xs font-bold text-[#241B36]">
-                    Quartier & Repère précis <span className="text-[#FF5C93]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Ex: Haie Vive, 2ème ruelle après la pharmacie..."
-                    className="w-full p-3 rounded-xl border border-[#D8CBEF] text-xs sm:text-sm bg-white text-[#241B36] focus:border-[#FF5C93] outline-none transition-colors"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* RÉCAPITULATIF */}
-            <div className="bg-[#EEE6FA] rounded-xl p-3.5 border border-[#8B6FE0]/25 space-y-1.5 text-left">
-              <div className="flex justify-between text-xs text-[#6B5F87] font-medium">
-                <span>Pack sélectionné :</span>
-                <strong className="text-[#241B36] truncate max-w-[180px] sm:max-w-none">{selectedBundle.name}</strong>
-              </div>
-              <div className="flex justify-between text-xs text-[#6B5F87] font-medium">
-                <span>Livraison :</span>
-                <strong className="text-[#2E855C]">24h–48h (Gratuite)</strong>
-              </div>
-              <div className="flex justify-between text-sm sm:text-base font-extrabold text-[#241B36] pt-1.5 border-t border-[#8B6FE0]/20">
-                <span>Total à régler au livreur :</span>
-                <span className="text-[#FF5C93]">{selectedBundle.price.toLocaleString("fr-FR")} FCFA</span>
-              </div>
-            </div>
-
-            {/* BOUTON */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full min-h-[50px] bg-gradient-to-r from-[#FF5C93] to-[#E13D74] text-white p-3.5 rounded-xl font-display font-extrabold text-sm sm:text-base shadow-[0_12px_25px_-8px_rgba(255,92,147,0.6)] hover:-translate-y-0.5 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <span>Validation de ta commande...</span>
-              ) : (
-                <>
-                  <span>Je valide ma commande (Paiement à la livraison)</span>
-                  <ArrowRight className="w-4 h-4 shrink-0" />
-                </>
-              )}
-            </button>
-
-            <p className="text-center text-[11px] text-[#6B5F87] font-medium">
-              🔒 Données strictement confidentielles réservées à la livraison.
-            </p>
-
-          </form>
-
-        </div>
-      </section>
+      {/* 📝 FORMULAIRE DE COMMANDE DIRECT (MODÈLE UMÉI AVEC ORDER BUMP) */}
+      <UmeiStyleOrderSection
+        productSlug={slug || "umei"}
+        productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
+        bundles={BUNDLES}
+        selectedBundle={selectedBundle}
+        onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
+        customerName={customerName}
+        setCustomerName={setCustomerName}
+        customerPhone={customerPhone}
+        setCustomerPhone={setCustomerPhone}
+        customerPhone2={customerPhone2}
+        setCustomerPhone2={setCustomerPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        includeBump={includeBump}
+        setIncludeBump={setIncludeBump}
+        bumpOffer={bumpOffer}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+        accentColor="#FF5C93"
+        whatsappNumber="2290192901817"
+      />
 
       {/* 💬 SECTION AVIS ("On te laisse pas juste sur parole.") */}
       <section id="avis" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
@@ -683,34 +543,6 @@ export default function UmeiLanding({ slug }: { slug: string }) {
           </button>
         </div>
       </section>
-
-      {/* 📱 STICKY MOBILE BAR */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-[#8B6FE0]/20 p-2.5 px-4 shadow-[0_-8px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-2 max-w-full overflow-hidden">
-        <div>
-          <div className="text-[10px] text-[#6B5F87] font-bold">Total à régler :</div>
-          <div className="font-display font-extrabold text-base text-[#FF5C93] leading-none">
-            {selectedBundle.price.toLocaleString("fr-FR")} F
-          </div>
-        </div>
-        <button
-          onClick={() => scrollToSection("commander")}
-          className="bg-[#FF5C93] text-white font-bold text-xs py-2.5 px-5 rounded-full shadow-md hover:bg-[#E13D74] transition-all flex items-center gap-1.5 cursor-pointer"
-        >
-          <span>Commander</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* 💬 BOUTON FLOATING WHATSAPP ASSISTANCE (+229 01 92 90 18 17) */}
-      <a
-        href={`https://wa.me/2290192901817?text=${encodeURIComponent("Bonjour ! J'ai une question concernant la brosse uméi.")}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-16 md:bottom-6 right-4 z-40 bg-emerald-500 hover:bg-emerald-600 text-white p-3 rounded-full shadow-2xl transition-all hover:scale-110 flex items-center justify-center cursor-pointer border-2 border-white"
-        title="Besoin d'aide ? Écrivez-nous sur WhatsApp (+229 01 92 90 18 17)"
-      >
-        <MessageCircle className="w-6 h-6 fill-white text-emerald-500" />
-      </a>
 
       {/* 🦶 FOOTER */}
       <footer className="py-6 px-4 border-t border-[#8B6FE0]/15 max-w-[1180px] mx-auto w-full overflow-hidden">

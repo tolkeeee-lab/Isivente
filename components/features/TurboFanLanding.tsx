@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
   Check,
   ArrowRight,
@@ -151,10 +153,15 @@ const fmt = (n: number) =>
 /* ─────────────────────────────────────────── COMPONENT */
 export default function TurboFanLanding({ slug }: { slug: string }) {
   const [selected, setSelected] = useState<Bundle>(BUNDLES[1]);
+  const [includeBump, setIncludeBump] = useState(false);
+  const upsellConfig = getProductUpsellConfig("turbofan");
+  const bumpOffer = upsellConfig?.bump;
+
   const [slide, setSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [phone2, setPhone2] = useState("");
   const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -214,22 +221,25 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || !address.trim()) {
-      setErrorMsg("Veuillez renseigner votre nom, téléphone et adresse de livraison.");
+      alert("Veuillez renseigner votre nom, téléphone et adresse de livraison.");
       return;
     }
-    setErrorMsg("");
     setSubmitting(true);
 
     try {
+      const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
+      const finalTotal = selected.price + bumpPrice;
+      const finalBundleName = selected.name + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+
       const order = await saveNewOrder({
         product_slug: slug,
         product_title: "TurboFan™ Max — Ventilateur Ceinture & Powerbank",
         bundle_id: selected.id,
-        bundle_name: selected.name,
+        bundle_name: finalBundleName,
         quantity: selected.quantity,
-        total_amount: selected.price,
+        total_amount: finalTotal,
         customer_name: name.trim(),
-        customer_phone: phone.trim(),
+        customer_phone: phone.trim() + (phone2.trim() ? ` / ${phone2.trim()}` : ""),
         city,
         shipping_city: city,
         address: address.trim(),
@@ -241,12 +251,10 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
       const sessId = sessionIdRef.current || ("sess_" + Date.now());
       trackUserSession(slug, 0, true, sessId);
 
-      setOrderInfo(order);
-      setSubmitted(true);
-      document.getElementById("confirmation")?.scrollIntoView({ behavior: "smooth" });
+      const orderNum = order?.order_number || "";
+      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone)}`;
     } catch {
-      setErrorMsg("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
-    } finally {
+      alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setSubmitting(false);
     }
   };
@@ -610,231 +618,31 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* ════════════════ SÉLECTION DES PACKS & FORMULAIRE COD ════════════════ */}
-      <section id="commander" className="py-14 px-4 md:px-8 max-w-4xl mx-auto space-y-8">
-        
-        <div className="text-center max-w-xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/60">
-            Commander au Bénin
-          </span>
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
-            Sélectionnez votre Pack & Validez votre Livraison
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Aucun paiement en ligne requis. Vous vérifiez le colis et payez à la réception.
-          </p>
-        </div>
-
-        {/* CHOIX DU PACK */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          {BUNDLES.map((b) => {
-            const isSel = selected.id === b.id;
-            return (
-              <div
-                key={b.id}
-                onClick={() => setSelected(b)}
-                className={`rounded-2xl p-5 border-2 transition-all duration-150 cursor-pointer relative flex flex-col justify-between ${
-                  isSel
-                    ? "bg-emerald-50/70 border-emerald-500 shadow-md scale-[1.02]"
-                    : "bg-white border-slate-200/80 hover:border-slate-300"
-                }`}
-              >
-                {b.badge && (
-                  <span className="absolute -top-3 right-4 bg-emerald-500 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    {b.badge}
-                  </span>
-                )}
-
-                <div>
-                  <div className="font-bold text-sm text-slate-900 mb-1">{b.name}</div>
-                  <div className="text-xs text-slate-500 mb-3">{b.description}</div>
-                </div>
-
-                <div className="pt-3 border-t border-slate-200/60 flex items-baseline justify-between">
-                  <div className="font-mono font-extrabold text-lg text-slate-900 tabular-nums">
-                    {fmt(b.price)}
-                  </div>
-                  {b.originalPrice && (
-                    <div className="text-xs text-slate-400 line-through font-mono tabular-nums">
-                      {fmt(b.originalPrice)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* FORMULAIRE DE COMMANDE */}
-        <div id="confirmation" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xl">
-          
-          {submitted ? (
-            <div className="text-center py-6 sm:py-8 space-y-5 animate-fadeIn max-w-lg mx-auto">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-                <Check className="w-8 h-8 stroke-[3]" />
-              </div>
-
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                  Commande Enregistrée avec Succès
-                </span>
-                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
-                  Félicitations {name} !
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                  Votre commande du <strong>{selected.name}</strong> ({fmt(selected.price)}) est bien prise en compte. Notre équipe vous contactera au <strong>{phone}</strong> pour convenir de la remise du colis.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700 flex items-center justify-between">
-                <span className="text-slate-400 font-sans">Référence :</span>
-                <strong>{orderInfo?.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000)}</strong>
-              </div>
-
-              {/* 3 ÉTAPES CLAIRES */}
-              <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 sm:p-5 text-left space-y-2.5 text-xs text-slate-700">
-                <div className="font-bold text-[11px] uppercase tracking-wider text-emerald-900 mb-1">
-                  Prochaines étapes :
-                </div>
-                <div className="flex gap-2.5 items-start">
-                  <span className="w-5 h-5 rounded-full bg-emerald-200 text-emerald-900 font-bold flex items-center justify-center shrink-0 text-[10px]">1</span>
-                  <div>
-                    <span className="font-bold text-slate-900">Appel ou message de confirmation :</span>
-                    <p className="text-slate-500 text-[11px]">Notre service logistique vous contacte pour confirmer votre lieu exact.</p>
-                  </div>
-                </div>
-                <div className="flex gap-2.5 items-start">
-                  <span className="w-5 h-5 rounded-full bg-emerald-200 text-emerald-900 font-bold flex items-center justify-center shrink-0 text-[10px]">2</span>
-                  <div>
-                    <span className="font-bold text-slate-900">Livraison express 24h–48h :</span>
-                    <p className="text-slate-500 text-[11px]">Le livreur vous apporte votre colis à {city} et environs.</p>
-                  </div>
-                </div>
-                <div className="flex gap-2.5 items-start">
-                  <span className="w-5 h-5 rounded-full bg-emerald-200 text-emerald-900 font-bold flex items-center justify-center shrink-0 text-[10px]">3</span>
-                  <div>
-                    <span className="font-bold text-slate-900">Vérification & Paiement à la réception :</span>
-                    <p className="text-slate-500 text-[11px]">Vous vérifiez le colis et payez au livreur en espèces ou Mobile Money.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* BOUTON WHATSAPP ACCÉLÉRATION */}
-              <div className="space-y-2.5 pt-2">
-                <a
-                  href={`https://wa.me/2290192901817?text=${encodeURIComponent(
-                    `Bonjour Isivente ! Je viens de commander le ${selected.name} (${fmt(selected.price)}) pour ${name} (${phone}, ${city}). Réf: ${orderInfo?.order_number || "En cours"}. Je souhaite accélérer et confirmer ma livraison.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-sm py-4 px-6 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98]"
-                >
-                  <MessageCircle className="w-5 h-5 fill-white text-[#25D366]" />
-                  <span>Accélérer ma livraison sur WhatsApp</span>
-                </a>
-
-                <div className="flex items-center justify-center gap-4 pt-3 text-[11px] text-slate-400">
-                  <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Colis Garanti</span>
-                  <span className="flex items-center gap-1"><PackageCheck className="w-3.5 h-3.5 text-emerald-600" /> Paiement à la réception</span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
-              
-              <div className="text-center border-b border-slate-100 pb-4 mb-4">
-                <span className="text-xs font-bold text-slate-400 uppercase">Récapitulatif Sélection</span>
-                <div className="font-display font-bold text-lg text-slate-900">{selected.name}</div>
-                <div className="font-mono font-extrabold text-xl text-emerald-600 tabular-nums">{fmt(selected.price)}</div>
-              </div>
-
-              {errorMsg && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold text-center">
-                  {errorMsg}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Votre Nom Complet *</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex : Brice Houndégbé"
-                  className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Numéro de Téléphone (Appels & WhatsApp) *</label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Ex : 01 97 00 00 00 / 01 66 00 00 00"
-                  className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 font-mono"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Ville de Livraison *</label>
-                  <select
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500"
-                  >
-                    <option value="Cotonou">Cotonou</option>
-                    <option value="Calavi">Abomey-Calavi</option>
-                    <option value="Porto-Novo">Porto-Novo</option>
-                    <option value="Ouidah">Ouidah</option>
-                    <option value="Autre">Autre ville du Bénin</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Quartier & Précisions *</label>
-                  <input
-                    type="text"
-                    required
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Ex : Fidjrossé, face pharmacie"
-                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full mt-2 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm sm:text-base shadow-lg shadow-emerald-600/25 transition-all duration-150 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
-              >
-                {submitting ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Enregistrement en cours...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>CONFIRMER MA COMMANDE ({fmt(selected.price)})</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-
-              <div className="text-[11px] text-center text-slate-400 pt-1">
-                🔒 Vos informations sont confidentielles et utilisées uniquement pour votre livraison.
-              </div>
-
-            </form>
-          )}
-
-        </div>
-
-      </section>
+      {/* ════════════════ SÉLECTION DES PACKS & FORMULAIRE COD (MODÈLE UMÉI) ════════════════ */}
+      <UmeiStyleOrderSection
+        productSlug={slug}
+        productTitle="TurboFan™ Max — Ventilateur Ceinture & Powerbank"
+        bundles={BUNDLES}
+        selectedBundle={selected}
+        onSelectBundle={(b) => setSelected(b as Bundle)}
+        customerName={name}
+        setCustomerName={setName}
+        customerPhone={phone}
+        setCustomerPhone={setPhone}
+        customerPhone2={phone2}
+        setCustomerPhone2={setPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        includeBump={includeBump}
+        setIncludeBump={setIncludeBump}
+        bumpOffer={bumpOffer}
+        isSubmitting={submitting}
+        onSubmit={handleSubmit}
+        accentColor="#10B981"
+        whatsappNumber="2290192901817"
+      />
 
       {/* ════════════════ AVIS CLIENTS ════════════════ */}
       <section className="py-12 px-4 md:px-8 max-w-4xl mx-auto space-y-6">
@@ -886,39 +694,6 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
           ))}
         </div>
       </section>
-
-      {/* 📱 STICKY MOBILE BAR */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 p-2.5 px-4 shadow-[0_-8px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-2 max-w-full overflow-hidden">
-        <div>
-          <div className="text-[10px] text-slate-500 font-bold">Total à la livraison :</div>
-          <div className="font-display font-extrabold text-base text-emerald-600 leading-none">
-            {fmt(selected.price)}
-          </div>
-        </div>
-        <button
-          onClick={handleCtaClick}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-5 rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-        >
-          <span>Commander</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* 💬 BOUTON FLOATING WHATSAPP ASSISTANCE (+229 01 92 90 18 17) */}
-      <a
-        href={`https://wa.me/2290192901817?text=${encodeURIComponent(
-          "Bonjour ! J'ai une question concernant le ventilateur TurboFan™ Max 3-en-1."
-        )}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-16 md:bottom-6 right-4 z-40 bg-[#25D366] hover:bg-[#1EBE5D] text-white p-3.5 rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 flex items-center justify-center cursor-pointer border-2 border-white group"
-        title="Besoin d'aide ? Écrivez-nous sur WhatsApp (+229 01 92 90 18 17)"
-      >
-        <MessageCircle className="w-6 h-6 fill-white text-[#25D366]" />
-        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out text-xs font-bold pl-0 group-hover:pl-2">
-          WhatsApp Direct
-        </span>
-      </a>
 
       {/* ════════════════ FOOTER ════════════════ */}
       <footer className="bg-slate-950 text-white py-10 px-4 text-center border-t border-slate-800 space-y-3 pb-24 md:pb-10">

@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
   Check,
   ArrowRight,
@@ -154,6 +156,10 @@ const fmt = (n: number) =>
 /* ─────────────────────────────────────────── COMPONENT */
 export default function EraCleanLanding({ slug }: { slug: string }) {
   const [selected, setSelected] = useState<Bundle>(BUNDLES[1]);
+  const [includeBump, setIncludeBump] = useState(false);
+  const upsellConfig = getProductUpsellConfig("eraclean");
+  const bumpOffer = upsellConfig?.bump;
+
   const [slide, setSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [name, setName] = useState("");
@@ -214,13 +220,17 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
     }
     setSubmitting(true);
     try {
+      const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
+      const finalTotal = selected.price + bumpPrice;
+      const finalBundleName = selected.name + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+
       const res = await saveNewOrder({
         product_slug: "eraclean",
         product_title: "Purificateur d'Air & Anti-Odeurs EraClean™",
         bundle_id: selected.id,
-        bundle_name: selected.name,
+        bundle_name: finalBundleName,
         quantity: selected.quantity,
-        total_amount: selected.price,
+        total_amount: finalTotal,
         customer_name: name,
         customer_phone: phone + (phone2 ? ` / ${phone2}` : ""),
         shipping_city: city,
@@ -718,159 +728,31 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* ════════════════ PACKS (COMMANDER) ════════════════ */}
-      <section id="commander" className="py-16 px-4 md:px-8 max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: C.accent }}>Choisissez votre pack</p>
-          <h2 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: C.dark }}>
-            Commandez maintenant — Livraison COD
-          </h2>
-          <p className="mt-2 text-sm" style={{ color: C.muted }}>
-            Vous payez uniquement à la réception. Espèces ou Mobile Money.
-          </p>
-        </div>
-
-        {/* Bundle cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-          {BUNDLES.map((b) => {
-            const active = selected.id === b.id;
-            return (
-              <button
-                key={b.id}
-                onClick={() => setSelected(b)}
-                className="relative text-left rounded-2xl p-5 border-2 transition-all cursor-pointer active:scale-[0.97]"
-                style={{
-                  borderColor: active ? C.accent : `${C.mid}20`,
-                  background: active ? `${C.accent}08` : "white",
-                  boxShadow: active ? `0 0 0 2px ${C.accent}40, 0 8px 24px -8px ${C.accent}30` : "none",
-                }}
-              >
-                {b.badge && (
-                  <span
-                    className="absolute -top-3 left-4 text-[11px] font-bold px-3 py-1 rounded-full text-white"
-                    style={{ background: b.popular ? C.accent : "#10B981" }}
-                  >
-                    {b.badge}
-                  </span>
-                )}
-
-                <div className="flex items-start justify-between mb-3">
-                  <div
-                    className="w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 shrink-0"
-                    style={{ borderColor: active ? C.accent : `${C.mid}40` }}
-                  >
-                    {active && <div className="w-2.5 h-2.5 rounded-full" style={{ background: C.accent }} />}
-                  </div>
-                </div>
-
-                <p className="font-bold text-base mb-1" style={{ color: C.dark }}>{b.name}</p>
-                <p className="text-xs mb-3 leading-relaxed" style={{ color: C.muted }}>{b.description}</p>
-
-                <div className="flex items-baseline gap-2">
-                  <span className="font-mono font-bold text-xl tabular-nums" style={{ color: C.accent }}>
-                    {fmt(b.price)}
-                  </span>
-                  <span className="text-xs line-through" style={{ color: C.muted }}>
-                    {fmt(b.originalPrice)}
-                  </span>
-                </div>
-
-                {b.savings && (
-                  <p className="text-xs font-semibold mt-1" style={{ color: "#10B981" }}>
-                    Économie de {fmt(b.savings)}
-                  </p>
-                )}
-                {b.freeShipping && (
-                  <p className="text-xs font-semibold mt-1" style={{ color: "#10B981" }}>
-                    + Livraison offerte
-                  </p>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* ORDER FORM */}
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-3xl p-6 md:p-8 border shadow-xl"
-          style={{ background: "white", borderColor: `${C.accent}15` }}
-        >
-          <h3 className="font-display font-bold text-lg mb-1" style={{ color: C.dark }}>
-            Pack sélectionné :{" "}
-            <span style={{ color: C.accent }}>{selected.name}</span>
-          </h3>
-          <p className="text-sm mb-6" style={{ color: C.muted }}>
-            Total :{" "}
-            <span className="font-mono font-bold tabular-nums" style={{ color: C.dark }}>
-              {fmt(selected.price)}
-            </span>{" "}
-            · Paiement à la livraison
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { label: "Prénom & Nom", val: name, set: setName, type: "text", placeholder: "Ex: Mariette Ahounou", required: false },
-              { label: "Téléphone principal *", val: phone, set: setPhone, type: "tel", placeholder: "Ex: 97 00 00 00", required: true },
-              { label: "Téléphone secondaire (optionnel)", val: phone2, set: setPhone2, type: "tel", placeholder: "Ex: 61 00 00 00", required: false },
-              { label: "Ville *", val: city, set: setCity, type: "text", placeholder: "Cotonou / Calavi / Porto-Novo", required: true },
-            ].map(({ label, val, set, type, placeholder, required }) => (
-              <div key={label}>
-                <label className="text-xs font-semibold mb-1.5 block" style={{ color: C.text }}>
-                  {label}
-                </label>
-                <input
-                  type={type}
-                  value={val}
-                  onChange={(e) => set(e.target.value)}
-                  placeholder={placeholder}
-                  required={required}
-                  className="w-full rounded-xl px-4 py-3 text-sm border outline-none focus:ring-2 transition-all"
-                  style={{
-                    borderColor: `${C.mid}25`,
-                    background: C.silver,
-                    color: C.dark,
-                  }}
-                />
-              </div>
-            ))}
-            <div className="md:col-span-2">
-              <label className="text-xs font-semibold mb-1.5 block" style={{ color: C.text }}>
-                Quartier / Adresse de livraison *
-              </label>
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Ex: Quartier Aidjèdo, près du marché"
-                required
-                className="w-full rounded-xl px-4 py-3 text-sm border outline-none focus:ring-2 transition-all"
-                style={{ borderColor: `${C.mid}25`, background: C.silver, color: C.dark }}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{ background: submitting ? C.muted : C.accent }}
-            className="mt-6 w-full text-white py-4 rounded-2xl font-bold text-base shadow-xl hover:-translate-y-0.5 active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
-          >
-            {submitting ? (
-              <span>Enregistrement…</span>
-            ) : (
-              <>
-                <span>Confirmer ma commande — {fmt(selected.price)}</span>
-                <ArrowRight className="w-5 h-5 shrink-0" />
-              </>
-            )}
-          </button>
-
-          <p className="text-center text-xs mt-3" style={{ color: C.muted }}>
-            Vous serez contacté(e) dans les 24h pour confirmer la livraison.
-          </p>
-        </form>
-      </section>
+      {/* ════════════════ PACKS & FORMULAIRE (MODÈLE UMÉI) ════════════════ */}
+      <UmeiStyleOrderSection
+        productSlug="eraclean"
+        productTitle="Purificateur d'Air & Anti-Odeurs EraClean™"
+        bundles={BUNDLES}
+        selectedBundle={selected}
+        onSelectBundle={(b) => setSelected(b as Bundle)}
+        customerName={name}
+        setCustomerName={setName}
+        customerPhone={phone}
+        setCustomerPhone={setPhone}
+        customerPhone2={phone2}
+        setCustomerPhone2={setPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        includeBump={includeBump}
+        setIncludeBump={setIncludeBump}
+        bumpOffer={bumpOffer}
+        isSubmitting={submitting}
+        onSubmit={handleSubmit}
+        accentColor={C.accent}
+        whatsappNumber="2290192901817"
+      />
 
       {/* ════════════════ AVIS ════════════════ */}
       <section id="avis" className="py-16 px-4 md:px-8" style={{ background: "white" }}>
@@ -983,18 +865,6 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
-
-      {/* ════════════════ STICKY MOBILE CTA ════════════════ */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden px-4 pb-4 pt-2" style={{ background: `${C.bg}f5`, backdropFilter: "blur(12px)" }}>
-        <button
-          onClick={() => scroll("commander")}
-          style={{ background: C.accent }}
-          className="w-full text-white py-4 rounded-2xl font-bold text-sm shadow-xl active:scale-[0.97] transition-transform flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <span>Commander — {fmt(selected.price)}</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
     </div>
   );
 }
