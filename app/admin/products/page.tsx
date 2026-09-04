@@ -125,16 +125,19 @@ export default function ProductsPage() {
     setLoading(true);
     try {
       const { data } = await supabase.from("products").select("*").order("created_at", { ascending: true });
-      if (data && data.length > 0) {
-        const formatted = data.map((p: any) => ({
-          ...p,
-          image_url: p.image_url || (p.images && p.images[0]?.url) || "/images/projecteur-hero.jpg",
-          bundles: p.bundles || []
-        }));
-        setProducts(formatted);
-      } else {
-        setProducts(defaultProducts);
-      }
+      
+      const supabaseProducts = (data || []).map((p: any) => ({
+        ...p,
+        image_url: p.image_url || (p.images && p.images[0]?.url) || "/images/projecteur-hero.jpg",
+        bundles: p.bundles || []
+      }));
+
+      // Fusionner : Supabase a priorité, puis on ajoute les defaults manquants
+      const slugsFromDb = new Set(supabaseProducts.map((p: ProductItem) => p.slug));
+      const missingDefaults = defaultProducts.filter(dp => !slugsFromDb.has(dp.slug));
+      const merged = [...supabaseProducts, ...missingDefaults];
+      
+      setProducts(merged);
     } catch (err) {
       setProducts(defaultProducts);
     } finally {
@@ -238,18 +241,30 @@ export default function ProductsPage() {
         </button>
       </div>
 
+      {/* COMPTEUR */}
+      <div className="flex items-center justify-between">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
+          {products.length} produit{products.length > 1 ? "s" : ""} au catalogue
+        </div>
+        <div className="text-[10px] text-slate-400 hidden sm:block">
+          Faites défiler horizontalement pour voir tous les produits
+        </div>
+      </div>
+
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="card-figma p-5 space-y-4 animate-pulse">
-              <div className="h-44 bg-slate-200 rounded-xl" />
+        <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-2 px-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="card-figma p-5 space-y-4 animate-pulse min-w-[300px] w-[300px] shrink-0 snap-start">
+              <div className="h-40 bg-slate-200 rounded-xl" />
               <div className="h-5 bg-slate-200 rounded w-3/4" />
               <div className="h-10 bg-slate-200 rounded-xl" />
             </div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-2 px-2"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
           {products.map((product, idx) => {
             const productUrl = `/p/${product.slug}`;
             const isCopied = copiedSlug === product.slug;
@@ -257,60 +272,65 @@ export default function ProductsPage() {
             return (
               <div 
                 key={product.id} 
-                className="card-figma overflow-hidden flex flex-col hover:border-slate-300/80 hover:-translate-y-0.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                style={{ animationDelay: `${idx * 40}ms` }}
+                className="card-figma overflow-hidden flex flex-col hover:border-slate-300/80 hover:-translate-y-0.5 min-w-[300px] w-[300px] shrink-0 snap-start"
+                style={{ 
+                  animationDelay: `${idx * 40}ms`,
+                  transition: "all 160ms cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
               >
                 {/* PHOTO PRODUIT */}
-                <div className="h-48 bg-slate-100 flex items-center justify-center relative overflow-hidden border-b border-slate-100 p-4">
+                <div className="h-44 bg-slate-100 flex items-center justify-center relative overflow-hidden border-b border-slate-100 p-4">
                   {product.image_url ? (
                     <img 
                       src={product.image_url} 
                       alt={product.title}
-                      className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain hover:scale-105"
+                      style={{ transition: "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)" }}
                     />
                   ) : (
                     <Package className="w-12 h-12 text-slate-300" />
                   )}
                   
-                  <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold font-mono text-slate-900 shadow-sm border border-slate-200/80">
-                    {new Intl.NumberFormat("fr-FR").format(product.price)} FCFA
+                  <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold font-mono text-slate-900 shadow-sm border border-slate-200/80 tabular-nums">
+                    {new Intl.NumberFormat("fr-FR").format(product.price)} F
                   </span>
                 </div>
 
                 {/* CONTENU & LIEN DU PRODUIT */}
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div>
-                    <h3 className="font-display font-bold text-base text-slate-900 leading-snug mb-2">
+                    <h3 className="font-display font-bold text-sm text-slate-900 leading-snug mb-2 line-clamp-2">
                       {product.title}
                     </h3>
                     
                     {/* BOÎTE DU LIEN AVEC OPTION COPIER */}
-                    <div className="bg-slate-50 rounded-xl p-3 space-y-2 border border-slate-200/60">
-                      <div className="flex items-center justify-between gap-1 text-[11px] font-semibold text-slate-600">
+                    <div className="bg-slate-50 rounded-xl p-2.5 space-y-1.5 border border-slate-200/60">
+                      <div className="flex items-center justify-between gap-1 text-[10px] font-semibold text-slate-600">
                         <span className="flex items-center gap-1">
-                          <LinkIcon className="w-3 h-3 text-slate-400" /> Lien de campagne :
+                          <LinkIcon className="w-3 h-3 text-slate-400" /> Lien :
                         </span>
-                        <span className="font-mono text-[10.5px] text-slate-500">/p/{product.slug}</span>
+                        <span className="font-mono text-[10px] text-slate-500 truncate max-w-[120px]">/p/{product.slug}</span>
                       </div>
                       
                       <button
                         type="button"
                         onClick={() => copyProductLink(product.slug)}
-                        className={`w-full text-xs font-semibold py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-[0.97] ${
+                        className={`w-full text-[11px] font-semibold py-1.5 px-2.5 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.97] ${
                           isCopied 
                             ? "bg-emerald-600 text-white shadow-sm" 
                             : "bg-white text-slate-800 border border-slate-200 hover:bg-slate-100"
                         }`}
+                        style={{ transition: "all 150ms cubic-bezier(0.2, 0, 0, 1)" }}
                       >
                         {isCopied ? (
                           <>
-                            <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                            <span>Lien copié dans le presse-papier !</span>
+                            <Check className="w-3 h-3 stroke-[2.5]" />
+                            <span>Copié !</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3.5 h-3.5 stroke-[1.75]" />
-                            <span>Copier l'URL directe</span>
+                            <Copy className="w-3 h-3 stroke-[1.75]" />
+                            <span>Copier l&apos;URL</span>
                           </>
                         )}
                       </button>
@@ -318,15 +338,15 @@ export default function ProductsPage() {
 
                     {/* PACKS / OFFRES */}
                     {product.bundles && product.bundles.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-slate-100">
-                        <div className="text-[10.5px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
+                      <div className="mt-2.5 pt-2.5 border-t border-slate-100">
+                        <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center gap-1">
                           <Layers className="w-3 h-3" />
-                          <span>Packs configurés ({product.bundles.length})</span>
+                          <span>Packs ({product.bundles.length})</span>
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-1">
                           {product.bundles.map((b, bIdx) => (
-                            <span key={bIdx} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono font-medium">
-                              {b.name} : {new Intl.NumberFormat("fr-FR").format(b.price)} F
+                            <span key={bIdx} className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono font-medium tabular-nums">
+                              {b.name.length > 20 ? b.name.substring(0, 20) + "…" : b.name} : {new Intl.NumberFormat("fr-FR").format(b.price)} F
                             </span>
                           ))}
                         </div>
@@ -340,16 +360,18 @@ export default function ProductsPage() {
                       href={productUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all duration-150 active:scale-[0.97]"
+                      className="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.97]"
+                      style={{ transition: "all 150ms cubic-bezier(0.2, 0, 0, 1)" }}
                     >
-                      <span>Tester la page</span>
+                      <span>Tester</span>
                       <ExternalLink className="w-3 h-3 text-emerald-400" />
                     </a>
 
                     <button 
                       type="button"
                       onClick={() => openEditModal(product)}
-                      className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors active:scale-[0.97] cursor-pointer"
+                      className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 active:scale-[0.97] cursor-pointer"
+                      style={{ transition: "all 150ms cubic-bezier(0.2, 0, 0, 1)" }}
                       title="Modifier le produit"
                     >
                       <Edit2 className="w-3.5 h-3.5" />

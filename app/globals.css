@@ -141,10 +141,12 @@ h1, h2, h3, h4, h5, h6, .display {
 }
 
 /* Custom subtle scrollbars */
-.scrollbar-none::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
-.scrollbar-none {
+.scrollbar-none,
+.scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
