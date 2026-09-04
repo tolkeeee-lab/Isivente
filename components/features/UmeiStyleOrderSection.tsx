@@ -164,6 +164,18 @@ export default function UmeiStyleOrderSection({
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleSelectBundle = (b: BundleOption) => {
+    onSelectBundle(b);
+    if (typeof window !== "undefined") {
+      setTimeout(() => {
+        const target = document.getElementById("step-client-info");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 120);
+    }
+  };
+
   // ════════════════ VUE SUCCÈS COMMANDE (SANS DOUBLE PAGE / SANS REDIRECTION) ════════════════
   if (orderSuccess) {
     const finalOrderNum = orderNumber || "CMD-" + Math.floor(100000 + Math.random() * 900000);
@@ -325,7 +337,7 @@ export default function UmeiStyleOrderSection({
                     return (
                       <div
                         key={b.id || b.name || idx}
-                        onClick={() => onSelectBundle(b)}
+                        onClick={() => handleSelectBundle(b)}
                         role="radio"
                         aria-checked={isSelected}
                         className={`rounded-2xl p-3.5 text-center cursor-pointer relative transition-all duration-200 select-none ${
@@ -413,8 +425,8 @@ export default function UmeiStyleOrderSection({
               </div>
             )}
 
-            {/* 2. COORDONNÉES CLIENT */}
-            <div>
+            {/* 2. COORDONNÉES CLIENT (DÉFILEMENT AUTOMATIQUE AU CLIC DU PACK) */}
+            <div id="step-client-info" className="scroll-mt-16 sm:scroll-mt-24 space-y-2.5">
               <label className="font-extrabold text-xs sm:text-sm text-slate-900 block mb-2.5 text-left">
                 2. Vos informations de livraison :
               </label>
