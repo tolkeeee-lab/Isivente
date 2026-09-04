@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import {
   Check,
   ArrowRight,
@@ -96,6 +97,14 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
         setProduct(formatted);
 
+        // Meta Pixel: ViewContent
+        trackViewContent({
+          content_name: formatted.title,
+          content_ids: [slug],
+          value: formatted.price,
+          currency: "XOF",
+        });
+
         // Select the popular bundle by default, or the first one
         const popularIdx = (formatted.bundles || []).findIndex(
           (b: ProductBundle) => b.popular
@@ -125,6 +134,14 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
   /* ─── Helpers ─── */
   const scrollToSection = (id: string) => {
+    if (id === "order-form" && product) {
+      trackInitiateCheckout({
+        content_name: product.title,
+        content_ids: [slug],
+        value: selectedBundle?.price || product.price,
+        currency: "XOF",
+      });
+    }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
@@ -159,10 +176,27 @@ export default function ProductLanding({ slug }: { slug: string }) {
         status: "pending" as const,
       });
 
+      // Meta Pixel: Purchase
+      trackPurchase({
+        content_name: product.title,
+        content_ids: [slug],
+        value: selectedBundle.price,
+        currency: "XOF",
+        num_items: selectedBundle.quantity || 1,
+      });
+
+      try {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: product.title,
+          price: selectedBundle.price,
+          quantity: selectedBundle.quantity || 1,
+        }));
+      } catch {}
+
       clickedRef.current = true;
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
-      window.location.href = `/p/${slug}/success`;
+      window.location.href = `/p/${slug}/success?phone=${encodeURIComponent(customerPhone)}`;
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllOrders, deleteOrder, clearAllOrders, OrderItem } from "@/lib/ordersStorage";
+import { supabase } from "@/lib/supabase";
 import { getAnalyticsStats, getAllProductsAnalytics, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
   TrendingUp, 
@@ -59,41 +60,35 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
-  const productsList = [
-    {
-      title: "Brosse Démêlante Vapeur Uméi 3-en-1",
-      slug: "umei",
-      price: 14900,
-      image: "/images/umei-hero-real.jpg"
-    },
-    {
-      title: "Purificateur d'Air EraClean™ 10 Ans",
-      slug: "eraclean",
-      price: 19900,
-      image: "/images/eraclean-studio.jpg"
-    },
-    {
-      title: "Ventilateur Ceinture & Powerbank TurboFan™",
-      slug: "turbofan",
-      price: 16900,
-      image: "/images/turbofan-studio.jpg"
-    },
-    {
-      title: "Éplucheur Automatique ChefPeel™ Pro",
-      slug: "peeler",
-      price: 14900,
-      image: "/images/peeler-hero.jpg"
-    },
-    {
-      title: "Stabilisateur Trépied Z3 Zoom™",
-      slug: "stabilisateur",
-      price: 49900,
-      image: "/images/stabilisateur-hero.jpg"
-    }
+  const defaultProductsList = [
+    { title: "Brosse Démêlante Vapeur Uméi 3-en-1", slug: "umei", price: 14900, image: "/images/umei-hero-real.jpg" },
+    { title: "Purificateur d'Air EraClean™ 10 Ans", slug: "eraclean", price: 19900, image: "/images/eraclean-studio.jpg" },
+    { title: "Ventilateur Ceinture & Powerbank TurboFan™", slug: "turbofan", price: 16900, image: "/images/turbofan-studio.jpg" },
+    { title: "Éplucheur Automatique ChefPeel™ Pro", slug: "peeler", price: 14900, image: "/images/peeler-hero.jpg" },
+    { title: "Stabilisateur Trépied Z3 Zoom™", slug: "stabilisateur", price: 49900, image: "/images/stabilisateur-hero.jpg" },
+    { title: "Veilleuse Projecteur LED 3D FRIOSZ", slug: "veilleuse", price: 14900, image: "/images/projecteur-hero.jpg" },
   ];
+
+  const [productsList, setProductsList] = useState(defaultProductsList);
 
   useEffect(() => {
     async function fetchData() {
+      // Fetch products from Supabase and merge with defaults
+      try {
+        const { data: dbProducts } = await supabase.from("products").select("title, slug, price, image_url").order("created_at", { ascending: true });
+        if (dbProducts && dbProducts.length > 0) {
+          const formatted = dbProducts.map((p: any) => ({
+            title: p.title,
+            slug: p.slug,
+            price: p.price,
+            image: p.image_url || "/images/default-hero.jpg",
+          }));
+          const slugsFromDb = new Set(formatted.map((p: any) => p.slug));
+          const missingDefaults = defaultProductsList.filter(dp => !slugsFromDb.has(dp.slug));
+          setProductsList([...formatted, ...missingDefaults]);
+        }
+      } catch {}
+
       const [allOrders, analyticsData, perProductData] = await Promise.all([
         getAllOrders(),
         getAnalyticsStats(),
@@ -397,89 +392,95 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
-          {productsList.map((prod) => {
-            const isCopied = copiedSlug === prod.slug;
-            const pa = productAnalytics.find(p => p.slug === prod.slug);
-            const fin = productFinancials[prod.slug] || { totalOrders: 0, deliveredOrders: 0, deliveredRevenue: 0, totalRevenue: 0 };
-            const ctr = pa?.ctr ?? null;
-            const avgTime = pa?.formattedAvgTime ?? null;
+        {/* RUBAN HORIZONTAL DÉFILABLE (évite d'allonger la page) */}
+        <div className="relative -mx-2 px-2">
+          <div className="flex items-stretch gap-4 overflow-x-auto pb-3 pt-1 scrollbar-thin snap-x snap-mandatory">
+            {productsList.map((prod) => {
+              const isCopied = copiedSlug === prod.slug;
+              const pa = productAnalytics.find(p => p.slug === prod.slug);
+              const fin = productFinancials[prod.slug] || { totalOrders: 0, deliveredOrders: 0, deliveredRevenue: 0, totalRevenue: 0 };
+              const ctr = pa?.ctr ?? null;
+              const avgTime = pa?.formattedAvgTime ?? null;
 
-            return (
-              <div
-                key={prod.slug}
-                className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 flex flex-col gap-3 hover:bg-slate-50 transition-colors"
-              >
-                {/* Header */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 overflow-hidden min-w-0">
-                    <img
-                      src={prod.image}
-                      alt={prod.title}
-                      className="w-11 h-11 rounded-lg object-cover shrink-0 border border-slate-200 bg-white"
-                    />
-                    <div className="min-w-0">
-                      <div className="font-bold text-xs text-slate-900 truncate">{prod.title}</div>
-                      <div className="text-[11px] font-mono text-slate-500">/p/{prod.slug}</div>
+              return (
+                <div
+                  key={prod.slug}
+                  className="min-w-[300px] sm:min-w-[340px] max-w-[360px] shrink-0 snap-start p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 flex flex-col justify-between gap-3 hover:bg-white hover:border-slate-300 hover:shadow-sm transition-all duration-150"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 overflow-hidden min-w-0">
+                      <img
+                        src={prod.image}
+                        alt={prod.title}
+                        className="w-12 h-12 rounded-lg object-cover shrink-0 border border-slate-200 bg-white"
+                      />
+                      <div className="min-w-0">
+                        <div className="font-bold text-xs text-slate-900 truncate" title={prod.title}>{prod.title}</div>
+                        <div className="text-[11px] font-mono text-slate-500">/p/{prod.slug}</div>
+                        <div className="text-[11px] font-semibold text-emerald-700 font-mono">
+                          {new Intl.NumberFormat("fr-FR").format(prod.price)} FCFA
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => copyProductLink(prod.slug)}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-[0.97] ${
+                          isCopied
+                            ? "bg-emerald-600 text-white shadow-sm"
+                            : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900 shadow-xs"
+                        }`}
+                      >
+                        {isCopied ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[1.75]" />}
+                        <span>{isCopied ? "Copié !" : "Copier"}</span>
+                      </button>
+                      <a
+                        href={`/p/${prod.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-xs transition-colors"
+                        title="Aperçu client"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => copyProductLink(prod.slug)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-[0.97] ${
-                        isCopied
-                          ? "bg-emerald-600 text-white shadow-sm"
-                          : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900 shadow-xs"
-                      }`}
-                    >
-                      {isCopied ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[1.75]" />}
-                      <span>{isCopied ? "Copié !" : "Copier"}</span>
-                    </button>
-                    <a
-                      href={`/p/${prod.slug}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-xs transition-colors"
-                      title="Aperçu client"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
+
+                  {/* Métriques Financières & Analytics Produit */}
+                  <div className="grid grid-cols-4 gap-2 pt-2.5 border-t border-slate-200/60 text-center">
+                    <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                      <div className="text-[10px] uppercase font-bold text-emerald-600 truncate">CA Livré</div>
+                      <div className="text-xs font-bold font-mono text-emerald-700 tabular-nums">
+                        {new Intl.NumberFormat("fr-FR").format(fin.deliveredRevenue)} F
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                      <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Livrées</div>
+                      <div className="text-xs font-bold font-mono text-slate-900 tabular-nums">
+                        {fin.deliveredOrders} / {fin.totalOrders}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                      <div className="text-[10px] uppercase font-bold text-slate-400 truncate">CTR</div>
+                      <div className={`text-xs font-bold font-mono tabular-nums ${
+                        ctr !== null && ctr > 0 ? "text-violet-700" : "text-slate-400"
+                      }`}>
+                        {ctr !== null ? `${ctr}%` : "—"}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
+                      <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Tps Moy.</div>
+                      <div className="text-xs font-bold font-mono text-slate-700 tabular-nums">
+                        {avgTime || "—"}
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                {/* Métriques Financières & Analytics Produit */}
-                <div className="grid grid-cols-4 gap-2 pt-2.5 border-t border-slate-200/60 text-center">
-                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
-                    <div className="text-[10px] uppercase font-bold text-emerald-600 truncate">CA Livré</div>
-                    <div className="text-xs font-bold font-mono text-emerald-700 tabular-nums">
-                      {new Intl.NumberFormat("fr-FR").format(fin.deliveredRevenue)} F
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
-                    <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Livrées</div>
-                    <div className="text-xs font-bold font-mono text-slate-900 tabular-nums">
-                      {fin.deliveredOrders} / {fin.totalOrders}
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
-                    <div className="text-[10px] uppercase font-bold text-slate-400 truncate">CTR</div>
-                    <div className={`text-xs font-bold font-mono tabular-nums ${
-                      ctr !== null && ctr > 0 ? "text-violet-700" : "text-slate-400"
-                    }`}>
-                      {ctr !== null ? `${ctr}%` : "—"}
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-2 border border-slate-200/70 shadow-2xs">
-                    <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Tps Moy.</div>
-                    <div className="text-xs font-bold font-mono text-slate-700 tabular-nums">
-                      {avgTime || "—"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 

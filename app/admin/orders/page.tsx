@@ -17,7 +17,8 @@ import {
   ExternalLink,
   ChevronDown,
   Trash2,
-  Eraser
+  Eraser,
+  Download
 } from "lucide-react";
 
 export default function OrdersPage() {
@@ -126,6 +127,56 @@ export default function OrdersPage() {
     { id: "cancelled", label: "Annulées" }
   ];
 
+  const exportToCSV = () => {
+    if (filteredOrders.length === 0) {
+      alert("Aucune commande à exporter.");
+      return;
+    }
+
+    const statusLabels: Record<string, string> = {
+      pending: "À confirmer",
+      shipped: "En cours livreur",
+      delivered: "Livrée et Encaissée",
+      cancelled: "Annulée",
+    };
+
+    const headers = [
+      "N° Commande",
+      "Date",
+      "Nom Client",
+      "Téléphone",
+      "Ville",
+      "Adresse",
+      "Produit",
+      "Quantité",
+      "Montant (FCFA)",
+      "Statut",
+    ];
+
+    const rows = filteredOrders.map((order) => [
+      order.order_number || order.id || "—",
+      order.created_at ? new Date(order.created_at).toLocaleDateString("fr-FR") : "—",
+      `"${(order.customer_name || "").replace(/"/g, '""')}"`,
+      `"${(order.customer_phone || "").replace(/"/g, '""')}"`,
+      `"${(order.shipping_city || order.city || "").replace(/"/g, '""')}"`,
+      `"${(order.shipping_address || order.address || "").replace(/"/g, '""')}"`,
+      `"${(order.product_title || order.product_slug || "").replace(/"/g, '""')}"`,
+      order.quantity || 1,
+      order.total_amount || 0,
+      `"${statusLabels[order.status || "pending"] || order.status || "pending"}"`,
+    ]);
+
+    const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(r => r.join(";"))].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `commandes-isivente-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6 animate-[staggerFadeUp_240ms_cubic-bezier(0.16,1,0.3,1)_both]">
       
@@ -146,7 +197,19 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {filteredOrders.length > 0 && (
+            <button
+              type="button"
+              onClick={exportToCSV}
+              className="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+              title="Exporter les commandes affichées au format Excel/CSV"
+            >
+              <Download className="w-3.5 h-3.5 stroke-[2] text-emerald-600" />
+              <span>Exporter CSV</span>
+            </button>
+          )}
+
           {orders.length > 0 && (
             <button
               type="button"
