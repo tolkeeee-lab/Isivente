@@ -238,7 +238,7 @@ function UpsellContent() {
 
       {/* FOOTER */}
       <footer className="border-t border-white/10 py-4 text-center text-xs text-slate-500">
-        <p>Paiement sécurisé à la livraison • Garantie de satisfaction Isivente</p>
+        <p>Paiement sécurisé à la livraison • Satisfaction client Isivente</p>
       </footer>
 
     </div>

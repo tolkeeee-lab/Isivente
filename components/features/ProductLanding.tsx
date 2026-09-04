@@ -7,6 +7,7 @@ import { trackUserSession } from "@/lib/analyticsStorage";
 import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import {
   Check,
   ArrowRight,
@@ -64,6 +65,8 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
 
   const imagesList = useMemo(() => {
     if (!product) return [];
@@ -224,12 +227,11 @@ export default function ProductLanding({ slug }: { slug: string }) {
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
 
-      const orderRef = createdOrder?.order_number || "";
-      if (upsellConfig.upsell) {
-        window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}`;
-      } else {
-        window.location.href = `/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}`;
-      }
+      const orderRef = createdOrder?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
+      setOrderNumber(orderRef);
+      setOrderSuccess(true);
+      setIsSubmitting(false);
+      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
@@ -349,36 +351,12 @@ export default function ProductLanding({ slug }: { slug: string }) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
 
           {/* Image / Carrousel */}
-          <div className="md:col-span-5 flex flex-col justify-center items-center order-1 gap-3">
-            <div className="relative w-full max-w-[340px] sm:max-w-[400px] mx-auto overflow-hidden rounded-[28px]">
-              <img
-                key={activeImgIdx}
-                src={imagesList[activeImgIdx] || product.image_url}
-                alt={product.title}
-                className="rounded-[28px] w-full aspect-square shadow-[0_20px_50px_-20px_rgba(0,0,0,0.15)] object-cover border border-slate-200/60 transition-all duration-300 animate-[fadeIn_200ms_ease-in-out]"
-              />
-              {/* Price badge */}
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md border border-slate-200 px-3 py-1.5 rounded-full text-sm font-mono font-bold text-indigo-700 shadow-sm tabular-nums">
-                {fmt(product.price)} FCFA
-              </div>
-            </div>
-
-            {/* Pagination dots if multiple images */}
-            {imagesList.length > 1 && (
-              <div className="flex items-center gap-2">
-                {imagesList.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setActiveImgIdx(idx)}
-                    className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
-                      activeImgIdx === idx ? "w-7 bg-indigo-600" : "w-2 bg-slate-300 hover:bg-slate-400"
-                    }`}
-                    aria-label={`Photo ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            )}
+          <div className="md:col-span-5 flex flex-col justify-center items-center order-1">
+            <HorizontalCarousel
+              slides={imagesList.map((url) => ({ src: url, alt: product.title }))}
+              accentColor="#6366F1"
+              autoplayInterval={4500}
+            />
           </div>
 
           {/* Text content */}
@@ -422,8 +400,8 @@ export default function ProductLanding({ slug }: { slug: string }) {
                 Livraison 24h–48h
               </span>
               <span className="bg-white text-slate-600 text-xs font-bold py-1.5 px-3.5 rounded-full shadow-sm border border-slate-200 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                Garantie 30 jours
+                <Package className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                Inspection à l&apos;arrivée
               </span>
             </div>
           </div>
@@ -559,6 +537,12 @@ export default function ProductLanding({ slug }: { slug: string }) {
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
         whatsappNumber={whatsapp}
+        orderSuccess={orderSuccess}
+        orderNumber={orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderNumber("");
+        }}
       />
 
       {/* ── REVIEWS ── */}

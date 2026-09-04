@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
   Check,
@@ -169,6 +170,8 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ID de session stable — généré UNE SEULE FOIS au montage du composant
@@ -190,24 +193,6 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
       window.removeEventListener("beforeunload", save);
     };
   }, [slug]);
-
-  const goToSlide = useCallback(
-    (idx: number) => {
-      if (isAnimating) return;
-      setIsAnimating(true);
-      setSlide((idx + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
-      setTimeout(() => setIsAnimating(false), 350);
-    },
-    [isAnimating]
-  );
-
-  /* Auto-play */
-  useEffect(() => {
-    autoplayRef.current = setInterval(() => goToSlide(slide + 1), 4500);
-    return () => {
-      if (autoplayRef.current) clearInterval(autoplayRef.current);
-    };
-  }, [slide, goToSlide]);
 
   const scroll = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -243,8 +228,11 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
       clickedRef.current = true;
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
-      const orderNum = res?.order_number || "";
-      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone)}`;
+      const orderNum = res?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
+      setOrderNumber(orderNum);
+      setOrderSuccess(true);
+      setSubmitting(false);
+      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch {
       alert("Erreur. Veuillez réessayer.");
       setSubmitting(false);
@@ -314,7 +302,7 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
           {/* 1. VISUEL PRODUIT & CARROUSEL (EN PREMIER) */}
           <div id="carousel" className="md:col-span-6 order-1">
             <div className="relative w-full max-w-sm mx-auto select-none">
-              {/* Badge flottant sur le carrousel */}
+              {/* Badge flottant sur mobile */}
               <div
                 className="inline-flex md:hidden items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border mb-3 bg-white shadow-xs"
                 style={{ borderColor: `${C.accent}30`, color: C.dark }}
@@ -323,78 +311,12 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
                 <span>4.9 / 5 · +340 clients satisfaits</span>
               </div>
 
-              {/* Image principale */}
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-square bg-white border border-slate-200/60">
-                <img
-                  key={slide}
-                  src={CAROUSEL_SLIDES[slide].src}
-                  alt={CAROUSEL_SLIDES[slide].alt}
-                  className="w-full h-full object-cover transition-opacity duration-300"
-                  style={{ opacity: isAnimating ? 0 : 1 }}
-                />
-
-                {/* Boutons Précédent / Suivant */}
-                <button
-                  type="button"
-                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide - 1); }}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-                  style={{ background: "rgba(255,255,255,0.92)" }}
-                  aria-label="Précédent"
-                >
-                  <ChevronLeft className="w-5 h-5" style={{ color: C.dark }} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(slide + 1); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-                  style={{ background: "rgba(255,255,255,0.92)" }}
-                  aria-label="Suivant"
-                >
-                  <ChevronRight className="w-5 h-5" style={{ color: C.dark }} />
-                </button>
-
-                {/* Label indicatif */}
-                <div
-                  className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md whitespace-nowrap"
-                  style={{ background: "rgba(15,23,42,0.65)", color: "white" }}
-                >
-                  {CAROUSEL_SLIDES[slide].label}
-                </div>
-              </div>
-
-              {/* Indicateurs points (Dots) */}
-              <div className="flex justify-center gap-2 mt-4">
-                {CAROUSEL_SLIDES.map((_, i) => (
-                  <button
-                    type="button"
-                    key={i}
-                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
-                    className="rounded-full transition-all duration-300 cursor-pointer"
-                    style={{
-                      width: i === slide ? 24 : 8,
-                      height: 8,
-                      background: i === slide ? C.accent : `${C.accent}35`,
-                    }}
-                    aria-label={`Diapositive ${i + 1}`}
-                  />
-                ))}
-              </div>
-
-              {/* Miniatures cliquables */}
-              <div className="flex gap-2 mt-3 justify-center">
-                {CAROUSEL_SLIDES.map((s, i) => (
-                  <button
-                    type="button"
-                    key={i}
-                    onClick={() => { if (autoplayRef.current) clearInterval(autoplayRef.current); goToSlide(i); }}
-                    className="w-16 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer"
-                    style={{ borderColor: i === slide ? C.accent : "transparent", opacity: i === slide ? 1 : 0.55 }}
-                    aria-label={s.alt}
-                  >
-                    <img src={s.src} alt={s.alt} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
+              {/* Vrai carrousel horizontal avec glissement fluide */}
+              <HorizontalCarousel
+                slides={CAROUSEL_SLIDES}
+                accentColor={C.accent}
+                autoplayInterval={4500}
+              />
             </div>
           </div>
 
@@ -715,7 +637,7 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
                   "1x Purificateur EraClean™ Alu",
                   "1x Câble USB-C renforcé",
                   "1x Manuel d'utilisation FR",
-                  "1x Garantie Sérénité 10 ans",
+                  "1x Colis Scellé & Contrôlé",
                 ].map((item) => (
                   <div key={item} className="bg-slate-50 border border-slate-200/60 rounded-xl p-2.5 text-center text-xs font-semibold text-slate-700 flex items-center justify-center">
                     {item}
@@ -752,6 +674,12 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
         onSubmit={handleSubmit}
         accentColor={C.accent}
         whatsappNumber="2290192901817"
+        orderSuccess={orderSuccess}
+        orderNumber={orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderNumber("");
+        }}
       />
 
       {/* ════════════════ AVIS ════════════════ */}

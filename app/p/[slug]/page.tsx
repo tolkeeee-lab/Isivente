@@ -24,7 +24,7 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
   },
   turbofan: {
     title: "Ventilateur Ceinture & Powerbank TurboFan™ Max",
-    description: "Mini ventilateur portable avec batterie 8000mAh intégrée. Fraîcheur garantie toute la journée. Livraison 24h.",
+    description: "Mini ventilateur portable avec batterie 8000mAh intégrée. Fraîcheur continue toute la journée. Livraison 24h.",
     image: "/images/turbofan-studio.jpg",
     price: 16900,
   },

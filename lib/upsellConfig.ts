@@ -44,7 +44,7 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       badge: "ÉCONOMISEZ 7 450 FCFA (-50%)",
       benefits: [
         "Coffret complet avec accessoires inclus",
-        "Garantie remplacement 1 an offerte sur les 2 brosses",
+        "Vérification complète du colis avant expédition",
         "Livré ensemble dans le même paquet sans frais de port en plus",
       ],
     },
@@ -60,7 +60,7 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       benefits: [
         "Assure une vapeur pure sans traces blanches",
         "Flacon compte-gouttes haute précision",
-        "Résultats salon garantis à domicile",
+        "Résultats professionnels visibles dès la 1ère utilisation",
       ],
     },
   },
@@ -194,13 +194,13 @@ export function getProductUpsellConfig(slug: string, productTitle?: string, prod
   return {
     bump: {
       id: `bump-${normalized}`,
-      title: "Garantie Remplacement VIP 1 An + Support Prioritaire",
-      subtitle: "En cas de panne ou de casse accidentelle, remplacement neuf immédiat à domicile",
-      description: "Aucun frais de réparation, échange direct par notre coursier en moins de 24h.",
+      title: "Préparation Logistique Prioritaire + Emballage Renforcé Anti-Choc",
+      subtitle: "Votre colis préparé, inspecté et expédié en priorité par notre équipe",
+      description: "Protection renforcée et remise immédiate au livreur pour une livraison ultra-rapide.",
       price: bumpPrice > 1500 ? bumpPrice : 1900,
       originalPrice: (bumpPrice > 1500 ? bumpPrice : 1900) * 2,
       image: "/images/default-hero.jpg",
-      badge: "SÉRÉNITÉ TOTALE",
+      badge: "EXPÉDITION EXPRESS",
     },
     upsell: {
       id: `upsell-${normalized}`,

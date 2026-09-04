@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
   Check,
@@ -260,8 +261,11 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
       const sessId = sessionIdRef.current || ("sess_" + Date.now());
       trackUserSession(slug, 0, true, sessId);
 
-      const orderNum = order?.order_number || "";
-      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone)}`;
+      const orderNum = order?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
+      setOrderInfo({ order_number: orderNum });
+      setSubmitted(true);
+      setSubmitting(false);
+      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch {
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setSubmitting(false);
@@ -317,62 +321,11 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
           
           {/* 1. CARROUSEL 4 IMAGES HD EN 1ÈRE POSITION */}
           <div className="md:col-span-6 flex flex-col items-center">
-            
-            <div className="relative w-full max-w-[360px] sm:max-w-[420px] aspect-square rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 bg-white group select-none">
-              
-              {/* Badge flottant sur l'image */}
-              <div className="absolute top-3.5 left-3.5 z-20 bg-slate-950/85 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>{CAROUSEL_SLIDES[slide].label}</span>
-              </div>
-
-              <div className="absolute top-3.5 right-3.5 z-20 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                Batterie 10 000 mAh
-              </div>
-
-              {/* Image active */}
-              <img
-                key={slide}
-                src={CAROUSEL_SLIDES[slide].src}
-                alt={CAROUSEL_SLIDES[slide].alt}
-                className="w-full h-full object-cover transition-all duration-300 animate-[fadeIn_200ms_ease-in-out]"
-              />
-
-              {/* Flèches de navigation */}
-              <button
-                type="button"
-                onClick={prevSlide}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-900 flex items-center justify-center shadow-lg transition-all active:scale-95 cursor-pointer z-20"
-                aria-label="Image précédente"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={nextSlide}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-slate-900 flex items-center justify-center shadow-lg transition-all active:scale-95 cursor-pointer z-20"
-                aria-label="Image suivante"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Puces et miniatures */}
-            <div className="flex items-center gap-2 mt-3.5">
-              {CAROUSEL_SLIDES.map((s, idx) => (
-                <button
-                  key={s.label}
-                  type="button"
-                  onClick={() => setSlide(idx)}
-                  className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
-                    slide === idx ? "w-8 bg-emerald-600" : "w-2 bg-slate-300 hover:bg-slate-400"
-                  }`}
-                  aria-label={`Slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-
+            <HorizontalCarousel
+              slides={CAROUSEL_SLIDES}
+              accentColor="#10B981"
+              autoplayInterval={4500}
+            />
           </div>
 
           {/* 2. TEXTE D'ACCROCHE & OFFRE */}
@@ -414,8 +367,8 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
                 <div className="text-xs font-bold text-emerald-700 font-mono">24h–48h</div>
               </div>
               <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center shadow-2xs">
-                <div className="text-[10px] font-bold uppercase text-slate-400">Garantie</div>
-                <div className="text-xs font-bold text-slate-800">100% Sérénité</div>
+                <div className="text-[10px] font-bold uppercase text-slate-400">Colis</div>
+                <div className="text-xs font-bold text-slate-800">Vérifié & Testé</div>
               </div>
             </div>
 
@@ -651,6 +604,12 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         onSubmit={handleSubmit}
         accentColor="#10B981"
         whatsappNumber="2290192901817"
+        orderSuccess={submitted}
+        orderNumber={orderInfo?.order_number}
+        onResetOrder={() => {
+          setSubmitted(false);
+          setOrderInfo(null);
+        }}
       />
 
       {/* ════════════════ AVIS CLIENTS ════════════════ */}

@@ -72,6 +72,8 @@ export default function UmeiLanding({ slug }: { slug: string }) {
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState("");
 
   // ID de session stable — généré UNE SEULE FOIS au montage du composant
   const sessionIdRef = useRef(
@@ -132,8 +134,11 @@ export default function UmeiLanding({ slug }: { slug: string }) {
       clickedRef.current = true;
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug || "umei", duration, true, sessionIdRef.current);
-      const orderNum = res?.order_number || "";
-      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}`;
+      const orderNum = res?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
+      setOrderNumber(orderNum);
+      setOrderSuccess(true);
+      setIsSubmitting(false);
+      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
@@ -268,7 +273,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
                 🚚 Livraison 24h–48h
               </span>
               <span className="bg-white text-[#6B5F87] text-xs font-bold py-1.5 px-3.5 rounded-full shadow-[0_4px_14px_-6px_rgba(139,111,224,0.3)] border border-[#8B6FE0]/15">
-                🛡️ Garantie 30 jours
+                🔍 Inspection du colis à l&apos;arrivée
               </span>
             </div>
 
@@ -441,6 +446,12 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         onSubmit={handleSubmit}
         accentColor="#FF5C93"
         whatsappNumber="2290192901817"
+        orderSuccess={orderSuccess}
+        orderNumber={orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderNumber("");
+        }}
       />
 
       {/* 💬 SECTION AVIS ("On te laisse pas juste sur parole.") */}

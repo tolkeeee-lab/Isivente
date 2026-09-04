@@ -23,6 +23,7 @@ import {
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
 interface ProductBundle {
@@ -222,97 +223,17 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
 
-      const orderNum = res?.order_number || "";
-      window.location.href = `/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}`;
+      const orderNum = res?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
+      setOrderInfo({ order_number: orderNum });
+      setOrderSuccess(true);
+      setIsSubmitting(false);
+      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       console.error("Order error:", err);
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setIsSubmitting(false);
     }
   };
-
-  // VUE SUCCÈS COMMANDE CONFIRMÉE
-  if (orderSuccess) {
-    const cleanPhone = (customerPhone || "0192901817").replace(/[^0-9]/g, "");
-    const orderNum = orderInfo?.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000);
-    const whatsappMsg = encodeURIComponent(
-      `Bonjour Isivente, je viens de commander la *Veilleuse Projecteur LED 3D Tactile* (${selectedBundle.name}) pour un montant de *${new Intl.NumberFormat("fr-FR").format(selectedBundle.price)} FCFA*. Référence : *${orderNum}*. Merci de confirmer ma livraison !`
-    );
-
-    return (
-      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-lg w-full bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl animate-[staggerFadeUp_240ms_cubic-bezier(0.16,1,0.3,1)_both]">
-          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full flex items-center justify-center mx-auto shadow-inner">
-            <Check className="w-8 h-8 stroke-[3]" />
-          </div>
-
-          <div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              Commande Enregistrée avec Succès
-            </span>
-            <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 mt-3">
-              Félicitations {customerName || "Cher Client"} !
-            </h1>
-            <p className="text-slate-600 text-sm mt-2 leading-relaxed">
-              Votre commande pour la <strong className="text-slate-900">Veilleuse Projecteur LED 3D Tactile (FRIOSZ FP-032)</strong> est bien reçue. Notre service logistique prépare votre colis.
-            </p>
-          </div>
-
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-left space-y-2.5 text-xs font-mono">
-            <div className="flex justify-between text-slate-600">
-              <span>N° Commande :</span>
-              <span className="text-slate-900 font-bold">{orderNum}</span>
-            </div>
-            <div className="flex justify-between text-slate-600">
-              <span>Pack sélectionné :</span>
-              <span className="text-indigo-700 font-bold">{selectedBundle.name}</span>
-            </div>
-            <div className="flex justify-between text-slate-600">
-              <span>Montant à régler au livreur :</span>
-              <span className="text-emerald-700 font-black text-sm">
-                {new Intl.NumberFormat("fr-FR").format(selectedBundle.price)} FCFA
-              </span>
-            </div>
-            <div className="flex justify-between text-slate-600">
-              <span>Destination :</span>
-              <span className="text-slate-900 font-semibold">{city || "Cotonou"}</span>
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <a
-              href={`https://wa.me/2290192901817?text=${whatsappMsg}`}
-              target="_blank"
-              rel="noreferrer"
-              className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition-all text-sm uppercase tracking-wide"
-            >
-              <MessageSquare className="w-5 h-5 fill-current" />
-              <span>Accélérer ma livraison sur WhatsApp</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={() => {
-                setOrderSuccess(false);
-                setCustomerName("");
-                setCustomerPhone("");
-                setCustomerPhone2("");
-                setAddress("");
-              }}
-              className="text-xs text-slate-500 hover:text-slate-800 underline transition-colors pt-2"
-            >
-              Retourner à la page produit
-            </button>
-          </div>
-
-          <div className="text-[11px] text-slate-500 flex items-center justify-center gap-1.5 pt-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Paiement 100% sécurisé en espèces ou MoMo à la livraison</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-indigo-100 selection:text-indigo-950">
@@ -357,39 +278,12 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* GAUCHE : GALERIE D'IMAGES HD AVEC CARROUSEL */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-xl group">
-              <img
-                src={CAROUSEL_IMAGES[activeImageIndex].src}
-                alt={CAROUSEL_IMAGES[activeImageIndex].alt}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md border border-slate-200/90 px-3 py-1.5 rounded-full text-[11px] font-mono text-indigo-700 font-bold flex items-center gap-1.5 shadow-md">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                <span>24 Disques Haute Définition Inclus</span>
-              </div>
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-slate-200/90 px-4 py-2.5 rounded-2xl text-xs text-slate-800 font-semibold shadow-lg">
-                {CAROUSEL_IMAGES[activeImageIndex].caption}
-              </div>
-            </div>
-
-            {/* MINIATURES CLIQUABLES */}
-            <div className="grid grid-cols-5 gap-2.5">
-              {CAROUSEL_IMAGES.map((img, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveImageIndex(idx)}
-                  className={`aspect-square rounded-2xl overflow-hidden border-2 bg-white transition-all cursor-pointer ${
-                    activeImageIndex === idx
-                      ? "border-indigo-600 shadow-md shadow-indigo-500/25 scale-[1.03]"
-                      : "border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100"
-                  }`}
-                >
-                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+          <div className="lg:col-span-7">
+            <HorizontalCarousel
+              slides={CAROUSEL_IMAGES}
+              accentColor="#6366F1"
+              autoplayInterval={4500}
+            />
           </div>
 
           {/* DROITE : ARGUMENTAIRE & OFFRE HORMOZI */}
@@ -605,6 +499,12 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
           onSubmit={handleSubmit}
           accentColor="#6366F1"
           whatsappNumber="2290192901817"
+          orderSuccess={orderSuccess}
+          orderNumber={orderInfo?.order_number}
+          onResetOrder={() => {
+            setOrderSuccess(false);
+            setOrderInfo(null);
+          }}
         />
 
         {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
