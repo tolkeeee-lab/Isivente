@@ -106,15 +106,32 @@ export default function ProductsPage() {
         { name: "Pack Duo Studio (2 Kits)", price: 89900 },
         { name: "Pack Pro Équipe & Vidéaste (3 Kits)", price: 129900 }
       ]
+    },
+    {
+      id: "veilleuse-default",
+      title: "Veilleuse Projecteur LED 3D Tactile FRIOSZ FP-032",
+      slug: "veilleuse",
+      price: 14900,
+      image_url: "/images/projecteur-hero.jpg",
+      bundles: [
+        { name: "Pack Solo Découverte (1 Kit + 24 Disques)", price: 14900 },
+        { name: "Pack Duo Magique (2 Kits + 48 Disques)", price: 25900 },
+        { name: "Pack Trio Famille & Cadeaux (3 Kits + 72 Disques)", price: 36900 }
+      ]
     }
   ];
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const { data } = await supabase.from("products").select("*");
+      const { data } = await supabase.from("products").select("*").order("created_at", { ascending: true });
       if (data && data.length > 0) {
-        setProducts(data);
+        const formatted = data.map((p: any) => ({
+          ...p,
+          image_url: p.image_url || (p.images && p.images[0]?.url) || "/images/projecteur-hero.jpg",
+          bundles: p.bundles || []
+        }));
+        setProducts(formatted);
       } else {
         setProducts(defaultProducts);
       }
