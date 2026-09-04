@@ -429,6 +429,38 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
 
         </div>
 
+        {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA PRÉSENTATION) */}
+        <UmeiStyleOrderSection
+          productSlug={slug}
+          productTitle="Veilleuse Projecteur LED 3D Tactile FRIOSZ FP-032"
+          bundles={BUNDLES}
+          selectedBundle={selectedBundle}
+          onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
+          customerName={customerName}
+          setCustomerName={setCustomerName}
+          customerPhone={customerPhone}
+          setCustomerPhone={setCustomerPhone}
+          customerPhone2={customerPhone2}
+          setCustomerPhone2={setCustomerPhone2}
+          city={city}
+          setCity={setCity}
+          address={address}
+          setAddress={setAddress}
+          includeBump={includeBump}
+          setIncludeBump={setIncludeBump}
+          bumpOffer={bumpOffer}
+          isSubmitting={isSubmitting}
+          onSubmit={handleSubmit}
+          accentColor="#6366F1"
+          whatsappNumber="2290192901817"
+          orderSuccess={orderSuccess}
+          orderNumber={orderInfo?.order_number}
+          onResetOrder={() => {
+            setOrderSuccess(false);
+            setOrderInfo(null);
+          }}
+        />
+
         {/* 🌟 SECTION FONCTIONNALITÉS EN DÉTAIL */}
         <section className="border-t border-slate-200 pt-12 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -474,38 +506,6 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
 
           </div>
         </section>
-
-        {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI) */}
-        <UmeiStyleOrderSection
-          productSlug={slug}
-          productTitle="Veilleuse Projecteur LED 3D Tactile FRIOSZ FP-032"
-          bundles={BUNDLES}
-          selectedBundle={selectedBundle}
-          onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
-          customerName={customerName}
-          setCustomerName={setCustomerName}
-          customerPhone={customerPhone}
-          setCustomerPhone={setCustomerPhone}
-          customerPhone2={customerPhone2}
-          setCustomerPhone2={setCustomerPhone2}
-          city={city}
-          setCity={setCity}
-          address={address}
-          setAddress={setAddress}
-          includeBump={includeBump}
-          setIncludeBump={setIncludeBump}
-          bumpOffer={bumpOffer}
-          isSubmitting={isSubmitting}
-          onSubmit={handleSubmit}
-          accentColor="#6366F1"
-          whatsappNumber="2290192901817"
-          orderSuccess={orderSuccess}
-          orderNumber={orderInfo?.order_number}
-          onResetOrder={() => {
-            setOrderSuccess(false);
-            setOrderInfo(null);
-          }}
-        />
 
         {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
         <section className="space-y-6 pt-4">

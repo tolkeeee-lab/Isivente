@@ -424,6 +424,38 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
 
         </div>
 
+        {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA PRÉSENTATION) */}
+        <UmeiStyleOrderSection
+          productSlug={slug}
+          productTitle="Stabilisateur Pro-Mobile Z3 Zoom™"
+          bundles={BUNDLES}
+          selectedBundle={selectedBundle}
+          onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
+          customerName={customerName}
+          setCustomerName={setCustomerName}
+          customerPhone={customerPhone}
+          setCustomerPhone={setCustomerPhone}
+          customerPhone2={customerPhone2}
+          setCustomerPhone2={setCustomerPhone2}
+          city={city}
+          setCity={setCity}
+          address={address}
+          setAddress={setAddress}
+          includeBump={includeBump}
+          setIncludeBump={setIncludeBump}
+          bumpOffer={bumpOffer}
+          isSubmitting={isSubmitting}
+          onSubmit={handleSubmit}
+          accentColor="#F59E0B"
+          whatsappNumber="2290192901817"
+          orderSuccess={orderSuccess}
+          orderNumber={orderInfo?.order_number}
+          onResetOrder={() => {
+            setOrderSuccess(false);
+            setOrderInfo(null);
+          }}
+        />
+
         {/* 🌟 SECTION FONCTIONNALITÉS EN DÉTAIL */}
         <section className="border-t border-slate-200 pt-12 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
@@ -469,38 +501,6 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
 
           </div>
         </section>
-
-        {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI) */}
-        <UmeiStyleOrderSection
-          productSlug={slug}
-          productTitle="Stabilisateur Pro-Mobile Z3 Zoom™"
-          bundles={BUNDLES}
-          selectedBundle={selectedBundle}
-          onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
-          customerName={customerName}
-          setCustomerName={setCustomerName}
-          customerPhone={customerPhone}
-          setCustomerPhone={setCustomerPhone}
-          customerPhone2={customerPhone2}
-          setCustomerPhone2={setCustomerPhone2}
-          city={city}
-          setCity={setCity}
-          address={address}
-          setAddress={setAddress}
-          includeBump={includeBump}
-          setIncludeBump={setIncludeBump}
-          bumpOffer={bumpOffer}
-          isSubmitting={isSubmitting}
-          onSubmit={handleSubmit}
-          accentColor="#F59E0B"
-          whatsappNumber="2290192901817"
-          orderSuccess={orderSuccess}
-          orderNumber={orderInfo?.order_number}
-          onResetOrder={() => {
-            setOrderSuccess(false);
-            setOrderInfo(null);
-          }}
-        />
 
         {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
         <section className="space-y-6 pt-4">

@@ -317,48 +317,95 @@ export default function UmeiStyleOrderSection({
                 
                 <div className={`grid grid-cols-1 ${bundles.length >= 3 ? "sm:grid-cols-3" : bundles.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-1"} gap-3`}>
                   {bundles.map((b, idx) => {
-                    const isSelected = selectedBundle?.name === b.name || (b.id && selectedBundle?.id === b.id) || idx === 0;
+                    const isSelected = selectedBundle
+                      ? (Boolean(selectedBundle.id && b.id) ? selectedBundle.id === b.id : selectedBundle.name === b.name)
+                      : idx === 0;
                     const origPrice = b.originalPrice || b.original_price || Math.round(b.price * 1.4);
 
                     return (
                       <div
                         key={b.id || b.name || idx}
                         onClick={() => onSelectBundle(b)}
-                        className="border-2 rounded-2xl p-3.5 text-center cursor-pointer relative transition-all duration-150"
+                        role="radio"
+                        aria-checked={isSelected}
+                        className={`rounded-2xl p-3.5 text-center cursor-pointer relative transition-all duration-200 select-none ${
+                          isSelected
+                            ? "border-[2.5px] shadow-md ring-2 ring-offset-1"
+                            : "border-2 border-slate-200 hover:border-slate-300 bg-white hover:shadow-xs"
+                        }`}
                         style={{
-                          borderColor: isSelected ? theme.primary : "#E2E8F0",
+                          borderColor: isSelected ? theme.primary : undefined,
                           backgroundColor: isSelected ? theme.primaryLight : "#FFFFFF",
-                          boxShadow: isSelected ? `0 8px 20px -8px ${theme.primary}40` : "none",
-                          transform: isSelected ? "scale(1.01)" : "scale(1)",
+                          boxShadow: isSelected ? `0 10px 25px -5px ${theme.primary}30` : undefined,
+                          transform: isSelected ? "scale(1.02)" : "scale(1)",
                         }}
                       >
                         {b.badge && (
                           <span
-                            className="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-[9.5px] sm:text-[10px] font-extrabold py-0.5 px-2.5 rounded-full whitespace-nowrap shadow-xs"
+                            className="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-[9.5px] sm:text-[10px] font-extrabold py-0.5 px-3 rounded-full whitespace-nowrap shadow-sm tracking-wide uppercase"
                             style={{ backgroundColor: theme.primary }}
                           >
                             {b.badge}
                           </span>
                         )}
-                        <div className="font-display font-bold text-xs sm:text-[14px] text-slate-900 mt-1">
+
+                        {/* Indicateur radio visuel en haut */}
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            {b.quantity ? `${b.quantity} pièce${b.quantity > 1 ? "s" : ""}` : `Option ${idx + 1}`}
+                          </span>
+                          <div
+                            className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                              isSelected ? "text-white shadow-xs" : "border-2 border-slate-300 bg-white"
+                            }`}
+                            style={{
+                              backgroundColor: isSelected ? theme.primary : "#FFFFFF",
+                              borderColor: isSelected ? theme.primary : "#CBD5E1",
+                            }}
+                          >
+                            {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                          </div>
+                        </div>
+
+                        <div className="font-display font-bold text-xs sm:text-[14px] text-slate-900 mt-0.5 leading-snug">
                           {b.name}
                         </div>
+
                         <div
-                          className="font-display font-black text-xl sm:text-2xl my-0.5 font-mono tabular-nums"
+                          className="font-display font-black text-xl sm:text-2xl my-1 font-mono tabular-nums"
                           style={{ color: theme.primary }}
                         >
                           {fmt(b.price)} F
                         </div>
+
                         {origPrice && (
                           <div className="text-[11px] text-slate-400 line-through font-medium font-mono tabular-nums">
                             {fmt(origPrice)} F
                           </div>
                         )}
+
                         {(b.description || b.subtitle) && (
                           <div className="text-[10.5px] text-slate-500 mt-1 font-medium leading-tight">
                             {b.description || b.subtitle}
                           </div>
                         )}
+
+                        {/* Bouton indicateur d'état sélectionné */}
+                        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-center">
+                          {isSelected ? (
+                            <span
+                              className="inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2.5 py-0.5 rounded-full text-white shadow-2xs"
+                              style={{ backgroundColor: theme.primary }}
+                            >
+                              <Check className="w-3 h-3 stroke-[3]" />
+                              Pack Sélectionné
+                            </span>
+                          ) : (
+                            <span className="text-[10.5px] font-bold text-slate-400 hover:text-slate-600">
+                              Cliquer pour choisir
+                            </span>
+                          )}
+                        </div>
                       </div>
                     );
                   })}

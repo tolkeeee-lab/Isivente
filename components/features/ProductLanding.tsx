@@ -307,10 +307,10 @@ export default function ProductLanding({ slug }: { slug: string }) {
             {bundles.length > 0 && (
               <li>
                 <button
-                  onClick={() => scrollToSection("packs")}
+                  onClick={() => scrollToSection("commander")}
                   className="hover:text-indigo-600 transition-colors"
                 >
-                  Offres
+                  Offres & Commande
                 </button>
               </li>
             )}
@@ -408,110 +408,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* ── PACKS / BUNDLES + ORDER FORM ── */}
-      {bundles.length > 0 && (
-        <section id="packs" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full">
-          <div className="max-w-2xl mx-auto space-y-8">
-
-            <div className="text-center space-y-2">
-              <span className="text-[11px] font-mono uppercase tracking-widest text-indigo-700 font-bold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
-                Offres Spéciales
-              </span>
-              <h2 className="font-display font-bold text-2xl sm:text-3xl text-slate-950">
-                Choisissez votre pack
-              </h2>
-            </div>
-
-            {/* Bundle cards */}
-            <div className="space-y-3">
-              {bundles.map((bundle, idx) => {
-                const isSelected = selectedBundleIdx === idx;
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => setSelectedBundleIdx(idx)}
-                    className={`p-4 rounded-2xl border-2 cursor-pointer relative ${
-                      isSelected
-                        ? "bg-indigo-50/40 border-indigo-600 shadow-md shadow-indigo-500/10 ring-1 ring-indigo-600"
-                        : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
-                    }`}
-                    style={{
-                      transition: "all 160ms cubic-bezier(0.2, 0, 0, 1)",
-                      animationDelay: `${idx * 35}ms`,
-                    }}
-                  >
-                    {bundle.badge && (
-                      <span className="absolute -top-2.5 right-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md">
-                        {bundle.badge}
-                      </span>
-                    )}
-
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
-                            isSelected
-                              ? "border-indigo-600 bg-indigo-600 text-white"
-                              : "border-slate-300 bg-slate-100"
-                          }`}
-                          style={{ transition: "all 120ms cubic-bezier(0.2, 0, 0, 1)" }}
-                        >
-                          {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                        </div>
-                        <div>
-                          <div className="font-bold text-sm text-slate-900">{bundle.name}</div>
-                          {(bundle.subtitle || bundle.description) && (
-                            <div className="text-xs text-slate-600">
-                              {bundle.subtitle || bundle.description}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <div className="font-mono font-bold text-base text-indigo-700 tabular-nums">
-                          {fmt(bundle.price)} F
-                        </div>
-                        {bundle.originalPrice && bundle.originalPrice > bundle.price && (
-                          <div className="text-[11px] font-mono text-slate-400 line-through tabular-nums">
-                            {fmt(bundle.originalPrice)} F
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Order CTA */}
-            <button
-              type="button"
-              onClick={() => scrollToSection("commander")}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 shadow-xl shadow-indigo-600/20 active:scale-[0.98] text-sm uppercase tracking-wider cursor-pointer"
-              style={{ transition: "all 160ms cubic-bezier(0.2, 0, 0, 1)" }}
-            >
-              <Zap className="w-4 h-4 fill-current text-amber-300" />
-              <span>
-                Commander ({selectedBundle ? fmt(selectedBundle.price) : fmt(product.price)} FCFA)
-              </span>
-            </button>
-
-            <div className="flex items-center justify-center gap-4 text-xs text-slate-600">
-              <div className="flex items-center gap-1.5">
-                <Truck className="w-4 h-4 text-emerald-600" />
-                <span>Livraison 24h</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>Paiement à la livraison</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── SECTION COMMANDE AU MODÈLE EXACT UMÉI ── */}
+      {/* ── SECTION COMMANDE AU MODÈLE EXACT UMÉI DIRECTEMENT SOUS LE HERO ── */}
       <UmeiStyleOrderSection
         productSlug={slug}
         productTitle={product.title}

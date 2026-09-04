@@ -433,7 +433,38 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* ════════════════ BÉNÉFICES ════════════════ */}
+      {/* ════════════════ PACKS & FORMULAIRE (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA VIDÉO) ════════════════ */}
+      <UmeiStyleOrderSection
+        productSlug="eraclean"
+        productTitle="Purificateur d'Air & Anti-Odeurs EraClean™"
+        bundles={BUNDLES}
+        selectedBundle={selected}
+        onSelectBundle={(b) => setSelected(b as Bundle)}
+        customerName={name}
+        setCustomerName={setName}
+        customerPhone={phone}
+        setCustomerPhone={setPhone}
+        customerPhone2={phone2}
+        setCustomerPhone2={setPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        includeBump={includeBump}
+        setIncludeBump={setIncludeBump}
+        bumpOffer={bumpOffer}
+        isSubmitting={submitting}
+        onSubmit={handleSubmit}
+        accentColor={C.accent}
+        whatsappNumber="2290192901817"
+        orderSuccess={orderSuccess}
+        orderNumber={orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderNumber("");
+        }}
+      />
+
       {/* ════════════════ BÉNÉFICES & 10 ANS DE DURÉE DE VIE ════════════════ */}
       <section
         className="py-16 px-4 md:px-8"
@@ -649,38 +680,6 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
 
         </div>
       </section>
-
-      {/* ════════════════ PACKS & FORMULAIRE (MODÈLE UMÉI) ════════════════ */}
-      <UmeiStyleOrderSection
-        productSlug="eraclean"
-        productTitle="Purificateur d'Air & Anti-Odeurs EraClean™"
-        bundles={BUNDLES}
-        selectedBundle={selected}
-        onSelectBundle={(b) => setSelected(b as Bundle)}
-        customerName={name}
-        setCustomerName={setName}
-        customerPhone={phone}
-        setCustomerPhone={setPhone}
-        customerPhone2={phone2}
-        setCustomerPhone2={setPhone2}
-        city={city}
-        setCity={setCity}
-        address={address}
-        setAddress={setAddress}
-        includeBump={includeBump}
-        setIncludeBump={setIncludeBump}
-        bumpOffer={bumpOffer}
-        isSubmitting={submitting}
-        onSubmit={handleSubmit}
-        accentColor={C.accent}
-        whatsappNumber="2290192901817"
-        orderSuccess={orderSuccess}
-        orderNumber={orderNumber}
-        onResetOrder={() => {
-          setOrderSuccess(false);
-          setOrderNumber("");
-        }}
-      />
 
       {/* ════════════════ AVIS ════════════════ */}
       <section id="avis" className="py-16 px-4 md:px-8" style={{ background: "white" }}>

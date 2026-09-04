@@ -329,6 +329,38 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* 📝 FORMULAIRE DE COMMANDE DIRECT (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA VIDÉO) */}
+      <UmeiStyleOrderSection
+        productSlug={slug || "umei"}
+        productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
+        bundles={BUNDLES}
+        selectedBundle={selectedBundle}
+        onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
+        customerName={customerName}
+        setCustomerName={setCustomerName}
+        customerPhone={customerPhone}
+        setCustomerPhone={setCustomerPhone}
+        customerPhone2={customerPhone2}
+        setCustomerPhone2={setCustomerPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        includeBump={includeBump}
+        setIncludeBump={setIncludeBump}
+        bumpOffer={bumpOffer}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+        accentColor="#FF5C93"
+        whatsappNumber="2290192901817"
+        orderSuccess={orderSuccess}
+        orderNumber={orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderNumber("");
+        }}
+      />
+
       {/* 🌿 SECTION 3 AVANTAGES ("Ce qu'il y a dedans, en vrai.") */}
       <section id="comment" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
@@ -421,38 +453,6 @@ export default function UmeiLanding({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
-
-      {/* 📝 FORMULAIRE DE COMMANDE DIRECT (MODÈLE UMÉI AVEC ORDER BUMP) */}
-      <UmeiStyleOrderSection
-        productSlug={slug || "umei"}
-        productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
-        bundles={BUNDLES}
-        selectedBundle={selectedBundle}
-        onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
-        customerName={customerName}
-        setCustomerName={setCustomerName}
-        customerPhone={customerPhone}
-        setCustomerPhone={setCustomerPhone}
-        customerPhone2={customerPhone2}
-        setCustomerPhone2={setCustomerPhone2}
-        city={city}
-        setCity={setCity}
-        address={address}
-        setAddress={setAddress}
-        includeBump={includeBump}
-        setIncludeBump={setIncludeBump}
-        bumpOffer={bumpOffer}
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-        accentColor="#FF5C93"
-        whatsappNumber="2290192901817"
-        orderSuccess={orderSuccess}
-        orderNumber={orderNumber}
-        onResetOrder={() => {
-          setOrderSuccess(false);
-          setOrderNumber("");
-        }}
-      />
 
       {/* 💬 SECTION AVIS ("On te laisse pas juste sur parole.") */}
       <section id="avis" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">

@@ -378,6 +378,38 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* ════════════════ SÉLECTION DES PACKS & FORMULAIRE COD (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA PRÉSENTATION) ════════════════ */}
+      <UmeiStyleOrderSection
+        productSlug={slug}
+        productTitle="ChefPeel™ Pro — Éplucheur Automatique Multifonction"
+        bundles={BUNDLES}
+        selectedBundle={selected}
+        onSelectBundle={(b) => setSelected(b as Bundle)}
+        customerName={name}
+        setCustomerName={setName}
+        customerPhone={phone}
+        setCustomerPhone={setPhone}
+        customerPhone2={phone2}
+        setCustomerPhone2={setPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        includeBump={includeBump}
+        setIncludeBump={setIncludeBump}
+        bumpOffer={bumpOffer}
+        isSubmitting={submitting}
+        onSubmit={handleSubmit}
+        accentColor="#0047AB"
+        whatsappNumber="2290192901817"
+        orderSuccess={submitted}
+        orderNumber={orderInfo?.order_number}
+        onResetOrder={() => {
+          setSubmitted(false);
+          setOrderInfo(null);
+        }}
+      />
+
       {/* ════════════════ BANDEAU MARQUEE DES ATOUTS ════════════════ */}
       <div className="bg-[#0B1E3F] text-white py-3.5 overflow-hidden border-y border-white/10">
         <div className="flex whitespace-nowrap font-mono text-xs sm:text-sm font-semibold tracking-wider">
@@ -510,38 +542,6 @@ export default function PeelerLanding({ slug }: { slug: string }) {
           />
         </div>
       </section>
-
-      {/* ════════════════ SÉLECTION DES PACKS & FORMULAIRE COD (MODÈLE UMÉI) ════════════════ */}
-      <UmeiStyleOrderSection
-        productSlug={slug}
-        productTitle="ChefPeel™ Pro — Éplucheur Automatique Multifonction"
-        bundles={BUNDLES}
-        selectedBundle={selected}
-        onSelectBundle={(b) => setSelected(b as Bundle)}
-        customerName={name}
-        setCustomerName={setName}
-        customerPhone={phone}
-        setCustomerPhone={setPhone}
-        customerPhone2={phone2}
-        setCustomerPhone2={setPhone2}
-        city={city}
-        setCity={setCity}
-        address={address}
-        setAddress={setAddress}
-        includeBump={includeBump}
-        setIncludeBump={setIncludeBump}
-        bumpOffer={bumpOffer}
-        isSubmitting={submitting}
-        onSubmit={handleSubmit}
-        accentColor="#0047AB"
-        whatsappNumber="2290192901817"
-        orderSuccess={submitted}
-        orderNumber={orderInfo?.order_number}
-        onResetOrder={() => {
-          setSubmitted(false);
-          setOrderInfo(null);
-        }}
-      />
 
       {/* ════════════════ AVIS CLIENTS ════════════════ */}
       <section className="py-12 px-4 md:px-8 max-w-4xl mx-auto space-y-6">

@@ -417,6 +417,38 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* ════════════════ SÉLECTION DES PACKS & FORMULAIRE COD (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA VIDÉO) ════════════════ */}
+      <UmeiStyleOrderSection
+        productSlug={slug}
+        productTitle="TurboFan™ Max — Ventilateur Ceinture & Powerbank"
+        bundles={BUNDLES}
+        selectedBundle={selected}
+        onSelectBundle={(b) => setSelected(b as Bundle)}
+        customerName={name}
+        setCustomerName={setName}
+        customerPhone={phone}
+        setCustomerPhone={setPhone}
+        customerPhone2={phone2}
+        setCustomerPhone2={setPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        includeBump={includeBump}
+        setIncludeBump={setIncludeBump}
+        bumpOffer={bumpOffer}
+        isSubmitting={submitting}
+        onSubmit={handleSubmit}
+        accentColor="#10B981"
+        whatsappNumber="2290192901817"
+        orderSuccess={submitted}
+        orderNumber={orderInfo?.order_number}
+        onResetOrder={() => {
+          setSubmitted(false);
+          setOrderInfo(null);
+        }}
+      />
+
       {/* ════════════════ LES 3 MODES D'USAGE EN IMAGES RÉELLES ════════════════ */}
       <section className="py-14 px-4 md:px-8 max-w-5xl mx-auto space-y-10">
         
@@ -579,38 +611,6 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
-
-      {/* ════════════════ SÉLECTION DES PACKS & FORMULAIRE COD (MODÈLE UMÉI) ════════════════ */}
-      <UmeiStyleOrderSection
-        productSlug={slug}
-        productTitle="TurboFan™ Max — Ventilateur Ceinture & Powerbank"
-        bundles={BUNDLES}
-        selectedBundle={selected}
-        onSelectBundle={(b) => setSelected(b as Bundle)}
-        customerName={name}
-        setCustomerName={setName}
-        customerPhone={phone}
-        setCustomerPhone={setPhone}
-        customerPhone2={phone2}
-        setCustomerPhone2={setPhone2}
-        city={city}
-        setCity={setCity}
-        address={address}
-        setAddress={setAddress}
-        includeBump={includeBump}
-        setIncludeBump={setIncludeBump}
-        bumpOffer={bumpOffer}
-        isSubmitting={submitting}
-        onSubmit={handleSubmit}
-        accentColor="#10B981"
-        whatsappNumber="2290192901817"
-        orderSuccess={submitted}
-        orderNumber={orderInfo?.order_number}
-        onResetOrder={() => {
-          setSubmitted(false);
-          setOrderInfo(null);
-        }}
-      />
 
       {/* ════════════════ AVIS CLIENTS ════════════════ */}
       <section className="py-12 px-4 md:px-8 max-w-4xl mx-auto space-y-6">
