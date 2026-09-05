@@ -429,6 +429,44 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
 
         </div>
 
+        {/* 🎬 SECTION DÉMONSTRATION VIDÉO EN DIRECT */}
+        <section id="demo-video" className="py-8 bg-gradient-to-b from-indigo-50/50 to-white rounded-3xl border border-indigo-100 p-4 sm:p-8 text-center space-y-5 shadow-sm">
+          <div className="max-w-xl mx-auto space-y-1.5">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-700 font-bold bg-indigo-100/70 px-3 py-1 rounded-full border border-indigo-200">
+              Démonstration Vidéo Réelle
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Voyez la projection en direct
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm">
+              Découvrez la netteté et les effets immersifs 3D des galaxies et méduses lumineuses au plafond.
+            </p>
+          </div>
+
+          <div className="bg-slate-950 p-2 sm:p-3.5 rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_-15px_rgba(99,102,241,0.35)] border border-indigo-500/20 max-w-3xl mx-auto">
+            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 aspect-video flex items-center justify-center">
+              
+              <div className="absolute top-2.5 left-2.5 bg-slate-950/85 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 z-10">
+                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                <span>Démonstration en direct</span>
+              </div>
+
+              <video 
+                src="/videos/veilleuse-demo.mp4"
+                poster="/images/projecteur-galaxie.jpg"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                className="w-full h-full object-cover"
+              >
+                Votre navigateur ne supporte pas la lecture de vidéos.
+              </video>
+            </div>
+          </div>
+        </section>
+
         {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA PRÉSENTATION) */}
         <UmeiStyleOrderSection
           productSlug={slug}

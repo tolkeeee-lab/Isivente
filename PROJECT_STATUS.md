@@ -46,6 +46,7 @@
 6. **Veilleuse Projecteur LED 3D Tactile FRIOSZ FP-032**
    - Slug : `/p/veilleuse` *(alias /p/projecteur, /p/galaxie, /p/friosz, /p/veilleuse-3d)*
    - Prix de base officiel : **14 900 FCFA**
+   - Vidéo démo : `/videos/veilleuse-demo.mp4`
    - Packs : Solo Découverte (14 900 F), Duo Magique (25 900 F), Trio Famille (36 900 F)
 
 ---
