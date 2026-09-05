@@ -153,9 +153,11 @@ const fmt = (n: number) =>
 
 /* ─────────────────────────────────────────── COMPONENT */
 export default function TurboFanLanding({ slug }: { slug: string }) {
-  const [selected, setSelected] = useState<Bundle>(BUNDLES[1]);
+  const [selected, setSelected] = useState<Bundle>(BUNDLES[0]);
   const [includeBump, setIncludeBump] = useState(false);
+  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const upsellConfig = getProductUpsellConfig("turbofan");
+  const secondUnitOffer = upsellConfig?.secondUnit;
   const bumpOffer = upsellConfig?.bump;
 
   const [slide, setSlide] = useState(0);
@@ -241,16 +243,19 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
     setSubmitting(true);
 
     try {
+      const secondUnitPrice = includeSecondUnit && secondUnitOffer ? secondUnitOffer.price : 0;
       const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
-      const finalTotal = selected.price + bumpPrice;
-      const finalBundleName = selected.name + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+      const finalTotal = selected.price + secondUnitPrice + bumpPrice;
+      const finalBundleName = selected.name 
+        + (includeSecondUnit && secondUnitOffer ? ` + 2ème TurboFan (${secondUnitOffer.title})` : "")
+        + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
 
       const order = await saveNewOrder({
         product_slug: slug,
         product_title: "TurboFan™ Max — Ventilateur Ceinture & Powerbank",
         bundle_id: selected.id,
         bundle_name: finalBundleName,
-        quantity: selected.quantity,
+        quantity: (selected.quantity || 1) + (includeSecondUnit ? 1 : 0),
         total_amount: finalTotal,
         customer_name: name.trim(),
         customer_phone: phone.trim() + (phone2.trim() ? ` / ${phone2.trim()}` : ""),
@@ -441,6 +446,9 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         includeBump={includeBump}
         setIncludeBump={setIncludeBump}
         bumpOffer={bumpOffer}
+        includeSecondUnit={includeSecondUnit}
+        setIncludeSecondUnit={setIncludeSecondUnit}
+        secondUnitOffer={secondUnitOffer}
         isSubmitting={submitting}
         onSubmit={handleSubmit}
         accentColor="#10B981"

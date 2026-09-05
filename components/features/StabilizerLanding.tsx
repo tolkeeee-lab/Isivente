@@ -138,9 +138,11 @@ const FAQ_ITEMS = [
 ];
 
 export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: string }) {
-  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[1]);
+  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
   const [includeBump, setIncludeBump] = useState(false);
+  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const upsellConfig = getProductUpsellConfig(slug || "stabilisateur");
+  const secondUnitOffer = upsellConfig?.secondUnit;
   const bumpOffer = upsellConfig?.bump;
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -193,16 +195,19 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
 
     setIsSubmitting(true);
     try {
+      const secondUnitPrice = includeSecondUnit && secondUnitOffer ? secondUnitOffer.price : 0;
       const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
-      const finalTotal = selectedBundle.price + bumpPrice;
-      const finalBundleName = selectedBundle.name + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+      const finalTotal = selectedBundle.price + secondUnitPrice + bumpPrice;
+      const finalBundleName = selectedBundle.name 
+        + (includeSecondUnit && secondUnitOffer ? ` + 2ème Stabilisateur (${secondUnitOffer.title})` : "")
+        + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
 
       const orderPayload = {
         product_slug: slug,
         product_title: "Stabilisateur Pro-Mobile Z3 Zoom™",
         bundle_id: selectedBundle.id,
         bundle_name: finalBundleName,
-        quantity: selectedBundle.quantity,
+        quantity: (selectedBundle.quantity || 1) + (includeSecondUnit ? 1 : 0),
         total_amount: finalTotal,
         customer_name: customerName || "Client",
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
@@ -444,6 +449,9 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
           includeBump={includeBump}
           setIncludeBump={setIncludeBump}
           bumpOffer={bumpOffer}
+          includeSecondUnit={includeSecondUnit}
+          setIncludeSecondUnit={setIncludeSecondUnit}
+          secondUnitOffer={secondUnitOffer}
           isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
           accentColor="#F59E0B"

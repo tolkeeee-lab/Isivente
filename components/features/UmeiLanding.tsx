@@ -60,9 +60,11 @@ const BUNDLES: ProductBundle[] = [
 ];
 
 export default function UmeiLanding({ slug }: { slug: string }) {
-  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[1]);
+  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
   const [includeBump, setIncludeBump] = useState(false);
+  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const upsellConfig = getProductUpsellConfig(slug || "umei");
+  const secondUnitOffer = upsellConfig?.secondUnit;
   const bumpOffer = upsellConfig?.bump;
 
   const [customerName, setCustomerName] = useState("");
@@ -109,16 +111,19 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
     setIsSubmitting(true);
     try {
+      const secondUnitPrice = includeSecondUnit && secondUnitOffer ? secondUnitOffer.price : 0;
       const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
-      const finalTotal = selectedBundle.price + bumpPrice;
-      const finalBundleName = selectedBundle.name + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+      const finalTotal = selectedBundle.price + secondUnitPrice + bumpPrice;
+      const finalBundleName = selectedBundle.name 
+        + (includeSecondUnit && secondUnitOffer ? ` + 2ème Brosse (${secondUnitOffer.title})` : "")
+        + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
 
       const orderData = {
         product_slug: slug || "umei",
         product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
         bundle_id: selectedBundle.id,
         bundle_name: finalBundleName,
-        quantity: selectedBundle.quantity,
+        quantity: (selectedBundle.quantity || 1) + (includeSecondUnit ? 1 : 0),
         total_amount: finalTotal,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
@@ -349,6 +354,9 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         includeBump={includeBump}
         setIncludeBump={setIncludeBump}
         bumpOffer={bumpOffer}
+        includeSecondUnit={includeSecondUnit}
+        setIncludeSecondUnit={setIncludeSecondUnit}
+        secondUnitOffer={secondUnitOffer}
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
         accentColor="#FF5C93"

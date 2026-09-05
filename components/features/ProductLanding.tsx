@@ -62,6 +62,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [includeBump, setIncludeBump] = useState(false);
+  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
@@ -175,8 +176,9 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
   const selectedBundle = product?.bundles?.[selectedBundleIdx] || null;
   const upsellConfig = getProductUpsellConfig(slug, product?.title, product?.price);
+  const secondUnitPrice = includeSecondUnit && upsellConfig.secondUnit ? upsellConfig.secondUnit.price : 0;
   const bumpPrice = includeBump && upsellConfig.bump ? upsellConfig.bump.price : 0;
-  const totalWithBump = (selectedBundle ? selectedBundle.price : (product?.price || 0)) + bumpPrice;
+  const totalWithBump = (selectedBundle ? selectedBundle.price : (product?.price || 0)) + secondUnitPrice + bumpPrice;
 
   /* ─── Order submission ─── */
   const handleSubmit = async (e: React.FormEvent) => {
@@ -189,13 +191,15 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
     setIsSubmitting(true);
     try {
-      const finalBundleName = selectedBundle.name + (includeBump && upsellConfig.bump ? ` + [BUMP] ${upsellConfig.bump.title}` : "");
+      const finalBundleName = selectedBundle.name 
+        + (includeSecondUnit && upsellConfig.secondUnit ? ` + 2ème Exemplaire (${upsellConfig.secondUnit.title})` : "")
+        + (includeBump && upsellConfig.bump ? ` + [BUMP] ${upsellConfig.bump.title}` : "");
 
       const createdOrder = await saveNewOrder({
         product_slug: slug,
         product_title: product.title,
         bundle_name: finalBundleName,
-        quantity: selectedBundle.quantity || 1,
+        quantity: (selectedBundle.quantity || 1) + (includeSecondUnit ? 1 : 0),
         total_amount: totalWithBump,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
@@ -431,6 +435,9 @@ export default function ProductLanding({ slug }: { slug: string }) {
         includeBump={includeBump}
         setIncludeBump={setIncludeBump}
         bumpOffer={upsellConfig.bump}
+        includeSecondUnit={includeSecondUnit}
+        setIncludeSecondUnit={setIncludeSecondUnit}
+        secondUnitOffer={upsellConfig.secondUnit}
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
         whatsappNumber={whatsapp}
