@@ -30,8 +30,11 @@ export const metadata: Metadata = {
     title: "Isivente",
   },
   icons: {
-    icon: "/icons/icon-192x192.png",
-    apple: "/icons/icon-192x192.png",
+    icon: [
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/icons/apple-touch-icon.png",
   },
   openGraph: {
     title: "Isivente — Produits Innovants & Livraison 24h au Bénin",
@@ -40,9 +43,9 @@ export const metadata: Metadata = {
     siteName: "Isivente",
     images: [
       {
-        url: "/images/umei-hero-real.jpg",
-        width: 1200,
-        height: 630,
+        url: "/images/logo.png",
+        width: 512,
+        height: 512,
         alt: "Isivente Boutique en ligne",
       },
     ],
@@ -53,12 +56,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Isivente — Produits Innovants & Livraison 24h",
     description: "Commandez en ligne et payez à la réception au Bénin.",
-    images: ["/images/umei-hero-real.jpg"],
+    images: ["/images/logo.png"],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#8B6FE0",
+  themeColor: "#0E7C8C",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -73,8 +76,8 @@ export default function RootLayout({
     <html lang="fr" className={`${syne.variable} ${inter.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#8B6FE0" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <meta name="theme-color" content="#0E7C8C" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="min-h-screen bg-bg text-ink antialiased font-sans">
         <MetaPixel />

@@ -52,9 +52,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* LOGO & BRAND */}
         <div className="h-18 flex items-center justify-between px-6 border-b border-slate-100">
           <Link href="/admin" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform duration-150">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-            </div>
+            <img
+              src="/icons/icon-192x192.png"
+              alt="Logo Isivente"
+              className="w-8 h-8 rounded-xl object-contain shadow-sm group-hover:scale-105 transition-transform duration-150"
+            />
             <div>
               <span className="font-display font-bold text-lg tracking-tight text-slate-900 block leading-none">Isivente</span>
               <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">Commerce Pro</span>

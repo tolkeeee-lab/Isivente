@@ -1,43 +1,67 @@
 {
-  "name": "Isivente - Gestion & Ventes",
+  "name": "Isivente — Produits Innovants & Livraison 24h",
   "short_name": "Isivente",
-  "description": "Plateforme de gestion de commandes, catalogue et ventes directes.",
-  "start_url": "/admin",
-  "display": "standalone",
-  "background_color": "#241B36",
-  "theme_color": "#8B6FE0",
-  "orientation": "portrait",
+  "description": "Plateforme e-commerce officielle Isivente au Bénin. Paiement sécurisé à la livraison 24h.",
+  "start_url": "/",
+  "id": "/",
   "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E7C8C",
+  "theme_color": "#0E7C8C",
+  "categories": ["shopping", "business", "lifestyle"],
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icons/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
-      "name": "Commandes",
-      "url": "/admin/orders",
-      "description": "Voir les commandes récentes"
+      "name": "Dashboard Admin",
+      "url": "/admin",
+      "description": "Tableau de bord et gestion"
     },
     {
-      "name": "Produits",
-      "url": "/admin/products",
-      "description": "Voir le catalogue"
+      "name": "Commandes",
+      "url": "/admin/orders",
+      "description": "Suivi des commandes en temps réel"
+    },
+    {
+      "name": "Finance & Rentabilité",
+      "url": "/admin/finance",
+      "description": "Bénéfices nets et dépenses"
+    },
+    {
+      "name": "Suivre ma commande",
+      "url": "/track",
+      "description": "Suivi de colis client"
     }
   ]
 }

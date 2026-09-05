@@ -1,10 +1,12 @@
 // Isivente PWA Service Worker
-const CACHE_NAME = "isivente-cache-v2";
+const CACHE_NAME = "isivente-cache-v3";
 const OFFLINE_URLS = [
   "/admin",
   "/manifest.json",
   "/icons/icon-192x192.png",
-  "/icons/icon-512x512.png"
+  "/icons/icon-512x512.png",
+  "/icons/apple-touch-icon.png",
+  "/icons/favicon-32x32.png"
 ];
 
 self.addEventListener("install", (event) => {
