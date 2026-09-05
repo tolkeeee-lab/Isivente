@@ -294,40 +294,40 @@ export default function UmeiStyleOrderSection({
   // ════════════════ FORMULAIRE DE COMMANDE ACTIF ════════════════
   return (
     <>
-      <section id="commander" className="py-10 px-3 sm:px-6 md:px-8 max-w-[860px] mx-auto w-full overflow-hidden">
+      <section id="commander" className="py-8 px-3 sm:px-6 md:px-8 max-w-[680px] mx-auto w-full overflow-hidden">
         <div
-          className="rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 md:p-10 shadow-xl border-2 transition-all"
+          className="rounded-[22px] sm:rounded-[28px] p-4 sm:p-6 md:p-8 shadow-xl border-2 transition-all"
           style={{
             backgroundColor: "#FFFFFF",
             borderColor: theme.border,
           }}
         >
           {/* EN-TÊTE ÉPURÉ */}
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-5 sm:mb-6">
             <span
-              className="text-white text-[10.5px] sm:text-[11.5px] font-extrabold uppercase tracking-wider py-1 px-3 sm:px-4 rounded-full inline-block mb-2.5 shadow-xs"
+              className="text-white text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider py-1 px-3 sm:px-3.5 rounded-full inline-block mb-2 shadow-xs"
               style={{ background: theme.gradientBadge }}
             >
               ⚡ Paiement à la livraison
             </span>
-            <h2 className="font-display font-extrabold text-xl sm:text-3xl text-slate-900 mb-1.5">
+            <h2 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900 mb-1">
               Passez votre commande en 30 secondes
             </h2>
-            <p className="text-slate-600 text-xs sm:text-sm font-medium max-w-md mx-auto leading-relaxed">
-              Remplissez simplement vos coordonnées ci-dessous. Vous règlerez directement au livreur après réception et inspection de votre colis.
+            <p className="text-slate-600 text-xs sm:text-[13px] font-medium max-w-sm mx-auto leading-relaxed">
+              Remplissez vos coordonnées ci-dessous. Vous règlerez directement au livreur après inspection du colis.
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-5 sm:space-y-6">
+          <form onSubmit={onSubmit} className="space-y-4 sm:space-y-5">
             
             {/* 1. CHOIX DU PACK */}
             {bundles && bundles.length > 0 && (
               <div>
-                <label className="font-extrabold text-xs sm:text-sm text-slate-900 block mb-2.5 text-left">
+                <label className="font-extrabold text-xs sm:text-[13px] text-slate-900 block mb-2 text-left">
                   1. Choisissez votre offre :
                 </label>
                 
-                <div className={`grid grid-cols-1 ${bundles.length >= 3 ? "sm:grid-cols-3" : bundles.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-1"} gap-3`}>
+                <div className={`grid grid-cols-1 ${bundles.length >= 3 ? "sm:grid-cols-3" : bundles.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-1"} gap-2.5`}>
                   {bundles.map((b, idx) => {
                     const isSelected = selectedBundle
                       ? (Boolean(selectedBundle.id && b.id) ? selectedBundle.id === b.id : selectedBundle.name === b.name)
@@ -340,21 +340,21 @@ export default function UmeiStyleOrderSection({
                         onClick={() => handleSelectBundle(b)}
                         role="radio"
                         aria-checked={isSelected}
-                        className={`rounded-2xl p-3.5 text-center cursor-pointer relative transition-all duration-200 select-none ${
+                        className={`rounded-xl p-2.5 sm:p-3 text-center cursor-pointer relative transition-all duration-200 select-none ${
                           isSelected
-                            ? "border-[2.5px] shadow-md ring-2 ring-offset-1"
-                            : "border-2 border-slate-200 hover:border-slate-300 bg-white hover:shadow-xs"
+                            ? "border-[2px] shadow-sm ring-1 ring-offset-1"
+                            : "border border-slate-200 hover:border-slate-300 bg-white hover:shadow-2xs"
                         }`}
                         style={{
                           borderColor: isSelected ? theme.primary : undefined,
                           backgroundColor: isSelected ? theme.primaryLight : "#FFFFFF",
-                          boxShadow: isSelected ? `0 10px 25px -5px ${theme.primary}30` : undefined,
-                          transform: isSelected ? "scale(1.02)" : "scale(1)",
+                          boxShadow: isSelected ? `0 8px 20px -6px ${theme.primary}25` : undefined,
+                          transform: isSelected ? "scale(1.01)" : "scale(1)",
                         }}
                       >
                         {b.badge && (
                           <span
-                            className="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-[9.5px] sm:text-[10px] font-extrabold py-0.5 px-3 rounded-full whitespace-nowrap shadow-sm tracking-wide uppercase"
+                            className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-white text-[9px] sm:text-[9.5px] font-extrabold py-0.5 px-2.5 rounded-full whitespace-nowrap shadow-xs tracking-wide uppercase"
                             style={{ backgroundColor: theme.primary }}
                           >
                             {b.badge}
@@ -362,59 +362,59 @@ export default function UmeiStyleOrderSection({
                         )}
 
                         {/* Indicateur radio visuel en haut */}
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
                             {b.quantity ? `${b.quantity} pièce${b.quantity > 1 ? "s" : ""}` : `Option ${idx + 1}`}
                           </span>
                           <div
-                            className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                              isSelected ? "text-white shadow-xs" : "border-2 border-slate-300 bg-white"
+                            className={`w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+                              isSelected ? "text-white shadow-2xs" : "border border-slate-300 bg-white"
                             }`}
                             style={{
                               backgroundColor: isSelected ? theme.primary : "#FFFFFF",
                               borderColor: isSelected ? theme.primary : "#CBD5E1",
                             }}
                           >
-                            {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                           </div>
                         </div>
 
-                        <div className="font-display font-bold text-xs sm:text-[14px] text-slate-900 mt-0.5 leading-snug">
+                        <div className="font-display font-bold text-xs sm:text-[13px] text-slate-900 mt-0.5 leading-snug">
                           {b.name}
                         </div>
 
                         <div
-                          className="font-display font-black text-xl sm:text-2xl my-1 font-mono tabular-nums"
+                          className="font-display font-black text-lg sm:text-xl my-0.5 font-mono tabular-nums"
                           style={{ color: theme.primary }}
                         >
                           {fmt(b.price)} F
                         </div>
 
                         {origPrice && (
-                          <div className="text-[11px] text-slate-400 line-through font-medium font-mono tabular-nums">
+                          <div className="text-[10px] text-slate-400 line-through font-medium font-mono tabular-nums">
                             {fmt(origPrice)} F
                           </div>
                         )}
 
                         {(b.description || b.subtitle) && (
-                          <div className="text-[10.5px] text-slate-500 mt-1 font-medium leading-tight">
+                          <div className="text-[10px] text-slate-500 mt-1 font-medium leading-tight">
                             {b.description || b.subtitle}
                           </div>
                         )}
 
                         {/* Bouton indicateur d'état sélectionné */}
-                        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-center">
+                        <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-center">
                           {isSelected ? (
                             <span
-                              className="inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2.5 py-0.5 rounded-full text-white shadow-2xs"
+                              className="inline-flex items-center gap-1 text-[9.5px] font-extrabold px-2 py-0.5 rounded-full text-white shadow-2xs"
                               style={{ backgroundColor: theme.primary }}
                             >
-                              <Check className="w-3 h-3 stroke-[3]" />
-                              Pack Sélectionné
+                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              Sélectionné
                             </span>
                           ) : (
-                            <span className="text-[10.5px] font-bold text-slate-400 hover:text-slate-600">
-                              Cliquer pour choisir
+                            <span className="text-[10px] font-bold text-slate-400">
+                              Choisir
                             </span>
                           )}
                         </div>

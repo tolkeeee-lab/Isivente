@@ -345,7 +345,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
             </div>
 
             {/* PACKS HORMOZI */}
-            <div className="space-y-3 pt-2">
+            <div className="space-y-2.5 pt-1">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
                 1. Choisissez votre Pack Promo :
               </label>
@@ -356,40 +356,40 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                   <div
                     key={bundle.id}
                     onClick={() => setSelectedBundle(bundle)}
-                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative ${
+                    className={`p-3 rounded-xl border transition-all cursor-pointer relative select-none ${
                       isSelected
-                        ? "bg-amber-50/40 border-amber-500 shadow-md shadow-amber-500/10 ring-1 ring-amber-500"
-                        : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
+                        ? "bg-amber-50/50 border-amber-500 shadow-sm ring-1 ring-amber-500"
+                        : "bg-white border-slate-200 hover:border-slate-300 shadow-2xs"
                     }`}
                   >
                     {bundle.badge && (
-                      <span className="absolute -top-2.5 right-4 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md">
+                      <span className="absolute -top-2.5 right-3 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs">
                         {bundle.badge}
                       </span>
                     )}
 
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5">
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all ${
                             isSelected
                               ? "border-amber-500 bg-amber-500 text-slate-950"
                               : "border-slate-300 bg-slate-100"
                           }`}
                         >
-                          {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                          {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                         </div>
                         <div>
-                          <div className="font-bold text-sm text-slate-900">{bundle.name}</div>
-                          <div className="text-xs text-slate-600">{bundle.subtitle}</div>
+                          <div className="font-bold text-xs sm:text-sm text-slate-900">{bundle.name}</div>
+                          <div className="text-[11px] text-slate-500">{bundle.subtitle}</div>
                         </div>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="font-mono font-bold text-base text-amber-600 tabular-nums">
+                        <div className="font-mono font-bold text-sm sm:text-base text-amber-600 tabular-nums">
                           {new Intl.NumberFormat("fr-FR").format(bundle.price)} F
                         </div>
-                        <div className="text-[11px] font-mono text-slate-400 line-through tabular-nums">
+                        <div className="text-[10px] font-mono text-slate-400 line-through tabular-nums">
                           {new Intl.NumberFormat("fr-FR").format(bundle.originalPrice)} F
                         </div>
                       </div>
