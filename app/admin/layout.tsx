@@ -12,7 +12,8 @@ import {
   Menu, 
   X,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  Wallet
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import OrderRealtimeListener from "@/components/features/OrderRealtimeListener";
@@ -28,6 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: "Vue d'ensemble", href: "/admin", icon: LayoutDashboard },
+    { name: "Bénéfice Réel & Finance", href: "/admin/finance", icon: Wallet },
     { name: "Commandes", href: "/admin/orders", icon: ShoppingBag },
     { name: "Produits & Liens", href: "/admin/products", icon: Package },
     { name: "Paramètres", href: "/admin/settings", icon: Settings },

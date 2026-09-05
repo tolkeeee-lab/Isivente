@@ -502,6 +502,226 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
           </div>
         </section>
 
+        {/* 🌟 SECTION 1 : DÉMONSTRATION EN 3 ÉTAPES CLAIRES */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+              Prise en main instantanée
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Comment ça marche en 3 gestes simples ?
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm">
+              Aucune application complexe requise. Tout fonctionne nativement avec l'appareil photo de votre smartphone.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-amber-400 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center font-mono text-base shadow-sm">
+                01
+              </div>
+              <h3 className="font-bold text-lg text-slate-950">Clipsez en 0.5 seconde</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Approchez votre iPhone ou Android : les puissants aimants MagSafe N52 le verrouillent instantanément. Fini les pinces mécaniques qui coincent les boutons de volume.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-amber-400 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center font-mono text-base shadow-sm">
+                02
+              </div>
+              <h3 className="font-bold text-lg text-slate-950">Cadrez & Zoomez au pouce</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Tournez la molette ergonomique pour zoomer avec fluidité cinématographique sans jamais toucher l'écran, et basculez du mode portrait au paysage en 1 seconde.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-amber-400 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center font-mono text-base shadow-sm">
+                03
+              </div>
+              <h3 className="font-bold text-lg text-slate-950">Posez ou déclenchez à 10m</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Déployez les 3 pieds renforcés sur une table ou au sol, détachez la télécommande Bluetooth et enregistrez vos vidéos sans l'aide de personne.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 2 : TABLEAU COMPARATIF ÉCRASANT */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+              Comparatif Sans Appel
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Pourquoi le Z3 Zoom surpasse les perches classiques ?
+            </h2>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-3xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/80">
+                    <th className="py-4 px-5 font-bold text-slate-600 uppercase tracking-wider">Critère</th>
+                    <th className="py-4 px-5 font-black text-amber-600 uppercase tracking-wider bg-amber-50/50">
+                      Stabilisateur Z3 Zoom™
+                    </th>
+                    <th className="py-4 px-5 font-bold text-slate-400 uppercase tracking-wider">
+                      Perches & Trépieds Classiques
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Stabilisation Vidéo</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      Fluide cinéma sans tremblement
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Vidéos saccadées dès qu'on marche</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Fixation Smartphone</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      MagSafe N52 magnétique (0.5s)
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Pinces dures qui rayent et bloquent les boutons</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Commande de Zoom</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      Molette intégrée + Déclencheur 10m
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Obligé de toucher l'écran à deux mains</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Robustesse des Matériaux</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      Alliage d'Aluminium Haute Résistance
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Plastique fin qui casse après 3 sorties</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Compatibilité Téléphones</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      100% Universel (iPhone & Android)
+                    </td>
+                    <td className="py-3.5 px-5 text-slate-500">Limité à certaines largeurs</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 3 : 4 CAS D'USAGE RÉELS AU BÉNIN */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-sky-700 font-bold bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+              Polyvalence Totale
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Conçu pour votre quotidien et votre activité
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-amber-600 text-sm">🛍️ Vendeurs & Boutiques</div>
+              <h4 className="font-bold text-slate-900 text-sm">Vidéos TikTok & Lives Pro</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Mettez en valeur vos vêtements, chaussures et produits avec des plans fluides qui donnent immédiatement confiance aux clients.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-sky-600 text-sm">🎬 Créateurs de Contenu</div>
+              <h4 className="font-bold text-slate-900 text-sm">Vlogs de Rue & Interviews</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Marchez à votre rythme dans la rue sans tremblement ni effet de nausée sur vos vidéos.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-emerald-600 text-sm">💼 Réunions & Visioconférences</div>
+              <h4 className="font-bold text-slate-900 text-sm">Appels Mains-Libres</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Posez votre trépied sur votre bureau pour des appels Zoom et WhatsApp impeccablement cadrés.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-purple-600 text-sm">🎉 Famille & Événements</div>
+              <h4 className="font-bold text-slate-900 text-sm">Photos de Groupe Sans Stress</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Plus besoin d'exclure la personne qui prend la photo : posez le trépied et déclenchez avec la télécommande.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 4 : CONTENU DU COFFRET (UNBOXING) */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-700 font-bold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+              Coffret Complet Prêt à l'Emploi
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Que recevez-vous exactement dans votre colis ?
+            </h2>
+          </div>
+
+          <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-amber-400 font-display">Kit Studio Z3 Zoom™ Pro</h3>
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Stabilisateur Z3 Zoom</strong> en alliage d'aluminium renforcé</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Télécommande Bluetooth sans fil</strong> détachable longue portée (10m)</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Anneau magnétique universel</strong> adhésif offert pour téléphones Android</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Câble de recharge rapide</strong> USB Type-C haute durabilité</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Guide d'utilisation illustré</strong> en français</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-slate-800/80 border border-white/10 rounded-2xl p-5 text-center space-y-3">
+              <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Garantie Qualité & Contrôle Colis</div>
+              <div className="text-lg font-bold text-white">Inspection Physique Avant Paiement</div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Le livreur vous remet le colis en main propre au Bénin. Vous ouvrez, vous vérifiez et vous ne payez qu'après totale satisfaction.
+              </p>
+              <button
+                type="button"
+                onClick={scrollToOrder}
+                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-amber-500/20 cursor-pointer"
+              >
+                Commander maintenant (49 900 F)
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
         <section className="space-y-6 pt-4">
           <div className="text-center space-y-1">

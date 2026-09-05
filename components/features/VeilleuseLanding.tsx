@@ -507,6 +507,214 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
           </div>
         </section>
 
+        {/* 🌟 SECTION 1 : DÉMONSTRATION EN 3 GESTES SIMPLES */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-700 font-bold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+              Simplicité Magique
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Comment projeter vos univers en 3 secondes ?
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm">
+              Facile à manipuler pour les enfants et les parents. Zéro configuration, branchement USB immédiat.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-indigo-400 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white font-black flex items-center justify-center font-mono text-base shadow-sm">
+                01
+              </div>
+              <h3 className="font-bold text-lg text-slate-950">Glissez le disque de votre choix</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Choisissez parmi les 24 thèmes HD (Planètes, Nébuleuses, Océan de méduses, Ciel étoilé) et insérez le disque dans la fente latérale.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-indigo-400 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white font-black flex items-center justify-center font-mono text-base shadow-sm">
+                02
+              </div>
+              <h3 className="font-bold text-lg text-slate-950">Branchez en USB & Orientez à 360°</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Connectez sur un chargeur de téléphone, une prise USB ou une batterie nomade (Powerbank). Tordez le col flexible pour viser le plafond ou un mur.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-indigo-400 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white font-black flex items-center justify-center font-mono text-base shadow-sm">
+                03
+              </div>
+              <h3 className="font-bold text-lg text-slate-950">Ajustez la bague de netteté optique</h3>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Tournez la bague frontale pour obtenir une image nette au millimètre près, que votre plafond soit à 1m50 ou 4 mètres de hauteur.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 2 : TABLEAU COMPARATIF */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+              Comparatif Clarté
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Veilleuse FRIOSZ 3D vs Veilleuses Plastique Ordinaires
+            </h2>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-3xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/80">
+                    <th className="py-4 px-5 font-bold text-slate-600 uppercase tracking-wider">Caractéristiques</th>
+                    <th className="py-4 px-5 font-black text-indigo-700 uppercase tracking-wider bg-indigo-50/50">
+                      Veilleuse Projecteur FRIOSZ 3D
+                    </th>
+                    <th className="py-4 px-5 font-bold text-slate-400 uppercase tracking-wider">
+                      Veilleuses Ordinaires du Marché
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Variété des Thèmes</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-indigo-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      24 Disques HD interchangeables
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">1 seule image ou simple lumière fixe</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Mise au Point Optique</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-indigo-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      Bague de focus micrométrique nette
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Lumière floue et aveuglante</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Orientation & Flexibilité</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-indigo-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      Col silicone 360° orientable partout
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Bloc rigide fixe collé à la prise</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Alimentation en Coupure</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-indigo-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      Fonctionne sur Powerbank / USB
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Inutilisable dès la coupure de courant</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 3 : 4 CAS D'USAGE RÉELS AU BÉNIN */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-700 font-bold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+              Moments de Vie
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              4 Utilisations Incontournables au Foyer
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-indigo-600 text-sm">🧸 Chambre Enfants</div>
+              <h4 className="font-bold text-slate-900 text-sm">Finie la peur du noir</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Les enfants s'endorment paisiblement en observant les constellations au plafond au lieu de pleurer dans l'obscurité.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-purple-600 text-sm">✨ Chambre Parents</div>
+              <h4 className="font-bold text-slate-900 text-sm">Ambiance Romantique & Zen</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Créez une atmosphère feutrée et apaisante pour décompresser après une longue journée de travail.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-amber-600 text-sm">⚡ Secours Délestage</div>
+              <h4 className="font-bold text-slate-900 text-sm">Lumière douce sur Powerbank</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                En cas de coupure de courant, branchez-la sur votre batterie externe pour éclairer chaleureusement toute la pièce.
+              </p>
+            </div>
+
+            <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
+              <div className="font-black text-emerald-600 text-sm">🎁 Cadeau Inoubliable</div>
+              <h4 className="font-bold text-slate-900 text-sm">Effet Émerveillement</h4>
+              <p className="text-slate-600 text-xs leading-relaxed">
+                Le cadeau parfait d'anniversaire ou de fête qui surprend petits et grands à coup sûr.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 4 : CONTENU DU COFFRET (UNBOXING) */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-700 font-bold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+              Contenu du Pack
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Que contient votre coffret Veilleuse 3D ?
+            </h2>
+          </div>
+
+          <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-indigo-400 font-display">Kit Veilleuse FRIOSZ FP-032</h3>
+              <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Projecteur Tactile USB</strong> avec col flexible orientable 360°</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Coffret complet de 24 Disques HD</strong> thématiques haute résolution</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Lentille optique haute pureté</strong> avec bague de focus ajustable</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                  <span><strong>1x Guide explicatif</strong> des constellations et univers</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-slate-800/80 border border-white/10 rounded-2xl p-5 text-center space-y-3">
+              <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Paiement Sécurisé à Domicile</div>
+              <div className="text-lg font-bold text-white">Livraison 24h & Contrôle Colis</div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Testez et inspectez l'appareil en présence du livreur avant de régler votre achat.
+              </p>
+              <button
+                type="button"
+                onClick={scrollToOrder}
+                className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-indigo-600/25 cursor-pointer"
+              >
+                Commander ma veilleuse (14 900 F)
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
         <section className="space-y-6 pt-4">
           <div className="text-center space-y-1">

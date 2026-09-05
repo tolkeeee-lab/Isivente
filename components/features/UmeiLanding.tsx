@@ -540,6 +540,51 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
+      {/* 📦 COFFRET DÉBALLÉ & UNBOXING */}
+      <section className="py-10 px-4 md:px-8 max-w-[900px] mx-auto w-full overflow-hidden">
+        <div className="bg-[#241B36] text-white rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="space-y-4">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#FF5C93] font-bold bg-[#FF5C93]/20 px-3 py-1 rounded-full border border-[#FF5C93]/30">
+              Coffret Prestige Soin
+            </span>
+            <h3 className="text-xl font-bold text-white font-display">Dans votre colis Uméi™</h3>
+            <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Brosse Démêlante Vapeur Uméi</strong> avec mécanisme de clic libérateur</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Flacon pipette compte-gouttes</strong> pour remplir l'eau & huiles essentielles</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Câble de recharge rapide</strong> USB universel</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Guide des rituels capillaires</strong> pour cheveux crépus, frisés et ondulés</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 text-center space-y-3">
+            <div className="text-xs uppercase tracking-wider text-[#F8D9B4] font-bold">Paiement 100% à la Livraison</div>
+            <div className="text-lg font-bold text-white">Livraison 24h & Contrôle Colis</div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Ouvrez le paquet avec le livreur à domicile avant de régler en espèces ou Mobile Money.
+            </p>
+            <button
+              type="button"
+              onClick={() => scrollToSection("commander")}
+              className="w-full bg-[#FF5C93] hover:bg-[#E13D74] text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-[#FF5C93]/30 cursor-pointer"
+            >
+              Commander ma brosse (14 900 F)
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* 🚀 FINAL CTA */}
       <section className="py-10 px-4 md:px-8 max-w-[1180px] mx-auto text-center w-full overflow-hidden">
         <div className="bg-[#241B36] text-white rounded-[28px] sm:rounded-[36px] py-10 sm:py-14 px-5">

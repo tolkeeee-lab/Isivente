@@ -202,6 +202,10 @@ export default function PeelerLanding({ slug }: { slug: string }) {
     };
   }, [slug]);
 
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const handleCtaClick = useCallback(() => {
     const sessId = sessionIdRef.current || ("sess_" + Date.now());
     trackUserSession(slug, 0, true, sessId);
@@ -540,6 +544,51 @@ export default function PeelerLanding({ slug }: { slug: string }) {
             alt="Une machine plusieurs usages"
             className="w-full h-auto object-cover"
           />
+        </div>
+      </section>
+
+      {/* ════════════════ COFFRET DÉBALLÉ & UNBOXING ════════════════ */}
+      <section className="py-10 px-4 md:px-8 max-w-4xl mx-auto">
+        <div className="bg-[#0B1E3F] text-white rounded-3xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="space-y-4">
+            <span className="text-xs font-mono uppercase tracking-widest text-sky-400 font-bold bg-sky-950/80 px-3 py-1 rounded-full border border-sky-500/30">
+              Pack Cuisine Complet
+            </span>
+            <h3 className="text-xl font-bold text-white font-display">Dans votre colis ChefPeel™ Pro</h3>
+            <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Éplucheur Automatique ChefPeel™</strong> avec batterie 1300 mAh rechargeable</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Bol rotatif transparent</strong> démontable et lavable à l'eau en 10s</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Plateau centrifuge en inox</strong> alimentaire anti-oxydation</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Câble de recharge USB</strong> compatible tout chargeur de téléphone</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-slate-800/90 border border-white/10 rounded-2xl p-5 text-center space-y-3">
+            <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Paiement 100% à la Livraison</div>
+            <div className="text-lg font-bold text-white">Livraison 24h & Inspection Colis</div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Vérifiez la machine et ses accessoires avec le livreur à domicile avant tout paiement.
+            </p>
+            <button
+              type="button"
+              onClick={() => scrollToSection("commander")}
+              className="w-full bg-[#0047AB] hover:bg-blue-600 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-blue-500/20 cursor-pointer"
+            >
+              Commander ChefPeel™ (14 900 F)
+            </button>
+          </div>
         </div>
       </section>
 

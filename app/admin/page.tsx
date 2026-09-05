@@ -249,6 +249,15 @@ export default function AdminDashboard() {
           )}
 
           <Link
+            href="/admin/finance"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition-all duration-150 active:scale-[0.98]"
+          >
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Bénéfice Réel & Finance</span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
+          </Link>
+
+          <Link
             href="/admin/orders"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-white shadow-sm hover:bg-slate-800 transition-all duration-150 active:scale-[0.98]"
           >

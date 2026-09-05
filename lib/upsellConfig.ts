@@ -173,6 +173,80 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       badge: "-44% OFFRE SPÉCIALE",
     },
   },
+
+  stabilisateur: {
+    bump: {
+      id: "stabilisateur-coldshoe",
+      title: "Support Cold-Shoe Studio + 2 Anneaux MagSafe Universels",
+      subtitle: "Permet de fixer un micro ou une torche LED et d'utiliser tout smartphone",
+      description: "Adaptation immédiate sur Android & iPhone avec force magnétique renforcée.",
+      price: 3900,
+      originalPrice: 8000,
+      image: "/images/stabilisateur-magsafe.jpg",
+      badge: "-51% ORDER BUMP",
+    },
+    upsell: {
+      id: "stabilisateur-second",
+      title: "Deuxième Stabilisateur Pro-Mobile Z3 Zoom™",
+      subtitle: "Équipez un proche créateur de contenu ou assurez un second angle de caméra",
+      description: "Profitez d'un tarif exclusif à -50% pour ajouter un 2ème exemplaire complet dans votre colis.",
+      price: 24900,
+      originalPrice: 49900,
+      image: "/images/stabilisateur-hero.jpg",
+      badge: "-50% OFFRE UNIQUE",
+      benefits: [
+        "Pack complet avec télécommande et trépied",
+        "Idéal pour tournages multi-angles",
+        "Aucun frais de livraison supplémentaire",
+      ],
+    },
+    downsell: {
+      id: "stabilisateur-micro",
+      title: "Micro Cravate Sans Fil Plug & Play (Type-C / Lightning)",
+      subtitle: "Un son clair et net sans bruit de vent pour vos vidéos TikTok & Facebook",
+      price: 8900,
+      originalPrice: 16000,
+      image: "/images/stabilisateur-vlog.jpg",
+      badge: "-45% OFFRE SPÉCIALE",
+    },
+  },
+
+  veilleuse: {
+    bump: {
+      id: "veilleuse-adaptateur",
+      title: "Adaptateur Secteur Silencieux 5V/2A + Cordon Rallonge USB 2M",
+      subtitle: "Branchez et positionnez votre projecteur n'importe où dans la pièce",
+      description: "Assure une intensité lumineuse optimale et une sécurité électrique totale.",
+      price: 2500,
+      originalPrice: 5000,
+      image: "/images/projecteur-hero.jpg",
+      badge: "-50% SPÉCIAL",
+    },
+    upsell: {
+      id: "veilleuse-second",
+      title: "Deuxième Veilleuse Projecteur LED 3D FRIOSZ",
+      subtitle: "Équipez une seconde chambre (chambre des parents ou chambre d'enfant)",
+      description: "Recevez un 2ème kit complet avec ses 24 disques HD à moitié prix dans votre colis.",
+      price: 7450,
+      originalPrice: 14900,
+      image: "/images/projecteur-hero.jpg",
+      badge: "-50% OFFRE SPÉCIALE",
+      benefits: [
+        "Kit complet avec 24 disques HD inclus",
+        "Parfait pour créer une ambiance féérique dans tout le foyer",
+        "Livraison groupée sans frais supplémentaires",
+      ],
+    },
+    downsell: {
+      id: "veilleuse-pack-disques",
+      title: "Coffret Prestige 12 Nouveaux Disques HD Thématiques Exclusifs",
+      subtitle: "Aurores Boréales, Nébuleuse d'Orion et Faune Tropicale Lumineuse",
+      price: 3900,
+      originalPrice: 8000,
+      image: "/images/projecteur-galaxie.jpg",
+      badge: "-51% RATTRAPAGE EXCLUSIF",
+    },
+  },
 };
 
 /**

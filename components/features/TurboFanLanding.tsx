@@ -199,6 +199,10 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
     };
   }, [slug]);
 
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const handleCtaClick = useCallback(() => {
     const sessId = sessionIdRef.current || ("sess_" + Date.now());
     trackUserSession(slug, 0, true, sessId);
@@ -608,6 +612,51 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
               </ul>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════ COFFRET DÉBALLÉ & UNBOXING ════════════════ */}
+      <section className="py-10 px-4 md:px-8 max-w-4xl mx-auto">
+        <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="space-y-4">
+            <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/30">
+              Kit Complet Prêt à l'Emploi
+            </span>
+            <h3 className="text-xl font-bold text-white font-display">Dans votre colis TurboFan™ Max</h3>
+            <ul className="space-y-3 text-xs sm:text-sm text-slate-300">
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Ventilateur TurboFan™ Max</strong> avec batterie 10 000 mAh intégrée</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Cordon tour de cou réglable</strong> tressé ultra-résistant</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Double clip de ceinture</strong> renforcé anti-décrochage</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Câble de recharge rapide USB-C</strong> vers USB standard</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-slate-800/90 border border-white/10 rounded-2xl p-5 text-center space-y-3">
+            <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Paiement 100% à la Livraison</div>
+            <div className="text-lg font-bold text-white">Livraison Express 24h au Bénin</div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Testez le souffle d'air puissant en présence du livreur avant de régler votre commande en espèces ou Mobile Money.
+            </p>
+            <button
+              type="button"
+              onClick={() => scrollToSection("commander")}
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-emerald-500/20 cursor-pointer"
+            >
+              Commander mon TurboFan (16 900 F)
+            </button>
           </div>
         </div>
       </section>

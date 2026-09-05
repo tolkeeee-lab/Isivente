@@ -87,6 +87,30 @@ VALUES
     '[{"url": "/images/peeler-hero.jpg"}]'::jsonb,
     '[{"name": "Pack Découverte Cuisine (1 Appareil)", "price": 14900}, {"name": "Pack Duo Sérénité (2 Appareils)", "price": 24900}, {"name": "Pack Traiteur / Famille (3 Appareils)", "price": 34900}]'::jsonb,
     true
+  ),
+  (
+    'stabilisateur',
+    'Stabilisateur Pro-Mobile Z3 Zoom™ (MagSafe & Trépied)',
+    'Vidéos cinématographiques ultra-fluides sans tremblement avec zoom sans fil et fixation magnétique MagSafe.',
+    'Trépied intégré 1 seconde, commande Bluetooth détachable 10m, rotation 360° et compatibilité universelle iPhone et Android.',
+    49900,
+    65000,
+    'FCFA',
+    '[{"url": "/images/stabilisateur-hero.jpg"}]'::jsonb,
+    '[{"name": "Pack Solo Créateur (1 Kit)", "price": 49900}, {"name": "Pack Duo Studio (2 Kits)", "price": 89900}, {"name": "Pack Pro Équipe & Vidéaste (3 Kits)", "price": 129900}]'::jsonb,
+    true
+  ),
+  (
+    'veilleuse',
+    'Veilleuse Projecteur LED 3D Tactile FRIOSZ FP-032',
+    '24 disques de projection HD galaxie, océan, étoiles et système solaire avec col USB flexible 360°.',
+    'Mise au point optique ultra-nette, tactile sensitif, silencieux et apaisant pour enfants et adultes. Alimentation USB universelle.',
+    14900,
+    22000,
+    'FCFA',
+    '[{"url": "/images/projecteur-hero.jpg"}]'::jsonb,
+    '[{"name": "Pack Solo Découverte (1 Kit Complet)", "price": 14900}, {"name": "Pack Duo Magique (2 Kits Complets)", "price": 25900}, {"name": "Pack Trio Famille & Cadeaux (3 Kits)", "price": 36900}]'::jsonb,
+    true
   )
 ON CONFLICT (slug) 
 DO UPDATE SET

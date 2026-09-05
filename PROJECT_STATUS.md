@@ -15,7 +15,7 @@
 
 ---
 
-## 📦 2. LES 5 PRODUITS DU CATALOGUE
+## 📦 2. LES 6 PRODUITS DU CATALOGUE
 
 1. **Brosse Démêlante Vapeur Uméi 3-en-1**
    - Slug : `/p/umei`
@@ -42,6 +42,11 @@
    - Slug : `/p/stabilisateur` *(alias /p/trepied, /p/gimbal, /p/z3)*
    - Prix de base officiel : **49 900 FCFA**
    - Packs : Solo Créateur (49 900 F), Duo Studio (89 900 F), Pro Équipe (129 900 F)
+
+6. **Veilleuse Projecteur LED 3D Tactile FRIOSZ FP-032**
+   - Slug : `/p/veilleuse` *(alias /p/projecteur, /p/galaxie, /p/friosz, /p/veilleuse-3d)*
+   - Prix de base officiel : **14 900 FCFA**
+   - Packs : Solo Découverte (14 900 F), Duo Magique (25 900 F), Trio Famille (36 900 F)
 
 ---
 
