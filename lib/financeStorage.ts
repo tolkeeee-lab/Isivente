@@ -18,43 +18,11 @@ export interface FinanceSettings {
 }
 
 export const DEFAULT_FINANCE_SETTINGS: FinanceSettings = {
-  productCogs: {
-    umei: 4500,
-    eraclean: 6000,
-    turbofan: 5500,
-    peeler: 4500,
-    stabilisateur: 16000,
-    veilleuse: 4500,
-  },
-  deliveryCostPerSuccess: 1500,
-  deliveryCostPerFailure: 500,
+  productCogs: {},
+  deliveryCostPerSuccess: 0,
+  deliveryCostPerFailure: 0,
   adSpendTotal: 0,
-  subscriptions: [
-    {
-      id: "sub_telecom",
-      name: "Forfaits Téléphone & Internet (Confirmation Commandes)",
-      category: "telecom",
-      amount: 15000,
-      active: true,
-      recurrence: "mensuel",
-    },
-    {
-      id: "sub_domain_host",
-      name: "Hébergement Vercel & Noms de domaine",
-      category: "logiciel",
-      amount: 12000,
-      active: true,
-      recurrence: "mensuel",
-    },
-    {
-      id: "sub_tools",
-      name: "Outils de gestion & WhatsApp Business API",
-      category: "marketing",
-      amount: 10000,
-      active: true,
-      recurrence: "mensuel",
-    },
-  ],
+  subscriptions: [],
 };
 
 const STORAGE_KEY = "isivente_finance_settings_v1";

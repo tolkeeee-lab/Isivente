@@ -25,6 +25,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { getAllOrders, OrderItem } from "@/lib/ordersStorage";
+import { supabase } from "@/lib/supabase";
 import { 
   getFinanceSettings, 
   saveFinanceSettings, 
@@ -33,10 +34,17 @@ import {
   DEFAULT_FINANCE_SETTINGS 
 } from "@/lib/financeStorage";
 
+interface DynamicProduct {
+  slug: string;
+  title: string;
+  price?: number;
+}
+
 const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(Math.round(n));
 
 export default function FinanceDashboardPage() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [productsList, setProductsList] = useState<DynamicProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<"all" | "today" | "week" | "month">("all");
   const [settings, setSettings] = useState<FinanceSettings>(DEFAULT_FINANCE_SETTINGS);
@@ -45,19 +53,54 @@ export default function FinanceDashboardPage() {
   // Nouvel abonnement modal / form state
   const [newSubName, setNewSubName] = useState("");
   const [newSubCategory, setNewSubCategory] = useState<SubscriptionItem["category"]>("logiciel");
-  const [newSubAmount, setNewSubAmount] = useState<number>(10000);
+  const [newSubAmount, setNewSubAmount] = useState<number>(0);
   const [showAddSub, setShowAddSub] = useState(false);
 
-  // Charger les paramètres et les commandes
+  // Charger les paramètres, les produits depuis Supabase et les commandes
   const fetchData = async () => {
     setLoading(true);
-    const [allOrders, currentSettings] = await Promise.all([
-      getAllOrders(),
-      Promise.resolve(getFinanceSettings()),
-    ]);
-    setOrders(allOrders);
-    setSettings(currentSettings);
-    setLoading(false);
+    try {
+      const [allOrders, currentSettings, { data: dbProducts }] = await Promise.all([
+        getAllOrders(),
+        Promise.resolve(getFinanceSettings()),
+        supabase.from("products").select("title, slug, price").order("created_at", { ascending: true }),
+      ]);
+
+      setOrders(allOrders);
+      setSettings(currentSettings);
+
+      // Fusionner les produits de la base de données et des commandes réelles
+      const productsMap: Record<string, DynamicProduct> = {};
+
+      if (dbProducts && Array.isArray(dbProducts)) {
+        dbProducts.forEach((p: any) => {
+          if (p.slug) {
+            productsMap[p.slug.toLowerCase()] = {
+              slug: p.slug.toLowerCase(),
+              title: p.title || p.slug,
+              price: p.price || 0,
+            };
+          }
+        });
+      }
+
+      allOrders.forEach((o) => {
+        const slug = (o.product_slug || "umei").toLowerCase();
+        if (!productsMap[slug]) {
+          productsMap[slug] = {
+            slug,
+            title: o.product_title || slug,
+            price: o.total_amount || 0,
+          };
+        }
+      });
+
+      setProductsList(Object.values(productsMap));
+    } catch (err) {
+      console.error("Error fetching finance data:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -91,7 +134,7 @@ export default function FinanceDashboardPage() {
 
   // Prorata des abonnements selon la période
   const subscriptionCostForPeriod = useMemo(() => {
-    const monthlyTotal = settings.subscriptions
+    const monthlyTotal = (settings.subscriptions || [])
       .filter((s) => s.active)
       .reduce((sum, s) => sum + (s.amount || 0), 0);
 
@@ -133,25 +176,16 @@ export default function FinanceDashboardPage() {
       }
     > = {};
 
-    const productNames: Record<string, string> = {
-      umei: "Brosse Démêlante Uméi 3-en-1",
-      eraclean: "Purificateur EraClean™ Frigo & Auto",
-      turbofan: "Ventilateur Ceinture TurboFan™ Max",
-      peeler: "Éplucheur Automatique ChefPeel™",
-      stabilisateur: "Stabilisateur Pro Z3 Zoom MagSafe",
-      veilleuse: "Veilleuse Projecteur LED 3D FRIOSZ",
-    };
-
     filteredOrders.forEach((order) => {
       const slug = (order.product_slug || "umei").toLowerCase();
       const amt = Number(order.total_amount || 0);
       const qty = Number(order.quantity || 1);
-      const unitCogs = settings.productCogs[slug] ?? 4500;
+      const unitCogs = Number(settings.productCogs?.[slug] || 0);
 
       if (!productStats[slug]) {
         productStats[slug] = {
           slug,
-          title: order.product_title || productNames[slug] || slug,
+          title: order.product_title || slug,
           deliveredCount: 0,
           shippedCount: 0,
           deliveredRev: 0,
@@ -173,7 +207,7 @@ export default function FinanceDashboardPage() {
         productStats[slug].deliveredCount += qty;
         productStats[slug].deliveredRev += amt;
         productStats[slug].totalCogs += cogs;
-        productStats[slug].deliveryFees += settings.deliveryCostPerSuccess;
+        productStats[slug].deliveryFees += Number(settings.deliveryCostPerSuccess || 0);
       } else if (order.status === "shipped") {
         shippedOrdersCount++;
         shippedRevenue += amt;
@@ -198,11 +232,11 @@ export default function FinanceDashboardPage() {
     });
 
     // Coûts totaux
-    const totalDeliverySuccessFees = deliveredOrdersCount * settings.deliveryCostPerSuccess;
-    const totalDeliveryReturnFees = cancelledOrdersCount * settings.deliveryCostPerFailure;
+    const totalDeliverySuccessFees = deliveredOrdersCount * Number(settings.deliveryCostPerSuccess || 0);
+    const totalDeliveryReturnFees = cancelledOrdersCount * Number(settings.deliveryCostPerFailure || 0);
     const totalLogisticsFees = totalDeliverySuccessFees + totalDeliveryReturnFees;
 
-    const totalAdSpend = settings.adSpendTotal || 0;
+    const totalAdSpend = Number(settings.adSpendTotal || 0);
     const totalSubscriptions = subscriptionCostForPeriod;
 
     // Bénéfice net encaissé = CA Livré - COGS Livré - Livraison Réussie - Frais Retours - Pub - Abonnements
@@ -215,7 +249,7 @@ export default function FinanceDashboardPage() {
 
     // Bénéfice projeté (si toutes les commandes en transit sont livrées avec succès)
     const projectedTransitProfit =
-      shippedRevenue - shippedCogs - shippedOrdersCount * settings.deliveryCostPerSuccess;
+      shippedRevenue - shippedCogs - shippedOrdersCount * Number(settings.deliveryCostPerSuccess || 0);
     const netProfitProjected = netProfitDelivered + projectedTransitProfit;
 
     // Marges
@@ -263,7 +297,7 @@ export default function FinanceDashboardPage() {
     setSettings((prev) => ({
       ...prev,
       productCogs: {
-        ...prev.productCogs,
+        ...(prev.productCogs || {}),
         [slug]: Math.max(0, value),
       },
     }));
@@ -280,18 +314,18 @@ export default function FinanceDashboardPage() {
       active: true,
       recurrence: "mensuel",
     };
-    const updatedSubs = [...settings.subscriptions, newSub];
+    const updatedSubs = [...(settings.subscriptions || []), newSub];
     const newSettings = { ...settings, subscriptions: updatedSubs };
     setSettings(newSettings);
     saveFinanceSettings(newSettings);
     setNewSubName("");
-    setNewSubAmount(10000);
+    setNewSubAmount(0);
     setShowAddSub(false);
   };
 
   // Supprimer un abonnement
   const handleDeleteSubscription = (id: string) => {
-    const updatedSubs = settings.subscriptions.filter((s) => s.id !== id);
+    const updatedSubs = (settings.subscriptions || []).filter((s) => s.id !== id);
     const newSettings = { ...settings, subscriptions: updatedSubs };
     setSettings(newSettings);
     saveFinanceSettings(newSettings);
@@ -299,7 +333,7 @@ export default function FinanceDashboardPage() {
 
   // Activer / Désactiver un abonnement
   const handleToggleSubscription = (id: string) => {
-    const updatedSubs = settings.subscriptions.map((s) =>
+    const updatedSubs = (settings.subscriptions || []).map((s) =>
       s.id === id ? { ...s, active: !s.active } : s
     );
     const newSettings = { ...settings, subscriptions: updatedSubs };
@@ -712,48 +746,58 @@ export default function FinanceDashboardPage() {
 
           {/* LISTE DES ABONNEMENTS */}
           <div className="space-y-2">
-            {settings.subscriptions.map((sub) => (
-              <div
-                key={sub.id}
-                className={`p-3 rounded-xl border flex items-center justify-between transition-all ${
-                  sub.active ? "bg-white border-slate-200/80 shadow-sm" : "bg-slate-50 border-slate-200/40 opacity-60"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={sub.active}
-                    onChange={() => handleToggleSubscription(sub.id)}
-                    className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300"
-                  />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">{sub.name}</div>
-                    <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                      {sub.category} • Mensuel
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="font-mono font-bold text-sm text-slate-900 tabular-nums">
-                    {fmt(sub.amount)} <span className="text-[11px] font-sans text-slate-400">F/mois</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteSubscription(sub.id)}
-                    className="text-slate-400 hover:text-rose-600 p-1 rounded-lg hover:bg-rose-50 transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+            {!settings.subscriptions || settings.subscriptions.length === 0 ? (
+              <div className="p-6 rounded-xl border border-dashed border-slate-200 text-center space-y-1.5 bg-slate-50/50">
+                <CreditCard className="w-5 h-5 text-slate-400 mx-auto" />
+                <div className="text-xs font-bold text-slate-700">Aucun abonnement enregistré</div>
+                <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+                  Cliquez sur « Ajouter une charge » pour déduire vos forfaits téléphoniques, outils ou hébergements.
+                </p>
               </div>
-            ))}
+            ) : (
+              settings.subscriptions.map((sub) => (
+                <div
+                  key={sub.id}
+                  className={`p-3 rounded-xl border flex items-center justify-between transition-all ${
+                    sub.active ? "bg-white border-slate-200/80 shadow-sm" : "bg-slate-50 border-slate-200/40 opacity-60"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={sub.active}
+                      onChange={() => handleToggleSubscription(sub.id)}
+                      className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300"
+                    />
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">{sub.name}</div>
+                      <span className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                        {sub.category} • Mensuel
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="font-mono font-bold text-sm text-slate-900 tabular-nums">
+                      {fmt(sub.amount)} <span className="text-[11px] font-sans text-slate-400">F/mois</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteSubscription(sub.id)}
+                      className="text-slate-400 hover:text-rose-600 p-1 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="pt-2 flex items-center justify-between text-xs text-slate-600 border-t border-slate-100 font-medium">
             <span>Total mensuel des abonnements actifs :</span>
             <span className="font-mono font-bold text-slate-900 text-sm tabular-nums">
-              {fmt(settings.subscriptions.filter((s) => s.active).reduce((sum, s) => sum + s.amount, 0))} FCFA/mois
+              {fmt((settings.subscriptions || []).filter((s) => s.active).reduce((sum, s) => sum + s.amount, 0))} FCFA/mois
             </span>
           </div>
         </div>
@@ -799,7 +843,7 @@ export default function FinanceDashboardPage() {
                 </label>
                 <input
                   type="number"
-                  value={settings.deliveryCostPerSuccess}
+                  value={settings.deliveryCostPerSuccess || 0}
                   onChange={(e) =>
                     setSettings((prev) => ({ ...prev, deliveryCostPerSuccess: Number(e.target.value) }))
                   }
@@ -813,7 +857,7 @@ export default function FinanceDashboardPage() {
                 </label>
                 <input
                   type="number"
-                  value={settings.deliveryCostPerFailure}
+                  value={settings.deliveryCostPerFailure || 0}
                   onChange={(e) =>
                     setSettings((prev) => ({ ...prev, deliveryCostPerFailure: Number(e.target.value) }))
                   }
@@ -845,28 +889,26 @@ export default function FinanceDashboardPage() {
                 📦 Prix d'achat unitaire fournisseur (COGS) :
               </span>
 
-              <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                {[
-                  { slug: "umei", name: "Brosse Uméi 3-en-1" },
-                  { slug: "eraclean", name: "Purificateur EraClean™" },
-                  { slug: "turbofan", name: "Ventilateur TurboFan™" },
-                  { slug: "peeler", name: "Éplucheur ChefPeel™" },
-                  { slug: "stabilisateur", name: "Stabilisateur Z3 Zoom" },
-                  { slug: "veilleuse", name: "Veilleuse FRIOSZ 3D" },
-                ].map((item) => (
-                  <div key={item.slug} className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-slate-700 font-medium truncate">{item.name}</span>
-                    <div className="relative w-28 shrink-0">
-                      <input
-                        type="number"
-                        value={settings.productCogs[item.slug] ?? 4500}
-                        onChange={(e) => handleCogsChange(item.slug, Number(e.target.value))}
-                        className="w-full px-2 py-1 rounded-lg border border-slate-200 bg-slate-50 font-mono text-xs text-right pr-6 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                      />
-                      <span className="absolute right-2 top-1 text-[10px] font-mono text-slate-400">F</span>
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {productsList.length === 0 ? (
+                  <div className="text-xs text-slate-400 italic py-2">Chargement des produits...</div>
+                ) : (
+                  productsList.map((item) => (
+                    <div key={item.slug} className="flex items-center justify-between gap-2 text-xs">
+                      <span className="text-slate-700 font-medium truncate">{item.title}</span>
+                      <div className="relative w-28 shrink-0">
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={settings.productCogs?.[item.slug] ?? ""}
+                          onChange={(e) => handleCogsChange(item.slug, Number(e.target.value))}
+                          className="w-full px-2 py-1 rounded-lg border border-slate-200 bg-slate-50 font-mono text-xs text-right pr-6 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <span className="absolute right-2 top-1 text-[10px] font-mono text-slate-400">F</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
