@@ -1,4 +1,10 @@
-export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686";
+export const PIXEL_CONFIG = {
+  pixelId: "2150878529184686",
+  currency: "XOF",
+  autoPageView: true,
+} as const;
+
+export const FB_PIXEL_ID = PIXEL_CONFIG.pixelId;
 
 declare global {
   interface Window {
