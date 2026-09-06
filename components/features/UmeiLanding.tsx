@@ -4,16 +4,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
-import QuickOrderDrawer from "@/components/features/QuickOrderDrawer";
-import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import { 
   Check, 
   ArrowRight, 
   ChevronDown, 
   Sparkles,
   Droplets,
-  HeartHandshake,
-  MessageCircle
+  HeartHandshake
 } from "lucide-react";
 
 interface ProductBundle {
@@ -30,7 +27,7 @@ interface ProductBundle {
 const BUNDLES: ProductBundle[] = [
   {
     id: "solo",
-    name: "Pack Découverte (1 Brosse)",
+    name: "1 Brosse",
     quantity: 1,
     price: 14900,
     original_price: 24900,
@@ -40,21 +37,21 @@ const BUNDLES: ProductBundle[] = [
   },
   {
     id: "duo",
-    name: "Pack Sérénité Duo (2 Brosses)",
+    name: "2 Brosses",
     quantity: 2,
     price: 24900,
     original_price: 49800,
-    badge: "⭐ Populaire (-50%)",
-    description: "1 pour toi + 1 offerte pour ta fille ou amie",
+    badge: "-40% sur la 2ème",
+    description: "1 pour toi + 1 offerte pour une proche",
     popular: true
   },
   {
     id: "famille",
-    name: "Pack Famille (3 Brosses)",
+    name: "3 Brosses",
     quantity: 3,
     price: 34900,
     original_price: 74700,
-    badge: "🔥 Meilleur Prix",
+    badge: "Pack Économique",
     description: "Pour toute la maison au tarif le plus bas",
     popular: false
   }
@@ -62,29 +59,22 @@ const BUNDLES: ProductBundle[] = [
 
 export default function UmeiLanding({ slug }: { slug: string }) {
   const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
-  const [includeBump, setIncludeBump] = useState(false);
-  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
-  const upsellConfig = getProductUpsellConfig(slug || "umei");
-  const secondUnitOffer = upsellConfig?.secondUnit;
-  const bumpOffer = upsellConfig?.bump;
-
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
 
-  // ID de session stable — généré UNE SEULE FOIS au montage du composant
+  // ID de session stable
   const sessionIdRef = useRef(
     "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8)
   );
   const startTimeRef = useRef(Date.now());
-  const clickedRef = useRef(false); // flag partagé entre cleanup et beforeunload
+  const clickedRef = useRef(false);
 
   useEffect(() => {
     const save = () => {
@@ -94,7 +84,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
     window.addEventListener("beforeunload", save);
     return () => {
-      save(); // cleanup React (navigation SPA)
+      save();
       window.removeEventListener("beforeunload", save);
     };
   }, [slug]);
@@ -122,19 +112,15 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
     setIsSubmitting(true);
     try {
-      const secondUnitPrice = includeSecondUnit && secondUnitOffer ? secondUnitOffer.price : 0;
-      const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
-      const finalTotal = selectedBundle.price + secondUnitPrice + bumpPrice;
-      const finalBundleName = selectedBundle.name 
-        + (includeSecondUnit && secondUnitOffer ? ` + 2ème Brosse (${secondUnitOffer.title})` : "")
-        + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
+      const finalTotal = selectedBundle.price;
+      const finalBundleName = selectedBundle.name;
 
       const orderData = {
         product_slug: slug || "umei",
         product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
         bundle_id: selectedBundle.id,
         bundle_name: finalBundleName,
-        quantity: (selectedBundle.quantity || 1) + (includeSecondUnit ? 1 : 0),
+        quantity: selectedBundle.quantity || 1,
         total_amount: finalTotal,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
@@ -146,14 +132,26 @@ export default function UmeiLanding({ slug }: { slug: string }) {
       };
 
       const res = await saveNewOrder(orderData);
-      // Marquer la session comme cliquée (conversion)
       clickedRef.current = true;
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug || "umei", duration, true, sessionIdRef.current);
-      const orderNum = res?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
+      const orderNum = res?.order_number || ("ISV-" + Math.floor(100000 + Math.random() * 900000));
       setOrderNumber(orderNum);
       setOrderSuccess(true);
       setIsSubmitting(false);
+
+      // Meta Pixel Track Purchase
+      try {
+        if (typeof window !== "undefined" && (window as any).fbq) {
+          (window as any).fbq("track", "Purchase", {
+            content_name: orderData.product_title,
+            content_type: "product",
+            value: finalTotal,
+            currency: "XOF",
+          });
+        }
+      } catch (e) {}
+
       document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       console.error("Order error:", err);
@@ -165,7 +163,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
   return (
     <div className="bg-[#F5F0FC] min-h-screen text-[#241B36] font-sans antialiased overflow-x-hidden w-full max-w-full relative selection:bg-purple-200 selection:text-purple-900 pb-24 md:pb-0">
       
-      {/* 🌟 HEADER EXACT */}
+      {/* 🌟 HEADER */}
       <header className="sticky top-0 z-50 bg-[#F5F0FC]/95 backdrop-blur-md border-b border-[#8B6FE0]/15 w-full">
         <nav className="flex items-center justify-between py-3.5 px-4 md:px-8 max-w-[1180px] mx-auto w-full">
           <div className="font-display text-2xl font-extrabold flex items-center gap-2 tracking-tight">
@@ -197,7 +195,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
           </ul>
 
           <button
-            onClick={() => setIsDrawerOpen(true)}
+            onClick={() => scrollToSection("commander")}
             className="bg-[#FF5C93] hover:bg-[#E13D74] text-white px-5 py-2 rounded-full text-sm font-bold shadow-[0_8px_20px_-8px_rgba(255,92,147,0.6)] hover:-translate-y-0.5 transition-all cursor-pointer"
           >
             Commander
@@ -205,35 +203,30 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </nav>
       </header>
 
-      {/* 🚀 HERO SECTION EXACTE - IMAGE UNIQUE EN PREMIER PUIS ARGUMENTS DE VENTE */}
+      {/* 🚀 HERO SECTION */}
       <section className="pt-6 md:pt-14 pb-0 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
           
-          {/* 1. VRAIE PHOTO DU PRODUIT AVEC STICKERS (EN PREMIER) */}
+          {/* 1. PHOTO DU PRODUIT */}
           <div className="md:col-span-5 flex justify-center items-center pt-2 md:pt-0 order-1">
             <div className="relative w-full max-w-[310px] sm:max-w-[360px] md:max-w-[400px] mx-auto px-2 select-none">
               
-              {/* Badge avis affiché au-dessus sur mobile */}
               <div className="inline-flex md:hidden items-center gap-2 bg-white/90 border border-[#8B6FE0]/20 px-3 py-1 rounded-full shadow-xs mb-3">
                 <div className="flex text-amber-400 text-xs">★★★★★</div>
                 <span className="text-xs font-bold text-[#241B36]">4.9/5 (+1420 femmes comblées)</span>
               </div>
 
-              {/* Conteneur image */}
               <div className="relative">
-                {/* STICKER 1 HAUT GAUCHE */}
                 <div className="absolute -top-2 left-0 sm:-left-4 w-[90px] h-[90px] sm:w-[105px] sm:h-[105px] bg-[#A8E6C9] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] -rotate-12 z-20 pointer-events-none">
                   3-en-1 vapeur + huile + clic
                 </div>
 
-                {/* IMAGE RÉELLE */}
                 <img 
                   src="/images/umei-hero-real.jpg" 
-                  alt="Brosse vapeur uméi en action, jet de vapeur visible" 
+                  alt="Brosse vapeur uméi en action" 
                   className="rounded-[28px] sm:rounded-[32px] w-full shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] object-cover"
                 />
 
-                {/* STICKER 2 BAS DROITE */}
                 <div className="absolute -bottom-2 right-0 sm:-right-4 w-[80px] h-[80px] sm:w-[88px] sm:h-[88px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] rotate-12 z-20 pointer-events-none">
                   Sans chaleur agressive
                 </div>
@@ -242,7 +235,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
             </div>
           </div>
 
-          {/* 2. TEXTES ÉMOTIONNELS & CTA (EN DEUXIÈME) */}
+          {/* 2. TEXTES & CTA */}
           <div className="md:col-span-7 space-y-5 text-center md:text-left flex flex-col items-center md:items-start order-2">
             
             <div className="hidden md:inline-flex items-center gap-2 bg-white/80 border border-[#8B6FE0]/20 px-3.5 py-1 rounded-full shadow-sm">
@@ -262,10 +255,9 @@ export default function UmeiLanding({ slug }: { slug: string }) {
               Vapeur, huile essentielle et clic libérateur — dans une seule brosse. Fini le peigne qui accroche et le fer qui abîme.
             </p>
 
-            {/* BOUTONS D'ACTION DU HERO */}
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 w-full pt-1">
               <button
-                onClick={() => setIsDrawerOpen(true)}
+                onClick={() => scrollToSection("commander")}
                 className="w-full sm:w-auto bg-[#FF5C93] hover:bg-[#E13D74] text-white px-7 py-3.5 rounded-full font-bold text-base shadow-[0_12px_28px_-10px_rgba(255,92,147,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 text-center"
               >
                 <span>Je commande — 14 900 FCFA</span>
@@ -280,7 +272,6 @@ export default function UmeiLanding({ slug }: { slug: string }) {
               </button>
             </div>
 
-            {/* BADGES RÉASSURANCE */}
             <div className="flex flex-wrap justify-center md:justify-start gap-2 pt-1 w-full">
               <span className="bg-white text-[#6B5F87] text-xs font-bold py-1.5 px-3.5 rounded-full shadow-[0_4px_14px_-6px_rgba(139,111,224,0.3)] border border-[#8B6FE0]/15">
                 💵 Paiement à la livraison
@@ -297,7 +288,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
         </div>
 
-        {/* BANDEAU MARQUEE DÉFILANT */}
+        {/* MARQUEE */}
         <div className="bg-[#8B6FE0] text-white py-3 overflow-hidden mt-8 md:mt-12 rounded-lg w-full max-w-full">
           <div className="flex whitespace-nowrap animate-marquee font-display font-semibold text-xs sm:text-sm md:text-base">
             <span className="px-4 flex items-center gap-3">VAPEUR <em className="not-italic text-[#F8D9B4]">✺</em> BRUME + HUILE <em className="not-italic text-[#F8D9B4]">✺</em> CLIC LIBÉRATEUR <em className="not-italic text-[#F8D9B4]">✺</em> SANS CHALEUR AGRESSIVE <em className="not-italic text-[#F8D9B4]">✺</em> POUR TOUTES LES TEXTURES <em className="not-italic text-[#F8D9B4]">✺</em></span>
@@ -306,7 +297,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 🎬 SECTION DÉMONSTRATION VIDÉO */}
+      {/* 🎬 DÉMONSTRATION VIDÉO */}
       <section id="demo-video" className="py-12 md:py-20 bg-[#EEE6FA]/60 border-y border-[#8B6FE0]/15 mt-8 px-4 md:px-8 w-full overflow-hidden">
         <div className="max-w-4xl mx-auto text-center">
           
@@ -345,7 +336,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 📝 FORMULAIRE DE COMMANDE DIRECT (MODÈLE UMÉI PLACÉ DIRECTEMENT SOUS LA VIDÉO) */}
+      {/* 📝 FORMULAIRE DE COMMANDE DIRECT ÉPURÉ */}
       <UmeiStyleOrderSection
         productSlug={slug || "umei"}
         productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
@@ -362,15 +353,9 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         setCity={setCity}
         address={address}
         setAddress={setAddress}
-        includeBump={includeBump}
-        setIncludeBump={setIncludeBump}
-        bumpOffer={bumpOffer}
-        includeSecondUnit={includeSecondUnit}
-        setIncludeSecondUnit={setIncludeSecondUnit}
-        secondUnitOffer={secondUnitOffer}
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
-        accentColor="#FF5C93"
+        accentColor="#E11D48"
         whatsappNumber="2290192901817"
         orderSuccess={orderSuccess}
         orderNumber={orderNumber}
@@ -380,7 +365,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         }}
       />
 
-      {/* 🌿 SECTION 3 AVANTAGES ("Ce qu'il y a dedans, en vrai.") */}
+      {/* 🌿 SECTION 3 AVANTAGES */}
       <section id="comment" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
           <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[#241B36] mb-2">
@@ -433,7 +418,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 📸 PHOTO FEATURE VRAIE PHOTO ("Un clic, et c'est réglé.") */}
+      {/* 📸 PHOTO FEATURE */}
       <section className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           <div className="md:col-span-5 flex justify-center">
@@ -473,7 +458,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 💬 SECTION AVIS ("On te laisse pas juste sur parole.") */}
+      {/* 💬 AVIS */}
       <section id="avis" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
           <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[#241B36] mb-2">
@@ -559,7 +544,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 📦 COFFRET DÉBALLÉ & UNBOXING */}
+      {/* 📦 COFFRET */}
       <section className="py-10 px-4 md:px-8 max-w-[900px] mx-auto w-full overflow-hidden">
         <div className="bg-[#241B36] text-white rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="space-y-4">
@@ -595,7 +580,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
             </p>
             <button
               type="button"
-              onClick={() => setIsDrawerOpen(true)}
+              onClick={() => scrollToSection("commander")}
               className="w-full bg-[#FF5C93] hover:bg-[#E13D74] text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-[#FF5C93]/30 cursor-pointer"
             >
               Commander ma brosse (14 900 F)
@@ -611,7 +596,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
             Prête à changer ton rituel capillaire ?
           </h2>
           <button
-            onClick={() => setIsDrawerOpen(true)}
+            onClick={() => scrollToSection("commander")}
             className="w-full sm:w-auto bg-[#FF5C93] hover:bg-[#E13D74] text-white px-7 py-3.5 rounded-full font-bold text-sm sm:text-base shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
           >
             Commander ma brosse — 14 900 FCFA
@@ -625,24 +610,11 @@ export default function UmeiLanding({ slug }: { slug: string }) {
           <div>© 2026 uméi. Tous droits réservés.</div>
           <ul className="flex gap-4">
             <li><button onClick={() => scrollToSection("demo-video")}>Vidéo</button></li>
-            <li><button onClick={() => setIsDrawerOpen(true)}>Commander</button></li>
+            <li><button onClick={() => scrollToSection("commander")}>Commander</button></li>
             <li><button onClick={() => scrollToSection("faq")}>Questions</button></li>
           </ul>
         </div>
       </footer>
-
-      {/* 🚀 QUICK-ORDER DRAWER EXPRESS 1-CLIC */}
-      <QuickOrderDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        productSlug={slug || "umei"}
-        productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
-        productImage="/images/umei-hero-real.jpg"
-        bundles={BUNDLES}
-        accentColor="#FF5C93"
-        whatsappNumber="2290192901817"
-        initialBundle={selectedBundle}
-      />
 
     </div>
   );
