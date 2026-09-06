@@ -14,6 +14,7 @@ import {
   Truck,
   ShieldCheck,
   PackageCheck,
+  Package,
   ArrowRight,
   ExternalLink,
 } from "lucide-react";
@@ -361,54 +362,19 @@ export default function QuickOrderDrawer({
                 </div>
               )}
 
-              {/* 1. SÉLECTION DU PACK SI PLUSIEURS DISPONIBLES */}
-              {bundles.length > 1 && (
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-800 block">
-                    1. Choisissez votre formule :
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {bundles.map((b, idx) => {
-                      const isSel = selectedBundle?.id ? selectedBundle.id === b.id : selectedBundle?.name === b.name;
-                      return (
-                        <div
-                          key={idx}
-                          onClick={() => setSelectedBundle(b)}
-                          className={`p-3 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between text-left select-none ${
-                            isSel
-                              ? "bg-slate-50 border-slate-900 shadow-xs"
-                              : "border-slate-200 hover:border-slate-300 bg-white"
-                          }`}
-                          style={{
-                            borderColor: isSel ? accentColor : undefined,
-                            backgroundColor: isSel ? `${accentColor}0D` : undefined,
-                          }}
-                        >
-                          <div className="min-w-0 pr-2">
-                            <div className="text-xs font-extrabold text-slate-900 truncate">
-                              {b.name}
-                            </div>
-                            {b.badge && (
-                              <span
-                                className="text-[9px] font-black uppercase text-white px-1.5 py-0.2 rounded"
-                                style={{ backgroundColor: accentColor }}
-                              >
-                                {b.badge}
-                              </span>
-                            )}
-                          </div>
-                          <div
-                            className="font-mono font-black text-xs sm:text-sm tabular-nums shrink-0"
-                            style={{ color: accentColor }}
-                          >
-                            {fmt(b.price)} F
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {/* 1. RÉCAPITULATIF DU PRODUIT UNIQUE */}
+              <div className="bg-slate-50 border border-slate-200/80 p-3 rounded-xl flex items-center justify-between gap-3 text-left">
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-slate-700 shrink-0" />
+                  <span className="text-xs font-bold text-slate-900 truncate">{productTitle}</span>
                 </div>
-              )}
+                <div
+                  className="font-mono font-black text-xs sm:text-sm tabular-nums shrink-0"
+                  style={{ color: accentColor }}
+                >
+                  {fmt(selectedBundle?.price || 14900)} F
+                </div>
+              </div>
 
               {/* 2. OFFRE 2ÈME PIÈCE EN 1 CLIC (SI DISPONIBLE) */}
               {resolvedSecondUnit && (

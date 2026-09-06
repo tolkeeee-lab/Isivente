@@ -360,56 +360,26 @@ export default function UmeiStyleOrderSection({
 
         <form onSubmit={onSubmit} className="space-y-5">
           
-          {/* 1. SÉLECTION QUANTITÉ ÉPURÉE */}
-          {availableBundles.length > 1 && (
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 tracking-wide block">
-                Choisissez votre quantité :
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {availableBundles.slice(0, 3).map((bundle) => {
-                  const isSelected = currentBundle.id === bundle.id;
-                  return (
-                    <button
-                      key={bundle.id}
-                      type="button"
-                      onClick={() => {
-                        try {
-                          playOrderSound("ios_pop", 0.4);
-                        } catch {}
-                        if (onSelectBundle) onSelectBundle(bundle);
-                      }}
-                      className={`relative p-3 rounded-2xl border text-center transition-all duration-150 select-none active:scale-[0.97] ${
-                        isSelected
-                          ? "bg-slate-900 border-slate-900 text-white shadow-sm"
-                          : "bg-slate-50 hover:bg-slate-100/80 border-slate-200 text-slate-800"
-                      }`}
-                    >
-                      {bundle.badge && (
-                        <span
-                          className={`absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap ${
-                            isSelected
-                              ? "bg-rose-500 text-white"
-                              : "bg-emerald-600 text-white"
-                          }`}
-                        >
-                          {bundle.badge}
-                        </span>
-                      )}
-                      <div className="text-xs font-bold">{bundle.name}</div>
-                      <div
-                        className={`text-xs font-mono font-bold tabular-nums mt-0.5 ${
-                          isSelected ? "text-slate-100" : "text-slate-900"
-                        }`}
-                      >
-                        {fmt(bundle.price)} F
-                      </div>
-                    </button>
-                  );
-                })}
+          {/* 1. RÉCAPITULATIF DU PRODUIT UNIQUE */}
+          <div className="bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+                <Package className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-bold text-xs sm:text-sm text-slate-900">{productTitle}</div>
+                <div className="text-[11px] text-slate-500 font-medium">1 Exemplaire Neuf Complet</div>
               </div>
             </div>
-          )}
+            <div className="text-right shrink-0">
+              <div className="font-mono font-bold text-sm sm:text-base text-slate-950 tabular-nums">
+                {fmt(totalPrice)} FCFA
+              </div>
+              <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                En stock
+              </span>
+            </div>
+          </div>
 
           {/* 2. LES 3 CHAMPS ESSENTIELS */}
           <div className="space-y-3.5 pt-1">
