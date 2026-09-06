@@ -21,6 +21,9 @@ export interface OrderItem {
 
 const LOCAL_STORAGE_KEY = "isivente_orders_store";
 
+// Cache anti-doublon en mémoire (15 secondes) pour bloquer les doubles clics accidentels
+const recentOrdersCache = new Map<string, { order: any; timestamp: number }>();
+
 function saveToLocalStorage(order: any) {
   if (typeof window === "undefined") return;
   try {
@@ -30,8 +33,18 @@ function saveToLocalStorage(order: any) {
   } catch {}
 }
 
-/** Sauvegarde une nouvelle commande dans Supabase avec auto-adaptation au schéma exact */
+/** Sauvegarde une nouvelle commande dans Supabase avec protection anti-doublon 15s */
 export async function saveNewOrder(orderData: OrderItem): Promise<any> {
+  const phoneClean = (orderData.customer_phone || "").replace(/\D/g, "");
+  const dedupeKey = `${phoneClean}_${orderData.product_slug || "default"}_${orderData.total_amount || 0}`;
+  const now = Date.now();
+
+  const existingRecent = recentOrdersCache.get(dedupeKey);
+  if (existingRecent && now - existingRecent.timestamp < 15000) {
+    console.warn("⚠️ Double clic détecté : commande déjà enregistrée il y a moins de 15s.", existingRecent.order);
+    return existingRecent.order;
+  }
+
   const randomNum = Math.floor(100000 + Math.random() * 900000);
   const orderNumberStr = "CMD-" + randomNum;
 
@@ -117,6 +130,9 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
     console.warn("Supabase insert notice:", res.error.message);
     break;
   }
+
+  // Stocker dans le cache anti-doublon
+  recentOrdersCache.set(dedupeKey, { order: finalResult, timestamp: Date.now() });
 
   return finalResult;
 }

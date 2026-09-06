@@ -70,6 +70,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const isSubmittingRef = useRef(false);
 
   // ID de session stable
   const sessionIdRef = useRef(
@@ -107,11 +108,14 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current || isSubmitting) return;
+
     if (!customerPhone.trim() || customerPhone.trim().length < 8) {
       alert("Veuillez saisir un numéro de téléphone valide pour la confirmation de livraison.");
       return;
     }
 
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     try {
       const finalTotal = selectedBundle.price;
@@ -159,6 +163,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
     }
   };
 

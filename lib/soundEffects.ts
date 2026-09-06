@@ -314,7 +314,7 @@ export function playChaChingSound() {
 }
 
 /**
- * Demande la permission pour les notifications navigateur push
+ * Demande la permission pour les notifications navigateur push & PWA
  */
 export async function requestNotificationPermission(): Promise<boolean> {
   if (typeof window === "undefined" || !("Notification" in window)) {
@@ -322,8 +322,22 @@ export async function requestNotificationPermission(): Promise<boolean> {
   }
   if (Notification.permission === "granted") return true;
   if (Notification.permission !== "denied") {
-    const permission = await Notification.requestPermission();
-    return permission === "granted";
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.showNotification("🎉 Notifications Isivente Activées !", {
+              body: "Vous recevrez désormais chaque nouvelle commande en direct.",
+              icon: "/icons/icon-192x192.png",
+              badge: "/icons/icon-192x192.png",
+              tag: "welcome_notif",
+            });
+          }).catch(() => {});
+        }
+        return true;
+      }
+    } catch {}
   }
   return false;
 }
@@ -340,19 +354,19 @@ export function sendDesktopNotification(title: string, body: string, icon?: stri
       body,
       icon: iconUrl,
       badge: iconUrl,
-      vibrate: [200, 100, 200, 100, 200],
+      vibrate: [300, 100, 300, 100, 300],
       tag: "order_" + Date.now(),
       requireInteraction: true,
+      data: { url: "/admin" },
     };
 
     // 1. Essayer via le Service Worker PWA (nécessaire sur mobile / Android / PWA)
-    if ("serviceWorker" in navigator && navigator.serviceWorker.ready) {
+    if ("serviceWorker" in navigator) {
       navigator.serviceWorker.ready
         .then((registration) => {
           registration.showNotification(title, options);
         })
         .catch(() => {
-          // Fallback natif direct
           try {
             new Notification(title, options);
           } catch {}
@@ -366,7 +380,9 @@ export function sendDesktopNotification(title: string, body: string, icon?: stri
 
     // 3. Vibreur direct du smartphone
     if (typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate([150, 80, 150, 80, 300]);
+      try {
+        navigator.vibrate([200, 100, 200, 100, 300]);
+      } catch {}
     }
   }
 }

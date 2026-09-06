@@ -52,6 +52,15 @@ export default function OrderRealtimeListener() {
   const [playingPreview, setPlayingPreview] = useState<SoundType | null>(null);
 
   useEffect(() => {
+    // Déverrouillage audio au premier toucher/clic utilisateur sur smartphone / PWA
+    const handleFirstInteraction = () => {
+      unlockAudio();
+      window.removeEventListener("touchstart", handleFirstInteraction);
+      window.removeEventListener("click", handleFirstInteraction);
+    };
+    window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
+    window.addEventListener("click", handleFirstInteraction, { passive: true });
+
     // Charger les préférences de son sauvegardées
     setSelectedSound(getSavedSoundType());
     setVolume(getSavedVolume());
@@ -295,11 +304,30 @@ export default function OrderRealtimeListener() {
             className="p-2 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold flex items-center gap-1.5 hover:bg-amber-100 transition-colors cursor-pointer active:scale-95"
             title="Activer les alertes push du navigateur"
           >
-            <Bell className="w-4 h-4 text-amber-600" />
+            <Bell className="w-4 h-4 text-amber-600 animate-bounce" />
             <span className="hidden lg:inline">Activer push</span>
           </button>
         )}
       </div>
+
+      {/* 🔔 BANDEAU PROMINENT D'ACTIVATION NOTIFICATION PWA */}
+      {!notifGranted && (
+        <div className="fixed top-18 left-0 right-0 z-[105] bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-2.5 text-xs font-semibold flex items-center justify-between shadow-md animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <Bell className="w-4 h-4 text-amber-200 shrink-0 animate-bounce" />
+            <span>
+              <strong>Notifications PWA :</strong> Cliquez pour activer la sonnerie et les alertes de commandes en direct sur cet appareil.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={enableNotifications}
+            className="bg-white text-slate-950 hover:bg-amber-50 px-3 py-1 rounded-lg font-bold text-xs shadow-sm active:scale-95 transition-all cursor-pointer ml-3 shrink-0"
+          >
+            Activer maintenant
+          </button>
+        </div>
+      )}
 
       {/* 🎛️ MODAL FIGMA-GRADE DE PERSONNALISATION SONORE */}
       {showSettingsModal && (
