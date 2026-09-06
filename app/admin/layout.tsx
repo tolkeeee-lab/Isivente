@@ -13,7 +13,8 @@ import {
   X,
   ExternalLink,
   Sparkles,
-  Wallet
+  Wallet,
+  RefreshCw
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import OrderRealtimeListener from "@/components/features/OrderRealtimeListener";
@@ -21,6 +22,15 @@ import OrderRealtimeListener from "@/components/features/OrderRealtimeListener";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -143,7 +153,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Bouton Rafraîchir Tactile */}
+            <button
+              type="button"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              title="Actualiser les données de la page"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100/90 hover:bg-slate-200/80 hover:text-slate-900 active:scale-95 transition-all duration-150 border border-slate-200/80 shadow-2xs cursor-pointer disabled:opacity-60"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-slate-600 ${isRefreshing ? "animate-spin text-amber-600" : ""}`} />
+              <span className="hidden sm:inline">Actualiser</span>
+            </button>
+
             {/* Listener Temps Réel & Contrôle Audio */}
             <OrderRealtimeListener />
 
