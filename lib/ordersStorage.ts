@@ -195,15 +195,34 @@ export async function getAllOrders(): Promise<OrderItem[]> {
   }
 
   const map = new Map<string, OrderItem>();
+  const seenOrderNumbers = new Set<string>();
+
+  // 1. Priorité absolue aux commandes de la base Supabase
   dbOrders.forEach((o) => {
     const normalized = normalizeOrder(o);
-    const key = String(normalized.id || normalized.order_number || `${normalized.customer_phone}_${normalized.created_at}`);
+    const orderNum = normalized.order_number ? String(normalized.order_number).trim() : "";
+    const key = orderNum || (normalized.id ? String(normalized.id) : `${normalized.customer_phone}_${normalized.total_amount}`);
+    
+    if (orderNum) seenOrderNumbers.add(orderNum);
     map.set(key, normalized);
   });
+
+  // 2. Ajouter uniquement les commandes locales non encore présentes dans Supabase
   localOrders.forEach((o) => {
     const normalized = normalizeOrder(o);
-    const key = String(normalized.id || normalized.order_number || `${normalized.customer_phone}_${normalized.created_at}`);
-    if (!map.has(key)) map.set(key, normalized);
+    const orderNum = normalized.order_number ? String(normalized.order_number).trim() : "";
+    
+    // Si la commande existe déjà dans Supabase par son numéro, l'ignorer
+    if (orderNum && seenOrderNumbers.has(orderNum)) {
+      return;
+    }
+
+    const key = orderNum || (normalized.id && !normalized.id.startsWith("local_") ? String(normalized.id) : `${normalized.customer_phone}_${normalized.total_amount}`);
+    
+    if (!map.has(key)) {
+      if (orderNum) seenOrderNumbers.add(orderNum);
+      map.set(key, normalized);
+    }
   });
 
   return Array.from(map.values()).sort((a, b) => {

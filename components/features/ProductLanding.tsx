@@ -65,6 +65,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [includeBump, setIncludeBump] = useState(false);
   const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -194,12 +195,14 @@ export default function ProductLanding({ slug }: { slug: string }) {
   /* ─── Order submission ─── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current || isSubmitting) return;
     if (!product || !selectedBundle) return;
     if (!customerPhone.trim() || customerPhone.trim().length < 8) {
       alert("Veuillez saisir un numéro de téléphone valide.");
       return;
     }
 
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     try {
       const finalBundleName = selectedBundle.name 
@@ -246,11 +249,13 @@ export default function ProductLanding({ slug }: { slug: string }) {
       setOrderNumber(orderRef);
       setOrderSuccess(true);
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
       document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
     }
   };
 

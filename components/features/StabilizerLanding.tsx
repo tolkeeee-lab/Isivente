@@ -153,6 +153,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -196,11 +197,14 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current || isSubmitting) return;
+
     if (!customerPhone.trim() || customerPhone.trim().length < 8) {
       alert("Veuillez saisir un numéro de téléphone valide pour la confirmation de livraison.");
       return;
     }
 
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     try {
       const secondUnitPrice = includeSecondUnit && secondUnitOffer ? secondUnitOffer.price : 0;
@@ -235,11 +239,13 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
       setOrderInfo({ order_number: orderNum });
       setOrderSuccess(true);
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
       document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       console.error("Order error:", err);
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
     }
   };
 

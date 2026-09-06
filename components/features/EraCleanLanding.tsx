@@ -175,6 +175,7 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const submittingRef = useRef(false);
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ID de session stable — généré UNE SEULE FOIS au montage du composant
@@ -213,10 +214,13 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current || submitting) return;
+
     if (!phone.trim() || phone.trim().length < 8) {
       alert("Numéro de téléphone invalide.");
       return;
     }
+    submittingRef.current = true;
     setSubmitting(true);
     try {
       const secondUnitPrice = includeSecondUnit && secondUnitOffer ? secondUnitOffer.price : 0;
@@ -253,6 +257,7 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
     } catch {
       alert("Erreur. Veuillez réessayer.");
       setSubmitting(false);
+      submittingRef.current = false;
     }
   };
 

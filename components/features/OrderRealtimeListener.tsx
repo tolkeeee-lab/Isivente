@@ -72,10 +72,20 @@ export default function OrderRealtimeListener() {
     const seenOrdersRef = new Set<string>();
 
     const handleNewOrder = (order: any) => {
-      const orderKey = String(order.id || order.order_number || order.created_at || (order.customer_phone + order.total_amount));
-      if (seenOrdersRef.has(orderKey)) return;
+      const rawPhone = String(order.customer_phone || "").replace(/\D/g, "");
+      const rawNum = String(order.order_number || "").trim();
+      const orderKey = rawNum || (rawPhone ? `${rawPhone}_${order.total_amount || 0}` : String(order.id || ""));
+
+      if (!orderKey || seenOrdersRef.has(orderKey)) return;
       seenOrdersRef.add(orderKey);
-      setTimeout(() => seenOrdersRef.delete(orderKey), 10000);
+      if (rawNum) seenOrdersRef.add(rawNum);
+      if (rawPhone) seenOrdersRef.add(`${rawPhone}_${order.total_amount || 0}`);
+      
+      setTimeout(() => {
+        seenOrdersRef.delete(orderKey);
+        if (rawNum) seenOrdersRef.delete(rawNum);
+        if (rawPhone) seenOrdersRef.delete(`${rawPhone}_${order.total_amount || 0}`);
+      }, 60000);
 
       const toastData: RealtimeOrderToast = {
         id: order.id || String(Date.now()),

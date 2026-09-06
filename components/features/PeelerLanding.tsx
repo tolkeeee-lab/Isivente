@@ -241,6 +241,8 @@ export default function PeelerLanding({ slug }: { slug: string }) {
     goToSlide(slide - 1);
   }, [goToSlide, slide]);
 
+  const submittingRef = useRef(false);
+
   useEffect(() => {
     autoplayRef.current = setInterval(() => {
       goToSlide(slide + 1);
@@ -252,10 +254,13 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current || submitting) return;
+
     if (!name.trim() || !phone.trim() || !address.trim()) {
-      alert("Veuillez renseigner votre nom, tÃ©lÃ©phone et adresse de livraison.");
+      alert("Veuillez renseigner votre nom, téléphone et adresse de livraison.");
       return;
     }
+    submittingRef.current = true;
     setSubmitting(true);
 
     try {
@@ -292,8 +297,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
       setSubmitting(false);
       document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
     } catch {
-      alert("Une erreur est survenue lors de l'enregistrement. Veuillez rÃ©essayer.");
+      alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setSubmitting(false);
+      submittingRef.current = false;
     }
   };
 

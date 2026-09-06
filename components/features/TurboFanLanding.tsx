@@ -223,6 +223,7 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
   }, [slug]);
 
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const submittingRef = useRef(false);
 
   const goToSlide = useCallback(
     (idx: number) => {
@@ -247,10 +248,13 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current || submitting) return;
+
     if (!name.trim() || !phone.trim() || !address.trim()) {
       alert("Veuillez renseigner votre nom, téléphone et adresse de livraison.");
       return;
     }
+    submittingRef.current = true;
     setSubmitting(true);
 
     try {
@@ -289,6 +293,7 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
     } catch {
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setSubmitting(false);
+      submittingRef.current = false;
     }
   };
 
