@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Check, 
   ShieldCheck, 
@@ -166,6 +167,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
   const isSubmittingRef = useRef(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderInfo, setOrderInfo] = useState<any>(null);
@@ -275,7 +277,13 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
       setOrderSuccess(true);
       setIsSubmitting(false);
       isSubmittingRef.current = false;
-      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
+
+      const upsellCfg = getProductUpsellConfig(slug);
+      if (upsellCfg.upsell) {
+        router.push(`/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`);
+      } else {
+        router.push(`/p/${slug}/success?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`);
+      }
     } catch (err) {
       console.error("Order error:", err);
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");

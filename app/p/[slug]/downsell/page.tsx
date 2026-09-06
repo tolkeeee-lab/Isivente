@@ -22,6 +22,8 @@ function DownsellContent() {
   const slug = (params.slug as string) || "umei";
   const orderRef = searchParams.get("order") || "";
   const phone = searchParams.get("phone") || "";
+  const name = searchParams.get("name") || "";
+  const initialTotal = Number(searchParams.get("total") || 0);
 
   const config = getProductUpsellConfig(slug);
   const offer: OfferItem | undefined = config.downsell;
@@ -32,15 +34,16 @@ function DownsellContent() {
   // Si pas de downsell configuré, rediriger immédiatement vers success
   useEffect(() => {
     if (!offer) {
-      router.replace(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}`);
+      router.replace(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(initialTotal))}`);
     }
-  }, [offer, router, slug, orderRef, phone]);
+  }, [offer, router, slug, orderRef, phone, name, initialTotal]);
 
   if (!offer) return null;
 
   // Accepter le Downsell en 1 Clic
   const handleAccept = async () => {
     setIsProcessing(true);
+    const finalTotal = initialTotal + offer.price;
     try {
       if (orderRef) {
         await upgradeOrderWithUpsell(orderRef, offer.price, offer.title);
@@ -54,7 +57,7 @@ function DownsellContent() {
     } catch (e) {
       console.error("Downsell upgrade error:", e);
     } finally {
-      router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&downsell=1`);
+      router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(finalTotal))}&downsell=1`);
     }
   };
 
@@ -65,7 +68,7 @@ function DownsellContent() {
       downsell_id: offer.id,
       order_ref: orderRef,
     });
-    router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}`);
+    router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(initialTotal))}`);
   };
 
   return (

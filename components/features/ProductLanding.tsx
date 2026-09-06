@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -52,6 +53,7 @@ interface ProductData {
 
 /* ─── Component ─── */
 export default function ProductLanding({ slug }: { slug: string }) {
+  const router = useRouter();
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -250,7 +252,13 @@ export default function ProductLanding({ slug }: { slug: string }) {
       setOrderSuccess(true);
       setIsSubmitting(false);
       isSubmittingRef.current = false;
-      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
+
+      const upsellCfg = getProductUpsellConfig(slug, product.title, product.price);
+      if (upsellCfg?.upsell) {
+        router.push(`/p/${slug}/upsell?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalWithBump))}`);
+      } else {
+        router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalWithBump))}`);
+      }
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");

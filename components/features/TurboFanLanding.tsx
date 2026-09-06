@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
@@ -154,6 +155,7 @@ const fmt = (n: number) =>
 
 /* ─────────────────────────────────────────── COMPONENT */
 export default function TurboFanLanding({ slug }: { slug: string }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<Bundle>(BUNDLES[0]);
   const [includeBump, setIncludeBump] = useState(false);
   const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
@@ -289,7 +291,13 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
       setOrderInfo({ order_number: orderNum });
       setSubmitted(true);
       setSubmitting(false);
-      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
+
+      const upsellCfg = getProductUpsellConfig("turbofan");
+      if (upsellCfg?.upsell) {
+        router.push(`/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone.trim())}&name=${encodeURIComponent(name.trim())}&total=${encodeURIComponent(String(finalTotal))}`);
+      } else {
+        router.push(`/p/${slug}/success?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone.trim())}&name=${encodeURIComponent(name.trim())}&total=${encodeURIComponent(String(finalTotal))}`);
+      }
     } catch {
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setSubmitting(false);

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { 
@@ -60,6 +62,7 @@ const BUNDLES: ProductBundle[] = [
 ];
 
 export default function UmeiLanding({ slug }: { slug: string }) {
+  const router = useRouter();
   const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -158,7 +161,12 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         }
       } catch (e) {}
 
-      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
+      const upsellCfg = getProductUpsellConfig(slug || "umei");
+      if (upsellCfg.upsell) {
+        router.push(`/p/${slug || "umei"}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`);
+      } else {
+        router.push(`/p/${slug || "umei"}/success?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`);
+      }
     } catch (err) {
       console.error("Order error:", err);
       alert("Erreur lors de l'enregistrement. Veuillez réessayer.");

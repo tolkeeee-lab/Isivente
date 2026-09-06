@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Check, 
   ShieldCheck, 
@@ -144,6 +145,7 @@ const FAQ_ITEMS = [
 ];
 
 export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string }) {
+  const router = useRouter();
   const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
   const [includeBump, setIncludeBump] = useState(false);
   const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
@@ -245,7 +247,13 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
       setOrderSuccess(true);
       setIsSubmitting(false);
       isSubmittingRef.current = false;
-      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
+
+      const upsellCfg = getProductUpsellConfig(slug || "veilleuse");
+      if (upsellCfg?.upsell) {
+        router.push(`/p/${slug || "veilleuse"}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`);
+      } else {
+        router.push(`/p/${slug || "veilleuse"}/success?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`);
+      }
     } catch (err) {
       console.error("Order error:", err);
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");

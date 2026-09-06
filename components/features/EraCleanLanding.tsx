@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
@@ -157,6 +158,7 @@ const fmt = (n: number) =>
 
 /* ─────────────────────────────────────────── COMPONENT */
 export default function EraCleanLanding({ slug }: { slug: string }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<Bundle>(BUNDLES[0]);
   const [includeBump, setIncludeBump] = useState(false);
   const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
@@ -253,7 +255,13 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
       setOrderNumber(orderNum);
       setOrderSuccess(true);
       setSubmitting(false);
-      document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
+
+      const upsellCfg = getProductUpsellConfig("eraclean");
+      if (upsellCfg?.upsell) {
+        router.push(`/p/${slug}/upsell?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(finalTotal))}`);
+      } else {
+        router.push(`/p/${slug}/success?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(finalTotal))}`);
+      }
     } catch {
       alert("Erreur. Veuillez réessayer.");
       setSubmitting(false);
