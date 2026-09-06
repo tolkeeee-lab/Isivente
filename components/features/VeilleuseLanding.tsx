@@ -188,7 +188,14 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
 
   const scrollToOrder = () => {
     const el = document.getElementById("commander");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => {
+        const input = (document.getElementById("customer-name-input") ||
+          el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
+        if (input) input.focus({ preventScroll: true });
+      }, 400);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -201,13 +201,23 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   }, [slug]);
 
   const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (id === "commander") {
+        setTimeout(() => {
+          const input = (document.getElementById("customer-name-input") ||
+            el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
+          if (input) input.focus({ preventScroll: true });
+        }, 400);
+      }
+    }
   };
 
   const handleCtaClick = useCallback(() => {
     const sessId = sessionIdRef.current || ("sess_" + Date.now());
     trackUserSession(slug, 0, true, sessId);
-    document.getElementById("commander")?.scrollIntoView({ behavior: "smooth" });
+    scrollToSection("commander");
   }, [slug]);
 
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);

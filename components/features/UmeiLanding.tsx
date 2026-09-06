@@ -99,7 +99,16 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (id === "commander") {
+        setTimeout(() => {
+          const input = (document.getElementById("customer-name-input") ||
+            el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
+          if (input) input.focus({ preventScroll: true });
+        }, 400);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

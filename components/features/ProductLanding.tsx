@@ -160,7 +160,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
   /* ─── Helpers ─── */
   const scrollToSection = (id: string) => {
-    if (id === "order-form" && product) {
+    if ((id === "order-form" || id === "commander") && product) {
       trackInitiateCheckout({
         content_name: product.title,
         content_ids: [slug],
@@ -168,8 +168,18 @@ export default function ProductLanding({ slug }: { slug: string }) {
         currency: "XOF",
       });
     }
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    const targetId = id === "order-form" || id === "commander" ? (document.getElementById("commander") ? "commander" : "order-form") : id;
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (targetId === "commander" || targetId === "order-form") {
+        setTimeout(() => {
+          const input = (document.getElementById("customer-name-input") ||
+            el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
+          if (input) input.focus({ preventScroll: true });
+        }, 400);
+      }
+    }
   };
 
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);

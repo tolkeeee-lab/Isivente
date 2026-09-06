@@ -16,6 +16,7 @@ import {
   MapPin,
   Clock,
   ExternalLink,
+  Zap,
 } from "lucide-react";
 import { OfferItem, getProductUpsellConfig } from "@/lib/upsellConfig";
 import { playOrderSound } from "@/lib/soundEffects";
@@ -251,7 +252,16 @@ export default function UmeiStyleOrderSection({
 
   const scrollToCommander = () => {
     const el = document.getElementById("commander");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => {
+        const input = (document.getElementById("customer-name-input") ||
+          el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
+        if (input) {
+          input.focus({ preventScroll: true });
+        }
+      }, 400);
+    }
   };
 
   // ════════════════ VUE SUCCÈS COMMANDE (INSTANTANÉE SANS REDIRECTION) ════════════════
@@ -421,7 +431,7 @@ export default function UmeiStyleOrderSection({
     <>
       <section
         id="commander"
-        className="py-8 px-3 sm:px-6 md:px-8 max-w-[680px] mx-auto w-full overflow-hidden"
+        className="py-8 px-3 sm:px-6 md:px-8 max-w-[680px] mx-auto w-full overflow-hidden scroll-mt-20 sm:scroll-mt-24"
       >
         <div
           className="rounded-[22px] sm:rounded-[28px] p-4 sm:p-6 md:p-8 shadow-xl border-2 transition-all"
@@ -434,16 +444,17 @@ export default function UmeiStyleOrderSection({
           {/* EN-TÊTE DU FORMULAIRE */}
           <div className="text-center mb-5 sm:mb-6">
             <span
-              className="text-white text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider py-1 px-3 sm:px-3.5 rounded-full inline-block mb-2 shadow-xs"
-              style={{ background: theme.gradientBadge }}
+              className="text-[11px] font-black uppercase tracking-wider text-white px-3.5 py-1 rounded-full shadow-xs inline-flex items-center gap-1.5"
+              style={{ backgroundColor: theme.primary }}
             >
-              ⚡ Paiement à la livraison au Bénin
+              <Zap className="w-3.5 h-3.5" />
+              Commande Express 1-Clic • Paiement Réception
             </span>
-            <h2 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900 mb-1 tracking-tight">
-              Commandez en 30 secondes
+            <h2 className="font-display font-extrabold text-lg sm:text-2xl text-slate-900 mt-2 tracking-tight">
+              Finalisez votre commande ci-dessous
             </h2>
-            <p className="text-slate-600 text-xs sm:text-[13px] font-medium max-w-sm mx-auto leading-relaxed">
-              Remplissez vos coordonnées ci-dessous. Vous règlerez directement au livreur après ouverture du colis.
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+              Remplissez vos coordonnées pour recevoir votre colis sous 24h à domicile.
             </p>
           </div>
 
@@ -605,6 +616,7 @@ export default function UmeiStyleOrderSection({
                     Nom & Prénom <span style={{ color: theme.primary }}>*</span>
                   </label>
                   <input
+                    id="customer-name-input"
                     type="text"
                     required
                     value={customerName}
@@ -635,6 +647,7 @@ export default function UmeiStyleOrderSection({
                       🇧🇯 +229
                     </div>
                     <input
+                      id="customer-phone-input"
                       type="tel"
                       required
                       value={customerPhone}
