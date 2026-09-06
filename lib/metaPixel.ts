@@ -1,5 +1,5 @@
 export const PIXEL_CONFIG = {
-  pixelId: "2150878529184686",
+  pixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686",
   currency: "XOF",
   autoPageView: true,
 } as const;
