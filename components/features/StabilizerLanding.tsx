@@ -74,24 +74,29 @@ const BUNDLES: ProductBundle[] = [
 
 const CAROUSEL_IMAGES = [
   {
-    src: "/images/stabilisateur-hero.jpg",
-    alt: "Stabilisateur Pro-Mobile Z3 Zoom en main avec bague MagSafe",
-    caption: "Stabilisation Pro, Zoom sans fil et Trépied intégré",
+    src: "/images/stabilisateur-angles-rotation-360.jpg",
+    alt: "Stabilisateur Z3 Zoom multi-angle 360 degrés en main",
+    caption: "Polyvalence 3-en-1 : Poignée Gimbal, Perche extensible & Trépied de table",
   },
   {
-    src: "/images/stabilisateur-magsafe.jpg",
-    alt: "Gros plan sur la commande de zoom et la bague magnétique MagSafe",
-    caption: "Bague magnétique ultra-puissante & commande Zoom millimétrique",
+    src: "/images/stabilisateur-force-magnetique-20n.jpg",
+    alt: "Force magnétique ultra-forte 20N et compatibilité universelle",
+    caption: "Force magnétique 20N ultra-sécurisée (iPhone MagSafe & 3 bagues Android incluses)",
   },
   {
-    src: "/images/stabilisateur-tripod.jpg",
-    alt: "Mode trépied de table déployé sur un bureau de tournage",
-    caption: "Déploiement trépied en 1 seconde pour vidéos et visioconférences",
+    src: "/images/stabilisateur-telecommande-10m.jpg",
+    alt: "Télécommande Bluetooth détachable 10 mètres et trépied",
+    caption: "Télécommande sans fil détachable 10m rechargeable par USB-C",
   },
   {
-    src: "/images/stabilisateur-vlog.jpg",
-    alt: "Créatrice de contenu filmant un vlog fluide dans la rue",
-    caption: "Vidéos fluides et nettes sans tremblement même en marchant",
+    src: "/images/stabilisateur-perche-extensible.jpg",
+    alt: "Perche à selfie extensible en extérieur",
+    caption: "Perche télescopique ultra-légère pour des prises de vue grand angle",
+  },
+  {
+    src: "/images/stabilisateur-guide-fonctions.jpg",
+    alt: "Guide des fonctions d'accessibilité et voyants LED",
+    caption: "Connexion Bluetooth express en 3s (WONEW-M) & indicateurs LED intelligents",
   },
 ];
 
@@ -101,32 +106,36 @@ const REVIEWS = [
     city: "Cotonou (Haie Vive)",
     rating: 5,
     date: "Il y a 2 jours",
-    comment: "Je fais des vidéos pour ma boutique de vêtements sur TikTok. Avant mes vidéos tremblaient toujours. Avec ce Z3, la qualité fait pro comme avec un iPhone 15 Pro sur caméra de cinéma ! La bague MagSafe tient très fort.",
+    comment: "Je fais des vidéos pour ma boutique de vêtements sur TikTok. Avant mes vidéos tremblaient toujours. Avec ce Z3, la qualité fait pro comme avec un iPhone 15 Pro sur caméra de cinéma ! La bague MagSafe tient très fort avec les 20N annoncés.",
   },
   {
     author: "Nadège T.",
     city: "Abomey-Calavi",
     rating: 5,
     date: "Il y a 3 jours",
-    comment: "Le zoom à distance avec la télécommande détachable est génial ! Je pose le trépied sur la table et je gère mes prises sans toucher au téléphone. Livraison reçue le jour même en main propre.",
+    comment: "Le zoom à distance avec la télécommande détachable est génial ! Je pose le trépied sur la table et je gère mes prises sans toucher au téléphone. La batterie USB-C tient des jours. Livraison reçue le jour même en main propre.",
   },
   {
     author: "Yannick D.",
     city: "Porto-Novo",
     rating: 5,
     date: "Il y a 5 jours",
-    comment: "J'ai pris le pack duo pour moi et ma sœur qui est photographe. Rien à dire, l'aluminium est de qualité supérieure et le trépied ne bouge pas d'un millimètre.",
+    comment: "J'ai pris le pack duo pour moi et ma sœur qui est photographe. Rien à dire, l'aluminium est de qualité supérieure et le trépied ne bouge pas d'un millimètre. Les 3 bagues fournies m'ont permis d'équiper mon Samsung aussi.",
   },
 ];
 
 const FAQ_ITEMS = [
   {
     q: "Est-il compatible avec mon téléphone (iPhone et Android) ?",
-    a: "Oui, à 100% ! Il est directement compatible avec tous les iPhones MagSafe (séries 12, 13, 14, 15, 16). Pour tous les autres téléphones (Samsung, Xiaomi, Tecno, Infinix, Huawei...), un anneau magnétique mince adhésif ultra-puissant est fourni gratuitement dans le kit.",
+    a: "Oui, à 100% ! Il est directement compatible avec tous les iPhones MagSafe (séries 12, 13, 14, 15, 16, 17). Pour tous les autres téléphones (Samsung, Xiaomi, Tecno, Infinix, Huawei, etc.), 3 bagues métalliques ultra-minces adhésives sont incluses gratuitement dans le kit.",
   },
   {
-    q: "Comment fonctionne la télécommande de zoom à distance ?",
-    a: "La poignée intègre une télécommande Bluetooth amovible. Vous pouvez l'utiliser clipsée sur le stabilisateur ou la détacher pour déclencher vos photos/vidéos et zoomer jusqu'à 10 mètres de distance.",
+    q: "Comment fonctionne la télécommande sans fil détachable ?",
+    a: "La poignée intègre une télécommande Bluetooth amovible avec aimant de maintien et batterie rechargeable en USB-C (pas besoin de piles). Vous pouvez l'utiliser clipsée sur le stabilisateur ou la détacher pour déclencher vos photos/vidéos et zoomer jusqu'à 10 mètres de distance.",
+  },
+  {
+    q: "Comment s'effectue la connexion au téléphone ?",
+    a: "En 3 secondes chrono sans aucune application à installer ! Activez le commutateur ON sur le stabilisateur (le voyant bleu clignote), allez dans Réglages > Bluetooth sur votre téléphone et cliquez sur « WONEW-M ». Vous êtes prêt à filmer.",
   },
   {
     q: "Comment se fait la livraison et le paiement ?",
@@ -134,7 +143,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Le trépied est-il solide ?",
-    a: "Absolument. La poignée s'ouvre en 3 pieds renforcés avec patins en silicone antidérapants pour garantir une stabilité totale sur table, sol, bitume ou herbe.",
+    a: "Absolument. La base s'ouvre en 3 pieds renforcés en alliage d'aluminium avec patins en silicone antidérapants pour garantir une stabilité totale sur table, sol, bitume ou herbe.",
   },
 ];
 
@@ -478,100 +487,320 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
           }}
         />
 
-        {/* 🌟 SECTION FONCTIONNALITÉS EN DÉTAIL */}
-        <section className="border-t border-slate-200 pt-12 space-y-10">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-              Ingénierie & Ergonomie Studio
-            </span>
-            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
-              Pourquoi le Z3 Zoom est indispensable à vos vidéos ?
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 hover:border-slate-300 shadow-sm hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/60 flex items-center justify-center">
-                <Video className="w-6 h-6" />
+        {/* 🌟 SECTION 1 : SPOTLIGHT MAGSAFE 20N & COMPATIBILITÉ UNIVERSELLE */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-sm overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              
+              {/* IMAGE HD MAGSAFE 20N */}
+              <div className="lg:col-span-6 order-2 lg:order-1">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
+                  <img
+                    src="/images/stabilisateur-force-magnetique-20n.jpg"
+                    alt="Force magnétique ultra-forte de 20N et compatibilité universelle"
+                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-amber-400 border border-amber-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wide">
+                    FORCE MAGNÉTIQUE 20N
+                  </div>
+                </div>
               </div>
-              <h3 className="font-bold text-lg text-slate-950">Stabilisation Pro-Active</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Fini les vidéos amateurs saccadées. Le gyroscope et le contre-balancement mécanique absorbent chaque choc pendant la marche pour un rendu digne des studios cinéma.
-              </p>
-            </div>
 
-            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 hover:border-slate-300 shadow-sm hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-200/60 flex items-center justify-center">
-                <Radio className="w-6 h-6" />
+              {/* CONTENU TEXTE & AVANTAGES */}
+              <div className="lg:col-span-6 space-y-5 order-1 lg:order-2">
+                <div className="space-y-2">
+                  <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                    Sécurité Magnétique Avancée
+                  </span>
+                  <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950 tracking-tight leading-tight">
+                    Force magnétique 20N ultra-puissante : Votre téléphone ne tombera jamais
+                  </h2>
+                </div>
+
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Grâce à un réseau circulaire d&apos;aimants néodyme N52 calibrés à <strong className="text-slate-950">20 Newtons de puissance</strong>, votre smartphone s&apos;aimante instantanément en 0.5 seconde et reste parfaitement verrouillé, même lors de mouvements brusques ou de marches rapides.
+                </p>
+
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-start gap-3 bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl">
+                    <div className="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 font-bold">
+                      <Radio className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs">
+                      <div className="font-bold text-slate-900">100% Compatible iPhone MagSafe</div>
+                      <div className="text-slate-600">Séries iPhone 12, 13, 14, 15, 16, 17 et toutes les coques MagSafe certifiées.</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl">
+                    <div className="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 font-bold">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs">
+                      <div className="font-bold text-slate-900">3 Bagues Métalliques Offertes pour Android</div>
+                      <div className="text-slate-600">Samsung, Xiaomi, Tecno, Infinix, Huawei... Collez la bague fine sur votre coque et profitez du MagSafe instantané.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={scrollToOrder}
+                  className="bg-slate-950 hover:bg-slate-800 text-white px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 flex items-center gap-2 shadow-sm"
+                >
+                  <Zap className="w-3.5 h-3.5 text-amber-400 fill-current" />
+                  <span>Commander le Kit MagSafe 20N</span>
+                </button>
               </div>
-              <h3 className="font-bold text-lg text-slate-950">Aimant MagSafe 16N Ultra-Puissant</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Posez simplement votre smartphone : il s&apos;aimante instantanément avec une force de maintien testée contre les chutes brutales. Bague magnétique incluse pour téléphones Android.
-              </p>
-            </div>
 
-            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 hover:border-slate-300 shadow-sm hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center">
-                <Sliders className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-lg text-slate-950">Molette de Zoom Précise & Déclencheur</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Ajustez le zoom au millimètre directement avec le pouce sans jamais toucher votre écran, et détachez la commande pour déclencher vos enregistrements à distance.
-              </p>
             </div>
-
           </div>
         </section>
 
-        {/* 🌟 SECTION 1 : DÉMONSTRATION EN 3 ÉTAPES CLAIRES */}
+        {/* 🌟 SECTION 2 : DOUBLE SPOTLIGHT — ROTATION 360° & PERCHE TÉLESCOPIQUE */}
         <section className="border-t border-slate-200/90 pt-12 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-              Prise en main instantanée
+            <span className="text-xs font-mono uppercase tracking-widest text-sky-700 font-bold bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+              Polyvalence Cinématographique
             </span>
             <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
-              Comment ça marche en 3 gestes simples ?
+              Cadrez sous n&apos;importe quel angle avec une liberté totale
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm">
-              Aucune application complexe requise. Tout fonctionne nativement avec l'appareil photo de votre smartphone.
+              Un seul appareil pour 3 utilisations : Poignée stabilisatrice à la main, perche selfie grand angle et trépied de table stable.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-amber-400 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center font-mono text-base shadow-sm">
-                01
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            
+            {/* CARTE A : ROTATION 360° & MULTI-ANGLE */}
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm space-y-5 hover:border-slate-300 transition-all flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xs group aspect-4/3">
+                  <img
+                    src="/images/stabilisateur-angles-rotation-360.jpg"
+                    alt="Prise de vue sous n'importe quel angle support horizontal et vertical"
+                    className="w-full h-full object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-sky-400 border border-sky-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
+                    PORTRAIT & PAYSAGE 360°
+                  </div>
+                </div>
+
+                <h3 className="font-display font-bold text-xl text-slate-950">
+                  Bascule Portrait / Paysage Instantanée
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                  Pivotez votre téléphone à 360° en une fraction de seconde pour passer du format TikTok / Réels (vertical) au format YouTube / Cinéma (horizontal) sans jamais démonter l&apos;appareil.
+                </p>
               </div>
-              <h3 className="font-bold text-lg text-slate-950">Clipsez en 0.5 seconde</h3>
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Approchez votre iPhone ou Android : les puissants aimants MagSafe N52 le verrouillent instantanément. Fini les pinces mécaniques qui coincent les boutons de volume.
-              </p>
+
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center text-slate-800 text-[11px] font-bold">
+                <div className="bg-slate-50 p-2 rounded-xl">Mode Poignée</div>
+                <div className="bg-slate-50 p-2 rounded-xl">Mode Perche</div>
+                <div className="bg-slate-50 p-2 rounded-xl">Mode Trépied</div>
+              </div>
             </div>
 
-            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-amber-400 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center font-mono text-base shadow-sm">
-                02
+            {/* CARTE B : PERCHE EXTENSIBLE ULTRA-LÉGÈRE */}
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm space-y-5 hover:border-slate-300 transition-all flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xs group aspect-4/3">
+                  <img
+                    src="/images/stabilisateur-perche-extensible.jpg"
+                    alt="Perche à selfie portable et extensible pour photos de groupe"
+                    className="w-full h-full object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-emerald-400 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
+                    EXTENSION ALUMINIUM
+                  </div>
+                </div>
+
+                <h3 className="font-display font-bold text-xl text-slate-950">
+                  Perche Télescopique Légère & Robuste
+                </h3>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                  Déployez la tige en alliage d&apos;aluminium aéronautique pour capturer des panoramas grandioses et des photos de groupe où personne n&apos;est coupé, sans aucune flexion ni vibration.
+                </p>
               </div>
-              <h3 className="font-bold text-lg text-slate-950">Cadrez & Zoomez au pouce</h3>
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Tournez la molette ergonomique pour zoomer avec fluidité cinématographique sans jamais toucher l'écran, et basculez du mode portrait au paysage en 1 seconde.
-              </p>
+
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center text-slate-800 text-[11px] font-bold">
+                <div className="bg-slate-50 p-2 rounded-xl">Zéro Flexion</div>
+                <div className="bg-slate-50 p-2 rounded-xl">Grand Angle</div>
+                <div className="bg-slate-50 p-2 rounded-xl">Ultra-Léger</div>
+              </div>
             </div>
 
-            <div className="bg-white border border-slate-200/90 p-6 rounded-3xl space-y-4 shadow-sm relative overflow-hidden group hover:border-amber-400 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center font-mono text-base shadow-sm">
-                03
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 3 : SPOTLIGHT TÉLÉCOMMANDE 10M & RECHARGE TYPE-C */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl overflow-hidden border border-slate-800">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              
+              {/* TEXTE & CARACTÉRISTIQUES TÉLÉCOMMANDE */}
+              <div className="lg:col-span-6 space-y-5">
+                <div className="space-y-2">
+                  <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">
+                    Contrôle Sans Fil Studio
+                  </span>
+                  <h2 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+                    Télécommande Sans Fil 10 Mètres : Déclenchez et zoomez à distance
+                  </h2>
+                </div>
+
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Filmez vos tutoriels, vlogs et démonstrations en toute autonomie. La commande magnétique se détache d&apos;une simple pression du doigt pour vous permettre de cadrer et démarrer l&apos;enregistrement jusqu&apos;à 10 mètres de distance.
+                </p>
+
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-2xl">
+                    <div className="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 font-bold">
+                      <Sliders className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs">
+                      <div className="font-bold text-white">Conception Magnétique Amovible</div>
+                      <div className="text-slate-300">Se range et se fixe magnétiquement sur la poignée pour ne jamais la perdre.</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 bg-white/5 border border-white/10 p-3.5 rounded-2xl">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center shrink-0 font-bold">
+                      <Zap className="w-4 h-4 fill-current" />
+                    </div>
+                    <div className="text-xs">
+                      <div className="font-bold text-white">Recharge Rapide par Câble USB-C</div>
+                      <div className="text-slate-300">Batterie rechargeable longue durée intégrée : aucun achat de pile bouton jetable.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={scrollToOrder}
+                  className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-amber-500/20 cursor-pointer"
+                >
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>Obtenir le Pack avec Télécommande 10m</span>
+                </button>
               </div>
-              <h3 className="font-bold text-lg text-slate-950">Posez ou déclenchez à 10m</h3>
-              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Déployez les 3 pieds renforcés sur une table ou au sol, détachez la télécommande Bluetooth et enregistrez vos vidéos sans l'aide de personne.
-              </p>
+
+              {/* VISUEL HD TÉLÉCOMMANDE 10M */}
+              <div className="lg:col-span-6">
+                <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
+                  <img
+                    src="/images/stabilisateur-telecommande-10m.jpg"
+                    alt="Télécommande sans fil 10 mètres détachable et rechargeable par USB-C"
+                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-amber-400 border border-amber-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
+                    PORTÉE 10 MÈTRES SANS FIL
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
 
-        {/* 🌟 SECTION 2 : TABLEAU COMPARATIF ÉCRASANT */}
+        {/* 🌟 SECTION 4 : GUIDE VISUEL D'ACCESSIBILITÉ & PRISE EN MAIN EXPRESS */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+              Prise En Main Express
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Guide Visuel d&apos;Appairage & Voyants Intelligents
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm">
+              Configuration en 3 secondes chrono sans aucune application à télécharger.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-sm overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              
+              {/* IMAGE HD DU GUIDE OFFICIEL */}
+              <div className="lg:col-span-6">
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
+                  <img
+                    src="/images/stabilisateur-guide-fonctions.jpg"
+                    alt="Guide des fonctions d'accessibilité appairage Bluetooth WONEW-M et voyants LED"
+                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-emerald-400 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
+                    APPAIRAGE BLUETOOTH « WONEW-M »
+                  </div>
+                </div>
+              </div>
+
+              {/* ÉTAPES CLAIRES & CODE COULEURS VOYANTS */}
+              <div className="lg:col-span-6 space-y-6">
+                
+                <div className="space-y-4">
+                  <h3 className="font-display font-bold text-xl text-slate-950">
+                    2 Étapes Simples pour Commencer
+                  </h3>
+
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                      <div className="w-7 h-7 rounded-xl bg-amber-500 text-slate-950 font-mono font-black flex items-center justify-center shrink-0 text-xs">
+                        1
+                      </div>
+                      <div className="text-xs">
+                        <div className="font-bold text-slate-900">Allumez l&apos;interrupteur</div>
+                        <div className="text-slate-600">Passez le commutateur sur ON. Le voyant clignote en BLEU pour indiquer le mode association.</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                      <div className="w-7 h-7 rounded-xl bg-sky-500 text-white font-mono font-black flex items-center justify-center shrink-0 text-xs">
+                        2
+                      </div>
+                      <div className="text-xs">
+                        <div className="font-bold text-slate-900">Connectez en Bluetooth</div>
+                        <div className="text-slate-600">Sur votre iPhone ou Android : Réglages &gt; Bluetooth &gt; Cliquez sur « WONEW-M » pour vous associer.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2 border-t border-slate-100">
+                  <h4 className="font-bold text-xs uppercase tracking-wider text-slate-700">
+                    Signification des Voyants LED :
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                    <div className="bg-rose-50 border border-rose-200/60 p-2.5 rounded-xl">
+                      <div className="font-bold text-rose-700">Clignote Rouge (3x)</div>
+                      <div className="text-rose-900/70 text-[11px]">Batterie faible</div>
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200/60 p-2.5 rounded-xl">
+                      <div className="font-bold text-amber-700">Rouge Continu</div>
+                      <div className="text-amber-900/70 text-[11px]">Charge en cours</div>
+                    </div>
+
+                    <div className="bg-emerald-50 border border-emerald-200/60 p-2.5 rounded-xl">
+                      <div className="font-bold text-emerald-700">Voyant Éteint</div>
+                      <div className="text-emerald-900/70 text-[11px]">Batterie 100% pleine</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* 🌟 SECTION 5 : TABLEAU COMPARATIF ÉCRASANT */}
         <section className="border-t border-slate-200/90 pt-12 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
@@ -598,34 +827,34 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   <tr>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Force de Fixation</td>
+                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+                      MagSafe 20N ultra-sécurisé
+                    </td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Pinces mécaniques dures qui rayent</td>
+                  </tr>
+                  <tr>
                     <td className="py-3.5 px-5 font-bold text-slate-800">Stabilisation Vidéo</td>
                     <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
                       <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
                       Fluide cinéma sans tremblement
                     </td>
-                    <td className="py-3.5 px-5 text-rose-500 font-medium">Vidéos saccadées dès qu'on marche</td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Vidéos saccadées dès qu&apos;on marche</td>
                   </tr>
                   <tr>
-                    <td className="py-3.5 px-5 font-bold text-slate-800">Fixation Smartphone</td>
+                    <td className="py-3.5 px-5 font-bold text-slate-800">Télécommande & Zoom</td>
                     <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
                       <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
-                      MagSafe N52 magnétique (0.5s)
+                      Détachable 10m + Rechargeable USB-C
                     </td>
-                    <td className="py-3.5 px-5 text-rose-500 font-medium">Pinces dures qui rayent et bloquent les boutons</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3.5 px-5 font-bold text-slate-800">Commande de Zoom</td>
-                    <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
-                      <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
-                      Molette intégrée + Déclencheur 10m
-                    </td>
-                    <td className="py-3.5 px-5 text-rose-500 font-medium">Obligé de toucher l'écran à deux mains</td>
+                    <td className="py-3.5 px-5 text-rose-500 font-medium">Obligé de toucher l&apos;écran ou piles jetables</td>
                   </tr>
                   <tr>
                     <td className="py-3.5 px-5 font-bold text-slate-800">Robustesse des Matériaux</td>
                     <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
                       <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
-                      Alliage d'Aluminium Haute Résistance
+                      Alliage d&apos;Aluminium Haute Résistance
                     </td>
                     <td className="py-3.5 px-5 text-rose-500 font-medium">Plastique fin qui casse après 3 sorties</td>
                   </tr>
@@ -633,7 +862,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                     <td className="py-3.5 px-5 font-bold text-slate-800">Compatibilité Téléphones</td>
                     <td className="py-3.5 px-5 font-bold text-emerald-700 bg-amber-50/30 flex items-center gap-1.5">
                       <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
-                      100% Universel (iPhone & Android)
+                      100% Universel (iPhone + 3 Bagues Android)
                     </td>
                     <td className="py-3.5 px-5 text-slate-500">Limité à certaines largeurs</td>
                   </tr>
@@ -643,7 +872,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
           </div>
         </section>
 
-        {/* 🌟 SECTION 3 : 4 CAS D'USAGE RÉELS AU BÉNIN */}
+        {/* 🌟 SECTION 6 : 4 CAS D'USAGE RÉELS AU BÉNIN */}
         <section className="border-t border-slate-200/90 pt-12 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-xs font-mono uppercase tracking-widest text-sky-700 font-bold bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
@@ -656,7 +885,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
-              <div className="font-black text-amber-600 text-sm">🛍️ Vendeurs & Boutiques</div>
+              <div className="font-black text-amber-600 text-sm">Vendeurs & Boutiques</div>
               <h4 className="font-bold text-slate-900 text-sm">Vidéos TikTok & Lives Pro</h4>
               <p className="text-slate-600 text-xs leading-relaxed">
                 Mettez en valeur vos vêtements, chaussures et produits avec des plans fluides qui donnent immédiatement confiance aux clients.
@@ -664,7 +893,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
             </div>
 
             <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
-              <div className="font-black text-sky-600 text-sm">🎬 Créateurs de Contenu</div>
+              <div className="font-black text-sky-600 text-sm">Créateurs de Contenu</div>
               <h4 className="font-bold text-slate-900 text-sm">Vlogs de Rue & Interviews</h4>
               <p className="text-slate-600 text-xs leading-relaxed">
                 Marchez à votre rythme dans la rue sans tremblement ni effet de nausée sur vos vidéos.
@@ -672,7 +901,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
             </div>
 
             <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
-              <div className="font-black text-emerald-600 text-sm">💼 Réunions & Visioconférences</div>
+              <div className="font-black text-emerald-600 text-sm">Réunions & Visioconférences</div>
               <h4 className="font-bold text-slate-900 text-sm">Appels Mains-Libres</h4>
               <p className="text-slate-600 text-xs leading-relaxed">
                 Posez votre trépied sur votre bureau pour des appels Zoom et WhatsApp impeccablement cadrés.
@@ -680,20 +909,20 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
             </div>
 
             <div className="bg-white border border-slate-200/90 p-5 rounded-2xl space-y-2 shadow-sm">
-              <div className="font-black text-purple-600 text-sm">🎉 Famille & Événements</div>
+              <div className="font-black text-purple-600 text-sm">Famille & Événements</div>
               <h4 className="font-bold text-slate-900 text-sm">Photos de Groupe Sans Stress</h4>
               <p className="text-slate-600 text-xs leading-relaxed">
-                Plus besoin d'exclure la personne qui prend la photo : posez le trépied et déclenchez avec la télécommande.
+                Plus besoin d&apos;exclure la personne qui prend la photo : posez le trépied et déclenchez avec la télécommande.
               </p>
             </div>
           </div>
         </section>
 
-        {/* 🌟 SECTION 4 : CONTENU DU COFFRET (UNBOXING) */}
+        {/* 🌟 SECTION 7 : CONTENU DU COFFRET (UNBOXING) */}
         <section className="border-t border-slate-200/90 pt-12 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-xs font-mono uppercase tracking-widest text-indigo-700 font-bold bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
-              Coffret Complet Prêt à l'Emploi
+              Coffret Complet Prêt à l&apos;Emploi
             </span>
             <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
               Que recevez-vous exactement dans votre colis ?
@@ -706,15 +935,15 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
               <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
                 <li className="flex items-center gap-2.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                  <span><strong>1x Stabilisateur Z3 Zoom</strong> en alliage d'aluminium renforcé</span>
+                  <span><strong>1x Stabilisateur Z3 Zoom</strong> en alliage d&apos;aluminium renforcé</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                  <span><strong>1x Télécommande Bluetooth sans fil</strong> détachable longue portée (10m)</span>
+                  <span><strong>1x Télécommande Bluetooth sans fil</strong> détachable rechargeable Type-C (10m)</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                  <span><strong>1x Anneau magnétique universel</strong> adhésif offert pour téléphones Android</span>
+                  <span><strong>3x Bagues magnétiques métalliques</strong> adhésives offertes pour téléphones Android</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
@@ -722,7 +951,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                 </li>
                 <li className="flex items-center gap-2.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                  <span><strong>1x Guide d'utilisation illustré</strong> en français</span>
+                  <span><strong>1x Guide officiel d&apos;accessibilité et voyants</strong> illustré en français</span>
                 </li>
               </ul>
             </div>
@@ -731,7 +960,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
               <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Garantie Qualité & Contrôle Colis</div>
               <div className="text-lg font-bold text-white">Inspection Physique Avant Paiement</div>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Le livreur vous remet le colis en main propre au Bénin. Vous ouvrez, vous vérifiez et vous ne payez qu'après totale satisfaction.
+                Le livreur vous remet le colis en main propre au Bénin. Vous ouvrez, vous vérifiez et vous ne payez qu&apos;après totale satisfaction.
               </p>
               <button
                 type="button"
