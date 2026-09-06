@@ -20,7 +20,9 @@ import {
   Sliders,
   Maximize2,
   Play,
-  ExternalLink
+  Pause,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -168,6 +170,28 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  // Contrôles Lecteur Vidéo MP4 Local
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsMuted(videoRef.current.muted);
+  };
 
   // Autoplay carrousel d'images HD toutes les 4.5s
   useEffect(() => {
@@ -489,12 +513,12 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
           }}
         />
 
-        {/* 🌟 SECTION VIDÉO DÉMONSTRATION EN DIRECT (TIKTOK UGC) */}
+        {/* 🌟 SECTION VIDÉO DÉMONSTRATION EN DIRECT (MP4 HÉBERGÉ LOCALEMENT) */}
         <section className="border-t border-slate-200/90 pt-12 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-200 inline-flex items-center gap-1.5">
               <Play className="w-3 h-3 fill-current text-amber-600" />
-              <span>Démonstration Vidéo Réelle</span>
+              <span>Démonstration & Prise en Main Réelle</span>
             </span>
             <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
               Voyez le Z3 Zoom™ en action réelle
@@ -507,27 +531,57 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
           <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-slate-800 text-white">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               
-              {/* LECTEUR VIDÉO TIKTOK INTÉGRÉ DANS UN CADRE SMARTPHONE ÉLÉGANT */}
+              {/* LECTEUR VIDÉO MP4 NATIF ULTRA-RAPIDE INTÉGRÉ DANS UN CHÂSSIS SMARTPHONE */}
               <div className="lg:col-span-5 flex justify-center">
                 <div className="relative w-full max-w-[340px] bg-slate-950 rounded-3xl p-2.5 sm:p-3 border border-slate-700/80 shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
                   {/* Encoche Smartphone Haut */}
                   <div className="flex items-center justify-between px-3 py-1.5 mb-1 text-[10px] text-slate-400 font-mono">
                     <span className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                      <span className="font-bold text-slate-200">DÉMO EN DIRECT</span>
+                      <span className="font-bold text-slate-200">DÉMO VIDÉO</span>
                     </span>
-                    <span>Z3 ZOOM MAGSAFE</span>
+                    <span>Z3 ZOOM PRO</span>
                   </div>
 
-                  {/* IFRAME TIKTOK EMBED */}
-                  <div className="relative w-full rounded-2xl overflow-hidden bg-black aspect-[9/16] min-h-[500px] max-h-[580px]">
-                    <iframe
-                      src="https://www.tiktok.com/embed/v2/7648101467630439694"
-                      title="Démonstration Vidéo Z3 Zoom TikTok"
-                      className="w-full h-full border-0 rounded-2xl"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
+                  {/* CONTENEUR VIDÉO AVEC COMMANDES TACTILES */}
+                  <div 
+                    onClick={togglePlay}
+                    className="relative w-full rounded-2xl overflow-hidden bg-black aspect-[9/16] min-h-[500px] max-h-[580px] cursor-pointer group select-none"
+                  >
+                    <video
+                      ref={videoRef}
+                      src="/videos/stabilisateur-demo.mp4"
+                      poster="/images/stabilisateur-video-poster.jpg"
+                      preload="metadata"
+                      playsInline
+                      loop
+                      muted={isMuted}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                      className="w-full h-full object-cover"
                     />
+
+                    {/* OVERLAY BOUTON PLAY AU CENTRE LORSQU'EN PAUSE */}
+                    {!isPlaying && (
+                      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3 transition-opacity">
+                        <div className="w-16 h-16 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-200 active:scale-95">
+                          <Play className="w-7 h-7 fill-current ml-1" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-white bg-slate-900/80 px-3 py-1 rounded-full border border-white/20">
+                          Lancer la vidéo
+                        </span>
+                      </div>
+                    )}
+
+                    {/* CONTRÔLEUR DU SON EN BAS À DROITE */}
+                    <button
+                      type="button"
+                      onClick={toggleMute}
+                      className="absolute bottom-3 right-3 p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-900 backdrop-blur-md text-white border border-white/20 shadow-lg active:scale-90 transition-all cursor-pointer z-10"
+                      title={isMuted ? "Activer le son" : "Couper le son"}
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4 text-amber-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -585,24 +639,15 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                   </div>
                 </div>
 
-                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div className="pt-2">
                   <button
                     type="button"
                     onClick={scrollToOrder}
-                    className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-8 py-4 rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Zap className="w-4 h-4 fill-current" />
                     <span>Commander mon Z3 Zoom (49 900 F)</span>
                   </button>
-                  <a
-                    href="https://www.tiktok.com/@eichpqw/video/7648101467630439694"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-slate-400 hover:text-white flex items-center justify-center gap-1.5 py-2 px-3 transition-colors"
-                  >
-                    <span>Voir sur TikTok</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
                 </div>
               </div>
 
