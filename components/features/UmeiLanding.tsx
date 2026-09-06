@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import QuickOrderDrawer from "@/components/features/QuickOrderDrawer";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import { 
   Check, 
@@ -72,6 +73,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
   const [customerPhone2, setCustomerPhone2] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -195,7 +197,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
           </ul>
 
           <button
-            onClick={() => scrollToSection("commander")}
+            onClick={() => setIsDrawerOpen(true)}
             className="bg-[#FF5C93] hover:bg-[#E13D74] text-white px-5 py-2 rounded-full text-sm font-bold shadow-[0_8px_20px_-8px_rgba(255,92,147,0.6)] hover:-translate-y-0.5 transition-all cursor-pointer"
           >
             Commander
@@ -263,7 +265,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
             {/* BOUTONS D'ACTION DU HERO */}
             <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 w-full pt-1">
               <button
-                onClick={() => scrollToSection("commander")}
+                onClick={() => setIsDrawerOpen(true)}
                 className="w-full sm:w-auto bg-[#FF5C93] hover:bg-[#E13D74] text-white px-7 py-3.5 rounded-full font-bold text-base shadow-[0_12px_28px_-10px_rgba(255,92,147,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 text-center"
               >
                 <span>Je commande — 14 900 FCFA</span>
@@ -593,7 +595,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
             </p>
             <button
               type="button"
-              onClick={() => scrollToSection("commander")}
+              onClick={() => setIsDrawerOpen(true)}
               className="w-full bg-[#FF5C93] hover:bg-[#E13D74] text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-[#FF5C93]/30 cursor-pointer"
             >
               Commander ma brosse (14 900 F)
@@ -609,7 +611,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
             Prête à changer ton rituel capillaire ?
           </h2>
           <button
-            onClick={() => scrollToSection("commander")}
+            onClick={() => setIsDrawerOpen(true)}
             className="w-full sm:w-auto bg-[#FF5C93] hover:bg-[#E13D74] text-white px-7 py-3.5 rounded-full font-bold text-sm sm:text-base shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
           >
             Commander ma brosse — 14 900 FCFA
@@ -623,11 +625,24 @@ export default function UmeiLanding({ slug }: { slug: string }) {
           <div>© 2026 uméi. Tous droits réservés.</div>
           <ul className="flex gap-4">
             <li><button onClick={() => scrollToSection("demo-video")}>Vidéo</button></li>
-            <li><button onClick={() => scrollToSection("commander")}>Commander</button></li>
+            <li><button onClick={() => setIsDrawerOpen(true)}>Commander</button></li>
             <li><button onClick={() => scrollToSection("faq")}>Questions</button></li>
           </ul>
         </div>
       </footer>
+
+      {/* 🚀 QUICK-ORDER DRAWER EXPRESS 1-CLIC */}
+      <QuickOrderDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        productSlug={slug || "umei"}
+        productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
+        productImage="/images/umei-hero-real.jpg"
+        bundles={BUNDLES}
+        accentColor="#FF5C93"
+        whatsappNumber="2290192901817"
+        initialBundle={selectedBundle}
+      />
 
     </div>
   );
