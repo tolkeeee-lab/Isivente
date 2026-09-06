@@ -4,13 +4,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { 
   Check, 
   ArrowRight, 
   ChevronDown, 
   Sparkles,
   Droplets,
-  HeartHandshake
+  HeartHandshake,
+  MessageCircle
 } from "lucide-react";
 
 interface ProductBundle {
@@ -604,17 +606,14 @@ export default function UmeiLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* 🦶 FOOTER */}
-      <footer className="py-6 px-4 border-t border-[#8B6FE0]/15 max-w-[1180px] mx-auto w-full overflow-hidden">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs font-semibold text-[#6B5F87] text-center">
-          <div>© 2026 uméi. Tous droits réservés.</div>
-          <ul className="flex gap-4">
-            <li><button onClick={() => scrollToSection("demo-video")}>Vidéo</button></li>
-            <li><button onClick={() => scrollToSection("commander")}>Commander</button></li>
-            <li><button onClick={() => scrollToSection("faq")}>Questions</button></li>
-          </ul>
-        </div>
-      </footer>
+      {/* 📱 STICKY MOBILE BAR (PRIX FIXE EN BAS & BOUTON COMMANDER) */}
+      <StickyMobileCtaBar
+        price={selectedBundle.price}
+        targetSectionId="commander"
+        accentColor="#FF5C93"
+        whatsappNumber="2290192901817"
+        whatsappMessage="Bonjour ! J'ai une question concernant la brosse démêlante vapeur Uméi."
+      />
 
     </div>
   );

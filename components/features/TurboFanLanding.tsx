@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
@@ -740,6 +741,15 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
           © {new Date().getFullYear()} Isivente. Tous droits réservés.
         </div>
       </footer>
+
+      {/* 📱 STICKY MOBILE BAR (PRIX FIXE EN BAS & BOUTON COMMANDER) */}
+      <StickyMobileCtaBar
+        price={selected.price}
+        targetSectionId="commander"
+        accentColor="#0284C7"
+        whatsappNumber="2290192901817"
+        whatsappMessage="Bonjour ! J'ai une question concernant le ventilateur TurboFan Max."
+      />
 
     </div>
   );

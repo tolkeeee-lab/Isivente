@@ -23,6 +23,7 @@ import {
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
@@ -827,11 +828,20 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
       </main>
 
       {/* 🌟 FOOTER */}
-      <footer className="border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-600 space-y-2">
+      <footer className="border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-600 space-y-2 pb-24 md:pb-8">
         <p className="font-bold text-slate-800">Isivente • Commerce Pro Bénin</p>
         <p>Service Client WhatsApp : +229 01 92 90 18 17 • Cotonou, Bénin</p>
         <p className="text-[10px] text-slate-400">© 2026 Isivente. Tous droits réservés.</p>
       </footer>
+
+      {/* 📱 STICKY MOBILE BAR (PRIX FIXE EN BAS & BOUTON COMMANDER) */}
+      <StickyMobileCtaBar
+        price={selectedBundle.price}
+        targetSectionId="commander"
+        accentColor="#4F46E5"
+        whatsappNumber="2290192901817"
+        whatsappMessage="Bonjour ! J'ai une question concernant la veilleuse projecteur d'étoiles."
+      />
 
     </div>
   );

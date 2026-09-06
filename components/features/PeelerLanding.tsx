@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
@@ -605,18 +606,18 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� AVIS CLIENTS â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
+      {/* ════════════════ AVIS CLIENTS ════════════════ */}
       <section className="py-12 px-4 md:px-8 max-w-4xl mx-auto space-y-6">
         <div className="text-center">
           <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
-            Ce que disent les cuisiniÃ¨res au BÃ©nin
+            Ce que disent les cuisinières au Bénin
           </h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {REVIEWS.map((r) => (
             <div key={r.name} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2">
-              <div className="flex text-amber-500 text-xs">â˜…â˜…â˜…â˜…â˜…</div>
+              <div className="flex text-amber-500 text-xs">★★★★★</div>
               <p className="text-xs text-slate-600 italic leading-relaxed">&ldquo;{r.text}&rdquo;</p>
               <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-800">
                 <span>{r.name}</span>
