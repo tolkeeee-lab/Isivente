@@ -18,7 +18,9 @@ import {
   Video,
   Radio,
   Sliders,
-  Maximize2
+  Maximize2,
+  Play,
+  ExternalLink
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -486,6 +488,127 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
             setOrderInfo(null);
           }}
         />
+
+        {/* 🌟 SECTION VIDÉO DÉMONSTRATION EN DIRECT (TIKTOK UGC) */}
+        <section className="border-t border-slate-200/90 pt-12 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-200 inline-flex items-center gap-1.5">
+              <Play className="w-3 h-3 fill-current text-amber-600" />
+              <span>Démonstration Vidéo Réelle</span>
+            </span>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-slate-950">
+              Voyez le Z3 Zoom™ en action réelle
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm">
+              Découvrez la facilité d&apos;aimantation MagSafe, la stabilité en marchant et le contrôle de zoom sans fil en vidéo.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-slate-800 text-white">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              
+              {/* LECTEUR VIDÉO TIKTOK INTÉGRÉ DANS UN CADRE SMARTPHONE ÉLÉGANT */}
+              <div className="lg:col-span-5 flex justify-center">
+                <div className="relative w-full max-w-[340px] bg-slate-950 rounded-3xl p-2.5 sm:p-3 border border-slate-700/80 shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
+                  {/* Encoche Smartphone Haut */}
+                  <div className="flex items-center justify-between px-3 py-1.5 mb-1 text-[10px] text-slate-400 font-mono">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                      <span className="font-bold text-slate-200">DÉMO EN DIRECT</span>
+                    </span>
+                    <span>Z3 ZOOM MAGSAFE</span>
+                  </div>
+
+                  {/* IFRAME TIKTOK EMBED */}
+                  <div className="relative w-full rounded-2xl overflow-hidden bg-black aspect-[9/16] min-h-[500px] max-h-[580px]">
+                    <iframe
+                      src="https://www.tiktok.com/embed/v2/7648101467630439694"
+                      title="Démonstration Vidéo Z3 Zoom TikTok"
+                      className="w-full h-full border-0 rounded-2xl"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* ARGUMENTS CLÉS VUS DANS LA VIDÉO */}
+              <div className="lg:col-span-7 space-y-6">
+                <div>
+                  <span className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-bold bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">
+                    Ce que vous observez en direct
+                  </span>
+                  <h3 className="font-display font-black text-xl sm:text-2xl text-white mt-2">
+                    L&apos;accessoire studio indispensable pour filmer comme un pro
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-1">
+                    <div className="font-bold text-amber-400 text-xs flex items-center gap-1.5">
+                      <Radio className="w-3.5 h-3.5" />
+                      <span>Aimantation Instantanée</span>
+                    </div>
+                    <p className="text-slate-300 text-xs leading-relaxed">
+                      Posez simplement votre téléphone : le cercle MagSafe se verrouille d&apos;un claquement franc et sécurisé.
+                    </p>
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-1">
+                    <div className="font-bold text-sky-400 text-xs flex items-center gap-1.5">
+                      <Sliders className="w-3.5 h-3.5" />
+                      <span>Zoom Millimétrique</span>
+                    </div>
+                    <p className="text-slate-300 text-xs leading-relaxed">
+                      La molette physique permet de zoomer avec fluidité cinéma sans jamais masquer l&apos;écran avec vos doigts.
+                    </p>
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-1">
+                    <div className="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>Déploiement en 1 Clic</span>
+                    </div>
+                    <p className="text-slate-300 text-xs leading-relaxed">
+                      Se transforme en perche télescopique ou en trépied autoportant en une seconde chrono.
+                    </p>
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl space-y-1">
+                    <div className="font-bold text-purple-400 text-xs flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Format Poche Pliable</span>
+                    </div>
+                    <p className="text-slate-300 text-xs leading-relaxed">
+                      Ultra-léger et compact, il vous accompagne dans toutes vos sorties et tournages au quotidien.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={scrollToOrder}
+                    className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Zap className="w-4 h-4 fill-current" />
+                    <span>Commander mon Z3 Zoom (49 900 F)</span>
+                  </button>
+                  <a
+                    href="https://www.tiktok.com/@eichpqw/video/7648101467630439694"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-slate-400 hover:text-white flex items-center justify-center gap-1.5 py-2 px-3 transition-colors"
+                  >
+                    <span>Voir sur TikTok</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
 
         {/* 🌟 SECTION 1 : SPOTLIGHT MAGSAFE 20N & COMPATIBILITÉ UNIVERSELLE */}
         <section className="border-t border-slate-200/90 pt-12 space-y-8">
