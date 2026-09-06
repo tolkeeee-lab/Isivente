@@ -398,59 +398,37 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
               </div>
             </div>
 
-            {/* PACKS HORMOZI */}
-            <div className="space-y-2.5 pt-1">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
-                1. Choisissez votre Pack Promo :
-              </label>
-
-              {BUNDLES.map((bundle) => {
-                const isSelected = selectedBundle.id === bundle.id;
-                return (
-                  <div
-                    key={bundle.id}
-                    onClick={() => setSelectedBundle(bundle)}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer relative select-none ${
-                      isSelected
-                        ? "bg-amber-50/50 border-amber-500 shadow-sm ring-1 ring-amber-500"
-                        : "bg-white border-slate-200 hover:border-slate-300 shadow-2xs"
-                    }`}
-                  >
-                    {bundle.badge && (
-                      <span className="absolute -top-2.5 right-3 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-xs">
-                        {bundle.badge}
-                      </span>
-                    )}
-
-                    <div className="flex items-center justify-between gap-2.5">
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                            isSelected
-                              ? "border-amber-500 bg-amber-500 text-slate-950"
-                              : "border-slate-300 bg-slate-100"
-                          }`}
-                        >
-                          {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
-                        </div>
-                        <div>
-                          <div className="font-bold text-xs sm:text-sm text-slate-900">{bundle.name}</div>
-                          <div className="text-[11px] text-slate-500">{bundle.subtitle}</div>
-                        </div>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <div className="font-mono font-bold text-sm sm:text-base text-amber-600 tabular-nums">
-                          {new Intl.NumberFormat("fr-FR").format(bundle.price)} F
-                        </div>
-                        <div className="text-[10px] font-mono text-slate-400 line-through tabular-nums">
-                          {new Intl.NumberFormat("fr-FR").format(bundle.originalPrice)} F
-                        </div>
-                      </div>
-                    </div>
+            {/* BLOC PRIX PROMO FLASH */}
+            <div className="bg-amber-50/70 border border-amber-300/80 p-4 rounded-2xl space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800 bg-amber-200/80 px-2.5 py-0.5 rounded-full">
+                    Offre Spéciale Lancement
+                  </span>
+                  <div className="font-mono font-black text-2xl sm:text-3xl text-slate-950 mt-1 tabular-nums">
+                    49 900 F <span className="text-xs font-semibold text-slate-500 font-sans">CFA</span>
                   </div>
-                );
-              })}
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-mono text-slate-400 line-through block tabular-nums">
+                    65 000 F
+                  </span>
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full inline-block mt-0.5">
+                    Économisez 15 100 F
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-amber-200/60 space-y-1.5 text-xs text-slate-700 font-medium">
+                <div className="flex items-center gap-2">
+                  <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                  <span>1x Stabilisateur Z3 Zoom + Télécommande Type-C</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                  <span>3x Bagues magnétiques Android offertes</span>
+                </div>
+              </div>
             </div>
 
             {/* CTA RAPIDE */}
