@@ -673,14 +673,23 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
       {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� FOOTER â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
       <footer className="bg-[#0B1E3F] text-white py-10 px-4 text-center border-t border-white/10 space-y-3 pb-24 md:pb-10">
-        <div className="font-display font-bold text-base">ChefPeelâ„¢ Pro BÃ©nin</div>
+        <div className="font-display font-bold text-base">ChefPeel™ Pro Bénin</div>
         <p className="text-xs text-slate-300 max-w-sm mx-auto">
-          DistribuÃ© par Isivente â€¢ Service client WhatsApp : +229 01 92 90 18 17
+          Distribué par Isivente • Service client WhatsApp : +229 01 92 90 18 17
         </p>
         <div className="text-[11px] text-slate-400 font-mono">
-          Â© {new Date().getFullYear()} Isivente. Tous droits rÃ©servÃ©s.
+          © {new Date().getFullYear()} Isivente. Tous droits réservés.
         </div>
       </footer>
+
+      {/* 📱 STICKY MOBILE BAR (PRIX FIXE EN BAS & BOUTON COMMANDER) */}
+      <StickyMobileCtaBar
+        price={selected.price}
+        targetSectionId="commander"
+        accentColor="#0047AB"
+        whatsappNumber="2290192901817"
+        whatsappMessage="Bonjour ! J'ai une question concernant l'éplucheur automatique ChefPeel Pro."
+      />
 
     </div>
   );

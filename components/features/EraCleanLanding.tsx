@@ -830,7 +830,7 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
       <StickyMobileCtaBar
         price={selected.price}
         targetSectionId="commander"
-        accentColor="#059669"
+        accentColor="#2563EB"
         whatsappNumber="2290192901817"
         whatsappMessage="Bonjour ! J'ai une question concernant le dépoussiéreur EraClean Pro."
       />

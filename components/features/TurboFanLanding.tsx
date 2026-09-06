@@ -759,7 +759,7 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
       <StickyMobileCtaBar
         price={selected.price}
         targetSectionId="commander"
-        accentColor="#0284C7"
+        accentColor="#059669"
         whatsappNumber="2290192901817"
         whatsappMessage="Bonjour ! J'ai une question concernant le ventilateur TurboFan Max."
       />

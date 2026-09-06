@@ -62,7 +62,7 @@ interface UmeiStyleOrderSectionProps {
   onResetOrder?: () => void;
 }
 
-/* Palettes épurées et sobres par produit */
+/* Palettes épurées et harmonisées au pixel près par produit */
 const THEME_PALETTES: Record<
   string,
   {
@@ -72,55 +72,79 @@ const THEME_PALETTES: Record<
     border: string;
     textPrimary: string;
     ringColor: string;
+    badgeBg: string;
+    badgeText: string;
   }
 > = {
   umei: {
-    primary: "#E11D48",
-    primaryHover: "#BE123C",
-    primaryLight: "#FFF1F2",
-    border: "#FECDD3",
-    textPrimary: "#1E293B",
-    ringColor: "rgba(225, 29, 72, 0.2)",
+    primary: "#FF5C93",
+    primaryHover: "#E13D74",
+    primaryLight: "#FFF1F5",
+    border: "#FECDD6",
+    textPrimary: "#831843",
+    ringColor: "rgba(255, 92, 147, 0.25)",
+    badgeBg: "#FFE4EC",
+    badgeText: "#BE185D",
   },
   eraclean: {
-    primary: "#059669",
-    primaryHover: "#047857",
-    primaryLight: "#ECFDF5",
-    border: "#A7F3D0",
-    textPrimary: "#0F172A",
-    ringColor: "rgba(5, 150, 105, 0.2)",
-  },
-  turbofan: {
-    primary: "#0284C7",
-    primaryHover: "#0369A1",
-    primaryLight: "#F0F9FF",
-    border: "#BAE6FD",
-    textPrimary: "#0F172A",
-    ringColor: "rgba(2, 132, 199, 0.2)",
-  },
-  peeler: {
     primary: "#2563EB",
     primaryHover: "#1D4ED8",
     primaryLight: "#EFF6FF",
     border: "#BFDBFE",
-    textPrimary: "#0F172A",
-    ringColor: "rgba(37, 99, 235, 0.2)",
+    textPrimary: "#1E3A8A",
+    ringColor: "rgba(37, 99, 235, 0.25)",
+    badgeBg: "#DBEAFE",
+    badgeText: "#1E40AF",
+  },
+  turbofan: {
+    primary: "#059669",
+    primaryHover: "#047857",
+    primaryLight: "#ECFDF5",
+    border: "#A7F3D0",
+    textPrimary: "#064E3B",
+    ringColor: "rgba(5, 150, 105, 0.25)",
+    badgeBg: "#D1FAE5",
+    badgeText: "#065F46",
+  },
+  peeler: {
+    primary: "#0047AB",
+    primaryHover: "#003580",
+    primaryLight: "#F0F5FF",
+    border: "#BCD0F7",
+    textPrimary: "#002B66",
+    ringColor: "rgba(0, 71, 171, 0.25)",
+    badgeBg: "#E0ECFF",
+    badgeText: "#003A8C",
+  },
+  chefpeel: {
+    primary: "#0047AB",
+    primaryHover: "#003580",
+    primaryLight: "#F0F5FF",
+    border: "#BCD0F7",
+    textPrimary: "#002B66",
+    ringColor: "rgba(0, 71, 171, 0.25)",
+    badgeBg: "#E0ECFF",
+    badgeText: "#003A8C",
   },
   stabilisateur: {
     primary: "#D97706",
     primaryHover: "#B45309",
     primaryLight: "#FFFBEB",
     border: "#FDE68A",
-    textPrimary: "#0F172A",
-    ringColor: "rgba(217, 119, 6, 0.2)",
+    textPrimary: "#78350F",
+    ringColor: "rgba(217, 119, 6, 0.25)",
+    badgeBg: "#FEF3C7",
+    badgeText: "#92400E",
   },
   veilleuse: {
     primary: "#4F46E5",
     primaryHover: "#4338CA",
     primaryLight: "#EEF2FF",
     border: "#C7D2FE",
-    textPrimary: "#0F172A",
-    ringColor: "rgba(79, 70, 229, 0.2)",
+    textPrimary: "#312E81",
+    ringColor: "rgba(79, 70, 229, 0.25)",
+    badgeBg: "#E0E7FF",
+    badgeText: "#3730A3",
   },
 };
 
@@ -163,14 +187,23 @@ export default function UmeiStyleOrderSection({
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   const normalizedSlug = (productSlug || "").toLowerCase();
 
-  const theme = THEME_PALETTES[normalizedSlug] || {
+  const baseTheme = THEME_PALETTES[normalizedSlug] || {
     primary: accentColor || "#0F172A",
     primaryHover: "#000000",
     primaryLight: "#F8FAFC",
     border: "#E2E8F0",
     textPrimary: "#0F172A",
     ringColor: "rgba(15, 23, 42, 0.15)",
+    badgeBg: "rgba(16, 185, 129, 0.12)",
+    badgeText: "#047857",
   };
+
+  const theme = accentColor
+    ? {
+        ...baseTheme,
+        primary: accentColor,
+      }
+    : baseTheme;
 
   // Liste de packs par défaut si non fournie
   const defaultBundles: BundleOption[] = [
@@ -360,22 +393,50 @@ export default function UmeiStyleOrderSection({
 
         <form onSubmit={onSubmit} className="space-y-5">
           
-          {/* 1. RÉCAPITULATIF DU PRODUIT UNIQUE */}
-          <div className="bg-slate-50 border border-slate-200/80 p-3.5 rounded-2xl flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
-                <Package className="w-4 h-4" />
+          {/* 1. RÉCAPITULATIF DU PRODUIT UNIQUE ADAPTÉ AUX COULEURS DU PRODUIT */}
+          <div 
+            className="p-4 rounded-2xl flex items-center justify-between gap-3 transition-all border shadow-xs"
+            style={{
+              backgroundColor: theme.primaryLight,
+              borderColor: theme.border,
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs text-white"
+                style={{
+                  backgroundColor: theme.primary,
+                }}
+              >
+                <Package className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div className="font-bold text-xs sm:text-sm text-slate-900">{productTitle}</div>
-                <div className="text-[11px] text-slate-500 font-medium">1 Exemplaire Neuf Complet</div>
+                <div 
+                  className="font-bold text-xs sm:text-sm tracking-tight"
+                  style={{ color: theme.textPrimary }}
+                >
+                  {productTitle}
+                </div>
+                <div className="text-[11px] font-medium opacity-80" style={{ color: theme.textPrimary }}>
+                  1 Exemplaire Neuf Complet
+                </div>
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="font-mono font-bold text-sm sm:text-base text-slate-950 tabular-nums">
+              <div 
+                className="font-mono font-extrabold text-sm sm:text-base tabular-nums"
+                style={{ color: theme.primary }}
+              >
                 {fmt(totalPrice)} FCFA
               </div>
-              <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+              <span 
+                className="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mt-0.5 border"
+                style={{
+                  backgroundColor: theme.badgeBg,
+                  color: theme.badgeText,
+                  borderColor: theme.border,
+                }}
+              >
                 En stock
               </span>
             </div>
@@ -492,7 +553,10 @@ export default function UmeiStyleOrderSection({
           <div className="pt-3 border-t border-slate-100 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-slate-600">Total à payer à la livraison :</span>
-              <span className="text-xl font-bold font-mono tabular-nums text-slate-900">
+              <span 
+                className="text-xl font-bold font-mono tabular-nums"
+                style={{ color: theme.primary }}
+              >
                 {fmt(totalPrice)} FCFA
               </span>
             </div>
@@ -500,9 +564,10 @@ export default function UmeiStyleOrderSection({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 px-6 rounded-2xl text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all disabled:opacity-75 cursor-pointer"
+              className="w-full py-4 px-6 rounded-2xl text-white font-bold text-sm sm:text-base tracking-wide flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-150 disabled:opacity-75 cursor-pointer"
               style={{
                 backgroundColor: theme.primary,
+                boxShadow: `0 8px 25px -6px ${theme.primary}66`,
               }}
             >
               {isSubmitting ? (

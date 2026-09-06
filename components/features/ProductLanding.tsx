@@ -569,7 +569,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
       <StickyMobileCtaBar
         price={selectedBundle?.price || product.price || 14900}
         targetSectionId="commander"
-        accentColor="#0F172A"
+        accentColor="#4F46E5"
         whatsappNumber="2290192901817"
         whatsappMessage={`Bonjour ! J'ai une question concernant le produit ${product.title || ""}.`}
       />
