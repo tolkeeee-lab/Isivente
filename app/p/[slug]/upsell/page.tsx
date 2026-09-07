@@ -167,18 +167,14 @@ function UpsellContent() {
     }
   };
 
-  // Refuser l'Upsell -> Proposer le Downsell ou Success
+  // Refuser l'Offre -> Direction immédiate page de confirmation finale
   const handleDecline = () => {
     trackCustomEvent("DeclineUpsell", {
       product_slug: slug,
       upsell_id: offer.id,
       order_ref: orderRef,
     });
-    if (config.downsell) {
-      router.push(`/p/${slug}/downsell?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(initialTotal))}`);
-    } else {
-      router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(initialTotal))}`);
-    }
+    router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(initialTotal))}`);
   };
 
   return (
@@ -214,13 +210,13 @@ function UpsellContent() {
             }}
           >
             <Sparkles className="w-3.5 h-3.5" style={{ color: theme.primary }} />
-            <span>Offre Exclusive — Étape 2/2</span>
+            <span>Offre Spéciale — 2ème Pièce Réduite</span>
           </div>
           <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-950 tracking-tight leading-tight">
-            ATTENDEZ ! Ne partez pas les mains vides...
+            Offrez un 2ème exemplaire à un proche !
           </h1>
           <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
-            Votre colis est en cours de préparation à notre entrepôt. Profitez de cette opportunité unique pour ajouter ceci à votre commande sans frais de livraison supplémentaires !
+            Votre colis est en cours de préparation. Profitez de cette opportunité unique pour ajouter un 2ème exemplaire à tarif très réduit dans le même colis sans frais de livraison en plus.
           </p>
         </div>
 
