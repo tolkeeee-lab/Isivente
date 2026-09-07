@@ -58,7 +58,7 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
     title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™ (15 000 mAh)",
     description: "Système modulaire magnétique 3-en-1, écran LED rétro-éclairé et mini batterie 5000mAh détachable sans fil. Livraison 24h au Bénin.",
     image: "/images/trozk-hero.jpg",
-    price: 24900,
+    price: 29900,
   },
 };
 

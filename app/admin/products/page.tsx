@@ -121,10 +121,10 @@ export default function ProductsPage() {
       id: "trozk-default",
       title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™ (15 000 mAh)",
       slug: "trozk",
-      price: 24900,
+      price: 29900,
       image_url: "/images/trozk-hero.jpg",
       bundles: [
-        { name: "Batterie Modulaire 3-en-1 Trozk T3 (15 000 mAh)", price: 24900 }
+        { name: "Batterie Modulaire 3-en-1 Trozk T3 (15 000 mAh)", price: 29900 }
       ]
     }
   ];

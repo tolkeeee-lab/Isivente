@@ -36,24 +36,11 @@ import {
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
-interface ProductBundle {
-  id: string;
-  name: string;
-  subtitle: string;
-  badge?: string;
-  price: number;
-  originalPrice: number;
-  savings: number;
-  popular?: boolean;
-  quantity: number;
-}
-
-const BUNDLES: ProductBundle[] = [
+const BUNDLES: BundleOption[] = [
   {
     id: "solo",
     name: "Mini Caméra Espionne & Surveillance HD A9 Pro™",
@@ -144,14 +131,12 @@ const LIVE_DEMO_SUBTITLES = [
 ];
 
 export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
-  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
+  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
-  const [includeBump, setIncludeBump] = useState(false);
-  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
@@ -197,17 +182,13 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
     };
   }, [slug]);
 
-  const upsellConfig = getProductUpsellConfig(slug, "Mini Caméra Espionne HD A9 Pro", 16900);
-  const secondUnitPrice = includeSecondUnit && upsellConfig.secondUnit ? upsellConfig.secondUnit.price : 0;
-  const bumpPrice = includeBump && upsellConfig.bump ? upsellConfig.bump.price : 0;
-  const totalAmount = selectedBundle.price + secondUnitPrice + bumpPrice;
-
-  const scrollToCommander = () => {
+  const scrollToOrder = () => {
     const el = document.getElementById("commander");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
       setTimeout(() => {
-        const input = document.getElementById("customer-name-input") as HTMLInputElement | null;
+        const input = (document.getElementById("customer-name-input") ||
+          el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
         if (input) input.focus({ preventScroll: true });
       }, 400);
     }
@@ -229,20 +210,24 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
       return;
     }
 
+    if (!customerName.trim() || !address.trim()) {
+      alert("Veuillez renseigner votre nom et votre adresse de livraison.");
+      return;
+    }
+
     isSubmittingRef.current = true;
     setIsSubmitting(true);
 
     try {
-      const finalBundleName = selectedBundle.name 
-        + (includeSecondUnit && upsellConfig.secondUnit ? ` + 2ème Exemplaire (${upsellConfig.secondUnit.title})` : "")
-        + (includeBump && upsellConfig.bump ? ` + [BUMP] ${upsellConfig.bump.title}` : "");
+      const finalTotal = selectedBundle.price;
+      const finalBundleName = selectedBundle.name;
 
       const createdOrder = await saveNewOrder({
         product_slug: slug,
         product_title: "Mini Caméra Espionne & Surveillance Magnétique HD A9 Pro™",
         bundle_name: finalBundleName,
-        quantity: selectedBundle.quantity + (includeSecondUnit ? 1 : 0),
-        total_amount: totalAmount,
+        quantity: selectedBundle.quantity || 1,
+        total_amount: finalTotal,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
         shipping_city: city,
@@ -257,17 +242,18 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
       await trackUserSession(slug, duration, true, sessionIdRef.current);
 
       const orderNumber = createdOrder?.order_number || `ISV-${Math.floor(100000 + Math.random() * 900000)}`;
-      setOrderInfo({ orderNumber, total: totalAmount, name: customerName, phone: customerPhone });
+      setOrderInfo({ orderNumber, total: finalTotal, name: customerName, phone: customerPhone });
       setOrderSuccess(true);
       setIsSubmitting(false);
 
-      if (upsellConfig.upsell && !includeSecondUnit) {
+      const upsellConfig = getProductUpsellConfig(slug);
+      if (upsellConfig.upsell) {
         router.push(
-          `/p/${slug}/upsell?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`
+          `/p/${slug}/upsell?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`
         );
       } else {
         router.push(
-          `/p/${slug}/success?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`
+          `/p/${slug}/success?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`
         );
       }
     } catch (err) {
@@ -311,7 +297,7 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
           </nav>
 
           <button
-            onClick={scrollToCommander}
+            onClick={scrollToOrder}
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl shadow-[0_4px_14px_-2px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <span>Commander</span>
@@ -433,7 +419,7 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
               </div>
 
               <button
-                onClick={scrollToCommander}
+                onClick={scrollToOrder}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base sm:text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <span>COMMANDER MAINTENANT</span>
@@ -450,6 +436,36 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
           </div>
         </div>
       </section>
+
+      {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI ÉPURÉ - UN SEUL CHOIX SANS PACK) */}
+      <UmeiStyleOrderSection
+        productSlug={slug}
+        productTitle="Mini Caméra Espionne & Surveillance Magnétique HD A9 Pro™"
+        productImage="/images/camera-hero.jpg"
+        bundles={BUNDLES}
+        selectedBundle={selectedBundle}
+        onSelectBundle={(b) => setSelectedBundle(b)}
+        customerName={customerName}
+        setCustomerName={setCustomerName}
+        customerPhone={customerPhone}
+        setCustomerPhone={setCustomerPhone}
+        customerPhone2={customerPhone2}
+        setCustomerPhone2={setCustomerPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+        accentColor="#059669"
+        whatsappNumber="2290192901817"
+        orderSuccess={orderSuccess}
+        orderNumber={orderInfo?.orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderInfo(null);
+        }}
+      />
 
       {/* 🎬 DÉMONSTRATION EN DIRECT & SIMULATEUR */}
       <section id="demo" className="py-12 sm:py-16 bg-slate-900 text-white px-4 sm:px-6">
@@ -712,218 +728,6 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* 📦 FORMULAIRE DE COMMANDE UMEI-STYLE COD 1-CLIC */}
-      <section id="commander" className="py-14 sm:py-20 px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="bg-white border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-xl space-y-8">
-          
-          <div className="text-center space-y-2 border-b border-slate-100 pb-6">
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
-              Étape Finale — Formulaire Rapide
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-              Commandez votre Mini Caméra A9 Pro™
-            </h2>
-            <p className="text-sm text-slate-500">
-              Remplissez ce formulaire en 30 secondes. Paiement au livreur après réception et inspection du colis.
-            </p>
-          </div>
-
-          {/* RÉCAPITULATIF DE L'OFFRE PRINCIPALE */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <img src="/images/camera-hero.jpg" alt="Mini Caméra A9 Pro" className="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0" />
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm sm:text-base">Mini Caméra Espionne HD A9 Pro™</h4>
-                <p className="text-xs text-slate-500">Kit complet + Support rotatif 360° + Câble de charge</p>
-                <div className="text-xs font-bold text-emerald-600 mt-0.5">✓ En stock — Livraison 24h</div>
-              </div>
-            </div>
-            <div className="text-right shrink-0">
-              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-600">16.900 F</div>
-              <div className="text-xs text-slate-400 line-through font-mono">25.000 F</div>
-            </div>
-          </div>
-
-          {/* OFFRE BUMP / CARTE SD */}
-          {upsellConfig.bump && (
-            <div 
-              onClick={() => setIncludeBump(!includeBump)}
-              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                includeBump 
-                  ? "bg-amber-50/80 border-amber-500 shadow-sm" 
-                  : "bg-white border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  checked={includeBump} 
-                  onChange={() => {}} 
-                  className="w-5 h-5 rounded text-amber-600 accent-amber-600 cursor-pointer shrink-0"
-                />
-                <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded">
-                    {upsellConfig.bump.badge || "OFFRE RECOMMANDÉE"}
-                  </span>
-                  <div className="font-bold text-slate-900 text-sm mt-0.5">{upsellConfig.bump.title}</div>
-                  <div className="text-xs text-slate-500">{upsellConfig.bump.subtitle}</div>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="text-base font-bold font-mono text-amber-700">+{upsellConfig.bump.price.toLocaleString("fr-FR")} F</div>
-                <div className="text-[11px] text-slate-400 line-through font-mono">{upsellConfig.bump.originalPrice.toLocaleString("fr-FR")} F</div>
-              </div>
-            </div>
-          )}
-
-          {/* OFFRE 2ÈME UNITÉ AVEC RÉDUCTION */}
-          {upsellConfig.secondUnit && (
-            <div 
-              onClick={() => setIncludeSecondUnit(!includeSecondUnit)}
-              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                includeSecondUnit 
-                  ? "bg-emerald-50/80 border-emerald-500 shadow-sm" 
-                  : "bg-white border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  checked={includeSecondUnit} 
-                  onChange={() => {}} 
-                  className="w-5 h-5 rounded text-emerald-600 accent-emerald-600 cursor-pointer shrink-0"
-                />
-                <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-200/80 px-2 py-0.5 rounded">
-                    {upsellConfig.secondUnit.badge || "🎁 -35% SUR LA 2ÈME CAMÉRA"}
-                  </span>
-                  <div className="font-bold text-slate-900 text-sm mt-0.5">{upsellConfig.secondUnit.title}</div>
-                  <div className="text-xs text-slate-500">{upsellConfig.secondUnit.subtitle}</div>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="text-base font-bold font-mono text-emerald-700">+{upsellConfig.secondUnit.price.toLocaleString("fr-FR")} F</div>
-                <div className="text-[11px] text-slate-400 line-through font-mono">{upsellConfig.secondUnit.originalPrice.toLocaleString("fr-FR")} F</div>
-              </div>
-            </div>
-          )}
-
-          {/* FORMULAIRE INPUTS */}
-          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Nom complet *
-              </label>
-              <input
-                id="customer-name-input"
-                type="text"
-                required
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Ex: Brice Tossou"
-                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Numéro de téléphone (WhatsApp si possible) *
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="Ex: 97 00 00 00"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Numéro secondaire (optionnel)
-                </label>
-                <input
-                  type="tel"
-                  value={customerPhone2}
-                  onChange={(e) => setCustomerPhone2(e.target.value)}
-                  placeholder="Ex: 61 00 00 00"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Ville / Commune *
-                </label>
-                <select
-                  required
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
-                >
-                  <option value="">Sélectionnez votre ville</option>
-                  <option value="Cotonou">Cotonou (Livraison Express 24h)</option>
-                  <option value="Abomey-Calavi">Abomey-Calavi (Livraison Express 24h)</option>
-                  <option value="Porto-Novo">Porto-Novo (Livraison Express 24h)</option>
-                  <option value="Parakou">Parakou</option>
-                  <option value="Bohicon / Abomey">Bohicon / Abomey</option>
-                  <option value="Ouidah">Ouidah</option>
-                  <option value="Autre ville">Autre ville du Bénin</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Quartier / Adresse précise *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Ex: Cadjehoun, près de la pharmacie"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
-                />
-              </div>
-            </div>
-
-            {/* TOTAL À PAYER */}
-            <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-              <div>
-                <div className="text-xs text-slate-500 font-medium">Total à payer à la livraison :</div>
-                <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-600">
-                  {totalAmount.toLocaleString("fr-FR")} FCFA
-                </div>
-              </div>
-              <div className="text-right text-xs text-slate-400 font-medium">
-                <div>Frais de livraison : Inclus ou selon ville</div>
-                <div className="text-emerald-600 font-bold">Paiement à la réception</div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Enregistrement en cours...</span>
-                </div>
-              ) : (
-                <span>CONFIRMER MA COMMANDE — {totalAmount.toLocaleString("fr-FR")} FCFA</span>
-              )}
-            </button>
-          </form>
-
         </div>
       </section>
 

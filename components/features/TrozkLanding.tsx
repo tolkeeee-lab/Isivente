@@ -37,29 +37,18 @@ import {
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
-interface ProductBundle {
-  id: string;
-  name: string;
-  subtitle: string;
-  badge?: string;
-  price: number;
-  originalPrice: number;
-  savings: number;
-  popular?: boolean;
-  quantity: number;
-}
-
-const BUNDLES: ProductBundle[] = [
+const BUNDLES: BundleOption[] = [
   {
     id: "solo",
     name: "Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)",
     subtitle: "Pack complet : 3 Modules magnétiques A+B+C + Câble de charge + Écran LED + Pochette rigide offerte",
-    price: 24900,
-    originalPrice: 39000,
-    savings: 14100,
+    price: 29900,
+    originalPrice: 45000,
+    savings: 15100,
     quantity: 1,
     popular: true,
   },
@@ -148,14 +137,12 @@ const LIVE_DEMO_SUBTITLES = [
 ];
 
 export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
-  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
+  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
-  const [includeBump, setIncludeBump] = useState(false);
-  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
@@ -223,17 +210,13 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
     };
   }, [slug]);
 
-  const upsellConfig = getProductUpsellConfig(slug, "Batterie Modulaire Trozk T3 Cyberpunk", 24900);
-  const secondUnitPrice = includeSecondUnit && upsellConfig.secondUnit ? upsellConfig.secondUnit.price : 0;
-  const bumpPrice = includeBump && upsellConfig.bump ? upsellConfig.bump.price : 0;
-  const totalAmount = selectedBundle.price + secondUnitPrice + bumpPrice;
-
-  const scrollToCommander = () => {
+  const scrollToOrder = () => {
     const el = document.getElementById("commander");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
       setTimeout(() => {
-        const input = document.getElementById("customer-name-input") as HTMLInputElement | null;
+        const input = (document.getElementById("customer-name-input") ||
+          el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
         if (input) input.focus({ preventScroll: true });
       }, 400);
     }
@@ -255,20 +238,24 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
       return;
     }
 
+    if (!customerName.trim() || !address.trim()) {
+      alert("Veuillez renseigner votre nom et votre adresse de livraison.");
+      return;
+    }
+
     isSubmittingRef.current = true;
     setIsSubmitting(true);
 
     try {
-      const finalBundleName = selectedBundle.name 
-        + (includeSecondUnit && upsellConfig.secondUnit ? ` + 2ème Exemplaire (${upsellConfig.secondUnit.title})` : "")
-        + (includeBump && upsellConfig.bump ? ` + [BUMP] ${upsellConfig.bump.title}` : "");
+      const finalTotal = selectedBundle.price;
+      const finalBundleName = selectedBundle.name;
 
       const createdOrder = await saveNewOrder({
         product_slug: slug,
         product_title: "Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)",
         bundle_name: finalBundleName,
-        quantity: selectedBundle.quantity + (includeSecondUnit ? 1 : 0),
-        total_amount: totalAmount,
+        quantity: selectedBundle.quantity || 1,
+        total_amount: finalTotal,
         customer_name: customerName,
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
         shipping_city: city,
@@ -283,17 +270,18 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
       await trackUserSession(slug, duration, true, sessionIdRef.current);
 
       const orderNumber = createdOrder?.order_number || `ISV-${Math.floor(100000 + Math.random() * 900000)}`;
-      setOrderInfo({ orderNumber, total: totalAmount, name: customerName, phone: customerPhone });
+      setOrderInfo({ orderNumber, total: finalTotal, name: customerName, phone: customerPhone });
       setOrderSuccess(true);
       setIsSubmitting(false);
 
-      if (upsellConfig.upsell && !includeSecondUnit) {
+      const upsellConfig = getProductUpsellConfig(slug);
+      if (upsellConfig.upsell) {
         router.push(
-          `/p/${slug}/upsell?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`
+          `/p/${slug}/upsell?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`
         );
       } else {
         router.push(
-          `/p/${slug}/success?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`
+          `/p/${slug}/success?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`
         );
       }
     } catch (err) {
@@ -337,11 +325,11 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           </nav>
 
           <button
-            onClick={scrollToCommander}
+            onClick={scrollToOrder}
             className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl shadow-[0_4px_14px_-2px_rgba(249,115,22,0.4)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <span>Commander</span>
-            <span className="font-mono text-orange-200 font-semibold">(24.900 F)</span>
+            <span className="font-mono text-orange-200 font-semibold">(29.900 F)</span>
           </button>
         </div>
       </header>
@@ -443,23 +431,23 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               </div>
             </div>
 
-            {/* PRIX & CTA HERO */}
+            {/* CARTE PRIX HERO */}
             <div className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm space-y-4 pt-4">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Prix Promo Lancement</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Prix Promo Spécial</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl sm:text-4xl font-black font-mono text-orange-600 tracking-tight">24.900 FCFA</span>
-                    <span className="text-base text-slate-400 line-through font-mono">39.000 FCFA</span>
+                    <span className="text-3xl sm:text-4xl font-black font-mono text-orange-600 tracking-tight">29.900 FCFA</span>
+                    <span className="text-base text-slate-400 line-through font-mono">45.000 FCFA</span>
                   </div>
                 </div>
                 <span className="bg-orange-50 text-orange-700 border border-orange-200 font-bold text-xs px-2.5 py-1 rounded-full">
-                  ÉCONOMISEZ 14.100 FCFA
+                  ÉCONOMISEZ 15.100 FCFA
                 </span>
               </div>
 
               <button
-                onClick={scrollToCommander}
+                onClick={scrollToOrder}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-base sm:text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(249,115,22,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <span>COMMANDER MAINTENANT</span>
@@ -477,12 +465,43 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
+      {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI ÉPURÉ - UN SEUL CHOIX SANS PACK) */}
+      <UmeiStyleOrderSection
+        productSlug={slug}
+        productTitle="Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)"
+        productImage="/images/trozk-hero.jpg"
+        bundles={BUNDLES}
+        selectedBundle={selectedBundle}
+        onSelectBundle={(b) => setSelectedBundle(b)}
+        customerName={customerName}
+        setCustomerName={setCustomerName}
+        customerPhone={customerPhone}
+        setCustomerPhone={setCustomerPhone}
+        customerPhone2={customerPhone2}
+        setCustomerPhone2={setCustomerPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+        accentColor="#F97316"
+        whatsappNumber="2290192901817"
+        orderSuccess={orderSuccess}
+        orderNumber={orderInfo?.orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderInfo(null);
+        }}
+      />
+
       {/* 🎬 LECTEUR VIDÉO MP4 RÉEL AVEC SON */}
       <section id="demo" className="py-12 sm:py-16 bg-slate-900 text-white px-4 sm:px-6">
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-950/80 border border-orange-800/80 px-3 py-1 rounded-full">
-              Démonstration Vidéo Réelle
+            <span className="text-xs font-mono uppercase tracking-widest text-orange-400 font-bold bg-orange-950/80 px-3 py-1 rounded-full border border-orange-500/30 inline-flex items-center gap-1.5">
+              <Play className="w-3 h-3 fill-current text-orange-400" />
+              <span>Démonstration & Prise en Main Réelle</span>
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
               Regardez la batterie Trozk T3 en action
@@ -533,10 +552,10 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               </div>
 
               <button
-                onClick={scrollToCommander}
+                onClick={scrollToOrder}
                 className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md transition-all active:scale-95"
               >
-                Commander (24.900 F)
+                Commander (29.900 F)
               </button>
             </div>
           </div>
@@ -689,218 +708,6 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* 📦 FORMULAIRE DE COMMANDE UMEI-STYLE COD 1-CLIC */}
-      <section id="commander" className="py-14 sm:py-20 px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="bg-white border-2 border-orange-500/40 rounded-3xl p-6 sm:p-10 shadow-xl space-y-8">
-          
-          <div className="text-center space-y-2 border-b border-slate-100 pb-6">
-            <span className="text-xs font-black uppercase tracking-wider text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
-              Étape Finale — Formulaire Express
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
-              Commandez votre Trozk T3 Modulaire™
-            </h2>
-            <p className="text-sm text-slate-500">
-              Remplissez vos coordonnées. Vous ne payez qu&apos;au livreur après inspection du coffret.
-            </p>
-          </div>
-
-          {/* RÉCAPITULATIF DE L'OFFRE PRINCIPALE */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <img src="/images/trozk-hero.jpg" alt="Batterie Trozk T3" className="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0" />
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm sm:text-base">Système Modulaire 3-en-1 Trozk T3 (15 000 mAh)</h4>
-                <p className="text-xs text-slate-500">Pack complet A+B+C + Écran LED + Sacoche de transport offerte</p>
-                <div className="text-xs font-bold text-orange-600 mt-0.5">✓ En stock — Expédition 24h</div>
-              </div>
-            </div>
-            <div className="text-right shrink-0">
-              <div className="text-xl sm:text-2xl font-black font-mono text-orange-600">24.900 F</div>
-              <div className="text-xs text-slate-400 line-through font-mono">39.000 F</div>
-            </div>
-          </div>
-
-          {/* OFFRE BUMP / CÂBLE 60W */}
-          {upsellConfig.bump && (
-            <div 
-              onClick={() => setIncludeBump(!includeBump)}
-              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                includeBump 
-                  ? "bg-amber-50/80 border-amber-500 shadow-sm" 
-                  : "bg-white border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  checked={includeBump} 
-                  onChange={() => {}} 
-                  className="w-5 h-5 rounded text-amber-600 accent-amber-600 cursor-pointer shrink-0"
-                />
-                <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded">
-                    {upsellConfig.bump.badge || "OFFRE ACCESSOIRE"}
-                  </span>
-                  <div className="font-bold text-slate-900 text-sm mt-0.5">{upsellConfig.bump.title}</div>
-                  <div className="text-xs text-slate-500">{upsellConfig.bump.subtitle}</div>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="text-base font-bold font-mono text-amber-700">+{upsellConfig.bump.price.toLocaleString("fr-FR")} F</div>
-                <div className="text-[11px] text-slate-400 line-through font-mono">{upsellConfig.bump.originalPrice.toLocaleString("fr-FR")} F</div>
-              </div>
-            </div>
-          )}
-
-          {/* OFFRE 2ÈME UNITÉ AVEC RÉDUCTION */}
-          {upsellConfig.secondUnit && (
-            <div 
-              onClick={() => setIncludeSecondUnit(!includeSecondUnit)}
-              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                includeSecondUnit 
-                  ? "bg-orange-50/80 border-orange-500 shadow-sm" 
-                  : "bg-white border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <input 
-                  type="checkbox" 
-                  checked={includeSecondUnit} 
-                  onChange={() => {}} 
-                  className="w-5 h-5 rounded text-orange-600 accent-orange-600 cursor-pointer shrink-0"
-                />
-                <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-orange-800 bg-orange-200/80 px-2 py-0.5 rounded">
-                    {upsellConfig.secondUnit.badge || "🎁 -32% SUR LA 2ÈME BATTERIE"}
-                  </span>
-                  <div className="font-bold text-slate-900 text-sm mt-0.5">{upsellConfig.secondUnit.title}</div>
-                  <div className="text-xs text-slate-500">{upsellConfig.secondUnit.subtitle}</div>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="text-base font-bold font-mono text-orange-700">+{upsellConfig.secondUnit.price.toLocaleString("fr-FR")} F</div>
-                <div className="text-[11px] text-slate-400 line-through font-mono">{upsellConfig.secondUnit.originalPrice.toLocaleString("fr-FR")} F</div>
-              </div>
-            </div>
-          )}
-
-          {/* FORMULAIRE INPUTS */}
-          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Nom complet *
-              </label>
-              <input
-                id="customer-name-input"
-                type="text"
-                required
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Ex: Lionel Dossou"
-                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm bg-slate-50/50"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Numéro de téléphone (WhatsApp si possible) *
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="Ex: 97 00 00 00"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm bg-slate-50/50"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Numéro secondaire (optionnel)
-                </label>
-                <input
-                  type="tel"
-                  value={customerPhone2}
-                  onChange={(e) => setCustomerPhone2(e.target.value)}
-                  placeholder="Ex: 61 00 00 00"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm bg-slate-50/50"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Ville / Commune *
-                </label>
-                <select
-                  required
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm bg-slate-50/50"
-                >
-                  <option value="">Sélectionnez votre ville</option>
-                  <option value="Cotonou">Cotonou (Livraison Express 24h)</option>
-                  <option value="Abomey-Calavi">Abomey-Calavi (Livraison Express 24h)</option>
-                  <option value="Porto-Novo">Porto-Novo (Livraison Express 24h)</option>
-                  <option value="Parakou">Parakou</option>
-                  <option value="Bohicon / Abomey">Bohicon / Abomey</option>
-                  <option value="Ouidah">Ouidah</option>
-                  <option value="Autre ville">Autre ville du Bénin</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Quartier / Adresse précise *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Ex: Haie Vive, en face du restaurant"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm bg-slate-50/50"
-                />
-              </div>
-            </div>
-
-            {/* TOTAL À PAYER */}
-            <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-              <div>
-                <div className="text-xs text-slate-500 font-medium">Total à payer à la livraison :</div>
-                <div className="text-2xl sm:text-3xl font-black font-mono text-orange-600">
-                  {totalAmount.toLocaleString("fr-FR")} FCFA
-                </div>
-              </div>
-              <div className="text-right text-xs text-slate-400 font-medium">
-                <div>Frais de port : Inclus ou selon zone</div>
-                <div className="text-orange-600 font-bold">Paiement après vérification</div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(249,115,22,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Validation en cours...</span>
-                </div>
-              ) : (
-                <span>CONFIRMER MA COMMANDE — {totalAmount.toLocaleString("fr-FR")} FCFA</span>
-              )}
-            </button>
-          </form>
-
-        </div>
-      </section>
-
       {/* ❓ FOIRE AUX QUESTIONS */}
       <section id="faq" className="py-14 sm:py-20 bg-slate-100/80 border-t border-slate-200 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto space-y-8">
@@ -936,11 +743,11 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
 
       {/* 📱 STICKY MOBILE CTA BAR */}
       <StickyMobileCtaBar
-        price={24900}
+        price={29900}
         accentColor="#F97316"
         buttonText="Commander"
         targetSectionId="commander"
-        whatsappMessage="Bonjour ! J'aimerais commander la Batterie Modulaire Trozk T3 Cyberpunk (24 900 FCFA). Pouvez-vous me renseigner ?"
+        whatsappMessage="Bonjour ! J'aimerais commander la Batterie Modulaire Trozk T3 (29 900 FCFA). Pouvez-vous me renseigner ?"
       />
 
     </div>
