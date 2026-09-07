@@ -180,17 +180,26 @@ export default function ProductsPage() {
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanSlug = formSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-");
     const newProduct: ProductItem = {
       id: editingProduct ? editingProduct.id : `prod_${Date.now()}`,
       title: formTitle.trim(),
-      slug: formSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+      slug: cleanSlug,
       price: Number(formPrice),
-      image_url: formImage.trim() || "/images/umei-hero-real.jpg",
+      image_url: formImage.trim() || "/images/camera-hero.jpg",
       bundles: formBundles
     };
 
     try {
-      await supabase.from("products").upsert(newProduct);
+      await supabase.from("products").upsert({
+        id: editingProduct ? editingProduct.id : undefined,
+        title: formTitle.trim(),
+        slug: cleanSlug,
+        price: Number(formPrice),
+        images: [{ url: formImage.trim() || "/images/camera-hero.jpg" }],
+        bundles: formBundles,
+        is_active: true,
+      }, { onConflict: "slug" });
     } catch (err) {
       console.warn("Supabase upsert offline fallback");
     }
