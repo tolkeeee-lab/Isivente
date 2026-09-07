@@ -45,33 +45,12 @@ interface ProductBundle {
 const BUNDLES: ProductBundle[] = [
   {
     id: "solo",
-    name: "Pack Solo Créateur (1 Kit)",
-    subtitle: "1 Stabilisateur Z3 Zoom + Télécommande + Bague MagSafe + Câble",
+    name: "Stabilisateur Pro-Mobile Z3 Zoom™",
+    subtitle: "Pack complet : Stabilisateur + Télécommande sans fil + 3 Bagues MagSafe + Trépied",
     price: 49900,
     originalPrice: 65000,
     savings: 15100,
     quantity: 1,
-  },
-  {
-    id: "duo",
-    name: "Pack Duo Studio (2 Kits)",
-    subtitle: "2 Stabilisateurs complets + 2 Anneaux MagSafe supplémentaires",
-    badge: "🔥 L'OFFRE LA PLUS CHOISIE (ÉCONOMISEZ 40 100 F)",
-    price: 89900,
-    originalPrice: 130000,
-    savings: 40100,
-    popular: true,
-    quantity: 2,
-  },
-  {
-    id: "trio",
-    name: "Pack Pro Équipe & Vidéaste (3 Kits)",
-    subtitle: "3 Stabilisateurs complets + Kit fixations studio",
-    badge: "💎 MEILLEUR PRIX / APPAREIL",
-    price: 129900,
-    originalPrice: 195000,
-    savings: 65100,
-    quantity: 3,
   },
 ];
 

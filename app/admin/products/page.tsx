@@ -54,9 +54,7 @@ export default function ProductsPage() {
       price: 14900,
       image_url: "/images/umei-hero-real.jpg",
       bundles: [
-        { name: "Pack Découverte (1 Brosse)", price: 14900 },
-        { name: "Pack Sérénité Duo (2 Brosses)", price: 24900 },
-        { name: "Pack Famille (3 Brosses)", price: 34900 }
+        { name: "Brosse Démêlante Vapeur Uméi 3-en-1", price: 14900 }
       ]
     },
     {
@@ -66,9 +64,7 @@ export default function ProductsPage() {
       price: 19900,
       image_url: "/images/eraclean-studio.jpg",
       bundles: [
-        { name: "Pack Solo (1 Appareil)", price: 19900 },
-        { name: "Pack Duo Frigo + WC (2 Appareils)", price: 32900 },
-        { name: "Pack Grand Ménage (3 Appareils)", price: 44900 }
+        { name: "Purificateur d'Air & Anti-Odeurs EraClean™", price: 19900 }
       ]
     },
     {
@@ -78,9 +74,7 @@ export default function ProductsPage() {
       price: 16900,
       image_url: "/images/turbofan-studio.jpg",
       bundles: [
-        { name: "Pack Solo Fraîcheur (1 TurboFan)", price: 16900 },
-        { name: "Pack Duo (2 TurboFans)", price: 27900 },
-        { name: "Pack Famille / Chantier (3 TurboFans)", price: 37900 }
+        { name: "Ventilateur TurboFan™ Max 8000mAh", price: 16900 }
       ]
     },
     {
@@ -90,9 +84,7 @@ export default function ProductsPage() {
       price: 14900,
       image_url: "/images/peeler-hero.jpg",
       bundles: [
-        { name: "Pack Découverte Cuisine (1 Appareil)", price: 14900 },
-        { name: "Pack Duo Sérénité (2 Appareils)", price: 24900 },
-        { name: "Pack Traiteur / Famille (3 Appareils)", price: 34900 }
+        { name: "Éplucheur Automatique ChefPeel™ Pro", price: 14900 }
       ]
     },
     {
@@ -102,9 +94,7 @@ export default function ProductsPage() {
       price: 49900,
       image_url: "/images/stabilisateur-hero.jpg",
       bundles: [
-        { name: "Pack Solo Créateur (1 Kit)", price: 49900 },
-        { name: "Pack Duo Studio (2 Kits)", price: 89900 },
-        { name: "Pack Pro Équipe & Vidéaste (3 Kits)", price: 129900 }
+        { name: "Stabilisateur Pro-Mobile Z3 Zoom™", price: 49900 }
       ]
     },
     {
@@ -114,9 +104,7 @@ export default function ProductsPage() {
       price: 14900,
       image_url: "/images/projecteur-hero.jpg",
       bundles: [
-        { name: "Pack Solo Découverte (1 Kit + 24 Disques)", price: 14900 },
-        { name: "Pack Duo Magique (2 Kits + 48 Disques)", price: 25900 },
-        { name: "Pack Trio Famille & Cadeaux (3 Kits + 72 Disques)", price: 36900 }
+        { name: "Veilleuse Projecteur LED 3D Tactile FRIOSZ", price: 14900 }
       ]
     },
     {
@@ -126,9 +114,7 @@ export default function ProductsPage() {
       price: 16900,
       image_url: "/images/camera-hero.jpg",
       bundles: [
-        { name: "Pack Solo Surveillance (1 Caméra)", price: 16900 },
-        { name: "Pack Duo Sécurité Totale (2 Caméras)", price: 27900 },
-        { name: "Pack Trio Protection 360° (3 Caméras)", price: 38900 }
+        { name: "Mini Caméra Espionne & Surveillance HD A9 Pro", price: 16900 }
       ]
     }
   ];

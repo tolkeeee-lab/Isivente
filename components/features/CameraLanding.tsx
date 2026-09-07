@@ -45,33 +45,12 @@ interface ProductBundle {
 const BUNDLES: ProductBundle[] = [
   {
     id: "solo",
-    name: "Pack Solo Surveillance (1 Caméra)",
-    subtitle: "1 Mini Caméra HD + Support Magnétique 360° + Câble USB + Application Gratuite",
+    name: "Mini Caméra Espionne & Surveillance HD A9 Pro",
+    subtitle: "Kit complet avec support magnétique 360°, câble de charge et application mobile",
     price: 16900,
     originalPrice: 25000,
     savings: 8100,
     quantity: 1,
-  },
-  {
-    id: "duo",
-    name: "Pack Duo Sécurité Totale (2 Caméras)",
-    subtitle: "2 Caméras complètes — Idéal pour surveiller la boutique ET le domicile",
-    badge: "🔥 L'OFFRE LA PLUS CHOISIE (-44%)",
-    popular: true,
-    price: 27900,
-    originalPrice: 50000,
-    savings: 22100,
-    quantity: 2,
-  },
-  {
-    id: "trio",
-    name: "Pack Trio Protection 360° (3 Caméras)",
-    subtitle: "3 Caméras complètes pour Boutique, Caisse, Salon & Véhicule",
-    badge: "ÉCONOMIE MAXIMALE (-48%)",
-    price: 38900,
-    originalPrice: 75000,
-    savings: 36100,
-    quantity: 3,
   },
 ];
 

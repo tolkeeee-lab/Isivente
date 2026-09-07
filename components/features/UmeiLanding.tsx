@@ -31,34 +31,14 @@ interface ProductBundle {
 const BUNDLES: ProductBundle[] = [
   {
     id: "solo",
-    name: "1 Brosse",
+    name: "Brosse Démêlante Vapeur Uméi™ 3-en-1",
     quantity: 1,
     price: 14900,
     original_price: 24900,
     badge: null,
-    description: "Idéal pour tester l'expérience",
-    popular: false
-  },
-  {
-    id: "duo",
-    name: "2 Brosses",
-    quantity: 2,
-    price: 24900,
-    original_price: 49800,
-    badge: "-40% sur la 2ème",
-    description: "1 pour toi + 1 offerte pour une proche",
+    description: "Coffret complet avec réservoir, flacon et buses",
     popular: true
   },
-  {
-    id: "famille",
-    name: "3 Brosses",
-    quantity: 3,
-    price: 34900,
-    original_price: 74700,
-    badge: "Pack Économique",
-    description: "Pour toute la maison au tarif le plus bas",
-    popular: false
-  }
 ];
 
 export default function UmeiLanding({ slug }: { slug: string }) {

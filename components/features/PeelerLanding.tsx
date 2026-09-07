@@ -27,7 +27,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ TYPES & DATA */
+/* ─────────────────────────────────────────── TYPES & DATA */
 interface Bundle {
   id: string;
   name: string;
@@ -44,39 +44,15 @@ interface Bundle {
 const BUNDLES: Bundle[] = [
   {
     id: "solo",
-    name: "Pack DÃ©couverte Cuisine (1 Appareil)",
+    name: "Éplucheur Automatique ChefPeel™ Pro",
     quantity: 1,
     price: 14900,
     originalPrice: 19900,
     savings: null,
     badge: null,
-    description: "1x Ã‰plucheur Automatique ChefPeelâ„¢ + CÃ¢ble USB + Manuel",
-    popular: false,
-    freeShipping: false,
-  },
-  {
-    id: "duo",
-    name: "Pack Duo SÃ©rÃ©nitÃ© (1 pour vous + 1 Cadeau Maman/Amie)",
-    quantity: 2,
-    price: 24900,
-    originalPrice: 29800,
-    savings: 4900,
-    badge: "Best-Seller",
-    description: "La formule favorite des familles et passionnÃ©es de cuisine",
+    description: "1x Éplucheur Automatique ChefPeel™ + Câble USB + Manuel",
     popular: true,
     freeShipping: false,
-  },
-  {
-    id: "trio",
-    name: "Pack Traiteur / Famille (3 Appareils)",
-    quantity: 3,
-    price: 34900,
-    originalPrice: 44700,
-    savings: 9800,
-    badge: "Livraison Offerte",
-    description: "Ã‰quipez votre cuisine et faites des heureux au meilleur prix",
-    popular: false,
-    freeShipping: true,
   },
 ];
 

@@ -43,33 +43,12 @@ interface ProductBundle {
 const BUNDLES: ProductBundle[] = [
   {
     id: "solo",
-    name: "Pack Solo Découverte (1 Kit Complet)",
-    subtitle: "1 Projecteur LED USB Flexible + 24 Disques de projection HD",
+    name: "Veilleuse Projecteur LED 3D Tactile FRIOSZ",
+    subtitle: "1 Projecteur LED USB Flexible + Coffret de 24 Disques de projection HD",
     price: 14900,
     originalPrice: 22000,
     savings: 7100,
     quantity: 1,
-  },
-  {
-    id: "duo",
-    name: "Pack Duo Magique (2 Kits Complets)",
-    subtitle: "2 Projecteurs USB + 48 Disques HD (Chambre Enfants + Chambre Parents)",
-    badge: "🔥 L'OFFRE LA PLUS CHOISIE (ÉCONOMISEZ 18 100 F)",
-    price: 25900,
-    originalPrice: 44000,
-    savings: 18100,
-    popular: true,
-    quantity: 2,
-  },
-  {
-    id: "trio",
-    name: "Pack Trio Famille & Cadeaux (3 Kits)",
-    subtitle: "3 Projecteurs USB complets + 72 Disques de projection HD",
-    badge: "💎 MEILLEUR PRIX / APPAREIL",
-    price: 36900,
-    originalPrice: 66000,
-    savings: 29100,
-    quantity: 3,
   },
 ];
 
