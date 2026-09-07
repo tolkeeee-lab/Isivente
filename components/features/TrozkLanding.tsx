@@ -19,6 +19,8 @@ import {
   ShieldAlert,
   Play,
   Pause,
+  Volume2,
+  VolumeX,
   Award,
   Box,
   Flame,
@@ -30,7 +32,8 @@ import {
   Cable,
   Briefcase,
   Compass,
-  Smile
+  Smile,
+  Maximize2
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -52,8 +55,8 @@ interface ProductBundle {
 const BUNDLES: ProductBundle[] = [
   {
     id: "solo",
-    name: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™ (15 000 mAh)",
-    subtitle: "Pack complet : 3 Modules magnétiques A+B+C + Câble intégré + Écran LED interactif + Sacoche rigide offerte",
+    name: "Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)",
+    subtitle: "Pack complet : 3 Modules magnétiques A+B+C + Câble de charge + Écran LED + Pochette rigide offerte",
     price: 24900,
     originalPrice: 39000,
     savings: 14100,
@@ -65,23 +68,28 @@ const BUNDLES: ProductBundle[] = [
 const CAROUSEL_IMAGES = [
   { 
     src: "/images/trozk-hero.jpg", 
-    alt: "Batterie Externe Modulaire Trozk T3 Cyberpunk",
-    caption: "Design Cyberpunk Industriel avec écran LED rétro-éclairé et recharge 22.5W"
+    alt: "Batterie Électrique Modulaire Trozk T3 Coloris Orange Vif",
+    caption: "Configuration 3-en-1 complète avec pochette de rangement sur mesure offerte"
   },
   { 
     src: "/images/trozk-modular.jpg", 
-    alt: "Les 3 modules magnétiques séparables A, B et C",
-    caption: "Système 3-en-1 : Dragonne câble (A), Bloc maître 10 000 mAh (B) et Mini-bloc poche 5 000 mAh (C)"
+    alt: "Les 3 modules indépendants A, B et C du système modulaire",
+    caption: "Système modulaire 3-en-1 : Dragonne câble (A), Bloc maître 10 000 mAh (B) et Mini-bloc poche 5 000 mAh (C)"
   },
   { 
-    src: "/images/trozk-direct-plug.jpg", 
-    alt: "Branchement direct sous le smartphone sans fil",
-    caption: "Le mini-bloc 5 000 mAh se branche directement sous votre téléphone sans câble encombrant"
+    src: "/images/trozk-glow.jpg", 
+    alt: "Batterie 15000 mAh avec charge rapide 22.5W",
+    caption: "Cellule de batterie de qualité automobile 21700 — Puissance de charge rapide 22.5W"
+  },
+  { 
+    src: "/images/trozk-dimensions.jpg", 
+    alt: "Dimensions officielles et caractéristiques techniques du modèle TP11",
+    caption: "Format compact ultra-portable : 80.4 mm (L) × 28.9 mm (P) × 116 mm (H)"
   },
   { 
     src: "/images/trozk-unboxing.jpg", 
-    alt: "Coffret complet avec sacoche rigide zippée offerte",
-    caption: "Livré dans son coffret premium avec sa sacoche de protection rigide zippée antichoc offerte"
+    alt: "Coffret complet et vérification d'authenticité aux normes",
+    caption: "Authenticité certifiée aux normes de sécurité avec coffret et numéro SN unique"
   },
 ];
 
@@ -116,7 +124,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Est-elle compatible avec mon téléphone (iPhone et Android) ?",
-    a: "Oui ! Le port de charge direct et le câble intégré sont en USB-C (compatible iPhone 15/16, Samsung, Xiaomi, Tecno, Infinix, Huawei, etc.). Un adaptateur ou câble USB-C vers Lightning permet également de charger tous les anciens modèles d'iPhone.",
+    a: "Oui ! Le port de charge direct et le câble intégré sont en USB-C (compatible iPhone 15/16, Samsung, Xiaomi, Tecno, Infinix, Huawei, etc.). Vous pouvez également brancher n'importe quel câble Lightning pour les anciens modèles d'iPhone.",
   },
   {
     q: "À quelle vitesse recharge-t-elle mon smartphone ?",
@@ -124,7 +132,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Quelles sont les sécurités intégrées ?",
-    a: "Elle utilise des cellules de batterie 21700 de qualité automobile (standard Tesla) avec une protection 9 couches 'Fortress-Level' : anti-surchauffe, anti-court-circuit, protection contre les surtensions et régulation thermique intelligente.",
+    a: "Elle utilise des cellules de batterie 21700 de grade automobile (standard Tesla) avec une protection militaire multicouche : anti-surchauffe, anti-court-circuit, protection contre les surtensions et régulation thermique intelligente.",
   },
   {
     q: "Comment se déroule la livraison au Bénin ?",
@@ -151,13 +159,35 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
-  const [isDemoPlaying, setIsDemoPlaying] = useState(true);
+
+  // Contrôles vidéo MP4 réelle
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
 
   const router = useRouter();
   const isSubmittingRef = useRef(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  // Lecture / Pause vidéo
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  // Son / Muet
+  const toggleMute = () => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsMuted(videoRef.current.muted);
+  };
 
   // Autoplay carrousel photos toutes les 4.5s
   useEffect(() => {
@@ -169,12 +199,12 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
 
   // Défilement sous-titres démo
   useEffect(() => {
-    if (!isDemoPlaying) return;
+    if (!isPlaying) return;
     const subTimer = setInterval(() => {
       setDemoSubtitleIndex((prev) => (prev + 1) % LIVE_DEMO_SUBTITLES.length);
     }, 3500);
     return () => clearInterval(subTimer);
-  }, [isDemoPlaying]);
+  }, [isPlaying]);
 
   const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
   const startTimeRef = useRef(Date.now());
@@ -235,7 +265,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
 
       const createdOrder = await saveNewOrder({
         product_slug: slug,
-        product_title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™ (15 000 mAh)",
+        product_title: "Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)",
         bundle_name: finalBundleName,
         quantity: selectedBundle.quantity + (includeSecondUnit ? 1 : 0),
         total_amount: totalAmount,
@@ -299,9 +329,9 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           </div>
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
-            <button onClick={() => scrollToSection("demo")} className="hover:text-slate-900 transition-colors">Démonstration</button>
+            <button onClick={() => scrollToSection("demo")} className="hover:text-slate-900 transition-colors">Démonstration Vidéo</button>
             <button onClick={() => scrollToSection("modules")} className="hover:text-slate-900 transition-colors">Les 3 Modules</button>
-            <button onClick={() => scrollToSection("avantages")} className="hover:text-slate-900 transition-colors">Avantages</button>
+            <button onClick={() => scrollToSection("specs")} className="hover:text-slate-900 transition-colors">Fiche Technique</button>
             <button onClick={() => scrollToSection("avis")} className="hover:text-slate-900 transition-colors">Avis clients</button>
             <button onClick={() => scrollToSection("faq")} className="hover:text-slate-900 transition-colors">FAQ</button>
           </nav>
@@ -326,7 +356,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               <img 
                 src={CAROUSEL_IMAGES[activeImageIndex].src} 
                 alt={CAROUSEL_IMAGES[activeImageIndex].alt}
-                className="w-full h-full object-cover rounded-2xl transition-all duration-500 group-hover:scale-[1.02]"
+                className="w-full h-full object-contain rounded-2xl transition-all duration-500 bg-[#ECECEE]"
               />
               <div className="absolute top-5 left-5 bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
                 <Flame className="w-4 h-4 text-orange-400" />
@@ -338,12 +368,12 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
             </div>
 
             {/* MINIATURES */}
-            <div className="grid grid-cols-4 gap-2.5 sm:gap-3 mt-4 w-full max-w-[460px]">
+            <div className="grid grid-cols-5 gap-2 sm:gap-2.5 mt-4 w-full max-w-[460px]">
               {CAROUSEL_IMAGES.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-slate-100 ${
                     activeImageIndex === idx 
                       ? "border-orange-500 ring-2 ring-orange-500/20 shadow-md scale-95" 
                       : "border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400"
@@ -363,11 +393,11 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
             </div>
 
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-              Fini les pavés lourds et les fils emmêlés. Voici la batterie <span className="text-orange-500 underline decoration-orange-300 decoration-wavy decoration-2">modulaire 3-en-1</span>.
+              Fini les pavés lourds et les fils emmêlés. Voici le <span className="text-orange-500 underline decoration-orange-300 decoration-wavy decoration-2">Système Modulaire 3-en-1</span>.
             </h1>
 
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-              Snap magnétique, écran LED dynamique et mini-batterie de poche 5 000 mAh détachable qui se branche directement sous votre téléphone sans câble.
+              Snap magnétique, écran LED dynamique et mini-batterie de poche 5 000 mAh détachable qui se branche directement sous votre smartphone sans aucun fil qui traîne.
             </p>
 
             {/* 4 BADGES CLÉS */}
@@ -447,32 +477,54 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* 🎬 DÉMONSTRATION VIDÉO & SIMULATION INTERACTIVE */}
+      {/* 🎬 LECTEUR VIDÉO MP4 RÉEL AVEC SON */}
       <section id="demo" className="py-12 sm:py-16 bg-slate-900 text-white px-4 sm:px-6">
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="text-center space-y-2">
             <span className="text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-950/80 border border-orange-800/80 px-3 py-1 rounded-full">
-              Démonstration Vidéo & Mécanisme
+              Démonstration Vidéo Réelle
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              Regardez la magie de la modularité en action
+              Regardez la batterie Trozk T3 en action
             </h2>
             <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
-              Un clic magnétique, et vous passez d&apos;un bloc haute capacité à une mini-batterie de poche ultra-légère.
+              Découvrez la fluidité du détachement magnétique et le branchement direct sous le smartphone.
             </p>
           </div>
 
-          <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-2xl max-w-3xl mx-auto">
-            <img 
-              src="/images/trozk-direct-plug.jpg" 
-              alt="Démonstration d'utilisation sans câble"
-              className="w-full h-auto object-cover max-h-[460px] opacity-90"
+          <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-black shadow-2xl max-w-2xl mx-auto aspect-[9/16] sm:aspect-[4/5] max-h-[580px] flex items-center justify-center">
+            <video
+              ref={videoRef}
+              src="/videos/trozk-demo.mp4"
+              playsInline
+              loop
+              autoPlay
+              className="w-full h-full object-contain"
             />
             
+            {/* BOUTONS FLOTTANTS VIDÉO */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+              <button
+                onClick={toggleMute}
+                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
+                title={isMuted ? "Activer le son" : "Couper le son"}
+              >
+                {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+              </button>
+
+              <button
+                onClick={togglePlay}
+                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
+                title={isPlaying ? "Mettre en pause" : "Lire la vidéo"}
+              >
+                {isPlaying ? <Pause className="w-4 h-4 text-orange-400" /> : <Play className="w-4 h-4 text-orange-400" />}
+              </button>
+            </div>
+
             {/* OVERLAY DYNAMIQUE SOUS-TITRES */}
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-6 flex flex-col sm:flex-row items-center justify-between gap-3 z-20">
               <div className="space-y-1 text-center sm:text-left">
-                <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider text-orange-400 bg-orange-900/60 px-2 py-0.5 rounded-md border border-orange-700/50">
+                <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider text-orange-400 bg-orange-950/90 px-2.5 py-0.5 rounded-md border border-orange-700/60">
                   {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].highlight}
                 </span>
                 <p className="text-sm sm:text-base font-semibold text-white">
@@ -480,15 +532,12 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => setIsDemoPlaying(!isDemoPlaying)}
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"
-                >
-                  {isDemoPlaying ? <Pause className="w-3.5 h-3.5 text-orange-400" /> : <Play className="w-3.5 h-3.5 text-orange-400" />}
-                  <span>{isDemoPlaying ? "Pause" : "Lecture"}</span>
-                </button>
-              </div>
+              <button
+                onClick={scrollToCommander}
+                className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md transition-all active:scale-95"
+              >
+                Commander (24.900 F)
+              </button>
             </div>
           </div>
         </div>
@@ -501,10 +550,10 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
             Ingénierie Révolutionnaire
           </span>
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-            L&apos;anatomie du système 3-en-1 Trozk T3
+            L&apos;anatomie du Système 3-en-1 Trozk T3
           </h2>
           <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto">
-            Chaque module a été pensé pour répondre à une situation précise de votre journée.
+            Chaque module a été pensé pour répondre à une situation précise de votre quotidien.
           </p>
         </div>
 
@@ -520,7 +569,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               <p className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Transport & Câble USB-C</p>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Intègre une dragonne tressée haute résistance et un câble de recharge rapide USB-C rétractable. Vous n&apos;oublierez plus jamais votre câble à la maison.
+              Intègre une dragonne tressée haute résistance et un câble de recharge rapide USB-C intégré. Vous n&apos;oublierez plus jamais votre câble à la maison.
             </p>
           </div>
 
@@ -537,7 +586,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               <p className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Écran LED & Charge 22.5W</p>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
-              Le cœur du système avec son écran rétro-éclairé animé qui indique le pourcentage d&apos;énergie exact et recharge 2 appareils simultanément à pleine vitesse.
+              Le cœur du système avec son écran rétro-éclairé animé qui indique le pourcentage d&apos;énergie exact et recharge vos appareils à pleine vitesse.
             </p>
           </div>
 
@@ -558,76 +607,48 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* 🛑 PROBLÈME VS SOLUTION */}
-      <section id="avantages" className="py-14 sm:py-20 bg-slate-100/70 border-y border-slate-200 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto space-y-12">
+      {/* 📐 FICHE TECHNIQUE DÉTAILLÉE */}
+      <section id="specs" className="py-14 sm:py-20 bg-slate-100/80 border-y border-slate-200 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-3.5 py-1 rounded-full">
-              Comparatif Sans Appel
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-white border border-slate-200 px-3.5 py-1 rounded-full">
+              Spécifications Officielles
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-              Pourquoi vous n&apos;utiliserez plus jamais d&apos;autre batterie
+              Caractéristiques du Modèle TP11
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* ANCIENNE BATTERIE */}
-            <div className="bg-white border border-red-200 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xs">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center shrink-0">
-                  <XCircle className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">Powerbanks Traditionnelles</h3>
-              </div>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li className="flex items-start gap-2.5">
-                  <span className="text-red-500 font-bold shrink-0">✕</span>
-                  <span>Pavé lourd (400g) impossible à tenir confortablement en téléphonant.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-red-500 font-bold shrink-0">✕</span>
-                  <span>Câbles longs qui s&apos;emmêlent dans le sac et s&apos;abîment rapidement.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-red-500 font-bold shrink-0">✕</span>
-                  <span>Indicateurs 4 petits points LED flous et imprécis.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-red-500 font-bold shrink-0">✕</span>
-                  <span>Chauffe excessive et perte de capacité après quelques mois.</span>
-                </li>
-              </ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-center">
+              <img src="/images/trozk-dimensions.jpg" alt="Dimensions Trozk TP11" className="w-full max-h-[380px] object-contain rounded-2xl" />
             </div>
 
-            {/* SOLUTION TROZK T3 */}
-            <div className="bg-orange-50/70 border-2 border-orange-500 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl">
-                Technologie 2026
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase">Capacité Totale</span>
+                <span className="font-mono font-bold text-slate-900 text-sm">15 000 mAh (10000 + 5000)</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-orange-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">Trozk T3 Modulaire</h3>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase">Technologie Cellule</span>
+                <span className="font-mono font-bold text-slate-900 text-sm">Lithium-ion 21700 Grade Automobile</span>
               </div>
-              <ul className="space-y-3 text-sm text-slate-800 font-medium">
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <span><strong>Mini-module de poche 5 000 mAh</strong> clipsable directement sous le téléphone.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <span><strong>15 000 mAh combinés</strong> pour 3 à 4 charges complètes de smartphone.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <span><strong>Écran digital animé</strong> indiquant le pourcentage réel à l&apos;unité près.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <span><strong>Cellules de batterie 21700</strong> de grade automobile ultra-sécurisées.</span>
-                </li>
-              </ul>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase">Puissance de Charge</span>
+                <span className="font-mono font-bold text-orange-600 text-sm">22.5W Fast Charge (PD / QC)</span>
+              </div>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase">Dimensions Exactes</span>
+                <span className="font-mono font-bold text-slate-900 text-sm">80.4 mm × 28.9 mm × 116 mm</span>
+              </div>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase">Accessoire Inclus</span>
+                <span className="font-mono font-bold text-emerald-600 text-sm">Pochette rigide zippée antichoc offerte</span>
+              </div>
             </div>
           </div>
         </div>
@@ -689,7 +710,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
             <div className="flex items-center gap-3.5">
               <img src="/images/trozk-hero.jpg" alt="Batterie Trozk T3" className="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0" />
               <div>
-                <h4 className="font-bold text-slate-900 text-sm sm:text-base">Batterie Modulaire 3-en-1 Trozk T3 (15 000 mAh)</h4>
+                <h4 className="font-bold text-slate-900 text-sm sm:text-base">Système Modulaire 3-en-1 Trozk T3 (15 000 mAh)</h4>
                 <p className="text-xs text-slate-500">Pack complet A+B+C + Écran LED + Sacoche de transport offerte</p>
                 <div className="text-xs font-bold text-orange-600 mt-0.5">✓ En stock — Expédition 24h</div>
               </div>
