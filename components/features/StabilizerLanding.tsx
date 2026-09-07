@@ -171,9 +171,18 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Contrôles Lecteur Vidéo MP4 Local (Mode Silencieux Garanti)
+const FRENCH_SUBTITLES = [
+  { text: "Fixation MagSafe ultra-puissante en 1 seconde", highlight: "Aimantation Instantanée" },
+  { text: "Molette de Zoom cinéma fluide & millimétrique", highlight: "Contrôle Sans Tremblement" },
+  { text: "Télécommande Bluetooth détachable jusqu'à 10m", highlight: "Déclenchement Sans Fil" },
+  { text: "Zéro secousse lors de vos déplacements et vlogs", highlight: "Stabilisation Pro-Active" },
+  { text: "Trépied intégré dépliable pour tournages solo & TikTok", highlight: "Mode Studio Mains-Libres" },
+];
+
+  // Contrôles Lecteur Vidéo MP4 Local (Mode Silencieux avec Sous-Titres Français)
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -184,6 +193,15 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
       setIsPlaying(false);
     }
   };
+
+  // Défilement automatique des sous-titres français toutes les 3.5s
+  useEffect(() => {
+    if (!isPlaying) return;
+    const subTimer = setInterval(() => {
+      setSubtitleIndex((prev) => (prev + 1) % FRENCH_SUBTITLES.length);
+    }, 3500);
+    return () => clearInterval(subTimer);
+  }, [isPlaying]);
 
   // Autoplay carrousel d'images HD toutes les 4.5s
   useEffect(() => {
@@ -549,6 +567,21 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                         </span>
                       </div>
                     )}
+
+                    {/* SOUS-TITRES DYNAMIQUES EN FRANÇAIS STYLE TIKTOK / UGC */}
+                    <div className="absolute bottom-3 left-2.5 right-2.5 z-10 pointer-events-none">
+                      <div className="bg-slate-950/90 backdrop-blur-md border border-amber-400/40 rounded-xl p-2.5 text-center shadow-xl transition-all duration-300">
+                        <div className="flex items-center justify-center gap-1.5 mb-0.5">
+                          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300">
+                            {FRENCH_SUBTITLES[subtitleIndex].highlight}
+                          </span>
+                        </div>
+                        <p className="text-xs font-extrabold text-white leading-snug drop-shadow-md">
+                          « {FRENCH_SUBTITLES[subtitleIndex].text} »
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
