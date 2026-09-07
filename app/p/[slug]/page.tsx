@@ -7,6 +7,7 @@ import PeelerLanding from "@/components/features/PeelerLanding";
 import StabilizerLanding from "@/components/features/StabilizerLanding";
 import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 import UmeiLanding from "@/components/features/UmeiLanding";
+import CameraLanding from "@/components/features/CameraLanding";
 
 /* ─── Données OG statiques pour les pages custom ─── */
 const CUSTOM_META: Record<string, { title: string; description: string; image: string; price: number }> = {
@@ -46,6 +47,12 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
     image: "/images/projecteur-hero.jpg",
     price: 14900,
   },
+  camera: {
+    title: "Mini Caméra Espionne & Surveillance Magnétique HD A9 Pro™",
+    description: "Surveillez votre boutique, maison et voiture en direct sur smartphone. Vision nocturne et alertes. Livraison 24h au Bénin.",
+    image: "/images/camera-hero.jpg",
+    price: 16900,
+  },
 };
 
 /* Slug aliases → canonical slug */
@@ -62,6 +69,10 @@ const SLUG_ALIASES: Record<string, string> = {
   galaxie: "veilleuse",
   friosz: "veilleuse",
   "veilleuse-3d": "veilleuse",
+  "mini-camera": "camera",
+  "camera-espion": "camera",
+  surveillance: "camera",
+  a9: "camera",
 };
 
 function getSupabaseServer() {
@@ -151,7 +162,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  // ── Pages custom existantes (inchangées) ──
+  // ── Pages custom existantes ──
   if (slug === "umei") {
     return <UmeiLanding slug={slug} />;
   }
@@ -174,6 +185,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (slug === "veilleuse" || slug === "projecteur" || slug === "galaxie" || slug === "friosz" || slug === "veilleuse-3d") {
     return <VeilleuseLanding slug="veilleuse" />;
+  }
+
+  if (slug === "camera" || slug === "mini-camera" || slug === "camera-espion" || slug === "surveillance" || slug === "a9") {
+    return <CameraLanding slug="camera" />;
   }
 
   // ── Fallback générique : charge depuis Supabase ──

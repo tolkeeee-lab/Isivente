@@ -92,6 +92,15 @@ const PRODUCT_THEMES: Record<
     badgeBg: "#E0E7FF",
     badgeText: "#3730A3",
   },
+  camera: {
+    primary: "#059669",
+    primaryHover: "#047857",
+    primaryLight: "#ECFDF5",
+    border: "#A7F3D0",
+    textPrimary: "#064E3B",
+    badgeBg: "#D1FAE5",
+    badgeText: "#065F46",
+  },
 };
 
 function UpsellContent() {

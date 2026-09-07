@@ -228,6 +228,57 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       ],
     },
   },
+
+  camera: {
+    secondUnit: {
+      id: "camera-second-unit",
+      title: "Ajoutez une 2ème Mini Caméra HD pour surveiller un autre endroit",
+      subtitle: "Protégez simultanément votre boutique ET votre domicile ou véhicule",
+      description: "Recevez une 2ème caméra complète avec son support magnétique 360° pour seulement 10 900 FCFA au lieu de 16 900 FCFA.",
+      price: 10900,
+      originalPrice: 16900,
+      savings: 6000,
+      image: "/images/camera-hero.jpg",
+      badge: "🎁 2ÈME PIÈCE (-35%)",
+      benefits: [
+        "Caméra HD 1080P supplémentaire avec vision nocturne",
+        "Visualisable sur la même application smartphone en simultané",
+        "Livraison groupée dans le même paquet sans frais en sus",
+      ],
+    },
+    bump: {
+      id: "camera-sd-card",
+      title: "Carte Mémoire MicroSD 64GB Spéciale Vidéosurveillance HD",
+      subtitle: "Enregistrement continu en boucle 24h/24 pendant 15 jours sans effacer",
+      description: "Permet de conserver tous les enregistrements même en cas de coupure de courant.",
+      price: 3900,
+      originalPrice: 8000,
+      savings: 4100,
+      image: "/images/camera-hero.jpg",
+      badge: "-51% ACCESSOIRE",
+      benefits: [
+        "Capacité 64GB classe 10 haute vitesse",
+        "Enregistrement automatique en boucle",
+        "Relecture facile des vidéos sur téléphone",
+      ],
+    },
+    upsell: {
+      id: "camera-second",
+      title: "Deuxième Mini Caméra Espionne HD A9 Pro™",
+      subtitle: "Protégez un second angle ou une deuxième pièce de votre maison",
+      description: "Profitez de cette opportunité unique pour ajouter une 2ème caméra complète pour seulement 10 900 FCFA au lieu de 16 900 FCFA.",
+      price: 10900,
+      originalPrice: 16900,
+      savings: 6000,
+      image: "/images/camera-hero.jpg",
+      badge: "ÉCONOMISEZ 6 000 FCFA",
+      benefits: [
+        "2ème caméra neuve avec support magnétique 360°",
+        "Connectable sur la même application",
+        "Paiement à la réception",
+      ],
+    },
+  },
 };
 
 /**

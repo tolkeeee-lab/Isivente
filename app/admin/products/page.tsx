@@ -118,6 +118,18 @@ export default function ProductsPage() {
         { name: "Pack Duo Magique (2 Kits + 48 Disques)", price: 25900 },
         { name: "Pack Trio Famille & Cadeaux (3 Kits + 72 Disques)", price: 36900 }
       ]
+    },
+    {
+      id: "camera-default",
+      title: "Mini Caméra Espionne & Surveillance Magnétique HD A9 Pro™",
+      slug: "camera",
+      price: 16900,
+      image_url: "/images/camera-hero.jpg",
+      bundles: [
+        { name: "Pack Solo Surveillance (1 Caméra)", price: 16900 },
+        { name: "Pack Duo Sécurité Totale (2 Caméras)", price: 27900 },
+        { name: "Pack Trio Protection 360° (3 Caméras)", price: 38900 }
+      ]
     }
   ];
 
