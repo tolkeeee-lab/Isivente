@@ -109,7 +109,7 @@ const FAQ_ITEMS = [
 ];
 
 export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
-  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[1]);
+  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
