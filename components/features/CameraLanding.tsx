@@ -21,7 +21,18 @@ import {
   Bell,
   Smartphone,
   ShieldAlert,
-  Play
+  Play,
+  Pause,
+  Layers,
+  Lock,
+  Flame,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  Store,
+  Home,
+  Car,
+  Warehouse
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -45,20 +56,37 @@ interface ProductBundle {
 const BUNDLES: ProductBundle[] = [
   {
     id: "solo",
-    name: "Mini Caméra Espionne & Surveillance HD A9 Pro",
-    subtitle: "Kit complet avec support magnétique 360°, câble de charge et application mobile",
+    name: "Mini Caméra Espionne & Surveillance HD A9 Pro™",
+    subtitle: "Pack complet : Caméra HD + Support magnétique 360° + Câble de charge + App mobile en français",
     price: 16900,
     originalPrice: 25000,
     savings: 8100,
     quantity: 1,
+    popular: true,
   },
 ];
 
 const CAROUSEL_IMAGES = [
-  { src: "/images/camera-hero.jpg", alt: "Mini Caméra Magnétique HD A9 Pro" },
-  { src: "/images/camera-app.jpg", alt: "Vision en direct sur smartphone avec alerte mouvement" },
-  { src: "/images/camera-night.jpg", alt: "Vision nocturne infrarouge dans le noir total" },
-  { src: "/images/camera-discreet.jpg", alt: "Installation magnétique discrète en boutique ou maison" },
+  { 
+    src: "/images/camera-hero.jpg", 
+    alt: "Mini Caméra Magnétique HD A9 Pro",
+    caption: "Format micro-cube furtif avec lentille optique grand angle 150°"
+  },
+  { 
+    src: "/images/camera-app.jpg", 
+    alt: "Vision en direct sur smartphone avec alerte mouvement",
+    caption: "Diffusion HD en direct sur votre téléphone (Android & iPhone) où que vous soyez"
+  },
+  { 
+    src: "/images/camera-night.jpg", 
+    alt: "Vision nocturne infrarouge dans le noir total",
+    caption: "Vision nocturne infrarouge haute précision 100% invisible à l'œil nu"
+  },
+  { 
+    src: "/images/camera-discreet.jpg", 
+    alt: "Installation magnétique discrète en boutique ou maison",
+    caption: "Fixation magnétique instantanée sous étagère, caisse, mur ou véhicule"
+  },
 ];
 
 const REVIEWS_DATA = [
@@ -96,7 +124,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Est-elle visible dans le noir ?",
-    a: "Non ! Ses 6 LED infrarouges de vision nocturne sont invisibles à l'œil nu (pas de lumière rouge voyante), ce qui permet une discrétion totale même dans l'obscurité complète.",
+    a: "Non ! Ses LED infrarouges de vision nocturne sont invisibles à l'œil nu (pas de lumière rouge voyante), ce qui permet une discrétion totale même dans l'obscurité complète.",
   },
   {
     q: "Comment s'installe-t-elle ?",
@@ -106,6 +134,13 @@ const FAQ_ITEMS = [
     q: "Comment se passe la livraison au Bénin ?",
     a: "Livraison express en 24h à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous payez en espèces ou Mobile Money uniquement après avoir reçu et inspecté votre colis.",
   },
+];
+
+const LIVE_DEMO_SUBTITLES = [
+  { text: "Lentille HD Grand Angle 150° : Couvre toute la pièce sans angle mort", highlight: "Champ Ultra-Large" },
+  { text: "Détection humaine intelligente : Notification instantanée sur votre smartphone", highlight: "Alerte en Direct" },
+  { text: "Vision nocturne infrarouge : Clarté totale même dans le noir complet", highlight: "Vision Nuit 100% Invisible" },
+  { text: "Fixation magnétique 360° : Se pose et se cache en 2 secondes chrono", highlight: "Discrétion Absolue" },
 ];
 
 export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
@@ -119,6 +154,8 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
   const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
+  const [isDemoPlaying, setIsDemoPlaying] = useState(true);
 
   const router = useRouter();
   const isSubmittingRef = useRef(false);
@@ -133,6 +170,15 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
     }, 4500);
     return () => clearInterval(timer);
   }, []);
+
+  // Défilement sous-titres démo
+  useEffect(() => {
+    if (!isDemoPlaying) return;
+    const subTimer = setInterval(() => {
+      setDemoSubtitleIndex((prev) => (prev + 1) % LIVE_DEMO_SUBTITLES.length);
+    }, 3500);
+    return () => clearInterval(subTimer);
+  }, [isDemoPlaying]);
 
   const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
   const startTimeRef = useRef(Date.now());
@@ -164,6 +210,13 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
         const input = document.getElementById("customer-name-input") as HTMLInputElement | null;
         if (input) input.focus({ preventScroll: true });
       }, 400);
+    }
+  };
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -203,315 +256,717 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
       const duration = (Date.now() - startTimeRef.current) / 1000;
       await trackUserSession(slug, duration, true, sessionIdRef.current);
 
-      const orderRef = createdOrder?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
-      setOrderInfo({
-        order_number: orderRef,
-        total_amount: totalAmount,
-        customer_phone: customerPhone,
-        customer_name: customerName,
-      });
-
+      const orderNumber = createdOrder?.order_number || `ISV-${Math.floor(100000 + Math.random() * 900000)}`;
+      setOrderInfo({ orderNumber, total: totalAmount, name: customerName, phone: customerPhone });
       setOrderSuccess(true);
       setIsSubmitting(false);
-      isSubmittingRef.current = false;
 
-      // Redirection immédiate vers l'Upsell en 1 clic
-      if (upsellConfig?.upsell) {
-        router.push(`/p/${slug}/upsell?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`);
+      if (upsellConfig.upsell && !includeSecondUnit) {
+        router.push(
+          `/p/${slug}/upsell?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`
+        );
       } else {
-        router.push(`/p/${slug}/success?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`);
+        router.push(
+          `/p/${slug}/success?order=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(totalAmount))}`
+        );
       }
     } catch (err) {
-      console.error("Erreur commande:", err);
+      console.error("Order submit error:", err);
       alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       setIsSubmitting(false);
       isSubmittingRef.current = false;
     }
   };
 
-  const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
-
   return (
-    <div className="bg-[#F8FAFC] text-slate-900 font-sans antialiased min-h-screen selection:bg-emerald-500/20">
-
-      {/* 🌟 BARRE D'URGENCE SUPÉRIEURE FIGMA-GRADE */}
-      <div className="bg-slate-950 text-white text-[11px] font-bold py-2.5 px-4 text-center tracking-wide flex items-center justify-center gap-2 border-b border-white/10 shadow-xs">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-        <span>PROMOTION SÉCURITÉ : -44% SUR LE PACK DUO + LIVRAISON 24H GRATUITE AU BÉNIN</span>
+    <div className="bg-[#F8FAFC] min-h-screen text-[#0F172A] font-sans antialiased overflow-x-hidden selection:bg-slate-200 selection:text-slate-900 pb-28 md:pb-0">
+      
+      {/* 🌟 BANDEAU D'URGENCE & CONFIANCE HAUT */}
+      <div className="bg-slate-900 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 border-b border-slate-800">
+        <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>🔥 OFFRE SPÉCIALE BÉNIN : <strong>-35% de réduction</strong> + Paiement à la réception après vérification</span>
       </div>
 
-      {/* 🌟 HEADER PRINCIPAL */}
-      <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-2xs">
-        <div className="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
+      {/* 🌟 HEADER FIGMA-GRADE */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-slate-950 text-white flex items-center justify-center font-black text-sm shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-sm shadow-sm">
               <Camera className="w-4 h-4 text-emerald-400" />
             </div>
-            <span className="font-display font-black text-lg text-slate-950 tracking-tight">
-              Isivente <span className="text-xs font-mono font-normal text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Sécurité Pro</span>
-            </span>
+            <div>
+              <span className="font-extrabold text-lg tracking-tight text-slate-900">A9 PRO™</span>
+              <span className="hidden sm:inline-block ml-2 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                Surveillance HD
+              </span>
+            </div>
           </div>
+
+          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
+            <button onClick={() => scrollToSection("demo")} className="hover:text-slate-900 transition-colors">Démonstration</button>
+            <button onClick={() => scrollToSection("avantages")} className="hover:text-slate-900 transition-colors">Avantages</button>
+            <button onClick={() => scrollToSection("comment-ca-marche")} className="hover:text-slate-900 transition-colors">Fonctionnement</button>
+            <button onClick={() => scrollToSection("avis")} className="hover:text-slate-900 transition-colors">Avis clients</button>
+            <button onClick={() => scrollToSection("faq")} className="hover:text-slate-900 transition-colors">FAQ</button>
+          </nav>
 
           <button
             onClick={scrollToCommander}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold px-4 sm:px-6 py-2.5 rounded-full shadow-[0_4px_14px_rgba(5,150,105,0.3)] active:scale-95 transition-all cursor-pointer"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl shadow-[0_4px_14px_-2px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
-            Commander (Paiement Réception)
+            <span>Commander</span>
+            <span className="font-mono text-emerald-200 font-semibold">(16.900 F)</span>
           </button>
         </div>
       </header>
 
-      {/* 🌟 SECTION HERO HARMONISÉE FIGMA-GRADE */}
-      <main className="max-w-5xl mx-auto px-4 py-6 sm:py-10 space-y-10">
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      {/* 🚀 HERO SECTION */}
+      <section className="pt-6 sm:pt-10 pb-12 sm:pb-16 px-4 sm:px-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* CARROUSEL D'IMAGES HD */}
+          {/* GALERIE INTERACTIVE */}
           <div className="lg:col-span-6 flex flex-col items-center">
-            <HorizontalCarousel
-              slides={CAROUSEL_IMAGES}
-              accentColor="#059669"
-              autoplayInterval={4500}
-            />
+            <div className="relative w-full max-w-[460px] aspect-square rounded-3xl bg-white border border-slate-200/80 p-3 shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] overflow-hidden group">
+              <img 
+                src={CAROUSEL_IMAGES[activeImageIndex].src} 
+                alt={CAROUSEL_IMAGES[activeImageIndex].alt}
+                className="w-full h-full object-cover rounded-2xl transition-all duration-500 group-hover:scale-[1.02]"
+              />
+              <div className="absolute top-5 left-5 bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>Micro-Format Discret</span>
+              </div>
+              <div className="absolute bottom-5 left-5 right-5 bg-slate-900/80 backdrop-blur-md text-white/95 px-3 py-2 rounded-xl text-xs font-medium text-center shadow-lg">
+                {CAROUSEL_IMAGES[activeImageIndex].caption}
+              </div>
+            </div>
+
+            {/* MINIATURES */}
+            <div className="grid grid-cols-4 gap-2.5 sm:gap-3 mt-4 w-full max-w-[460px]">
+              {CAROUSEL_IMAGES.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                    activeImageIndex === idx 
+                      ? "border-emerald-500 ring-2 ring-emerald-500/20 shadow-md scale-95" 
+                      : "border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400"
+                  }`}
+                >
+                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* ARGUMENTS D'ACCROCHE */}
-          <div className="lg:col-span-6 space-y-4">
-            
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider shadow-2xs">
-              <ShieldAlert className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Surveillance Discrète 24h/24 & 7j/7</span>
+          {/* TEXTES & SOCIAL PROOF */}
+          <div className="lg:col-span-6 space-y-5">
+            <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200/80 px-3.5 py-1.5 rounded-full">
+              <div className="flex text-amber-400 text-xs">★★★★★</div>
+              <span className="text-xs font-bold text-emerald-900">4.9/5 (+1 850 propriétaires & commerçants rassurés)</span>
             </div>
 
-            <h1 className="font-display font-black text-2xl sm:text-4xl text-slate-950 tracking-tight leading-tight">
-              Protégez votre boutique, maison et voiture en direct sur votre téléphone !
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+              Gardez un œil sur votre <span className="text-emerald-600 underline decoration-emerald-300 decoration-wavy decoration-2">boutique & maison</span>, où que vous soyez.
             </h1>
 
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-              De la taille d&apos;une pièce de monnaie, cette mini caméra magnétique sans fil s&apos;aimante discrètement n&apos;importe où, filme en HD 1080P et vous alerte instantanément en cas d&apos;intrusion.
+            <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+              La mini-caméra sans fil qui se dissimule partout. Visionnage en direct sur smartphone, alertes de mouvement instantanées et vision nocturne 100% invisible.
             </p>
 
-            {/* PUCES D'AVANTAGES CLÉS */}
-            <div className="space-y-2.5 pt-2">
-              <div className="flex items-center gap-2.5 text-xs text-slate-800 font-medium">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Smartphone className="w-3 h-3 stroke-[2.5]" />
+            {/* BADGES CLÉS */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Eye className="w-5 h-5" />
                 </div>
-                <span>Vision en direct HD 1080P sur smartphone (iPhone & Android)</span>
+                <div>
+                  <div className="text-xs font-bold text-slate-900">Vision Direct</div>
+                  <div className="text-[11px] text-slate-500 font-medium">Sur Android & iPhone</div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2.5 text-xs text-slate-800 font-medium">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Moon className="w-3 h-3 stroke-[2.5]" />
+              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                  <Moon className="w-5 h-5" />
                 </div>
-                <span>Vision nocturne infrarouge invisible dans l&apos;obscurité totale</span>
+                <div>
+                  <div className="text-xs font-bold text-slate-900">Vision Nuit HD</div>
+                  <div className="text-[11px] text-slate-500 font-medium">Infrarouge invisible</div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2.5 text-xs text-slate-800 font-medium">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Bell className="w-3 h-3 stroke-[2.5]" />
+              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                  <Bell className="w-5 h-5" />
                 </div>
-                <span>Détection de mouvement intelligente avec notifications instantanées</span>
+                <div>
+                  <div className="text-xs font-bold text-slate-900">Détection Alerte</div>
+                  <div className="text-[11px] text-slate-500 font-medium">Notification au vol</div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2.5 text-xs text-slate-800 font-medium">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Wifi className="w-3 h-3 stroke-[2.5]" />
+              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
+                <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                  <Zap className="w-5 h-5" />
                 </div>
-                <span>Aimant puissant intégré + Enregistrement continu sur carte SD</span>
+                <div>
+                  <div className="text-xs font-bold text-slate-900">Pose Aimantée</div>
+                  <div className="text-[11px] text-slate-500 font-medium">Support rotatif 360°</div>
+                </div>
               </div>
             </div>
 
-            {/* PRIX ET BOUTON HERO */}
-            <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center gap-4">
-              <div className="text-center sm:text-left">
-                <div className="text-[11px] font-semibold text-slate-500 line-through">25 000 FCFA</div>
-                <div className="font-mono font-black text-2xl text-emerald-700">16 900 FCFA</div>
+            {/* PRIX & BOUTON COMMANDE RAPIDE */}
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm space-y-4 pt-4">
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Prix Spécial Lancement</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl sm:text-4xl font-black font-mono text-emerald-600 tracking-tight">16.900 FCFA</span>
+                    <span className="text-base text-slate-400 line-through font-mono">25.000 FCFA</span>
+                  </div>
+                </div>
+                <span className="bg-red-50 text-red-600 border border-red-200 font-bold text-xs px-2.5 py-1 rounded-full">
+                  ÉCONOMISEZ 8.100 FCFA
+                </span>
               </div>
 
               <button
                 onClick={scrollToCommander}
-                className="w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm py-4 px-6 rounded-2xl shadow-[0_10px_25px_-5px_rgba(5,150,105,0.4)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base sm:text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <span>COMMANDER MAINTENANT</span>
-                <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">Paiement Réception</span>
+                <span className="text-emerald-200 text-sm font-normal">— Paiement à la livraison</span>
               </button>
+
+              <div className="flex items-center justify-center gap-4 text-xs font-medium text-slate-500 pt-1">
+                <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-emerald-600" /> Livraison 24h</span>
+                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Garantie échange</span>
+                <span className="flex items-center gap-1"><Check className="w-3.5 h-3.5 text-emerald-600" /> Test avant paiement</span>
+              </div>
             </div>
 
           </div>
+        </div>
+      </section>
 
+      {/* 🎬 DÉMONSTRATION EN DIRECT & SIMULATEUR */}
+      <section id="demo" className="py-12 sm:py-16 bg-slate-900 text-white px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-3 py-1 rounded-full">
+              Démonstration Vidéo & Live
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+              Voyez exactement ce qu&apos;elle voit, en temps réel.
+            </h2>
+            <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
+              Grâce à l&apos;application dédiée, vous accédez au flux vidéo ultra-fluide depuis n&apos;importe quelle connexion.
+            </p>
+          </div>
+
+          <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-2xl max-w-3xl mx-auto">
+            <img 
+              src="/images/camera-app.jpg" 
+              alt="Simulation flux vidéo en direct"
+              className="w-full h-auto object-cover max-h-[460px] opacity-90"
+            />
+            
+            {/* OVERLAY DYNAMIQUE SOUS-TITRES */}
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1 text-center sm:text-left">
+                <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 bg-emerald-900/60 px-2 py-0.5 rounded-md border border-emerald-700/50">
+                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].highlight}
+                </span>
+                <p className="text-sm sm:text-base font-semibold text-white">
+                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].text}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setIsDemoPlaying(!isDemoPlaying)}
+                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all"
+                >
+                  {isDemoPlaying ? <Pause className="w-3.5 h-3.5 text-emerald-400" /> : <Play className="w-3.5 h-3.5 text-emerald-400" />}
+                  <span>{isDemoPlaying ? "Pause" : "Lecture"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 🛑 PROBLÈME VS SOLUTION */}
+      <section id="avantages" className="py-14 sm:py-20 px-4 sm:px-6 max-w-5xl mx-auto space-y-12">
+        <div className="text-center space-y-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-3.5 py-1 rounded-full">
+            Sécurité vs Frustration
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+            Pourquoi les caméras traditionnelles sont un calvaire
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto">
+            Plus besoin de percer les murs, de tirer des câbles ou de payer des abonnements mensuels ruineux.
+          </p>
         </div>
 
-        {/* 🌟 SECTION COMMANDE (MODÈLE UMÉI AVEC PACKS & BUMP) */}
-        <UmeiStyleOrderSection
-          productSlug={slug}
-          productTitle="Mini Caméra Espionne & Surveillance Magnétique HD A9 Pro™"
-          bundles={BUNDLES}
-          selectedBundle={selectedBundle}
-          onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
-          customerName={customerName}
-          setCustomerName={setCustomerName}
-          customerPhone={customerPhone}
-          setCustomerPhone={setCustomerPhone}
-          customerPhone2={customerPhone2}
-          setCustomerPhone2={setCustomerPhone2}
-          city={city}
-          setCity={setCity}
-          address={address}
-          setAddress={setAddress}
-          includeBump={includeBump}
-          setIncludeBump={setIncludeBump}
-          bumpOffer={upsellConfig.bump}
-          includeSecondUnit={includeSecondUnit}
-          setIncludeSecondUnit={setIncludeSecondUnit}
-          secondUnitOffer={upsellConfig.secondUnit}
-          isSubmitting={isSubmitting}
-          onSubmit={handleSubmit}
-          whatsappNumber="2290192901817"
-          orderSuccess={orderSuccess}
-          orderNumber={orderInfo?.order_number || ""}
-          onResetOrder={() => setOrderSuccess(false)}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* ANCIENNE MÉTHODE */}
+          <div className="bg-red-50/50 border border-red-200/80 rounded-3xl p-6 sm:p-8 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                <XCircle className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">Systèmes Classiques Encombrants</h3>
+            </div>
+            <ul className="space-y-3 text-sm text-slate-600">
+              <li className="flex items-start gap-2.5">
+                <span className="text-red-500 font-bold shrink-0">✕</span>
+                <span>Coût excessif (70.000 à 150.000 FCFA + technicien d&apos;installation).</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="text-red-500 font-bold shrink-0">✕</span>
+                <span>Fils électriques visibles et travaux de perçage obligatoires.</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="text-red-500 font-bold shrink-0">✕</span>
+                <span>Trop visibles : les intrus les repèrent et les débranchent aussitôt.</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="text-red-500 font-bold shrink-0">✕</span>
+                <span>Inutilisables dans la voiture ou en déplacement.</span>
+              </li>
+            </ul>
+          </div>
 
-        {/* 🌟 4 CAS D'USAGE INCONTOURNABLES AU BÉNIN */}
-        <section className="space-y-6 pt-6">
-          <div className="text-center max-w-xl mx-auto space-y-1">
-            <span className="text-xs font-mono font-bold uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              Applications Pratiques
+          {/* SOLUTION A9 PRO */}
+          <div className="bg-emerald-50/60 border-2 border-emerald-500/60 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl">
+              Recommandé
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">La Mini Caméra A9 Pro™</h3>
+            </div>
+            <ul className="space-y-3 text-sm text-slate-700 font-medium">
+              <li className="flex items-start gap-2.5">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong>16.900 FCFA tout compris</strong>, sans abonnement ni frais cachés.</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong>100% Sans Fil & Magnétique</strong> : se fixe sur n&apos;importe quel métal en 1s.</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong>Discrétion Furtive</strong> : taille micro-cube indétectable pour une surveillance efficace.</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong>Nomade</strong> : fonctionne à la maison, en boutique, en voiture ou sur batterie externe.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* 🏢 4 CAS D'USAGE AU QUOTIDIEN AU BÉNIN */}
+      <section className="py-14 sm:py-20 bg-slate-100/70 border-y border-slate-200 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="text-center space-y-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3.5 py-1 rounded-full">
+              Polyvalence Totale
             </span>
-            <h2 className="font-display font-black text-xl sm:text-2xl text-slate-950">
-              Où installer votre mini caméra ?
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+              Une seule caméra pour tous vos besoins de protection
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto">
+              Idéale pour les commerçants, les parents et les propriétaires soucieux de la sécurité de leurs biens.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Store className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-slate-900 text-base">Boutique & Caisse</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Surveillez les encaissements, le stock et les allées et venues de vos employés et clients en direct.
+              </p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <Home className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-slate-900 text-base">Maison & Nounou</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Gardez un œil rassurant sur vos enfants, le travail de la nounou ou les visiteurs pendant votre absence.
+              </p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <Car className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-slate-900 text-base">Véhicule & Parking</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Placez-la dans la boîte à gants ou sur le tableau de bord pour enregistrer toute tentative d&apos;effraction.
+              </p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <Warehouse className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-slate-900 text-base">Entrepôt & Chantier</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Sécurisez vos matériaux, outils et marchandises même dans les zones isolées sans prise de courant.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ⚙️ COMMENT ÇA MARCHE EN 3 ÉTAPES */}
+      <section id="comment-ca-marche" className="py-14 sm:py-20 px-4 sm:px-6 max-w-5xl mx-auto space-y-12">
+        <div className="text-center space-y-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-slate-200 px-3.5 py-1 rounded-full">
+            Prise en Main Express
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+            Installée et configurée en moins de 60 secondes
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base max-w-lg mx-auto">
+            Aucune compétence technique nécessaire. Suivez simplement ces 3 étapes :
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-black text-lg flex items-center justify-center mx-auto shadow-md">
+              1
+            </div>
+            <h4 className="font-bold text-slate-900 text-lg">Aimantez</h4>
+            <p className="text-sm text-slate-600">
+              Posez la caméra sur n&apos;importe quelle surface métallique ou fixez le support adhésif 360° au mur.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-black text-lg flex items-center justify-center mx-auto shadow-md">
+              2
+            </div>
+            <h4 className="font-bold text-slate-900 text-lg">Connectez</h4>
+            <p className="text-sm text-slate-600">
+              Ouvrez l&apos;application gratuite sur votre smartphone (Android/iPhone) et scannez la caméra en 1 clic.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-black text-lg flex items-center justify-center mx-auto shadow-md">
+              3
+            </div>
+            <h4 className="font-bold text-slate-900 text-lg">Surveillez</h4>
+            <p className="text-sm text-slate-600">
+              Regardez en direct, activez les alertes de détection et relisez vos vidéos enregistrées sans effort.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
+      <section id="avis" className="py-14 sm:py-20 bg-slate-900 text-white px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto space-y-10">
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-800 text-emerald-400 px-3.5 py-1 rounded-full text-xs font-bold">
+              <span>★★★★★</span>
+              <span>Avis Vérifiés au Bénin</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+              Ce que disent nos clients satisfaits
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <div className="bg-white border border-slate-200 p-5 rounded-3xl space-y-2 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-                🏪
-              </div>
-              <h3 className="font-display font-bold text-sm text-slate-900">Boutique & Caisse</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Surveillez la caisse, les rayons et l&apos;activité des employés en temps réel depuis chez vous.
-              </p>
-            </div>
-
-            <div className="bg-white border border-slate-200 p-5 rounded-3xl space-y-2 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-                👶
-              </div>
-              <h3 className="font-display font-bold text-sm text-slate-900">Nounou & Enfants</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Gardez un œil rassurant sur vos enfants et la nounou à la maison pendant vos heures de bureau.
-              </p>
-            </div>
-
-            <div className="bg-white border border-slate-200 p-5 rounded-3xl space-y-2 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-                🚗
-              </div>
-              <h3 className="font-display font-bold text-sm text-slate-900">Voiture & Parking</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Aimantez la caméra sur le tableau de bord pour enregistrer toute tentative de dégradation ou de vol.
-              </p>
-            </div>
-
-            <div className="bg-white border border-slate-200 p-5 rounded-3xl space-y-2 shadow-xs">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-                🚪
-              </div>
-              <h3 className="font-display font-bold text-sm text-slate-900">Entrée & Portail</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Soyez alerté sur votre smartphone dès qu&apos;une personne s&apos;approche de votre porte la nuit.
-              </p>
-            </div>
-
-          </div>
-        </section>
-
-        {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
-        <section className="space-y-6 pt-6">
-          <div className="text-center max-w-xl mx-auto space-y-1">
-            <span className="text-xs font-mono font-bold uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              Témoignages Clients
-            </span>
-            <h2 className="font-display font-black text-xl sm:text-2xl text-slate-950">
-              Ce que disent nos clients au Bénin
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {REVIEWS_DATA.map((rev, idx) => (
-              <div key={idx} className="bg-white border border-slate-200 p-5 rounded-3xl space-y-3 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-0.5 text-amber-500">
-                    {Array.from({ length: rev.rating }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">{rev.date}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {REVIEWS_DATA.map((rev, i) => (
+              <div key={i} className="bg-slate-800/80 border border-slate-700/80 p-6 rounded-3xl space-y-4 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex text-amber-400 text-sm">★★★★★</div>
+                  <p className="text-sm text-slate-300 leading-relaxed italic">
+                    « {rev.comment} »
+                  </p>
                 </div>
-                <p className="text-xs text-slate-700 italic leading-relaxed">
-                  &ldquo;{rev.comment}&rdquo;
-                </p>
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-900">
-                  <span>{rev.author}</span>
-                  <span className="font-normal text-slate-500 font-mono text-[11px]">{rev.city}</span>
+                <div className="pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs">
+                  <div>
+                    <div className="font-bold text-white">{rev.author}</div>
+                    <div className="text-emerald-400 font-medium">{rev.city}</div>
+                  </div>
+                  <span className="text-slate-500">{rev.date}</span>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* 🌟 FAQ ACCORDÉON */}
-        <section className="space-y-4 pt-6 max-w-2xl mx-auto">
-          <div className="text-center space-y-1 mb-4">
-            <h2 className="font-display font-black text-xl sm:text-2xl text-slate-950">
-              Questions Fréquentes
+      {/* 📦 FORMULAIRE DE COMMANDE UMEI-STYLE COD 1-CLIC */}
+      <section id="commander" className="py-14 sm:py-20 px-4 sm:px-6 max-w-4xl mx-auto">
+        <div className="bg-white border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-10 shadow-xl space-y-8">
+          
+          <div className="text-center space-y-2 border-b border-slate-100 pb-6">
+            <span className="text-xs font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
+              Étape Finale — Formulaire Rapide
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+              Commandez votre Mini Caméra A9 Pro™
             </h2>
-            <p className="text-xs text-slate-600">Tout ce que vous devez savoir avant de commander</p>
+            <p className="text-sm text-slate-500">
+              Remplissez ce formulaire en 30 secondes. Paiement au livreur après réception et inspection du colis.
+            </p>
           </div>
 
-          <div className="space-y-2.5">
-            {FAQ_ITEMS.map((item, idx) => {
-              const isOpen = openFaq === idx;
-              return (
-                <div key={idx} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full px-5 py-4 text-left flex items-center justify-between gap-3 text-xs sm:text-sm font-bold text-slate-900 hover:text-emerald-700 cursor-pointer"
-                  >
-                    <span>{item.q}</span>
-                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? "rotate-180 text-emerald-600" : ""}`} />
-                  </button>
-                  {isOpen && (
-                    <div className="px-5 pb-4 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                      {item.a}
-                    </div>
-                  )}
+          {/* RÉCAPITULATIF DE L'OFFRE PRINCIPALE */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <img src="/images/camera-hero.jpg" alt="Mini Caméra A9 Pro" className="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0" />
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm sm:text-base">Mini Caméra Espionne HD A9 Pro™</h4>
+                <p className="text-xs text-slate-500">Kit complet + Support rotatif 360° + Câble de charge</p>
+                <div className="text-xs font-bold text-emerald-600 mt-0.5">✓ En stock — Livraison 24h</div>
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-600">16.900 F</div>
+              <div className="text-xs text-slate-400 line-through font-mono">25.000 F</div>
+            </div>
+          </div>
+
+          {/* OFFRE BUMP / CARTE SD */}
+          {upsellConfig.bump && (
+            <div 
+              onClick={() => setIncludeBump(!includeBump)}
+              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                includeBump 
+                  ? "bg-amber-50/80 border-amber-500 shadow-sm" 
+                  : "bg-white border-slate-200 hover:border-slate-300"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <input 
+                  type="checkbox" 
+                  checked={includeBump} 
+                  onChange={() => {}} 
+                  className="w-5 h-5 rounded text-amber-600 accent-amber-600 cursor-pointer shrink-0"
+                />
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded">
+                    {upsellConfig.bump.badge || "OFFRE RECOMMANDÉE"}
+                  </span>
+                  <div className="font-bold text-slate-900 text-sm mt-0.5">{upsellConfig.bump.title}</div>
+                  <div className="text-xs text-slate-500">{upsellConfig.bump.subtitle}</div>
                 </div>
-              );
-            })}
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-base font-bold font-mono text-amber-700">+{upsellConfig.bump.price.toLocaleString("fr-FR")} F</div>
+                <div className="text-[11px] text-slate-400 line-through font-mono">{upsellConfig.bump.originalPrice.toLocaleString("fr-FR")} F</div>
+              </div>
+            </div>
+          )}
+
+          {/* OFFRE 2ÈME UNITÉ AVEC RÉDUCTION */}
+          {upsellConfig.secondUnit && (
+            <div 
+              onClick={() => setIncludeSecondUnit(!includeSecondUnit)}
+              className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                includeSecondUnit 
+                  ? "bg-emerald-50/80 border-emerald-500 shadow-sm" 
+                  : "bg-white border-slate-200 hover:border-slate-300"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <input 
+                  type="checkbox" 
+                  checked={includeSecondUnit} 
+                  onChange={() => {}} 
+                  className="w-5 h-5 rounded text-emerald-600 accent-emerald-600 cursor-pointer shrink-0"
+                />
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-200/80 px-2 py-0.5 rounded">
+                    {upsellConfig.secondUnit.badge || "🎁 -35% SUR LA 2ÈME CAMÉRA"}
+                  </span>
+                  <div className="font-bold text-slate-900 text-sm mt-0.5">{upsellConfig.secondUnit.title}</div>
+                  <div className="text-xs text-slate-500">{upsellConfig.secondUnit.subtitle}</div>
+                </div>
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-base font-bold font-mono text-emerald-700">+{upsellConfig.secondUnit.price.toLocaleString("fr-FR")} F</div>
+                <div className="text-[11px] text-slate-400 line-through font-mono">{upsellConfig.secondUnit.originalPrice.toLocaleString("fr-FR")} F</div>
+              </div>
+            </div>
+          )}
+
+          {/* FORMULAIRE INPUTS */}
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Nom complet *
+              </label>
+              <input
+                id="customer-name-input"
+                type="text"
+                required
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Ex: Brice Tossou"
+                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Numéro de téléphone (WhatsApp si possible) *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="Ex: 97 00 00 00"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Numéro secondaire (optionnel)
+                </label>
+                <input
+                  type="tel"
+                  value={customerPhone2}
+                  onChange={(e) => setCustomerPhone2(e.target.value)}
+                  placeholder="Ex: 61 00 00 00"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Ville / Commune *
+                </label>
+                <select
+                  required
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
+                >
+                  <option value="">Sélectionnez votre ville</option>
+                  <option value="Cotonou">Cotonou (Livraison Express 24h)</option>
+                  <option value="Abomey-Calavi">Abomey-Calavi (Livraison Express 24h)</option>
+                  <option value="Porto-Novo">Porto-Novo (Livraison Express 24h)</option>
+                  <option value="Parakou">Parakou</option>
+                  <option value="Bohicon / Abomey">Bohicon / Abomey</option>
+                  <option value="Ouidah">Ouidah</option>
+                  <option value="Autre ville">Autre ville du Bénin</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Quartier / Adresse précise *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Ex: Cadjehoun, près de la pharmacie"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-slate-50/50"
+                />
+              </div>
+            </div>
+
+            {/* TOTAL À PAYER */}
+            <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+              <div>
+                <div className="text-xs text-slate-500 font-medium">Total à payer à la livraison :</div>
+                <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-600">
+                  {totalAmount.toLocaleString("fr-FR")} FCFA
+                </div>
+              </div>
+              <div className="text-right text-xs text-slate-400 font-medium">
+                <div>Frais de livraison : Inclus ou selon ville</div>
+                <div className="text-emerald-600 font-bold">Paiement à la réception</div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Enregistrement en cours...</span>
+                </div>
+              ) : (
+                <span>CONFIRMER MA COMMANDE — {totalAmount.toLocaleString("fr-FR")} FCFA</span>
+              )}
+            </button>
+          </form>
+
+        </div>
+      </section>
+
+      {/* ❓ FOIRE AUX QUESTIONS */}
+      <section id="faq" className="py-14 sm:py-20 bg-slate-100/80 border-t border-slate-200 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-white border border-slate-200 px-3.5 py-1 rounded-full">
+              FAQ
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              Questions Fréquemment Posées
+            </h2>
           </div>
-        </section>
 
-      </main>
+          <div className="space-y-3">
+            {FAQ_ITEMS.map((item, index) => (
+              <div key={index} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="w-full px-5 py-4 text-left font-bold text-slate-900 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  <span className="text-sm sm:text-base">{item.q}</span>
+                  <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${openFaq === index ? "rotate-180 text-emerald-600" : ""}`} />
+                </button>
+                {openFaq === index && (
+                  <div className="px-5 pb-4 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3 bg-slate-50/50">
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* 🌟 FOOTER CLAIR */}
-      <footer className="border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-500 space-y-2 mt-12 pb-24 md:pb-8">
-        <p className="font-bold text-slate-800">Isivente • Sécurité & Innovations au Bénin</p>
-        <p>Service Client WhatsApp : +229 01 92 90 18 17 • Cotonou, Bénin</p>
-        <p className="text-[11px] text-slate-400">Paiement 100% sécurisé à la livraison • Garantie échange 30 jours</p>
-      </footer>
-
-      {/* 📱 STICKY BAR MOBILE */}
+      {/* 📱 STICKY MOBILE CTA BAR */}
       <StickyMobileCtaBar
-        price={selectedBundle.price}
-        targetSectionId="commander"
+        price={16900}
         accentColor="#059669"
-        whatsappNumber="2290192901817"
-        whatsappMessage={`Bonjour Isivente, je souhaite commander la Mini Caméra de Surveillance HD (${selectedBundle.name}).`}
+        buttonText="Commander"
+        targetSectionId="commander"
+        whatsappMessage="Bonjour ! J'aimerais commander la Mini Caméra Espionne HD A9 Pro (16 900 FCFA). Pouvez-vous me renseigner ?"
       />
 
     </div>
