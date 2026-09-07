@@ -21,9 +21,7 @@ import {
   Sliders,
   Maximize2,
   Play,
-  Pause,
-  Volume2,
-  VolumeX
+  Pause
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -173,10 +171,9 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Contrôles Lecteur Vidéo MP4 Local
+  // Contrôles Lecteur Vidéo MP4 Local (Mode Silencieux Garanti)
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -186,13 +183,6 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
       videoRef.current.pause();
       setIsPlaying(false);
     }
-  };
-
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    videoRef.current.muted = !videoRef.current.muted;
-    setIsMuted(videoRef.current.muted);
   };
 
   // Autoplay carrousel d'images HD toutes les 4.5s
@@ -529,7 +519,7 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                     <span>Z3 ZOOM PRO</span>
                   </div>
 
-                  {/* CONTENEUR VIDÉO AVEC COMMANDES TACTILES */}
+                  {/* CONTENEUR VIDÉO MP4 SILENCIEUX HAUTE DÉFINITION */}
                   <div 
                     onClick={togglePlay}
                     className="relative w-full rounded-2xl overflow-hidden bg-black aspect-[9/16] min-h-[500px] max-h-[580px] cursor-pointer group select-none"
@@ -539,9 +529,10 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                       src="/videos/stabilisateur-demo.mp4"
                       poster="/images/stabilisateur-video-poster.jpg"
                       preload="metadata"
+                      autoPlay
                       playsInline
                       loop
-                      muted={isMuted}
+                      muted
                       onPlay={() => setIsPlaying(true)}
                       onPause={() => setIsPlaying(false)}
                       className="w-full h-full object-cover"
@@ -554,20 +545,10 @@ export default function StabilizerLanding({ slug = "stabilisateur" }: { slug?: s
                           <Play className="w-7 h-7 fill-current ml-1" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-wider text-white bg-slate-900/80 px-3 py-1 rounded-full border border-white/20">
-                          Lancer la vidéo
+                          Reprendre la démo
                         </span>
                       </div>
                     )}
-
-                    {/* CONTRÔLEUR DU SON EN BAS À DROITE */}
-                    <button
-                      type="button"
-                      onClick={toggleMute}
-                      className="absolute bottom-3 right-3 p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-900 backdrop-blur-md text-white border border-white/20 shadow-lg active:scale-90 transition-all cursor-pointer z-10"
-                      title={isMuted ? "Activer le son" : "Couper le son"}
-                    >
-                      {isMuted ? <VolumeX className="w-4 h-4 text-amber-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-                    </button>
                   </div>
                 </div>
               </div>
