@@ -8,6 +8,7 @@ import StabilizerLanding from "@/components/features/StabilizerLanding";
 import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 import UmeiLanding from "@/components/features/UmeiLanding";
 import CameraLanding from "@/components/features/CameraLanding";
+import TrozkLanding from "@/components/features/TrozkLanding";
 
 /* ─── Données OG statiques pour les pages custom ─── */
 const CUSTOM_META: Record<string, { title: string; description: string; image: string; price: number }> = {
@@ -53,6 +54,12 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
     image: "/images/camera-hero.jpg",
     price: 16900,
   },
+  trozk: {
+    title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™ (15 000 mAh)",
+    description: "Système modulaire magnétique 3-en-1, écran LED rétro-éclairé et mini batterie 5000mAh détachable sans fil. Livraison 24h au Bénin.",
+    image: "/images/trozk-hero.jpg",
+    price: 24900,
+  },
 };
 
 /* Slug aliases → canonical slug */
@@ -82,6 +89,13 @@ const SLUG_ALIASES: Record<string, string> = {
   "a9-pro": "camera",
   surveillance: "camera",
   a9: "camera",
+  trozk: "trozk",
+  t3: "trozk",
+  powerbank: "trozk",
+  "trozk-t3": "trozk",
+  "batterie-modulaire": "trozk",
+  batterie: "trozk",
+  tp11: "trozk",
 };
 
 function getSupabaseServer() {
@@ -208,6 +222,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (canonical === "camera") {
     return <CameraLanding slug="camera" />;
+  }
+
+  if (canonical === "trozk") {
+    return <TrozkLanding slug="trozk" />;
   }
 
   // ── Fallback générique : charge depuis Supabase ──
