@@ -67,6 +67,8 @@ export default function AdminDashboard() {
     { title: "Éplucheur Automatique ChefPeel™ Pro", slug: "peeler", price: 14900, image: "/images/peeler-hero.jpg" },
     { title: "Stabilisateur Trépied Z3 Zoom™", slug: "stabilisateur", price: 49900, image: "/images/stabilisateur-hero.jpg" },
     { title: "Veilleuse Projecteur LED 3D FRIOSZ", slug: "veilleuse", price: 14900, image: "/images/projecteur-hero.jpg" },
+    { title: "Mini Caméra Espionne & Surveillance HD A9 Pro™", slug: "camera", price: 16900, image: "/images/camera-hero.jpg" },
+    { title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™", slug: "trozk", price: 24900, image: "/images/trozk-hero.jpg" },
   ];
 
   const [productsList, setProductsList] = useState(defaultProductsList);
