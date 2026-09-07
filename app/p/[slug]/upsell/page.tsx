@@ -14,8 +14,85 @@ import {
   ArrowRight, 
   X,
   PackageCheck,
-  AlertCircle
+  Zap
 } from "lucide-react";
+
+const PRODUCT_THEMES: Record<
+  string,
+  {
+    primary: string;
+    primaryHover: string;
+    primaryLight: string;
+    border: string;
+    textPrimary: string;
+    badgeBg: string;
+    badgeText: string;
+  }
+> = {
+  umei: {
+    primary: "#FF5C93",
+    primaryHover: "#E13D74",
+    primaryLight: "#FFF1F5",
+    border: "#FECDD6",
+    textPrimary: "#831843",
+    badgeBg: "#FFE4EC",
+    badgeText: "#BE185D",
+  },
+  eraclean: {
+    primary: "#2563EB",
+    primaryHover: "#1D4ED8",
+    primaryLight: "#EFF6FF",
+    border: "#BFDBFE",
+    textPrimary: "#1E3A8A",
+    badgeBg: "#DBEAFE",
+    badgeText: "#1E40AF",
+  },
+  turbofan: {
+    primary: "#059669",
+    primaryHover: "#047857",
+    primaryLight: "#ECFDF5",
+    border: "#A7F3D0",
+    textPrimary: "#064E3B",
+    badgeBg: "#D1FAE5",
+    badgeText: "#065F46",
+  },
+  peeler: {
+    primary: "#0047AB",
+    primaryHover: "#003580",
+    primaryLight: "#F0F5FF",
+    border: "#BCD0F7",
+    textPrimary: "#002B66",
+    badgeBg: "#E0ECFF",
+    badgeText: "#003A8C",
+  },
+  chefpeel: {
+    primary: "#0047AB",
+    primaryHover: "#003580",
+    primaryLight: "#F0F5FF",
+    border: "#BCD0F7",
+    textPrimary: "#002B66",
+    badgeBg: "#E0ECFF",
+    badgeText: "#003A8C",
+  },
+  stabilisateur: {
+    primary: "#D97706",
+    primaryHover: "#B45309",
+    primaryLight: "#FFFBEB",
+    border: "#FDE68A",
+    textPrimary: "#78350F",
+    badgeBg: "#FEF3C7",
+    badgeText: "#92400E",
+  },
+  veilleuse: {
+    primary: "#4F46E5",
+    primaryHover: "#4338CA",
+    primaryLight: "#EEF2FF",
+    border: "#C7D2FE",
+    textPrimary: "#312E81",
+    badgeBg: "#E0E7FF",
+    badgeText: "#3730A3",
+  },
+};
 
 function UpsellContent() {
   const params = useParams();
@@ -30,6 +107,16 @@ function UpsellContent() {
 
   const config = getProductUpsellConfig(slug);
   const offer: OfferItem | undefined = config.upsell;
+
+  const theme = PRODUCT_THEMES[slug.toLowerCase()] || {
+    primary: "#0F172A",
+    primaryHover: "#000000",
+    primaryLight: "#F8FAFC",
+    border: "#E2E8F0",
+    textPrimary: "#0F172A",
+    badgeBg: "#F1F5F9",
+    badgeText: "#334155",
+  };
 
   // Compte à rebours psychologique (10 minutes)
   const [timeLeft, setTimeLeft] = useState(600);
@@ -80,14 +167,13 @@ function UpsellContent() {
     }
   };
 
-  // Refuser l'Upsell -> Proposer le Downsell
+  // Refuser l'Upsell -> Proposer le Downsell ou Success
   const handleDecline = () => {
     trackCustomEvent("DeclineUpsell", {
       product_slug: slug,
       upsell_id: offer.id,
       order_ref: orderRef,
     });
-    // Redirection vers le downsell s'il existe, sinon success
     if (config.downsell) {
       router.push(`/p/${slug}/downsell?order=${encodeURIComponent(orderRef)}&phone=${encodeURIComponent(phone)}&name=${encodeURIComponent(name)}&total=${encodeURIComponent(String(initialTotal))}`);
     } else {
@@ -96,50 +182,61 @@ function UpsellContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1117] text-slate-100 flex flex-col justify-between font-sans selection:bg-emerald-500/20">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between font-sans antialiased selection:bg-slate-200">
       
-      {/* HEADER DE STATUT DE COMMANDE SÉCURISÉE */}
-      <header className="border-b border-white/10 bg-[#161922] py-3 px-4 sticky top-0 z-30 shadow-lg">
+      {/* 🌟 HEADER DE STATUT DE COMMANDE SÉCURISÉE (FOND CLAIR) */}
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md py-3.5 px-4 sticky top-0 z-30 shadow-xs">
         <div className="max-w-xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-emerald-400">
-              Commande initiale #{orderRef || "Reçue"} validée avec succès
+            <span className="text-xs font-bold text-emerald-700">
+              Commande #{orderRef || "Reçue"} validée avec succès
             </span>
           </div>
-          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20">
-            <Clock className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 shadow-2xs">
+            <Clock className="w-3.5 h-3.5 text-amber-600" />
             <span className="tabular-nums">{formatTime(timeLeft)}</span>
           </div>
         </div>
       </header>
 
-      {/* CONTENEUR PRINCIPAL */}
+      {/* 🌟 CONTENEUR PRINCIPAL LUMINEUX */}
       <main className="flex-1 max-w-xl w-full mx-auto px-4 py-6 sm:py-10 space-y-6">
         
-        {/* BANNIÈRE D'ALERTE */}
+        {/* BANNIÈRE D'ALERTE SOBRE */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div 
+            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-2xs"
+            style={{
+              backgroundColor: theme.primaryLight,
+              borderColor: theme.border,
+              color: theme.textPrimary,
+            }}
+          >
+            <Sparkles className="w-3.5 h-3.5" style={{ color: theme.primary }} />
             <span>Offre Exclusive — Étape 2/2</span>
           </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-950 tracking-tight leading-tight">
             ATTENDEZ ! Ne partez pas les mains vides...
           </h1>
-          <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
             Votre colis est en cours de préparation à notre entrepôt. Profitez de cette opportunité unique pour ajouter ceci à votre commande sans frais de livraison supplémentaires !
           </p>
         </div>
 
-        {/* CARTE DE L'OFFRE UPSELL FIGMA-GRADE */}
-        <div className="relative rounded-3xl border border-white/15 bg-gradient-to-b from-[#1A1D27] to-[#12141C] p-5 sm:p-7 shadow-2xl overflow-hidden">
+        {/* 🌟 CARTE DE L'OFFRE UPSELL FIGMA-GRADE (FOND BLANC CLAIR) */}
+        <div className="relative rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] overflow-hidden">
           
-          {/* Liseré supérieur biseauté */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" />
-
-          {/* Badge Offre */}
+          {/* Badge Offre Thématique */}
           {offer.badge && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-mono text-[11px] font-bold uppercase tracking-wide mb-4">
+            <div 
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide mb-4 border"
+              style={{
+                backgroundColor: theme.badgeBg,
+                borderColor: theme.border,
+                color: theme.badgeText,
+              }}
+            >
               <Sparkles className="w-3 h-3" />
               <span>{offer.badge}</span>
             </div>
@@ -147,20 +244,19 @@ function UpsellContent() {
 
           {/* Image & Titre */}
           <div className="space-y-4">
-            <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-800/80 border border-white/10 relative">
+            <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 relative shadow-inner">
               <img
                 src={offer.image}
                 alt={offer.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#12141C] via-transparent to-transparent opacity-60" />
             </div>
 
             <div>
-              <h2 className="font-display font-bold text-lg sm:text-xl text-white leading-snug">
+              <h2 className="font-display font-extrabold text-lg sm:text-xl text-slate-900 leading-snug">
                 {offer.title}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
                 {offer.subtitle}
               </p>
             </div>
@@ -168,45 +264,67 @@ function UpsellContent() {
 
           {/* Avantages sous forme de puces */}
           {offer.benefits && offer.benefits.length > 0 && (
-            <div className="mt-5 pt-4 border-t border-white/10 space-y-2.5">
+            <div className="mt-5 pt-4 border-t border-slate-100 space-y-2.5">
               {offer.benefits.map((b, idx) => (
-                <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-200">
-                  <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/30">
+                <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700">
+                  <div 
+                    className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: theme.primary }}
+                  >
                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
-                  <span>{b}</span>
+                  <span className="font-medium">{b}</span>
                 </div>
               ))}
             </div>
           )}
 
-          {/* TARIFICATION SPECIALE */}
-          <div className="mt-6 p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+          {/* 🏷️ TARIFICATION SPÉCIALE CLAIRE */}
+          <div 
+            className="mt-6 p-4 rounded-2xl border flex items-center justify-between"
+            style={{
+              backgroundColor: theme.primaryLight,
+              borderColor: theme.border,
+            }}
+          >
             <div>
-              <div className="text-[11px] text-slate-400 uppercase tracking-wider">Tarif régulier boutique</div>
-              <div className="font-mono text-sm line-through text-slate-500 tabular-nums">
+              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Tarif régulier boutique</div>
+              <div className="font-mono text-sm line-through text-slate-400 tabular-nums">
                 {fmt(offer.originalPrice)} FCFA
               </div>
             </div>
             <div className="text-right">
-              <div className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Offre Spéciale 1-Clic</div>
-              <div className="font-mono font-extrabold text-2xl sm:text-3xl text-emerald-400 tabular-nums">
-                +{fmt(offer.price)} <span className="text-xs font-sans text-slate-400 font-normal">FCFA</span>
+              <div 
+                className="text-[11px] font-bold uppercase tracking-wider"
+                style={{ color: theme.textPrimary }}
+              >
+                Offre Spéciale 1-Clic
+              </div>
+              <div 
+                className="font-mono font-black text-2xl sm:text-3xl tabular-nums"
+                style={{ color: theme.primary }}
+              >
+                +{fmt(offer.price)} <span className="text-xs font-sans font-normal text-slate-600">FCFA</span>
               </div>
             </div>
           </div>
 
-          {/* BOUTON D'ACTION 1-CLIC */}
+          {/* 🚀 BOUTONS D'ACTION CLAIRS & BIEN VISIBLES */}
           <div className="mt-6 space-y-3">
+            {/* BOUTON 1 : ACCEPTER (COULEUR PRIMAIRE DU SITE) */}
             <button
               type="button"
               onClick={handleAccept}
               disabled={isProcessing}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm sm:text-base py-4 px-6 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-150 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+              className="w-full text-white font-bold text-sm sm:text-base py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-150 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+              style={{
+                backgroundColor: theme.primary,
+                boxShadow: `0 10px 25px -5px ${theme.primary}55`,
+              }}
             >
               {isProcessing ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin" />
+                  <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
                   <span>Ajout en cours à votre colis...</span>
                 </span>
               ) : (
@@ -217,31 +335,34 @@ function UpsellContent() {
               )}
             </button>
 
-            <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400 pt-1">
-              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-emerald-400" /> Même livreur, 0 F de port</span>
-              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Paiement à la réception</span>
+            {/* BOUTON 2 : REFUSER (CLAIREMENT VISIBLE ET HARMONISÉ SELON LE PRODUIT) */}
+            <button
+              type="button"
+              onClick={handleDecline}
+              disabled={isProcessing}
+              className="w-full bg-white hover:bg-slate-50 font-bold text-xs sm:text-sm py-3.5 px-4 rounded-2xl border-2 transition-all duration-150 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
+              style={{
+                borderColor: theme.border,
+                color: theme.textPrimary,
+              }}
+            >
+              <X className="w-4 h-4 stroke-[2.5]" style={{ color: theme.primary }} />
+              <span>Non merci, refuser cette offre et garder ma commande initiale</span>
+            </button>
+
+            <div className="flex items-center justify-center gap-4 text-[11px] text-slate-500 pt-1">
+              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-emerald-600" /> Même livreur, 0 F de port</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Paiement à la réception</span>
             </div>
           </div>
 
         </div>
 
-        {/* BOUTON DE DÉCLIN SUBTIL */}
-        <div className="text-center pt-2">
-          <button
-            type="button"
-            onClick={handleDecline}
-            disabled={isProcessing}
-            className="text-xs text-slate-500 hover:text-slate-400 underline underline-offset-4 transition-colors cursor-pointer p-2"
-          >
-            Non merci, je refuse cette offre exceptionnelle et je poursuis sans réduction
-          </button>
-        </div>
-
       </main>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/10 py-4 text-center text-xs text-slate-500">
-        <p>Paiement sécurisé à la livraison • Satisfaction client Isivente</p>
+      {/* FOOTER CLAIR */}
+      <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
+        <p>Paiement 100% sécurisé à la livraison • Isivente Bénin</p>
       </footer>
 
     </div>
@@ -250,7 +371,7 @@ function UpsellContent() {
 
 export default function UpsellPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0F1117]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
       <UpsellContent />
     </Suspense>
   );

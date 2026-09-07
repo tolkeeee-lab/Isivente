@@ -11,8 +11,87 @@ import {
   ShieldCheck, 
   Truck, 
   ArrowRight, 
-  AlertTriangle
+  X,
+  PackageCheck,
+  Zap
 } from "lucide-react";
+
+const PRODUCT_THEMES: Record<
+  string,
+  {
+    primary: string;
+    primaryHover: string;
+    primaryLight: string;
+    border: string;
+    textPrimary: string;
+    badgeBg: string;
+    badgeText: string;
+  }
+> = {
+  umei: {
+    primary: "#FF5C93",
+    primaryHover: "#E13D74",
+    primaryLight: "#FFF1F5",
+    border: "#FECDD6",
+    textPrimary: "#831843",
+    badgeBg: "#FFE4EC",
+    badgeText: "#BE185D",
+  },
+  eraclean: {
+    primary: "#2563EB",
+    primaryHover: "#1D4ED8",
+    primaryLight: "#EFF6FF",
+    border: "#BFDBFE",
+    textPrimary: "#1E3A8A",
+    badgeBg: "#DBEAFE",
+    badgeText: "#1E40AF",
+  },
+  turbofan: {
+    primary: "#059669",
+    primaryHover: "#047857",
+    primaryLight: "#ECFDF5",
+    border: "#A7F3D0",
+    textPrimary: "#064E3B",
+    badgeBg: "#D1FAE5",
+    badgeText: "#065F46",
+  },
+  peeler: {
+    primary: "#0047AB",
+    primaryHover: "#003580",
+    primaryLight: "#F0F5FF",
+    border: "#BCD0F7",
+    textPrimary: "#002B66",
+    badgeBg: "#E0ECFF",
+    badgeText: "#003A8C",
+  },
+  chefpeel: {
+    primary: "#0047AB",
+    primaryHover: "#003580",
+    primaryLight: "#F0F5FF",
+    border: "#BCD0F7",
+    textPrimary: "#002B66",
+    badgeBg: "#E0ECFF",
+    badgeText: "#003A8C",
+  },
+  stabilisateur: {
+    primary: "#D97706",
+    primaryHover: "#B45309",
+    primaryLight: "#FFFBEB",
+    border: "#FDE68A",
+    textPrimary: "#78350F",
+    badgeBg: "#FEF3C7",
+    badgeText: "#92400E",
+  },
+  veilleuse: {
+    primary: "#4F46E5",
+    primaryHover: "#4338CA",
+    primaryLight: "#EEF2FF",
+    border: "#C7D2FE",
+    textPrimary: "#312E81",
+    badgeBg: "#E0E7FF",
+    badgeText: "#3730A3",
+  },
+};
 
 function DownsellContent() {
   const params = useParams();
@@ -27,6 +106,16 @@ function DownsellContent() {
 
   const config = getProductUpsellConfig(slug);
   const offer: OfferItem | undefined = config.downsell;
+
+  const theme = PRODUCT_THEMES[slug.toLowerCase()] || {
+    primary: "#0F172A",
+    primaryHover: "#000000",
+    primaryLight: "#F8FAFC",
+    border: "#E2E8F0",
+    textPrimary: "#0F172A",
+    badgeBg: "#F1F5F9",
+    badgeText: "#334155",
+  };
 
   const [isProcessing, setIsProcessing] = useState(false);
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
@@ -61,7 +150,7 @@ function DownsellContent() {
     }
   };
 
-  // Refuser définitivement le Downsell -> Direction page de remerciement finale
+  // Refuser définitivement le Downsell -> Direction page de confirmation
   const handleDecline = () => {
     trackCustomEvent("DeclineDownsell", {
       product_slug: slug,
@@ -72,112 +161,145 @@ function DownsellContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1117] text-slate-100 flex flex-col justify-between font-sans selection:bg-amber-500/20">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between font-sans antialiased selection:bg-slate-200">
       
-      {/* HEADER STATUT */}
-      <header className="border-b border-white/10 bg-[#161922] py-3 px-4 sticky top-0 z-30 shadow-lg">
+      {/* 🌟 HEADER DE STATUT DE COMMANDE SÉCURISÉE (FOND CLAIR) */}
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md py-3.5 px-4 sticky top-0 z-30 shadow-xs">
         <div className="max-w-xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-emerald-400">
+            <span className="text-xs font-bold text-emerald-700">
               Commande initiale #{orderRef || "Reçue"} toujours active & sécurisée
             </span>
           </div>
-          <span className="text-[11px] font-mono text-slate-400">
-            Dernière proposition
+          <span className="text-[11px] font-mono font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
+            Dernière offre
           </span>
         </div>
       </header>
 
-      {/* CONTENU PRINCIPAL */}
+      {/* 🌟 CONTENEUR PRINCIPAL LUMINEUX */}
       <main className="flex-1 max-w-xl w-full mx-auto px-4 py-6 sm:py-10 space-y-6">
         
         {/* EN-TÊTE D'ACROCHE */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-bold uppercase tracking-wider">
-            <Tag className="w-3.5 h-3.5" />
+          <div 
+            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-2xs"
+            style={{
+              backgroundColor: theme.primaryLight,
+              borderColor: theme.border,
+              color: theme.textPrimary,
+            }}
+          >
+            <Tag className="w-3.5 h-3.5" style={{ color: theme.primary }} />
             <span>Offre de Rattrapage Ultime</span>
           </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight leading-tight">
+          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-950 tracking-tight leading-tight">
             Le pack précédent était trop cher ?
           </h1>
-          <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
-            Nous comprenons parfaitement. Que diriez-vous de recevoir uniquement l'accessoire essentiel pour un tarif dérisoire ?
+          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+            Nous comprenons parfaitement ! Que diriez-vous de recevoir uniquement l'accessoire indispensable pour un tarif dérisoire ?
           </p>
         </div>
 
-        {/* CARTE DU DOWNSELL */}
-        <div className="relative rounded-3xl border border-white/15 bg-gradient-to-b from-[#1A1D27] to-[#12141C] p-5 sm:p-7 shadow-2xl overflow-hidden">
+        {/* 🌟 CARTE DU DOWNSELL (FOND BLANC CLAIR) */}
+        <div className="relative rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-7 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] overflow-hidden">
           
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-400/40 to-transparent" />
-
           {offer.badge && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-300 font-mono text-[11px] font-bold uppercase tracking-wide mb-4">
+            <div 
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide mb-4 border"
+              style={{
+                backgroundColor: theme.badgeBg,
+                borderColor: theme.border,
+                color: theme.badgeText,
+              }}
+            >
               <Tag className="w-3 h-3" />
               <span>{offer.badge}</span>
             </div>
           )}
 
           <div className="space-y-4">
-            <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-800/80 border border-white/10 relative">
+            <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 relative shadow-inner">
               <img
                 src={offer.image}
                 alt={offer.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#12141C] via-transparent to-transparent opacity-60" />
             </div>
 
             <div>
-              <h2 className="font-display font-bold text-lg sm:text-xl text-white leading-snug">
+              <h2 className="font-display font-extrabold text-lg sm:text-xl text-slate-900 leading-snug">
                 {offer.title}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
                 {offer.subtitle}
               </p>
             </div>
           </div>
 
           {offer.benefits && offer.benefits.length > 0 && (
-            <div className="mt-5 pt-4 border-t border-white/10 space-y-2.5">
+            <div className="mt-5 pt-4 border-t border-slate-100 space-y-2.5">
               {offer.benefits.map((b, idx) => (
-                <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-200">
-                  <div className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5 border border-amber-500/30">
+                <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-700">
+                  <div 
+                    className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-white"
+                    style={{ backgroundColor: theme.primary }}
+                  >
                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
-                  <span>{b}</span>
+                  <span className="font-medium">{b}</span>
                 </div>
               ))}
             </div>
           )}
 
-          {/* TARIFICATION SPECIALE */}
-          <div className="mt-6 p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+          {/* 🏷️ TARIFICATION SPÉCIALE CLAIRE */}
+          <div 
+            className="mt-6 p-4 rounded-2xl border flex items-center justify-between"
+            style={{
+              backgroundColor: theme.primaryLight,
+              borderColor: theme.border,
+            }}
+          >
             <div>
-              <div className="text-[11px] text-slate-400 uppercase tracking-wider">Prix conseillé</div>
-              <div className="font-mono text-sm line-through text-slate-500 tabular-nums">
+              <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Prix régulier</div>
+              <div className="font-mono text-sm line-through text-slate-400 tabular-nums">
                 {fmt(offer.originalPrice)} FCFA
               </div>
             </div>
             <div className="text-right">
-              <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Offre Petit Prix</div>
-              <div className="font-mono font-extrabold text-2xl sm:text-3xl text-amber-400 tabular-nums">
-                +{fmt(offer.price)} <span className="text-xs font-sans text-slate-400 font-normal">FCFA</span>
+              <div 
+                className="text-[11px] font-bold uppercase tracking-wider"
+                style={{ color: theme.textPrimary }}
+              >
+                Offre Petit Prix
+              </div>
+              <div 
+                className="font-mono font-black text-2xl sm:text-3xl tabular-nums"
+                style={{ color: theme.primary }}
+              >
+                +{fmt(offer.price)} <span className="text-xs font-sans font-normal text-slate-600">FCFA</span>
               </div>
             </div>
           </div>
 
-          {/* BOUTON D'ACTION 1-CLIC */}
+          {/* 🚀 BOUTONS D'ACTION CLAIRS & VISIBLES */}
           <div className="mt-6 space-y-3">
+            {/* BOUTON 1 : ACCEPTER */}
             <button
               type="button"
               onClick={handleAccept}
               disabled={isProcessing}
-              className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm sm:text-base py-4 px-6 rounded-2xl shadow-[0_0_30px_rgba(251,191,36,0.25)] transition-all duration-150 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+              className="w-full text-white font-bold text-sm sm:text-base py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-150 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 group"
+              style={{
+                backgroundColor: theme.primary,
+                boxShadow: `0 10px 25px -5px ${theme.primary}55`,
+              }}
             >
               {isProcessing ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin" />
+                  <span className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
                   <span>Mise à jour de votre colis...</span>
                 </span>
               ) : (
@@ -188,29 +310,33 @@ function DownsellContent() {
               )}
             </button>
 
-            <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400 pt-1">
-              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-amber-400" /> Livraison groupée sans frais</span>
-              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> Règlement à la réception</span>
+            {/* BOUTON 2 : REFUSER (CLAIREMENT VISIBLE ET HARMONISÉ SELON LE PRODUIT) */}
+            <button
+              type="button"
+              onClick={handleDecline}
+              disabled={isProcessing}
+              className="w-full bg-white hover:bg-slate-50 font-bold text-xs sm:text-sm py-3.5 px-4 rounded-2xl border-2 transition-all duration-150 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
+              style={{
+                borderColor: theme.border,
+                color: theme.textPrimary,
+              }}
+            >
+              <X className="w-4 h-4 stroke-[2.5]" style={{ color: theme.primary }} />
+              <span>Non merci, refuser cette offre et garder ma commande initiale</span>
+            </button>
+
+            <div className="flex items-center justify-center gap-4 text-[11px] text-slate-500 pt-1">
+              <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-emerald-600" /> Livraison groupée sans frais</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Règlement à la réception</span>
             </div>
           </div>
 
         </div>
 
-        {/* REFUS FINAL */}
-        <div className="text-center pt-2">
-          <button
-            type="button"
-            onClick={handleDecline}
-            disabled={isProcessing}
-            className="text-xs text-slate-500 hover:text-slate-400 underline underline-offset-4 transition-colors cursor-pointer p-2"
-          >
-            Non merci, je préfère recevoir uniquement ma commande initiale
-          </button>
-        </div>
-
       </main>
 
-      <footer className="border-t border-white/10 py-4 text-center text-xs text-slate-500">
+      {/* FOOTER CLAIR */}
+      <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
         <p>Isivente • Traitement express de vos commandes sous 24h</p>
       </footer>
 
@@ -220,7 +346,7 @@ function DownsellContent() {
 
 export default function DownsellPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0F1117]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC]" />}>
       <DownsellContent />
     </Suspense>
   );
