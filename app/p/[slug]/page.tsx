@@ -60,9 +60,11 @@ const SLUG_ALIASES: Record<string, string> = {
   ventilateur: "turbofan",
   fan: "turbofan",
   eplucheur: "peeler",
+  éplucheur: "peeler",
   ail: "peeler",
   chefpeel: "peeler",
   trepied: "stabilisateur",
+  trépied: "stabilisateur",
   gimbal: "stabilisateur",
   z3: "stabilisateur",
   projecteur: "veilleuse",
@@ -70,7 +72,14 @@ const SLUG_ALIASES: Record<string, string> = {
   friosz: "veilleuse",
   "veilleuse-3d": "veilleuse",
   "mini-camera": "camera",
+  "mini-caméra": "camera",
   "camera-espion": "camera",
+  "caméra-espion": "camera",
+  "camera": "camera",
+  "caméra": "camera",
+  "camerà": "camera",
+  "camera-a9": "camera",
+  "a9-pro": "camera",
   surveillance: "camera",
   a9: "camera",
 };
@@ -86,10 +95,19 @@ function getSupabaseServer() {
 const BASE_URL = "https://isivente.vercel.app";
 const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
+function cleanSlug(raw: string): string {
+  try {
+    const decoded = decodeURIComponent(raw).toLowerCase().trim();
+    return SLUG_ALIASES[decoded] || decoded;
+  } catch {
+    return raw.toLowerCase().trim();
+  }
+}
+
 /* ─── generateMetadata : OG dynamique pour WhatsApp / Facebook / Meta Ads ─── */
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const canonical = SLUG_ALIASES[slug] || slug;
+  const canonical = cleanSlug(slug);
 
   // 1. Chercher dans les pages custom
   const custom = CUSTOM_META[canonical];
@@ -121,7 +139,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const { data } = await supabase
       .from("products")
       .select("title, price, image_url, slug")
-      .eq("slug", slug)
+      .eq("slug", canonical)
       .single();
 
     if (data) {
@@ -135,7 +153,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         openGraph: {
           title: `${data.title} — ${fmt(data.price)} FCFA`,
           description: `${data.title}. Livraison express 24h, paiement à la réception.`,
-          url: `${BASE_URL}/p/${slug}`,
+          url: `${BASE_URL}/p/${canonical}`,
           siteName: "Isivente",
           images: [{ url: imageUrl, width: 1200, height: 630, alt: data.title }],
           locale: "fr_FR",
@@ -161,36 +179,37 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 /* ─── Page Component ─── */
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const canonical = cleanSlug(slug);
 
   // ── Pages custom existantes ──
-  if (slug === "umei") {
-    return <UmeiLanding slug={slug} />;
+  if (canonical === "umei") {
+    return <UmeiLanding slug="umei" />;
   }
 
-  if (slug === "eraclean") {
-    return <EraCleanLanding slug={slug} />;
+  if (canonical === "eraclean") {
+    return <EraCleanLanding slug="eraclean" />;
   }
 
-  if (slug === "turbofan" || slug === "ventilateur" || slug === "fan") {
+  if (canonical === "turbofan") {
     return <TurboFanLanding slug="turbofan" />;
   }
 
-  if (slug === "peeler" || slug === "eplucheur" || slug === "ail" || slug === "chefpeel") {
+  if (canonical === "peeler") {
     return <PeelerLanding slug="peeler" />;
   }
 
-  if (slug === "stabilisateur" || slug === "trepied" || slug === "gimbal" || slug === "z3") {
+  if (canonical === "stabilisateur") {
     return <StabilizerLanding slug="stabilisateur" />;
   }
 
-  if (slug === "veilleuse" || slug === "projecteur" || slug === "galaxie" || slug === "friosz" || slug === "veilleuse-3d") {
+  if (canonical === "veilleuse") {
     return <VeilleuseLanding slug="veilleuse" />;
   }
 
-  if (slug === "camera" || slug === "mini-camera" || slug === "camera-espion" || slug === "surveillance" || slug === "a9") {
+  if (canonical === "camera") {
     return <CameraLanding slug="camera" />;
   }
 
   // ── Fallback générique : charge depuis Supabase ──
-  return <ProductLanding slug={slug} />;
+  return <ProductLanding slug={canonical} />;
 }
