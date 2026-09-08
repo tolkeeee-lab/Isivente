@@ -12,12 +12,10 @@ import {
   Cpu, 
   CheckCircle2, 
   XCircle, 
-  HelpCircle, 
   Scan, 
   Coins, 
   Bug, 
   Sparkles,
-  Layers,
   Check
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
@@ -29,7 +27,7 @@ const BUNDLES: BundleOption[] = [
   {
     id: "duo",
     name: "Pack Famille & Duo (2 Microscopes)",
-    subtitle: "2 Microscopes HD 1000X avec câbles USB-C et dragonnes de maintien",
+    subtitle: "2 Microscopes HD 1000X complets avec câbles de charge et dragonnes",
     price: 29900,
     originalPrice: 50000,
     savings: 20100,
@@ -190,32 +188,32 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-slate-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans selection:bg-indigo-50 selection:text-indigo-900">
       
-      {/* ── BANDEAU TOP BAR SUBTIL ── */}
-      <div className="bg-[#11131a] border-b border-white/[0.06] text-slate-300 text-[11px] font-medium py-2 px-4 text-center tracking-wide">
+      {/* ── BANDEAU TOP BAR CLAIR ÉPURÉ ── */}
+      <div className="bg-slate-900 text-white text-[11px] font-medium py-2 px-4 text-center tracking-wide">
         <div className="max-w-4xl mx-auto flex items-center justify-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span>Livraison express sous 24h • Règlement à la réception après vérification</span>
+          <span>Livraison express sous 24h • Règlement en espèces après vérification du colis</span>
         </div>
       </div>
 
-      {/* ── HEADER NAVIGATION FIGMA-GRADE ── */}
-      <header className="sticky top-0 z-40 bg-[#090a0f]/90 backdrop-blur-md border-b border-white/[0.08] px-4 py-3">
+      {/* ── HEADER NAVIGATION FOND CLAIR ── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Scan className="w-3.5 h-3.5 stroke-[1.75]" />
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+              <Scan className="w-4 h-4 stroke-[1.75]" />
             </div>
-            <span className="font-semibold text-sm tracking-tight text-slate-100">ISIVENTE</span>
+            <span className="font-bold text-sm tracking-tight text-slate-900">ISIVENTE</span>
           </div>
 
           <button
             onClick={scrollToOrder}
-            className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:scale-[0.97] rounded-xl border border-indigo-400/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_4px_12px_rgba(99,102,241,0.25)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
+            className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(99,102,241,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
             <span>Commander</span>
-            <span className="font-mono tabular-nums text-indigo-200 text-[11px]">(16 900 F)</span>
+            <span className="font-mono tabular-nums text-indigo-100 text-[11px]">(16 900 F)</span>
           </button>
         </div>
       </header>
@@ -223,45 +221,45 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
       {/* ── CONTENEUR PRINCIPAL ── */}
       <main className="max-w-4xl mx-auto px-4 pt-8 pb-16 space-y-10">
         
-        {/* En-tête Display & Titre */}
+        {/* En-tête Titre & Accroche */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.08] text-slate-300 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
-            <ZoomIn className="w-3.5 h-3.5 text-indigo-400 stroke-[1.75]" />
+          <div className="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full shadow-2xs">
+            <ZoomIn className="w-3.5 h-3.5 text-indigo-600 stroke-[1.75]" />
             <span>Optique Numérique 1000X</span>
           </div>
           
-          <h1 className="text-2xl sm:text-4xl font-semibold tracking-[-0.03em] text-slate-50 leading-tight">
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-[-0.03em] text-slate-900 leading-tight">
             Microscope Numérique Portable HD
           </h1>
           
-          <p className="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
-            Observation directe sur écran LCD 2.0 pouces avec éclairage 8 LED intégré. Conçu pour le contrôle de précision, l'électronique et l'exploration scientifique.
+          <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+            Observation directe sur écran couleur LCD 2.0 pouces avec éclairage 8 LED intégré. Conçu pour le contrôle de précision, la réparation électronique et la découverte scientifique.
           </p>
         </div>
 
-        {/* ── GALERIE DE SURFACE BISEAUTÉE (Obsidian Pro) ── */}
-        <div className="rounded-2xl bg-gradient-to-b from-white/[0.035] to-transparent bg-[#11131a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08),0_8px_24px_-4px_rgba(0,0,0,0.5)] p-3 sm:p-4 space-y-3">
-          <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-[#090a0f] border border-white/[0.06]">
+        {/* ── GALERIE PHOTOS FOND BLANC BISEAUTÉ ── */}
+        <div className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-5 space-y-3">
+          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60">
             <img 
               src={CAROUSEL_IMAGES[activeImgIndex].src} 
               alt={CAROUSEL_IMAGES[activeImgIndex].alt}
               className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
             />
-            <div className="absolute bottom-3 inset-x-3 bg-[#090a0f]/85 backdrop-blur-md border border-white/[0.08] rounded-lg p-2.5 text-xs text-slate-300 text-center font-normal shadow-lg">
+            <div className="absolute bottom-3 inset-x-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700 text-center font-medium shadow-md">
               {CAROUSEL_IMAGES[activeImgIndex].caption}
             </div>
           </div>
 
           {/* Miniatures */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2.5">
             {CAROUSEL_IMAGES.map((img, idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveImgIndex(idx)}
-                className={`relative aspect-square rounded-lg overflow-hidden border transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.97] cursor-pointer ${
+                className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.97] cursor-pointer ${
                   activeImgIndex === idx 
-                    ? "border-indigo-500 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_0_0_1px_rgba(99,102,241,0.5)]" 
-                    : "border-white/[0.08] opacity-50 hover:opacity-90"
+                    ? "border-indigo-600 ring-2 ring-indigo-600/20 shadow-sm" 
+                    : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300"
                 }`}
               >
                 <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
@@ -270,77 +268,77 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           </div>
         </div>
 
-        {/* ── GRILLE DE STATUTS TECHNIQUES ── */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          <div className="p-3.5 rounded-xl bg-gradient-to-b from-white/[0.03] to-transparent bg-[#11131a] border border-white/[0.07] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] text-center space-y-1">
-            <Truck className="w-4 h-4 text-indigo-400 mx-auto stroke-[1.75]" />
-            <div className="text-xs font-semibold text-slate-200">Livraison 24h</div>
-            <div className="text-[10px] text-slate-400 font-mono">Cotonou & Calavi</div>
+        {/* ── BADGES TECHNIQUES ── */}
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
+            <Truck className="w-5 h-5 text-indigo-600 mx-auto stroke-[1.75]" />
+            <div className="text-xs font-bold text-slate-900">Livraison 24h</div>
+            <div className="text-[10px] text-slate-500 font-mono">Cotonou & Calavi</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-gradient-to-b from-white/[0.03] to-transparent bg-[#11131a] border border-white/[0.07] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] text-center space-y-1">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 mx-auto stroke-[1.75]" />
-            <div className="text-xs font-semibold text-slate-200">Contrôle à Réception</div>
-            <div className="text-[10px] text-slate-400 font-mono">Paiement après test</div>
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 mx-auto stroke-[1.75]" />
+            <div className="text-xs font-bold text-slate-900">Test à Réception</div>
+            <div className="text-[10px] text-slate-500 font-mono">Paiement après vérification</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-gradient-to-b from-white/[0.03] to-transparent bg-[#11131a] border border-white/[0.07] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] text-center space-y-1">
-            <BatteryCharging className="w-4 h-4 text-amber-400 mx-auto stroke-[1.75]" />
-            <div className="text-xs font-semibold text-slate-200">USB-C Intégré</div>
-            <div className="text-[10px] text-slate-400 font-mono">Batterie autonome</div>
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
+            <BatteryCharging className="w-5 h-5 text-amber-600 mx-auto stroke-[1.75]" />
+            <div className="text-xs font-bold text-slate-900">100% Rechargeable</div>
+            <div className="text-[10px] text-slate-500 font-mono">Batterie USB-C</div>
           </div>
         </div>
 
         {/* ── CAS D'USAGE & DOMAINES D'APPLICATION ── */}
         <section className="space-y-4">
           <div className="space-y-1">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">Applications</div>
-            <h2 className="text-lg font-semibold text-slate-100 tracking-[-0.02em]">Domaines d'utilisation</h2>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600">Applications</div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-[-0.02em]">Ce que vous pouvez observer :</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-4 rounded-xl bg-[#11131a] border border-white/[0.07] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
                 <Cpu className="w-4 h-4 stroke-[1.75]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-semibold text-slate-200">Micro-électronique & Cartes Mères</h3>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Contrôle des pistes de cuivre, diagnostic des composants de montage en surface (SMD) et vérification des micro-soudures.
+                <h3 className="text-xs font-bold text-slate-900">Micro-électronique & Cartes Mères</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Contrôle des pistes de cuivre, diagnostic des composants SMD et vérification des micro-soudures de smartphones.
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#11131a] border border-white/[0.07] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                 <Coins className="w-4 h-4 stroke-[1.75]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-semibold text-slate-200">Authentification & Numismatique</h3>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Examen des micro-lignes de sécurité, filigranes et reliefs sur les billets de banque, poinçons de métaux précieux et timbres.
+                <h3 className="text-xs font-bold text-slate-900">Authentification & Billets de Banque</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Examen des micro-lignes de sécurité, filigranes et reliefs sur les billets de 10 000 FCFA et pièces de collection.
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#11131a] border border-white/[0.07] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
                 <Scan className="w-4 h-4 stroke-[1.75]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-semibold text-slate-200">Dermatologie & Textures Biologiques</h3>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Inspection de la structure cutanée, de la racine des follicules pileux, des fibres textiles et des surfaces minérales.
+                <h3 className="text-xs font-bold text-slate-900">Dermatologie & Textures Cutanées</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Inspection de la structure de la peau, des pores, des follicules pileux, des fibres textiles et des surfaces.
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#11131a] border border-white/[0.07] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
                 <Bug className="w-4 h-4 stroke-[1.75]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xs font-semibold text-slate-200">Éducation & Observation Naturelle</h3>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Étude de la structure des feuilles végétales, micro-organismes, cristaux de sel et insectes pour l'apprentissage scientifique.
+                <h3 className="text-xs font-bold text-slate-900">Éveil des Enfants & Sciences Naturelles</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Étude des nervures des feuilles, des ailes d'insectes et des minéraux pour développer la curiosité loin des écrans.
                 </p>
               </div>
             </div>
@@ -348,25 +346,25 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         </section>
 
         {/* ── CARACTÉRISTIQUES TECHNIQUES ── */}
-        <section className="p-5 rounded-2xl bg-gradient-to-b from-white/[0.03] to-transparent bg-[#11131a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] space-y-4">
-          <div className="text-xs font-semibold text-slate-200">Caractéristiques techniques</div>
+        <section className="p-5 rounded-3xl bg-white border border-slate-200/90 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-4">
+          <div className="text-xs font-bold text-slate-900">Caractéristiques techniques</div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div className="bg-[#090a0f] p-3 rounded-lg border border-white/[0.06]">
-              <div className="text-slate-400 text-[10.5px]">Grossissement</div>
-              <div className="text-slate-100 font-mono tabular-nums font-semibold mt-0.5">50X à 1000X</div>
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+              <div className="text-slate-500 text-[10.5px]">Grossissement</div>
+              <div className="text-slate-900 font-mono tabular-nums font-bold mt-0.5">50X à 1000X</div>
             </div>
-            <div className="bg-[#090a0f] p-3 rounded-lg border border-white/[0.06]">
-              <div className="text-slate-400 text-[10.5px]">Affichage</div>
-              <div className="text-slate-100 font-semibold mt-0.5">Écran LCD 2.0"</div>
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+              <div className="text-slate-500 text-[10.5px]">Affichage</div>
+              <div className="text-slate-900 font-bold mt-0.5">Écran LCD 2.0"</div>
             </div>
-            <div className="bg-[#090a0f] p-3 rounded-lg border border-white/[0.06]">
-              <div className="text-slate-400 text-[10.5px]">Éclairage</div>
-              <div className="text-slate-100 font-semibold mt-0.5">8 LEDs réglables</div>
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+              <div className="text-slate-500 text-[10.5px]">Éclairage</div>
+              <div className="text-slate-900 font-bold mt-0.5">8 LEDs réglables</div>
             </div>
-            <div className="bg-[#090a0f] p-3 rounded-lg border border-white/[0.06]">
-              <div className="text-slate-400 text-[10.5px]">Connectique</div>
-              <div className="text-slate-100 font-semibold mt-0.5">Port USB Type-C</div>
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+              <div className="text-slate-500 text-[10.5px]">Alimentation</div>
+              <div className="text-slate-900 font-bold mt-0.5">Port USB Type-C</div>
             </div>
           </div>
         </section>
@@ -374,8 +372,8 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         {/* ── FORMULAIRE DE COMMANDE ENCADRÉ ── */}
         <div ref={orderSectionRef} id="commander">
           {orderError && (
-            <div className="mb-4 p-3.5 bg-rose-950/80 border border-rose-500/40 rounded-xl text-rose-300 text-xs font-semibold flex items-center gap-2">
-              <XCircle className="w-4 h-4 text-rose-400 shrink-0 stroke-[1.75]" />
+            <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
+              <XCircle className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
               <span>{orderError}</span>
             </div>
           )}
@@ -397,31 +395,31 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             setCity={setCity}
             address={address}
             setAddress={setAddress}
-            accentColor="#6366f1"
+            accentColor="#4f46e5"
             onSubmit={handleOrderSubmit}
             isSubmitting={isSubmitting}
           />
         </div>
 
-        {/* ── RETOURS D'EXPÉRIENCE ── */}
+        {/* ── AVIS CLIENTS ── */}
         <section className="space-y-4">
           <div className="space-y-1">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">Avis</div>
-            <h2 className="text-lg font-semibold text-slate-100 tracking-[-0.02em]">Retours d'expérience clients</h2>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600">Avis Clients</div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-[-0.02em]">Ce que disent nos acheteurs :</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             {REVIEWS_DATA.map((rev, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-[#11131a] border border-white/[0.07] space-y-2">
+              <div key={idx} className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="font-semibold text-slate-200 text-xs">{rev.name}</div>
+                  <div className="font-bold text-slate-900 text-xs">{rev.name}</div>
                   <div className="flex text-amber-400 text-xs">★★★★★</div>
                 </div>
-                <div className="text-[10.5px] text-slate-400 font-mono">{rev.city} • {rev.date}</div>
-                <p className="text-xs text-slate-300 leading-relaxed">« {rev.comment} »</p>
-                <div className="flex items-center gap-1 text-[10.5px] text-emerald-400 font-medium pt-1 border-t border-white/[0.05]">
+                <div className="text-[10.5px] text-slate-500 font-mono">{rev.city} • {rev.date}</div>
+                <p className="text-xs text-slate-600 leading-relaxed italic">« {rev.comment} »</p>
+                <div className="flex items-center gap-1 text-[10.5px] text-emerald-600 font-semibold pt-1 border-t border-slate-100">
                   <CheckCircle2 className="w-3 h-3 stroke-[1.75]" />
-                  <span>Achat vérifié</span>
+                  <span>Achat vérifié Isivente</span>
                 </div>
               </div>
             ))}
@@ -429,21 +427,21 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         </section>
 
         {/* ── FOIRE AUX QUESTIONS ── */}
-        <section className="p-5 rounded-2xl bg-[#11131a] border border-white/[0.08] space-y-3">
-          <div className="text-xs font-semibold text-slate-200">Questions fréquentes</div>
+        <section className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-3">
+          <div className="text-xs font-bold text-slate-900">Questions fréquentes</div>
 
-          <div className="divide-y divide-white/[0.06]">
+          <div className="divide-y divide-slate-100">
             {FAQS_DATA.map((faq, idx) => (
               <div key={idx} className="py-3">
                 <button
                   onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                  className="w-full flex items-center justify-between text-left text-xs font-semibold text-slate-200 hover:text-indigo-300 transition-colors duration-100 cursor-pointer"
+                  className="w-full flex items-center justify-between text-left text-xs sm:text-sm font-semibold text-slate-800 hover:text-indigo-600 transition-colors duration-100 cursor-pointer"
                 >
                   <span>{faq.q}</span>
-                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${activeFaq === idx ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${activeFaq === idx ? "rotate-180 text-indigo-600" : ""}`} />
                 </button>
                 {activeFaq === idx && (
-                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                  <p className="text-xs text-slate-600 mt-2 leading-relaxed pt-1">
                     {faq.a}
                   </p>
                 )}
@@ -454,10 +452,10 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
 
       </main>
 
-      {/* ── BARRE MOBILE FLOTTANTE ── */}
+      {/* ── BARRE MOBILE FLOTTANTE POUR COMMANDER ── */}
       <StickyMobileCtaBar
         price={16900}
-        accentColor="#6366f1"
+        accentColor="#4f46e5"
         buttonText="Commander"
         targetSectionId="commander"
         whatsappNumber="2290192901817"
