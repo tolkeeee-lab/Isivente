@@ -9,9 +9,16 @@ import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 import UmeiLanding from "@/components/features/UmeiLanding";
 import CameraLanding from "@/components/features/CameraLanding";
 import TrozkLanding from "@/components/features/TrozkLanding";
+import MicroscopeLanding from "@/components/features/MicroscopeLanding";
 
 /* ─── Données OG statiques pour les pages custom ─── */
 const CUSTOM_META: Record<string, { title: string; description: string; image: string; price: number }> = {
+  microscope: {
+    title: "Microscope Numérique Portable HD 1000X",
+    description: "Écran couleur 2.0\", 8 LEDs ultra-lumineuses, zoom 1000X pour observer peau, billets de banque, électronique et nature. Livraison 24h au Bénin.",
+    image: "/images/microscope-hero.jpg",
+    price: 16900,
+  },
   umei: {
     title: "Brosse Démêlante Vapeur Uméi 3-en-1",
     description: "Démêle tes boucles sans douleur. Vapeur + huile + clic libérateur. Livraison 24h au Bénin, paiement à la réception.",
@@ -64,6 +71,12 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
 
 /* Slug aliases → canonical slug */
 const SLUG_ALIASES: Record<string, string> = {
+  microscope: "microscope",
+  micro: "microscope",
+  zoom: "microscope",
+  loupe: "microscope",
+  pocketscope: "microscope",
+  "mini-microscope": "microscope",
   ventilateur: "turbofan",
   fan: "turbofan",
   eplucheur: "peeler",
@@ -196,6 +209,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const canonical = cleanSlug(slug);
 
   // ── Pages custom existantes ──
+  if (canonical === "microscope") {
+    return <MicroscopeLanding slug="microscope" />;
+  }
+
   if (canonical === "umei") {
     return <UmeiLanding slug="umei" />;
   }
@@ -231,3 +248,4 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // ── Fallback générique : charge depuis Supabase ──
   return <ProductLanding slug={canonical} />;
 }
+

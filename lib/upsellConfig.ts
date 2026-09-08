@@ -315,6 +315,41 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       ],
     },
   },
+
+  microscope: {
+    secondUnit: {
+      id: "microscope-second-unit",
+      title: "Profitez d'un 2ème Microscope Numérique Portable 1000X",
+      subtitle: "Offrez la magie de la découverte à un enfant ou à un proche curieux",
+      description: "Recevez un 2ème microscope complet avec câble de charge et accessoires pour seulement 11 900 FCFA au lieu de 16 900 FCFA.",
+      price: 11900,
+      originalPrice: 16900,
+      savings: 5000,
+      image: "/images/microscope-hero.jpg",
+      badge: "🎁 2ÈME EXEMPLAIRE (-30%)",
+      benefits: [
+        "Microscope complet neuf sous blister",
+        "Livré ensemble dans le même colis sans frais de livraison en plus",
+        "Paiement à la réception après vérification",
+      ],
+    },
+    upsell: {
+      id: "microscope-duo-gift",
+      title: "Ajoutez un 2ème Microscope HD 1000X à prix réduit",
+      subtitle: "Le cadeau éducatif et interactif par excellence",
+      description: "Ajoutez un 2ème exemplaire pour votre famille ou vos proches pour seulement 11 900 FCFA.",
+      price: 11900,
+      originalPrice: 16900,
+      savings: 5000,
+      image: "/images/microscope-hero.jpg",
+      badge: "ÉCONOMISEZ 5 000 FCFA",
+      benefits: [
+        "Écran 2.0\" couleur haute définition",
+        "Batterie rechargeable nomade",
+        "Paiement au livreur à l'arrivée",
+      ],
+    },
+  },
 };
 
 /**
