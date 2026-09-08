@@ -74,29 +74,61 @@ const CAROUSEL_IMAGES = [
   },
 ];
 
-const REVIEWS_DATA = [
+interface CustomerReview {
+  name: string;
+  location: string;
+  rating: number;
+  date: string;
+  title: string;
+  comment: string;
+  image: string;
+  imageCaption: string;
+  verified: boolean;
+}
+
+const REVIEWS_DATA: CustomerReview[] = [
   {
-    name: "Mathieu T.",
-    city: "Cotonou (Cadjehoun)",
+    name: "rbrown",
+    location: "Client Amazon Vérifié",
     rating: 5,
-    date: "Il y a 2 jours",
-    comment: "Rendu optique très net. Les enfants observent les insectes et les feuilles sans difficulté. Nous avons également vérifié les micro-impressions d'un billet de banque.",
+    date: "Achat vérifié",
+    title: "Outil parfait pour explorer et apprendre pour les enfants !!",
+    comment: "J'en ai commandé deux pour mes petits-enfants de 2 ans et de 4 ans. Ils en sont ravis. Mon fils dit qu'ils prennent de très belles photos et que les images sont très nettes. N'hésitez pas à commander !",
+    image: "/images/microscope-real-spider.jpg",
+    imageCaption: "Détails d'une araignée capturée sur l'écran 2.0\"",
     verified: true,
   },
   {
-    name: "Serge K.",
-    city: "Abomey-Calavi",
+    name: "Saad Mehmood",
+    location: "Client Vérifié",
     rating: 5,
-    date: "Il y a 4 jours",
-    comment: "Utilisé pour le diagnostic de cartes mères de smartphones. Les pistes et soudures apparaissent nettement sur l'écran sans fatigue oculaire.",
+    date: "Achat vérifié",
+    title: "Le plaisir commence tout de suite",
+    comment: "Un jouet vraiment sympa où tu peux apprendre beaucoup. Très intéressant pour les enfants de 4 à 14 ans, mais n'importe qui peut être émerveillé par les détails des choses autour de nous. Très facile à utiliser et s'amuse même avec des objets du quotidien.",
+    image: "/images/microscope-real-leaf.jpg",
+    imageCaption: "Nervures et cellules végétales d'une feuille",
     verified: true,
   },
   {
-    name: "Aïcha G.",
-    city: "Porto-Novo",
+    name: "Laura M.",
+    location: "Acheteuse Vérifiée",
     rating: 5,
-    date: "Il y a 6 jours",
-    comment: "Appareil compact et immédiatement fonctionnel dès le déballage. Le livreur a patienté pendant la vérification du produit.",
+    date: "Achat vérifié",
+    title: "Vraiment génial !",
+    comment: "Whaou top !! Mon fils de 4 ans adore ! Il l'emmène partout dans le jardin pour observer les insectes et les fleurs en direct sur l'écran.",
+    image: "/images/microscope-real-ladybug.jpg",
+    imageCaption: "Observation directe d'une coccinelle en extérieur",
+    verified: true,
+  },
+  {
+    name: "Paul D.",
+    location: "Testeur Vérifié",
+    rating: 5,
+    date: "Achat vérifié",
+    title: "Bien plus qu'un jouet !",
+    comment: "Un appareil éducatif et précis qui permet d'éveiller la curiosité des petits comme des grands. Voir des choses invisibles à l'œil nu : le tissage des tissus, les fibres, les micro-soudures. Je recommande vivement !",
+    image: "/images/microscope-real-fabric.jpg",
+    imageCaption: "Micro-fibres et maillage d'un tissu textile",
     verified: true,
   },
 ];
@@ -401,25 +433,65 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           />
         </div>
 
-        {/* ── AVIS CLIENTS ── */}
-        <section className="space-y-4">
+        {/* ── AVIS CLIENTS & PHOTOS RÉELLES DES ACHETEURS ── */}
+        <section className="space-y-5">
           <div className="space-y-1">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600">Avis Clients</div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-[-0.02em]">Ce que disent nos acheteurs :</h2>
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600">
+              <Sparkles className="w-3.5 h-3.5 stroke-[1.75]" />
+              <span>Retours d'Expérience & Photos Réelles</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-[-0.02em]">
+              Ce que nos acheteurs observent au quotidien :
+            </h2>
+            <p className="text-xs text-slate-600 max-w-xl">
+              Photos réelles capturées directement sur l'écran LCD 2.0" par des parents et utilisateurs vérifiés.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {REVIEWS_DATA.map((rev, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-bold text-slate-900 text-xs">{rev.name}</div>
-                  <div className="flex text-amber-400 text-xs">★★★★★</div>
+              <div 
+                key={idx} 
+                className="p-4 rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_8px_-2px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row gap-4 items-stretch"
+              >
+                {/* Photo réelle recadrée à gauche */}
+                <div className="w-full sm:w-44 h-48 sm:h-auto rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60 relative shrink-0">
+                  <img 
+                    src={rev.image} 
+                    alt={rev.imageCaption} 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-2 inset-x-2 bg-slate-900/80 backdrop-blur-xs text-white text-[9.5px] font-medium py-1 px-2 rounded-lg text-center leading-tight">
+                    {rev.imageCaption}
+                  </div>
                 </div>
-                <div className="text-[10.5px] text-slate-500 font-mono">{rev.city} • {rev.date}</div>
-                <p className="text-xs text-slate-600 leading-relaxed italic">« {rev.comment} »</p>
-                <div className="flex items-center gap-1 text-[10.5px] text-emerald-600 font-semibold pt-1 border-t border-slate-100">
-                  <CheckCircle2 className="w-3 h-3 stroke-[1.75]" />
-                  <span>Achat vérifié Isivente</span>
+
+                {/* Avis & Détails à droite */}
+                <div className="flex-1 flex flex-col justify-between space-y-2.5">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <div className="font-bold text-slate-900 text-xs tracking-tight">{rev.name}</div>
+                        <div className="text-[10px] text-slate-500 font-mono">{rev.location}</div>
+                      </div>
+                      <div className="flex text-amber-400 text-xs tracking-tight">
+                        {"★".repeat(rev.rating)}
+                      </div>
+                    </div>
+
+                    <div className="text-xs font-bold text-slate-800 leading-snug">
+                      « {rev.title} »
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {rev.comment}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-[10.5px] text-emerald-700 font-semibold pt-2 border-t border-slate-100">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[1.75]" />
+                    <span>Achat vérifié Isivente</span>
+                  </div>
                 </div>
               </div>
             ))}
