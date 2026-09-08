@@ -199,15 +199,34 @@ export default function OrdersPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           {filteredOrders.length > 0 && (
-            <button
-              type="button"
-              onClick={exportToCSV}
-              className="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
-              title="Exporter les commandes affichées au format Excel/CSV"
-            >
-              <Download className="w-3.5 h-3.5 stroke-[2] text-emerald-600" />
-              <span>Exporter CSV</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  const numbers = filteredOrders
+                    .map(o => (o.customer_phone || "").replace(/[^0-9]/g, ""))
+                    .filter(Boolean)
+                    .join("\n");
+                  navigator.clipboard.writeText(numbers);
+                  alert(`${filteredOrders.length} numéros WhatsApp copiés dans le presse-papier !`);
+                }}
+                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+                title="Copier tous les numéros de téléphone pour diffusion WhatsApp"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Copier les numéros WhatsApp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={exportToCSV}
+                className="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+                title="Exporter les commandes affichées au format Excel/CSV"
+              >
+                <Download className="w-3.5 h-3.5 stroke-[2] text-emerald-600" />
+                <span>Exporter CSV</span>
+              </button>
+            </>
           )}
 
           {orders.length > 0 && (
@@ -377,19 +396,37 @@ export default function OrdersPage() {
                       {/* 2. CLIENT & TÉLÉPHONE */}
                       <td className="py-3.5 px-5">
                         <div className="font-semibold text-slate-900">{order.customer_name || "Client"}</div>
-                        <div className="flex items-center gap-2 mt-1 text-slate-500 text-xs">
-                          <span className="font-mono text-[11px]">{order.customer_phone || "-"}</span>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1 text-slate-500 text-xs">
+                          <span className="font-mono text-[11px] font-medium">{order.customer_phone || "-"}</span>
                           {phoneClean && (
-                            <a
-                              href={whatsappUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-emerald-700 hover:text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md text-[10.5px] inline-flex items-center gap-1 border border-emerald-200/60 active:scale-[0.97] transition-all"
-                              title="Contacter sur WhatsApp"
-                            >
-                              <MessageSquare className="w-3 h-3 text-emerald-600" />
-                              <span>WhatsApp</span>
-                            </a>
+                            <>
+                              {/* Message Rupture / Réservation VIP */}
+                              <a
+                                href={`https://wa.me/229${phoneClean.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                                  `Bonjour ${order.customer_name || ""}, c'est Isivente au sujet de votre commande du ${order.product_title || "Purificateur EraClean"} (Réf: ${order.order_number || ""}).\n\nSuite à une très forte demande, notre premier lot est en rupture immédiate. Le prochain arrivage est en cours d'acheminement.\n\nNous vous avons réservé un exemplaire prioritaire avec la LIVRAISON OFFERTE dès réception. Souhaitez-vous confirmer votre réservation ?`
+                                )}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-amber-800 hover:text-amber-900 font-semibold bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md text-[10.5px] inline-flex items-center gap-1 border border-amber-200 active:scale-[0.97] transition-all"
+                                title="Envoyer le message WhatsApp de Précommande / Rupture de stock"
+                              >
+                                <MessageSquare className="w-3 h-3 text-amber-600" />
+                                <span>Message Rupture/VIP</span>
+                              </a>
+
+                              {/* Message Direct Standard */}
+                              <a
+                                href={`https://wa.me/229${phoneClean.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                                  `Bonjour ${order.customer_name || ""}, c'est Isivente. Nous vous contactons pour confirmer la livraison de votre commande ${order.order_number || ""} (${order.product_title || ""}). Êtes-vous disponible aujourd'hui ?`
+                                )}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-emerald-700 hover:text-emerald-800 font-semibold bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-md text-[10.5px] inline-flex items-center gap-1 border border-emerald-200/60 active:scale-[0.97] transition-all"
+                                title="Confirmer la livraison sur WhatsApp"
+                              >
+                                <span>Direct</span>
+                              </a>
+                            </>
                           )}
                         </div>
                       </td>
