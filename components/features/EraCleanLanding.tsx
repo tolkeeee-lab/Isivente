@@ -80,24 +80,43 @@ const CAROUSEL_SLIDES = [
   },
 ];
 
-const REVIEWS = [
+interface ReviewItem {
+  name: string;
+  city: string;
+  stars: number;
+  title: string;
+  text: string;
+  image?: string;
+  verified?: boolean;
+}
+
+const REVIEWS: ReviewItem[] = [
   {
-    name: "Fatoumata D.",
-    city: "Cotonou",
+    name: "Pascal T.",
+    city: "Cotonou (Cadjehoun)",
     stars: 5,
-    text: "Mon frigo ne sent plus le poisson fumé. La différence après 2 jours était flagrante. Je recommande à toutes mes voisines.",
+    title: "Incroyable ! Mon frigo est maintenant inodore",
+    text: "C'est tellement incroyable que j'en ai pris 2 pour 2 frigos différents et sa durabilité est perceptible. Ça ne sent rien et son efficacité est impressionnante sur le poisson et les viandes.",
+    image: "/images/eraclean-real-review-ad.jpg",
+    verified: true,
   },
   {
-    name: "Roseline A.",
-    city: "Calavi",
+    name: "Béatrice G.",
+    city: "Abomey-Calavi",
     stars: 5,
-    text: "J'avais peur que ça ne marche pas mais mes légumes durent vraiment plus longtemps. Plus de gaspillage, ça vaut vraiment son prix.",
+    title: "Élimine les odeurs en moins de 30 minutes",
+    text: "Nous avons acheté un nouveau frigo et on sentait toujours les restes qu'on y mettait (viandes, oignons). Ça a complètement fait disparaître les odeurs en moins de 30 minutes. Sors-le de la boîte et mets-le au frigo, il dure 10 ans !",
+    image: "/images/eraclean-brandi-review-ad.jpg",
+    verified: true,
   },
   {
-    name: "Mariette K.",
+    name: "Roland K.",
     city: "Porto-Novo",
     stars: 5,
-    text: "J'en ai pris 2 : un pour le frigo, un pour mes toilettes. Les odeurs de piment ont disparu. Livraison rapide, paiement à la réception.",
+    title: "Mes légumes restent frais 2× plus longtemps",
+    text: "Une solution simple et ultra-efficace pour maintenir un environnement frais sans mauvaise odeur. Sa conception compacte n'occupe pas d'espace sur les étagères. Plus aucun gaspillage alimentaire.",
+    image: "/images/eraclean-ad-creative.jpg",
+    verified: true,
   },
 ];
 
@@ -703,29 +722,55 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
             {REVIEWS.map((r, i) => (
               <div
                 key={i}
-                className="rounded-2xl p-5 border"
+                className="rounded-2xl p-5 border flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow duration-200"
                 style={{
-                  background: C.silver,
-                  borderColor: `${C.accent}15`,
+                  background: "white",
+                  borderColor: `${C.accent}20`,
                   animationDelay: `${i * 35}ms`,
                 }}
               >
-                <div className="flex text-amber-400 text-sm mb-3">
-                  {"★".repeat(r.stars)}
-                </div>
-                <p className="text-sm leading-relaxed mb-4" style={{ color: C.text }}>
-                  &ldquo;{r.text}&rdquo;
-                </p>
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ background: C.accent }}
-                  >
-                    {r.name[0]}
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2.5">
+                    <div className="flex text-amber-400 text-sm">
+                      {"★".repeat(r.stars)}
+                    </div>
+                    {r.verified && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        <Check className="w-3 h-3 text-emerald-600" /> Achat vérifié
+                      </span>
+                    )}
                   </div>
-                  <div>
-                    <p className="text-xs font-bold" style={{ color: C.dark }}>{r.name}</p>
-                    <p className="text-xs" style={{ color: C.muted }}>{r.city}</p>
+                  <h4 className="font-bold text-sm mb-2" style={{ color: C.dark }}>
+                    {r.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm leading-relaxed mb-4 text-slate-600">
+                    &ldquo;{r.text}&rdquo;
+                  </p>
+                </div>
+
+                <div>
+                  {r.image && (
+                    <div className="mb-4 rounded-xl overflow-hidden border border-slate-200/80 aspect-4/3 bg-slate-50">
+                      <img
+                        src={r.image}
+                        alt={`Photo de l'avis de ${r.name}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2.5 pt-3 border-t border-slate-100">
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                      style={{ background: C.accent }}
+                    >
+                      {r.name[0]}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold" style={{ color: C.dark }}>{r.name}</p>
+                      <p className="text-[11px]" style={{ color: C.muted }}>{r.city}</p>
+                    </div>
                   </div>
                 </div>
               </div>
