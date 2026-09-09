@@ -61,7 +61,7 @@ export default function AdminDashboard() {
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
   const defaultProductsList = [
-    { title: "Microscope Numérique Portable HD 1000X", slug: "microscope", price: 16900, image: "/images/microscope-hero.jpg" },
+    { title: "Microscope Numérique Portable HD 1000X", slug: "microscope", price: 29900, image: "/images/microscope-monde-decouverte.jpg" },
     { title: "Brosse Démêlante Vapeur Uméi 3-en-1", slug: "umei", price: 14900, image: "/images/umei-hero-real.jpg" },
     { title: "Purificateur d'Air EraClean™ 10 Ans", slug: "eraclean", price: 19900, image: "/images/eraclean-studio.jpg" },
     { title: "Ventilateur Ceinture & Powerbank TurboFan™", slug: "turbofan", price: 16900, image: "/images/turbofan-studio.jpg" },

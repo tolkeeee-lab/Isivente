@@ -16,8 +16,8 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
   microscope: {
     title: "Microscope Numérique Portable HD 1000X",
     description: "Écran couleur 2.0\", 8 LEDs ultra-lumineuses, zoom 1000X pour observer peau, billets de banque, électronique et nature. Livraison 24h au Bénin.",
-    image: "/images/microscope-hero.jpg",
-    price: 16900,
+    image: "/images/microscope-monde-decouverte.jpg",
+    price: 29900,
   },
   umei: {
     title: "Brosse Démêlante Vapeur Uméi 3-en-1",

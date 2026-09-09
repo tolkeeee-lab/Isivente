@@ -21,6 +21,25 @@ async function main() {
   console.log("\n--- 2. INSERTING ALL 4 PRODUCTS INTO SUPABASE ---");
   const products = [
     {
+      slug: "microscope",
+      title: "Microscope Numérique Portable HD 1000X",
+      headline: "Observation directe sur écran couleur 2.0\", 8 LEDs ultra-lumineuses et grossissement 1000X.",
+      description: "Conçu pour l'éveil scientifique des enfants, l'électronique de précision et le contrôle de qualité. Batterie rechargeable USB-C.",
+      price: 29900,
+      original_price: 45000,
+      currency: "FCFA",
+      images: [
+        { url: "/images/microscope-monde-decouverte.jpg" },
+        { url: "/images/microscope-scientifique-action.jpg" },
+        { url: "/images/microscope-detection-poux.jpg" },
+        { url: "/images/microscope-cadeau-unboxing.jpg" }
+      ],
+      bundles: [
+        { name: "Microscope Numérique Portable HD 1000X", price: 29900 }
+      ],
+      is_active: true
+    },
+    {
       slug: "umei",
       title: "Brosse Démêlante Vapeur Uméi 3-en-1",
       headline: "La première brosse démêlante à vapeur qui libère tes cheveux d'un simple clic.",
@@ -30,9 +49,7 @@ async function main() {
       currency: "FCFA",
       images: [{ url: "/images/umei-hero-real.jpg" }],
       bundles: [
-        { name: "Pack Découverte (1 Brosse)", price: 14900 },
-        { name: "Pack Sérénité Duo (2 Brosses)", price: 24900 },
-        { name: "Pack Famille (3 Brosses)", price: 34900 }
+        { name: "Brosse Démêlante Vapeur Uméi 3-en-1", price: 14900 }
       ],
       is_active: true
     },
@@ -46,9 +63,7 @@ async function main() {
       currency: "FCFA",
       images: [{ url: "/images/eraclean-studio.jpg" }],
       bundles: [
-        { name: "Pack Solo (1 Appareil)", price: 19900 },
-        { name: "Pack Duo Frigo + WC (2 Appareils)", price: 32900 },
-        { name: "Pack Grand Ménage (3 Appareils)", price: 44900 }
+        { name: "Purificateur d'Air EraClean™ 10 Ans", price: 19900 }
       ],
       is_active: true
     },
@@ -62,9 +77,7 @@ async function main() {
       currency: "FCFA",
       images: [{ url: "/images/turbofan-studio.jpg" }],
       bundles: [
-        { name: "Pack Solo Fraîcheur (1 TurboFan)", price: 16900 },
-        { name: "Pack Duo (2 TurboFans)", price: 27900 },
-        { name: "Pack Famille / Chantier (3 TurboFans)", price: 37900 }
+        { name: "Ventilateur TurboFan™ Max 8000mAh", price: 16900 }
       ],
       is_active: true
     },
@@ -78,9 +91,7 @@ async function main() {
       currency: "FCFA",
       images: [{ url: "/images/peeler-hero.jpg" }],
       bundles: [
-        { name: "Pack Découverte Cuisine (1 Appareil)", price: 14900 },
-        { name: "Pack Duo Sérénité (2 Appareils)", price: 24900 },
-        { name: "Pack Traiteur / Famille (3 Appareils)", price: 34900 }
+        { name: "Éplucheur Automatique ChefPeel™ Pro", price: 14900 }
       ],
       is_active: true
     }
