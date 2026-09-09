@@ -66,10 +66,6 @@ const CAROUSEL_IMAGES = [
     alt: "Les 3 modules indépendants A, B et C du système modulaire",
   },
   { 
-    src: "/images/trozk-direct-plug.jpg", 
-    alt: "Mini-bloc 5000 mAh branché directement sous le téléphone",
-  },
-  { 
     src: "/images/trozk-glow.jpg", 
     alt: "Batterie 15000 mAh avec charge rapide 22.5W",
   },
@@ -159,12 +155,12 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
     }
   };
 
-  // Autoplay carrousel photos toutes les 3.8s (avec pause au survol)
+  // Autoplay carrousel photos toutes les 1.5s (avec pause au survol)
   useEffect(() => {
     if (isHeroHovered) return;
     const timer = setInterval(() => {
       setActiveImageIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
-    }, 3800);
+    }, 1500);
     return () => clearInterval(timer);
   }, [isHeroHovered]);
 
@@ -292,8 +288,9 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           </div>
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
-            <button onClick={() => scrollToSection("galerie")} className="hover:text-slate-900 transition-colors">Photos</button>
             <button onClick={() => scrollToSection("hero-showcase")} className="hover:text-slate-900 transition-colors">Aperçu 3D</button>
+            <button onClick={() => scrollToSection("commander")} className="hover:text-slate-900 transition-colors">Commander</button>
+            <button onClick={() => scrollToSection("galerie")} className="hover:text-slate-900 transition-colors">Photos</button>
             <button onClick={() => scrollToSection("modules")} className="hover:text-slate-900 transition-colors">Les 3 Modules</button>
             <button onClick={() => scrollToSection("specs")} className="hover:text-slate-900 transition-colors">Fiche Technique</button>
             <button onClick={() => scrollToSection("avis")} className="hover:text-slate-900 transition-colors">Avis clients</button>
@@ -310,60 +307,8 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </header>
 
-      {/* 📸 1. CARROUSEL DE PHOTOS AVANT LA VIDÉO (AUTO-DÉFILANT, ÉPURÉ SANS TEXTES SURCHARGÉS) */}
-      <section id="galerie" className="pt-6 sm:pt-10 pb-8 px-4 sm:px-6 max-w-5xl mx-auto space-y-6">
-        <div 
-          className="max-w-4xl mx-auto"
-          onMouseEnter={() => setIsHeroHovered(true)}
-          onMouseLeave={() => setIsHeroHovered(false)}
-        >
-          <div className="relative rounded-3xl bg-slate-50 border border-slate-200/90 p-3 sm:p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
-            <div className="relative aspect-[4/3] sm:aspect-[16/9] max-h-[460px] rounded-2xl overflow-hidden bg-[#ECECEE] flex items-center justify-center">
-              <img 
-                src={CAROUSEL_IMAGES[activeImageIndex].src} 
-                alt={CAROUSEL_IMAGES[activeImageIndex].alt}
-                className="w-full h-full object-contain transition-all duration-500"
-              />
-
-              {/* FLÈCHES DE NAVIGATION MANUELLE */}
-              <button
-                onClick={() => setActiveImageIndex((prev) => (prev === 0 ? CAROUSEL_IMAGES.length - 1 : prev - 1))}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-900 shadow-md flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                title="Image précédente"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setActiveImageIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-900 shadow-md flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                title="Image suivante"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* MINIATURES SYNCHRONISÉES */}
-            <div className="grid grid-cols-6 gap-2 sm:gap-2.5 mt-3">
-              {CAROUSEL_IMAGES.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImageIndex(idx)}
-                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-slate-100 ${
-                    activeImageIndex === idx 
-                      ? "border-orange-500 ring-2 ring-orange-500/20 shadow-md scale-95" 
-                      : "border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400"
-                  }`}
-                >
-                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 🚀 2. VIDÉO 3D MODULAIRE EN PLEINE LARGEUR (BOUCLE PURE SANS LOGO DE FIN NI TEXTES) */}
-      <section id="hero-showcase" className="relative w-full bg-black overflow-hidden border-y border-slate-200">
+      {/* 🚀 1. VIDÉO 3D MODULAIRE TOUT EN HAUT (BOUCLE PURE SANS LOGO DE FIN NI TEXTES) */}
+      <section id="hero-showcase" className="relative w-full bg-black overflow-hidden border-b border-slate-200">
         <div className="relative w-full h-[55vh] sm:h-[70vh] lg:h-[82vh] max-h-[840px] flex items-center justify-center bg-black">
           <video
             ref={heroVideoRef}
@@ -380,7 +325,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* 🌟 3 BADGES DE RÉASSURANCE CLÉS */}
+      {/* 🌟 2. 3 BADGES DE RÉASSURANCE CLÉS DIRECTEMENT SOUS LA VIDÉO */}
       <section className="py-6 px-4 sm:px-6 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-4xl mx-auto">
           <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
@@ -415,7 +360,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (PLACEMENT PRIORITAIRE SOUS MÉDIAS & BADGES) */}
+      {/* 🌟 3. FORMULAIRE DE COMMANDE DIRECTE (PLACEMENT PRIORITAIRE SOUS VIDÉO 3D & BADGES) */}
       <UmeiStyleOrderSection
         productSlug={slug}
         productTitle="Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)"
@@ -444,6 +389,58 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           setOrderInfo(null);
         }}
       />
+
+      {/* 📸 4. CARROUSEL DE PHOTOS (DÉFILEMENT AUTOMATIQUE 1.5s, ÉPURÉ SANS TEXTES NI IMAGE CAFÉ) */}
+      <section id="galerie" className="py-12 sm:py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-6">
+        <div 
+          className="max-w-4xl mx-auto"
+          onMouseEnter={() => setIsHeroHovered(true)}
+          onMouseLeave={() => setIsHeroHovered(false)}
+        >
+          <div className="relative rounded-3xl bg-slate-50 border border-slate-200/90 p-3 sm:p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
+            <div className="relative aspect-[4/3] sm:aspect-[16/9] max-h-[460px] rounded-2xl overflow-hidden bg-[#ECECEE] flex items-center justify-center">
+              <img 
+                src={CAROUSEL_IMAGES[activeImageIndex].src} 
+                alt={CAROUSEL_IMAGES[activeImageIndex].alt}
+                className="w-full h-full object-contain transition-all duration-500"
+              />
+
+              {/* FLÈCHES DE NAVIGATION MANUELLE */}
+              <button
+                onClick={() => setActiveImageIndex((prev) => (prev === 0 ? CAROUSEL_IMAGES.length - 1 : prev - 1))}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-900 shadow-md flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                title="Image précédente"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setActiveImageIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-900 shadow-md flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                title="Image suivante"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* MINIATURES SYNCHRONISÉES */}
+            <div className="grid grid-cols-5 gap-2 sm:gap-2.5 mt-3">
+              {CAROUSEL_IMAGES.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-slate-100 ${
+                    activeImageIndex === idx 
+                      ? "border-orange-500 ring-2 ring-orange-500/20 shadow-md scale-95" 
+                      : "border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400"
+                  }`}
+                >
+                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 🎬 DÉMONSTRATION PRISE EN MAIN EN BOUCLE PURE */}
       <section id="demo" className="py-12 sm:py-16 bg-slate-50 border-y border-slate-200 px-4 sm:px-6">
