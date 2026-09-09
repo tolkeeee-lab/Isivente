@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAllOrders, deleteOrder, clearAllOrders, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, deleteOrder, OrderItem } from "@/lib/ordersStorage";
 import { supabase } from "@/lib/supabase";
 import { getAnalyticsStats, getAllProductsAnalytics, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
@@ -219,38 +219,6 @@ export default function AdminDashboard() {
         </div>
 
         <div className="flex items-center gap-2">
-          {stats.totalOrders > 0 && (
-            <button
-              type="button"
-              onClick={async () => {
-                if (!confirm("Remettre immédiatement le compteur à 0 FCFA et effacer les commandes de test ?")) return;
-                try {
-                  localStorage.clear();
-                  sessionStorage.clear();
-                  await clearAllOrders();
-                } catch {}
-                setStats({
-                  totalOrders: 0,
-                  pendingOrders: 0,
-                  shippedOrders: 0,
-                  deliveredOrders: 0,
-                  cancelledOrders: 0,
-                  revenue: 0,
-                  deliveredRevenue: 0,
-                  shippedRevenue: 0,
-                  pendingRevenue: 0,
-                });
-                setRecentOrders([]);
-                setProductFinancials({});
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-all duration-150 active:scale-[0.98] cursor-pointer"
-              title="Remettre tous les compteurs à 0 FCFA"
-            >
-              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-              <span>Vider à 0 FCFA</span>
-            </button>
-          )}
-
           <Link
             href="/admin/finance"
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition-all duration-150 active:scale-[0.98]"
@@ -570,7 +538,15 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={async () => {
-                          if (!confirm(`Supprimer la commande de ${order.customer_name} ?`)) return;
+                          const ref = order.order_number || "cette commande";
+                          const customer = order.customer_name || "le client";
+                          const amount = order.total_amount ? ` (${new Intl.NumberFormat("fr-FR").format(order.total_amount)} FCFA)` : "";
+
+                          const isConfirmed = window.confirm(
+                            `⚠️ Confirmation de suppression :\n\nVoulez-vous vraiment supprimer définitivement la commande ${ref} de ${customer}${amount} ?\n\nCette action est irréversible et supprimera la commande de la base de données.`
+                          );
+
+                          if (!isConfirmed) return;
                           await deleteOrder(order.id, order.order_number, order);
                           setRecentOrders(prev => prev.filter(o => o.id !== order.id && o.created_at !== order.created_at));
                         }}

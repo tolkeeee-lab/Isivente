@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllOrders, updateOrderStatus as updateStorageStatus, deleteOrder, clearAllOrders, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, updateOrderStatus as updateStorageStatus, deleteOrder, OrderItem } from "@/lib/ordersStorage";
 import { 
   Search, 
   Phone, 
@@ -17,7 +17,6 @@ import {
   ExternalLink,
   ChevronDown,
   Trash2,
-  Eraser,
   Download
 } from "lucide-react";
 
@@ -50,7 +49,14 @@ export default function OrdersPage() {
 
   const handleDelete = async (order: OrderItem) => {
     const ref = order.order_number || "cette commande";
-    if (!confirm(`Supprimer définitivement la commande ${ref} (${order.customer_name}) ?`)) {
+    const customer = order.customer_name || "le client";
+    const amount = order.total_amount ? ` (${new Intl.NumberFormat("fr-FR").format(order.total_amount)} FCFA)` : "";
+
+    const isConfirmed = window.confirm(
+      `⚠️ Confirmation de suppression :\n\nVoulez-vous vraiment supprimer définitivement la commande ${ref} de ${customer}${amount} ?\n\nCette action est irréversible et supprimera la commande de la base de données.`
+    );
+
+    if (!isConfirmed) {
       return;
     }
 
@@ -64,40 +70,6 @@ export default function OrdersPage() {
       return true;
     }));
     setDeletingId(null);
-  };
-
-  const handleClearAll = async () => {
-    if (orders.length === 0) return;
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer TOUTES les ${orders.length} commandes de test ? Cette action est irréversible.`)) {
-      return;
-    }
-
-    setLoading(true);
-    await clearAllOrders();
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("isivente_orders_store");
-      localStorage.removeItem("isivente_last_order_trigger");
-    }
-    setOrders([]);
-    setLoading(false);
-  };
-
-  const handleForceReset = async () => {
-    if (!confirm("Vider complètement tout l'historique et forcer le rafraîchissement du cache ?")) return;
-    setLoading(true);
-    await clearAllOrders();
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("isivente_orders_store");
-      localStorage.removeItem("isivente_last_order_trigger");
-      sessionStorage.clear();
-      if ("caches" in window) {
-        try {
-          const names = await caches.keys();
-          await Promise.all(names.map(n => caches.delete(n)));
-        } catch {}
-      }
-      window.location.reload();
-    }
   };
 
   const filteredOrders = orders.filter(order => {
@@ -227,19 +199,6 @@ export default function OrdersPage() {
                 <span>Exporter CSV</span>
               </button>
             </>
-          )}
-
-          {orders.length > 0 && (
-            <button
-              type="button"
-              onClick={handleForceReset}
-              disabled={loading}
-              className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 px-3 py-2 rounded-xl text-xs font-semibold shadow-2xs transition-all active:scale-[0.97] cursor-pointer"
-              title="Supprimer définitivement toutes les commandes et vider le cache"
-            >
-              <Eraser className="w-3.5 h-3.5 text-rose-600" />
-              <span>Vider les tests</span>
-            </button>
           )}
 
           <button
