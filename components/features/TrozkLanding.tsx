@@ -155,11 +155,6 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
 
-  // Contrôles vidéo Hero HD Trozk (Haut de page)
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const [isHeroMuted, setIsHeroMuted] = useState(true);
-  const [isHeroPlaying, setIsHeroPlaying] = useState(true);
-
   // Contrôles vidéo Démo réelle (Bas de page)
   const demoVideoRef = useRef<HTMLVideoElement>(null);
   const [isDemoMuted, setIsDemoMuted] = useState(false);
@@ -170,24 +165,6 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  // Gestion du son vidéo Hero
-  const toggleHeroSound = () => {
-    if (!heroVideoRef.current) return;
-    heroVideoRef.current.muted = !heroVideoRef.current.muted;
-    setIsHeroMuted(heroVideoRef.current.muted);
-  };
-
-  // Gestion lecture / pause Hero
-  const toggleHeroPlay = () => {
-    if (!heroVideoRef.current) return;
-    if (heroVideoRef.current.paused) {
-      heroVideoRef.current.play().then(() => setIsHeroPlaying(true)).catch(() => {});
-    } else {
-      heroVideoRef.current.pause();
-      setIsHeroPlaying(false);
-    }
-  };
 
   // Gestion son démo
   const toggleDemoMute = () => {
@@ -367,13 +344,10 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </header>
 
-      {/* 🚀 HERO OFFICIEL TROZK : VIDÉO 3D MODULAIRE EN PLEINE LARGEUR (CDN OFFICIEL TROZK) */}
-      <section id="hero-showcase" className="relative w-full bg-slate-950 overflow-hidden border-b border-slate-200">
-        
-        <div className="relative w-full h-[65vh] sm:h-[80vh] lg:h-[88vh] max-h-[880px] flex items-center justify-center bg-black">
-          
+      {/* 🚀 HERO OFFICIEL TROZK : VIDÉO 3D MODULAIRE EN PLEINE LARGEUR (100% NEUTRE ET PURE SANS AUCUN OVERLAY) */}
+      <section id="hero-showcase" className="relative w-full bg-black overflow-hidden border-b border-slate-200">
+        <div className="relative w-full h-[55vh] sm:h-[70vh] lg:h-[85vh] max-h-[860px] flex items-center justify-center bg-black">
           <video
-            ref={heroVideoRef}
             src="/videos/trozk-hero-1.mp4"
             poster="/images/trozk-video-hero-cover.jpg"
             autoPlay
@@ -381,59 +355,8 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
             loop
             playsInline
             preload="auto"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-center pointer-events-none"
           />
-
-          {/* DÉGRADÉ DE CONTRASTE SUBTIL */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25 pointer-events-none" />
-
-          {/* BADGE HAUT GAUCHE ÉPURÉ */}
-          <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 flex items-center gap-2 bg-black/50 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full border border-white/15 shadow-md">
-            <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
-            <span>TROZK T3™ MODULAR SYSTEM</span>
-          </div>
-
-          {/* CONTRÔLES FLOTTANTS DISCRETS (SON / PAUSE) HAUT DROITE */}
-          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center gap-2">
-            <button
-              onClick={toggleHeroSound}
-              className="bg-black/50 hover:bg-black/75 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95 shadow-md"
-              title={isHeroMuted ? "Activer le son" : "Couper le son"}
-            >
-              {isHeroMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-            </button>
-            <button
-              onClick={toggleHeroPlay}
-              className="bg-black/50 hover:bg-black/75 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95 shadow-md"
-              title={isHeroPlaying ? "Mettre en pause" : "Lire la vidéo"}
-            >
-              {isHeroPlaying ? <Pause className="w-4 h-4 text-orange-400" /> : <Play className="w-4 h-4 text-orange-400" />}
-            </button>
-          </div>
-
-          {/* BANDEAU FLOTTANT BAS HERO AVEC CTA DIRECT */}
-          <div className="absolute bottom-4 inset-x-4 sm:bottom-8 sm:inset-x-8 z-20 max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 bg-black/60 backdrop-blur-xl border border-white/15 p-4 sm:p-5 rounded-3xl shadow-2xl">
-            <div className="text-white space-y-1 text-center sm:text-left">
-              <div className="flex items-center justify-center sm:justify-start gap-2">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-orange-400 bg-orange-950/80 px-2.5 py-0.5 rounded-md border border-orange-500/30">
-                  Système Modulaire 3-en-1
-                </span>
-                <span className="text-xs text-slate-300 font-mono">15 000 mAh • 22.5W</span>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-200 font-medium">
-                Snap magnétique, écran LED dynamique & mini-batterie de poche sans fil détachable.
-              </p>
-            </div>
-
-            <button
-              onClick={scrollToOrder}
-              className="shrink-0 w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-black text-sm sm:text-base px-6 py-3.5 rounded-2xl shadow-[0_4px_20px_-2px_rgba(249,115,22,0.6)] hover:-translate-y-0.5 transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2"
-            >
-              <span>COMMANDER</span>
-              <span className="font-mono text-orange-100 font-semibold">(29 900 FCFA)</span>
-            </button>
-          </div>
-
         </div>
       </section>
 
