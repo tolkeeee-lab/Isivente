@@ -127,7 +127,21 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
       continue;
     }
 
-    console.warn("Supabase insert notice:", res.error.message);
+    console.warn("Supabase direct insert notice:", res.error.message);
+    // Fallback serveur immédiat : envoyer vers /api/orders pour insertion serveur
+    try {
+      const srvRes = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const srvData = await srvRes.json();
+      if (srvData.success && srvData.order) {
+        finalResult = srvData.order;
+      }
+    } catch (srvErr) {
+      console.error("Server fallback insert error:", srvErr);
+    }
     break;
   }
 

@@ -1,112 +1,95 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-// Cache mémoire serveur global
-declare global {
-  var _serverOrdersStore: any[] | undefined;
-}
-
-if (!global._serverOrdersStore) {
-  global._serverOrdersStore = [];
-}
+const defaultUrl = "https://uelognqedzqtvupwzejh.supabase.co";
+const defaultKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlbG9nbnFlZHpxdHZ1cHd6ZWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMTE0ODgsImV4cCI6MjEwMzc4NzQ4OH0.DjUgqgALNjMIIolen-L6blr4kxUgPi3TKUBeX-TnK9k";
 
 function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultUrl;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultKey;
 
-  if (url && key && url !== "YOUR_SUPABASE_URL" && !url.includes("placeholder")) {
-    return createServerClient(url, key, {
-      cookies: {
-        get() { return undefined; },
-        set() {},
-        remove() {},
-      },
-    });
-  }
-  return null;
+  return createServerClient(url, key, {
+    cookies: {
+      get() { return undefined; },
+      set() {},
+      remove() {},
+    },
+  });
 }
 
-// 1. GET ALL ORDERS
+// 1. GET ALL ORDERS DIRECTEMENT DEPUIS SUPABASE
 export async function GET() {
-  const supabase = getSupabaseClient();
-  let dbOrders: any[] = [];
-
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (!error && data) {
-        dbOrders = data;
-      }
-    } catch (err) {
-      console.error("Supabase GET error:", err);
-    }
-  }
-
-  // Fusionner les commandes Supabase et la mémoire serveur
-  const map = new Map<string, any>();
-  dbOrders.forEach((o) => map.set(o.id, o));
-  (global._serverOrdersStore || []).forEach((o) => {
-    if (!map.has(o.id)) map.set(o.id, o);
-  });
-
-  const orders = Array.from(map.values()).sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-
-  return NextResponse.json({
-    success: true,
-    orders,
-    supabaseConnected: !!supabase,
-  });
-}
-
-// 2. CREATE NEW ORDER
-export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const newOrder = {
-      id: "ord_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
-      product_slug: body.product_slug || "umei",
-      product_title: body.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1",
-      bundle_id: body.bundle_id || "solo",
-      quantity: Number(body.quantity) || 1,
-      total_amount: Number(body.total_amount) || 14900,
-      customer_name: body.customer_name || "Client",
-      customer_phone: body.customer_phone || "",
-      shipping_city: body.shipping_city || "",
-      shipping_address: body.shipping_address || "",
-      status: "pending",
-      created_at: new Date().toISOString(),
-    };
-
-    // Stockage mémoire serveur
-    if (!global._serverOrdersStore) global._serverOrdersStore = [];
-    global._serverOrdersStore.unshift(newOrder);
-
-    // Stockage Supabase si connecté
     const supabase = getSupabaseClient();
-    let supabaseSaved = false;
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    if (supabase) {
-      try {
-        const { error } = await supabase.from("orders").insert([newOrder]);
-        if (!error) supabaseSaved = true;
-      } catch (err) {
-        console.error("Supabase POST error:", err);
-      }
+    if (error) {
+      console.error("Supabase GET error:", error);
+      return NextResponse.json({ success: false, error: error.message, orders: [] }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      order: newOrder,
-      supabaseSaved,
-      message: "Commande enregistrée avec succès",
+      orders: data || [],
+      count: data ? data.length : 0,
+    });
+  } catch (err: any) {
+    console.error("Orders GET route error:", err);
+    return NextResponse.json({ success: false, error: err.message, orders: [] }, { status: 500 });
+  }
+}
+
+// 2. CREATE NEW ORDER (INSERTION SUPABASE GARANTIE)
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const supabase = getSupabaseClient();
+
+    const orderNumberStr = body.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
+    const name = body.customer_name || body.name || "Client";
+    const phone = body.customer_phone || body.phone || "";
+    const city = body.city || body.shipping_city || "Cotonou";
+    const address = body.address || body.shipping_address || "";
+    const totalAmount = Number(body.total_amount) || 14900;
+    const quantity = Number(body.quantity) || 1;
+    const status = body.status || "pending";
+    const createdAt = body.created_at || new Date().toISOString();
+
+    const payload: Record<string, any> = {
+      order_number: orderNumberStr,
+      customer_name: name,
+      customer_phone: phone,
+      city: city,
+      address: address,
+      product_slug: body.product_slug || "umei",
+      product_title: body.product_title || "Produit Isivente",
+      bundle_name: body.bundle_name || "Offre standard",
+      total_amount: totalAmount,
+      quantity: quantity,
+      status: status,
+      created_at: createdAt,
+    };
+
+    const { data, error } = await supabase
+      .from("orders")
+      .insert([payload])
+      .select();
+
+    if (error) {
+      console.error("Supabase POST error:", error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      order: data?.[0] || payload,
+      message: "Commande enregistrée dans Supabase avec succès",
     });
   } catch (error: any) {
+    console.error("Orders POST error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 400 }
@@ -123,21 +106,20 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "ID et statut requis" }, { status: 400 });
     }
 
-    // Mise à jour mémoire serveur
-    if (global._serverOrdersStore) {
-      global._serverOrdersStore = global._serverOrdersStore.map((o) =>
-        o.id === id ? { ...o, status } : o
-      );
+    const supabase = getSupabaseClient();
+    const isUuid = id.includes("-") && id.length > 30;
+
+    let query = supabase.from("orders").update({ status });
+    if (isUuid) {
+      query = query.eq("id", id);
+    } else {
+      query = query.eq("order_number", id);
     }
 
-    // Mise à jour Supabase
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      try {
-        await supabase.from("orders").update({ status }).eq("id", id);
-      } catch (err) {
-        console.error("Supabase PATCH error:", err);
-      }
+    const { error } = await query;
+    if (error) {
+      console.error("Supabase PATCH error:", error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, id, status });
@@ -146,40 +128,30 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// 4. DELETE ORDER OR CLEAR ALL
+// 4. DELETE ORDER
 export async function DELETE(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     const clearAll = url.searchParams.get("clearAll");
+    const supabase = getSupabaseClient();
 
-    // Purge totale mémoire serveur
     if (clearAll === "true") {
-      global._serverOrdersStore = [];
-      const supabase = getSupabaseClient();
-      if (supabase) {
-        try {
-          await supabase.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-        } catch {}
-      }
-      return NextResponse.json({ success: true, message: "Mémoire serveur et base de données purgées" });
+      await supabase.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      return NextResponse.json({ success: true, message: "Toutes les commandes ont été supprimées" });
     }
 
-    // Suppression unitaire mémoire serveur
     if (id) {
-      if (global._serverOrdersStore) {
-        global._serverOrdersStore = global._serverOrdersStore.filter((o) => o.id !== id && o.order_number !== id);
-      }
-      const supabase = getSupabaseClient();
-      if (supabase) {
-        try {
-          await supabase.from("orders").delete().eq("id", id);
-        } catch {}
+      const isUuid = id.includes("-") && id.length > 30;
+      if (isUuid) {
+        await supabase.from("orders").delete().eq("id", id);
+      } else {
+        await supabase.from("orders").delete().eq("order_number", id);
       }
       return NextResponse.json({ success: true, id });
     }
 
-    return NextResponse.json({ success: false, error: "ID ou paramètre clearAll requis" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "ID ou clearAll requis" }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
