@@ -9,6 +9,8 @@ import {
   Clock, 
   Star, 
   ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
   Sparkles, 
   Phone, 
   MessageSquare,
@@ -66,6 +68,11 @@ const CAROUSEL_IMAGES = [
     caption: "Système modulaire 3-en-1 : Dragonne câble (A), Bloc maître 10 000 mAh (B) et Mini-bloc poche 5 000 mAh (C)"
   },
   { 
+    src: "/images/trozk-direct-plug.jpg", 
+    alt: "Mini-bloc 5000 mAh branché directement sous le téléphone",
+    caption: "Charge directe sans câble encombrant : téléphoner et jouer d'une seule main"
+  },
+  { 
     src: "/images/trozk-glow.jpg", 
     alt: "Batterie 15000 mAh avec charge rapide 22.5W",
     caption: "Cellule de batterie de qualité automobile 21700 — Puissance de charge rapide 22.5W"
@@ -88,7 +95,7 @@ const REVIEWS_DATA = [
     city: "Cotonou (Haie Vive)",
     rating: 5,
     date: "Il y a 1 jour",
-    comment: "Franchement le meilleur gadget tech que j'ai acheté cette année ! Le fait de pouvoir détacher la petite batterie de 5000 mAh pour téléphoner sans fil qui traîne est une révolution. Et l'écran LED fait trop stylé.",
+    comment: "Franchement le meilleur gadget tech que j'ai acheté cette année ! Le fait de pouvoir détacher la petite batterie de 5000 mAh pour téléphoner sans fil qui traîne est une révolution. Et l'écran LED fait super classe.",
   },
   {
     author: "Christelle M.",
@@ -102,7 +109,7 @@ const REVIEWS_DATA = [
     city: "Porto-Novo",
     rating: 5,
     date: "Il y a 4 jours",
-    comment: "Reçu en 24h chrono. Qualité des finitions au top, on sent la solidité des aimants et des matériaux. Le livreur m'a laissé ouvrir le paquet avant de payer.",
+    comment: "Reçu en 24h chrono. Qualité des finitions au top, on sent la solidité des aimants et des matériaux. Le livreur m'a laissé ouvrir le paquet et tester avant de payer.",
   },
 ];
 
@@ -113,7 +120,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Est-elle compatible avec mon téléphone (iPhone et Android) ?",
-    a: "Oui ! Le port de charge direct et le câble intégré sont en USB-C (compatible iPhone 15/16, Samsung, Xiaomi, Tecno, Infinix, Huawei, etc.). Vous pouvez également brancher n'importe quel câble Lightning pour les anciens modèles d'iPhone.",
+    a: "Oui ! Le port de charge direct et le câble intégré sont en USB-C (compatible iPhone 15/16, Samsung, Xiaomi, Tecno, Infinix, Huawei, etc.). Vous pouvez également brancher n'importe quel câble pour les anciens modèles d'iPhone.",
   },
   {
     q: "À quelle vitesse recharge-t-elle mon smartphone ?",
@@ -129,13 +136,6 @@ const FAQ_ITEMS = [
   },
 ];
 
-const LIVE_DEMO_SUBTITLES = [
-  { text: "Snap Magnétique Instantané : Assemblez ou séparez les 3 modules en 1 seconde", highlight: "Modularité 3-en-1" },
-  { text: "Charge Directe Sans Câble : Le mini-bloc 5000 mAh se branche directement sous le téléphone", highlight: "Zéro Câble Encombrant" },
-  { text: "Écran LED Interactif : Pourcentage précis et détection en direct de chaque module", highlight: "Contrôle en Temps Réel" },
-  { text: "Cellules 21700 Grade Automobile : 15 000 mAh réels pour 3 à 4 recharges complètes", highlight: "Puissance 22.5W Éclair" },
-];
-
 export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
@@ -145,12 +145,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
-
-  // Contrôles vidéo MP4 réelle
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
 
   const router = useRouter();
   const isSubmittingRef = useRef(false);
@@ -158,40 +153,14 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Lecture / Pause vidéo
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  // Son / Muet
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !videoRef.current.muted;
-    setIsMuted(videoRef.current.muted);
-  };
-
-  // Autoplay carrousel photos toutes les 4.5s
+  // Autoplay carrousel photos toutes les 3.8s (avec pause au survol)
   useEffect(() => {
+    if (isHeroHovered) return;
     const timer = setInterval(() => {
       setActiveImageIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
-    }, 4500);
+    }, 3800);
     return () => clearInterval(timer);
-  }, []);
-
-  // Défilement sous-titres démo
-  useEffect(() => {
-    if (!isPlaying) return;
-    const subTimer = setInterval(() => {
-      setDemoSubtitleIndex((prev) => (prev + 1) % LIVE_DEMO_SUBTITLES.length);
-    }, 3500);
-    return () => clearInterval(subTimer);
-  }, [isPlaying]);
+  }, [isHeroHovered]);
 
   const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
   const startTimeRef = useRef(Date.now());
@@ -293,12 +262,12 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   };
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen text-[#0F172A] font-sans antialiased overflow-x-hidden selection:bg-orange-200 selection:text-orange-950 pb-28 md:pb-0">
+    <div className="bg-[#FFFFFF] min-h-screen text-[#0F172A] font-sans antialiased overflow-x-hidden selection:bg-orange-200 selection:text-orange-950 pb-28 md:pb-0">
       
-      {/* 🌟 BANDEAU D'URGENCE & CONFIANCE HAUT */}
-      <div className="bg-[#0F172A] text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 border-b border-slate-800">
-        <span className="inline-block w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-        <span>⚡ ÉDITION LIMITÉE CYBERPUNK : <strong>Pochette rigide offerte</strong> + Paiement à la livraison après inspection</span>
+      {/* 🌟 BANDEAU D'ANNONCE HAUT (100% CLAIR & ÉPURÉ) */}
+      <div className="bg-orange-500 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 border-b border-orange-600 shadow-xs">
+        <span className="inline-block w-2 h-2 rounded-full bg-white animate-ping"></span>
+        <span>ÉDITION OFFICIELLE CYBERPUNK : <strong>Pochette de transport rigide offerte</strong> • Paiement à la livraison après inspection</span>
       </div>
 
       {/* 🌟 HEADER FIGMA-GRADE */}
@@ -317,7 +286,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           </div>
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
-            <button onClick={() => scrollToSection("demo")} className="hover:text-slate-900 transition-colors">Démonstration Vidéo</button>
+            <button onClick={() => scrollToSection("hero-video")} className="hover:text-slate-900 transition-colors">Vidéo Officielle</button>
             <button onClick={() => scrollToSection("modules")} className="hover:text-slate-900 transition-colors">Les 3 Modules</button>
             <button onClick={() => scrollToSection("specs")} className="hover:text-slate-900 transition-colors">Fiche Technique</button>
             <button onClick={() => scrollToSection("avis")} className="hover:text-slate-900 transition-colors">Avis clients</button>
@@ -329,34 +298,106 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
             className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl shadow-[0_4px_14px_-2px_rgba(249,115,22,0.4)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <span>Commander</span>
-            <span className="font-mono text-orange-200 font-semibold">(29.900 F)</span>
+            <span className="font-mono text-orange-100 font-semibold">(29 900 F)</span>
           </button>
         </div>
       </header>
 
-      {/* 🚀 HERO SECTION */}
-      <section className="pt-6 sm:pt-10 pb-12 sm:pb-16 px-4 sm:px-6 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          
-          {/* GALERIE INTERACTIVE */}
-          <div className="lg:col-span-6 flex flex-col items-center">
-            <div className="relative w-full max-w-[460px] aspect-square rounded-3xl bg-white border border-slate-200/80 p-3 shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] overflow-hidden group">
+      {/* 🚀 OPTION A : HERO BANNER CINÉMATIQUE AVEC VIDÉO IMMERSIVE EN HAUT */}
+      <section id="hero-video" className="pt-6 sm:pt-10 pb-8 sm:pb-12 px-4 sm:px-6 max-w-6xl mx-auto space-y-6">
+        
+        {/* EN-TÊTE PRINCIPAL FIGMA-GRADE */}
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200/80 px-3.5 py-1.5 rounded-full">
+            <div className="flex text-amber-400 text-xs">★★★★★</div>
+            <span className="text-xs font-bold text-orange-950">4.9/5 (+1 640 utilisateurs conquis au Bénin)</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+            Système Électrique Modulaire 3-en-1 <span className="text-orange-500 underline decoration-orange-300 decoration-wavy decoration-2">Trozk T3™</span>
+          </h1>
+
+          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+            Snap magnétique instantané, écran LED dynamique et mini-batterie de poche 5 000 mAh détachable qui se branche directement sous votre téléphone sans aucun fil.
+          </p>
+        </div>
+
+        {/* 🎬 LECTEUR VIDÉO HERO CINÉMATIQUE OFFICIEL (OPTION A) */}
+        <div className="relative w-full max-w-4xl mx-auto rounded-3xl overflow-hidden border border-slate-200/90 shadow-[0_20px_50px_-12px_rgba(249,115,22,0.18),inset_0_1px_0_0_rgba(255,255,255,0.9)] bg-slate-950 aspect-video group">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/GksPw7fmexo?autoplay=1&mute=1&loop=1&playlist=GksPw7fmexo&controls=1&playsinline=1&modestbranding=1&rel=0&enablejsapi=1"
+            title="Démonstration Vidéo Trozk T3 Modulaire 3-en-1"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className="w-full h-full border-0 object-cover"
+          />
+
+          {/* OVERLAY BADGE HAUT */}
+          <div className="pointer-events-none absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex items-center gap-2 bg-slate-900/85 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 rounded-xl border border-white/10 shadow-md">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            <span>DÉMONSTRATION OFFICIELLE TROZK • 5 FAÇONS DE L&apos;UTILISER</span>
+          </div>
+
+          {/* OVERLAY BADGE BAS DROITE */}
+          <div className="pointer-events-none absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 hidden sm:flex items-center gap-2 bg-slate-900/85 backdrop-blur-md text-orange-300 text-[11px] font-mono font-bold px-3 py-1.5 rounded-xl border border-orange-500/20 shadow-md">
+            <Zap className="w-3.5 h-3.5 text-orange-400" />
+            <span>Puissance 22.5W Fast Charge</span>
+          </div>
+        </div>
+
+        {/* CTA RAPIDE SOUS VIDÉO */}
+        <div className="max-w-2xl mx-auto text-center space-y-3 pt-2">
+          <button
+            onClick={scrollToOrder}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-base sm:text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(249,115,22,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+          >
+            <span>COMMANDER MAINTENANT (29 900 FCFA)</span>
+            <span className="text-orange-100 text-xs sm:text-sm font-normal">— Paiement à la réception</span>
+          </button>
+        </div>
+
+        {/* 📸 CARROUSEL DE PHOTOS AUTO-DÉFILANT AVEC PAUSE AU SURVOL */}
+        <div 
+          className="pt-6 max-w-4xl mx-auto"
+          onMouseEnter={() => setIsHeroHovered(true)}
+          onMouseLeave={() => setIsHeroHovered(false)}
+        >
+          <div className="relative rounded-3xl bg-slate-50 border border-slate-200/90 p-3 sm:p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
+            <div className="relative aspect-[4/3] sm:aspect-[16/9] max-h-[440px] rounded-2xl overflow-hidden bg-[#ECECEE] flex items-center justify-center">
               <img 
                 src={CAROUSEL_IMAGES[activeImageIndex].src} 
                 alt={CAROUSEL_IMAGES[activeImageIndex].alt}
-                className="w-full h-full object-contain rounded-2xl transition-all duration-500 bg-[#ECECEE]"
+                className="w-full h-full object-contain transition-all duration-500"
               />
-              <div className="absolute top-5 left-5 bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+              
+              <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
                 <Flame className="w-4 h-4 text-orange-400" />
-                <span>Système Modulaire 3-en-1</span>
+                <span>Vue {activeImageIndex + 1} / {CAROUSEL_IMAGES.length}</span>
               </div>
-              <div className="absolute bottom-5 left-5 right-5 bg-slate-900/85 backdrop-blur-md text-white/95 px-3 py-2 rounded-xl text-xs font-medium text-center shadow-lg">
+
+              <div className="absolute bottom-4 left-4 right-4 bg-slate-900/85 backdrop-blur-md text-white/95 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-center shadow-lg">
                 {CAROUSEL_IMAGES[activeImageIndex].caption}
               </div>
+
+              {/* FLÈCHES DE NAVIGATION MANUELLE */}
+              <button
+                onClick={() => setActiveImageIndex((prev) => (prev === 0 ? CAROUSEL_IMAGES.length - 1 : prev - 1))}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-900 shadow-md flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                title="Image précédente"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setActiveImageIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-900 shadow-md flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                title="Image suivante"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* MINIATURES */}
-            <div className="grid grid-cols-5 gap-2 sm:gap-2.5 mt-4 w-full max-w-[460px]">
+            {/* MINIATURES SYNCHRONISÉES */}
+            <div className="grid grid-cols-6 gap-2 sm:gap-2.5 mt-3">
               {CAROUSEL_IMAGES.map((img, idx) => (
                 <button
                   key={idx}
@@ -372,100 +413,44 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               ))}
             </div>
           </div>
+        </div>
 
-          {/* TEXTES & HOOK */}
-          <div className="lg:col-span-6 space-y-5">
-            <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200/80 px-3.5 py-1.5 rounded-full">
-              <div className="flex text-amber-400 text-xs">★★★★★</div>
-              <span className="text-xs font-bold text-orange-950">4.9/5 (+1 640 utilisateurs conquis)</span>
+        {/* 3 BADGES DE RÉASSURANCE CLÉS */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-4xl mx-auto pt-2">
+          <div className="bg-white border border-slate-200/90 p-3.5 rounded-2xl flex items-center gap-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+              <Truck className="w-5 h-5" />
             </div>
-
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-              Fini les pavés lourds et les fils emmêlés. Voici le <span className="text-orange-500 underline decoration-orange-300 decoration-wavy decoration-2">Système Modulaire 3-en-1</span>.
-            </h1>
-
-            <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-              Snap magnétique, écran LED dynamique et mini-batterie de poche 5 000 mAh détachable qui se branche directement sous votre smartphone sans aucun fil qui traîne.
-            </p>
-
-            {/* 4 BADGES CLÉS */}
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
-                  <Layers className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-900">3 Modules A+B+C</div>
-                  <div className="text-[11px] text-slate-500 font-medium">Séparables à volonté</div>
-                </div>
-              </div>
-
-              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <Zap className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-900">Charge 22.5W Éclair</div>
-                  <div className="text-[11px] text-slate-500 font-medium">0 à 60% en 30 min</div>
-                </div>
-              </div>
-
-              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <Tv className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-900">Écran LED Rétro</div>
-                  <div className="text-[11px] text-slate-500 font-medium">Pourcentage précis</div>
-                </div>
-              </div>
-
-              <div className="bg-white border border-slate-200 p-3 rounded-2xl flex items-center gap-3 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-900">Cellules 21700 EV</div>
-                  <div className="text-[11px] text-slate-500 font-medium">Standard sécurité Tesla</div>
-                </div>
-              </div>
+            <div>
+              <div className="text-xs font-bold text-slate-900">Livraison 24h & Test</div>
+              <div className="text-[11px] text-slate-500 font-medium">Paiement après vérification</div>
             </div>
+          </div>
 
-            {/* CARTE PRIX HERO */}
-            <div className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm space-y-4 pt-4">
-              <div className="flex items-baseline justify-between">
-                <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Prix Promo Spécial</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl sm:text-4xl font-black font-mono text-orange-600 tracking-tight">29.900 FCFA</span>
-                    <span className="text-base text-slate-400 line-through font-mono">45.000 FCFA</span>
-                  </div>
-                </div>
-                <span className="bg-orange-50 text-orange-700 border border-orange-200 font-bold text-xs px-2.5 py-1 rounded-full">
-                  ÉCONOMISEZ 15.100 FCFA
-                </span>
-              </div>
-
-              <button
-                onClick={scrollToOrder}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-base sm:text-lg py-4 rounded-2xl shadow-[0_8px_24px_-4px_rgba(249,115,22,0.5)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-              >
-                <span>COMMANDER MAINTENANT</span>
-                <span className="text-orange-200 text-sm font-normal">— Paiement à la réception</span>
-              </button>
-
-              <div className="flex items-center justify-center gap-4 text-xs font-medium text-slate-500 pt-1">
-                <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-orange-500" /> Livraison 24h</span>
-                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Garantie 1 an</span>
-                <span className="flex items-center gap-1"><Box className="w-3.5 h-3.5 text-orange-500" /> Sacoche offerte</span>
-              </div>
+          <div className="bg-white border border-slate-200/90 p-3.5 rounded-2xl flex items-center gap-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5" />
             </div>
+            <div>
+              <div className="text-xs font-bold text-slate-900">Cellules 21700 Grade EV</div>
+              <div className="text-[11px] text-slate-500 font-medium">Garantie fabricant 1 an</div>
+            </div>
+          </div>
 
+          <div className="bg-white border border-slate-200/90 p-3.5 rounded-2xl flex items-center gap-3 shadow-xs">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <Box className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-slate-900">Pochette Rigide Offerte</div>
+              <div className="text-[11px] text-slate-500 font-medium">Coffret zippé sur mesure inclus</div>
+            </div>
           </div>
         </div>
+
       </section>
 
-      {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (MODÈLE UMÉI ÉPURÉ - UN SEUL CHOIX SANS PACK) */}
+      {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (PLACEMENT PRIORITAIRE SOUS HERO VIDÉO & BADGES) */}
       <UmeiStyleOrderSection
         productSlug={slug}
         productTitle="Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)"
@@ -495,74 +480,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         }}
       />
 
-      {/* 🎬 LECTEUR VIDÉO MP4 RÉEL AVEC SON */}
-      <section id="demo" className="py-12 sm:py-16 bg-slate-900 text-white px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-orange-400 font-bold bg-orange-950/80 px-3 py-1 rounded-full border border-orange-500/30 inline-flex items-center gap-1.5">
-              <Play className="w-3 h-3 fill-current text-orange-400" />
-              <span>Démonstration & Prise en Main Réelle</span>
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              Regardez la batterie Trozk T3 en action
-            </h2>
-            <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
-              Découvrez la fluidité du détachement magnétique et le branchement direct sous le smartphone.
-            </p>
-          </div>
-
-          <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-black shadow-2xl max-w-2xl mx-auto aspect-[9/16] sm:aspect-[4/5] max-h-[580px] flex items-center justify-center">
-            <video
-              ref={videoRef}
-              src="/videos/trozk-demo.mp4"
-              playsInline
-              loop
-              autoPlay
-              className="w-full h-full object-contain"
-            />
-            
-            {/* BOUTONS FLOTTANTS VIDÉO */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
-              <button
-                onClick={toggleMute}
-                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
-                title={isMuted ? "Activer le son" : "Couper le son"}
-              >
-                {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-              </button>
-
-              <button
-                onClick={togglePlay}
-                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
-                title={isPlaying ? "Mettre en pause" : "Lire la vidéo"}
-              >
-                {isPlaying ? <Pause className="w-4 h-4 text-orange-400" /> : <Play className="w-4 h-4 text-orange-400" />}
-              </button>
-            </div>
-
-            {/* OVERLAY DYNAMIQUE SOUS-TITRES */}
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-6 flex flex-col sm:flex-row items-center justify-between gap-3 z-20">
-              <div className="space-y-1 text-center sm:text-left">
-                <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider text-orange-400 bg-orange-950/90 px-2.5 py-0.5 rounded-md border border-orange-700/60">
-                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].highlight}
-                </span>
-                <p className="text-sm sm:text-base font-semibold text-white">
-                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].text}
-                </p>
-              </div>
-
-              <button
-                onClick={scrollToOrder}
-                className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md transition-all active:scale-95"
-              >
-                Commander (29.900 F)
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 🧩 DÉTAIL DES 3 MODULES A, B, C */}
+      {/* 🧩 DÉTAIL DES 3 MODULES A, B, C (100% THÈME CLAIR) */}
       <section id="modules" className="py-14 sm:py-20 px-4 sm:px-6 max-w-5xl mx-auto space-y-12">
         <div className="text-center space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600 bg-orange-50 border border-orange-200 px-3.5 py-1 rounded-full">
@@ -579,7 +497,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* MODULE A */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-xs hover:border-orange-300 transition-all">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 space-y-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:border-orange-300 transition-all">
             <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-lg shadow-xs">
               A
             </div>
@@ -593,7 +511,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           </div>
 
           {/* MODULE B */}
-          <div className="bg-white border-2 border-orange-500/80 rounded-3xl p-6 space-y-4 shadow-md relative overflow-hidden">
+          <div className="bg-white border-2 border-orange-500/80 rounded-3xl p-6 space-y-4 shadow-[0_8px_30px_-6px_rgba(249,115,22,0.15)] relative overflow-hidden">
             <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-xl">
               Bloc Maître
             </div>
@@ -610,7 +528,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           </div>
 
           {/* MODULE C */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-xs hover:border-orange-300 transition-all">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 space-y-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:border-orange-300 transition-all">
             <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-lg shadow-xs">
               C
             </div>
@@ -626,11 +544,11 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* 📐 FICHE TECHNIQUE DÉTAILLÉE */}
-      <section id="specs" className="py-14 sm:py-20 bg-slate-100/80 border-y border-slate-200 px-4 sm:px-6">
+      {/* 📐 FICHE TECHNIQUE DÉTAILLÉE (100% THÈME CLAIR) */}
+      <section id="specs" className="py-14 sm:py-20 bg-slate-50 border-y border-slate-200 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-white border border-slate-200 px-3.5 py-1 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-white border border-slate-200 px-3.5 py-1 rounded-full shadow-2xs">
               Spécifications Officielles
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
@@ -643,28 +561,28 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               <img src="/images/trozk-dimensions.jpg" alt="Dimensions Trozk TP11" className="w-full max-h-[380px] object-contain rounded-2xl" />
             </div>
 
-            <div className="space-y-4">
-              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+            <div className="space-y-3.5">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase">Capacité Totale</span>
                 <span className="font-mono font-bold text-slate-900 text-sm">15 000 mAh (10000 + 5000)</span>
               </div>
 
-              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase">Technologie Cellule</span>
                 <span className="font-mono font-bold text-slate-900 text-sm">Lithium-ion 21700 Grade Automobile</span>
               </div>
 
-              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase">Puissance de Charge</span>
                 <span className="font-mono font-bold text-orange-600 text-sm">22.5W Fast Charge (PD / QC)</span>
               </div>
 
-              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase">Dimensions Exactes</span>
                 <span className="font-mono font-bold text-slate-900 text-sm">80.4 mm × 28.9 mm × 116 mm</span>
               </div>
 
-              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+              <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-500 uppercase">Accessoire Inclus</span>
                 <span className="font-mono font-bold text-emerald-600 text-sm">Pochette rigide zippée antichoc offerte</span>
               </div>
@@ -673,34 +591,34 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* 🌟 AVIS CLIENTS VÉRIFIÉS */}
-      <section id="avis" className="py-14 sm:py-20 bg-slate-900 text-white px-4 sm:px-6">
+      {/* 🌟 AVIS CLIENTS VÉRIFIÉS (100% THÈME CLAIR FIGMA-GRADE) */}
+      <section id="avis" className="py-14 sm:py-20 bg-white px-4 sm:px-6">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-1.5 bg-orange-950/80 border border-orange-800 text-orange-400 px-3.5 py-1 rounded-full text-xs font-bold">
-              <span>★★★★★</span>
+            <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 px-3.5 py-1 rounded-full text-xs font-bold">
+              <span className="text-amber-500">★★★★★</span>
               <span>Avis Vérifiés au Bénin</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
               Ce que pensent nos premiers utilisateurs
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {REVIEWS_DATA.map((rev, i) => (
-              <div key={i} className="bg-slate-800/80 border border-slate-700/80 p-6 rounded-3xl space-y-4 flex flex-col justify-between">
+              <div key={i} className="bg-slate-50 border border-slate-200/90 p-6 rounded-3xl space-y-4 flex flex-col justify-between shadow-2xs">
                 <div className="space-y-3">
                   <div className="flex text-amber-400 text-sm">★★★★★</div>
-                  <p className="text-sm text-slate-300 leading-relaxed italic">
+                  <p className="text-sm text-slate-700 leading-relaxed italic">
                     « {rev.comment} »
                   </p>
                 </div>
-                <div className="pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs">
+                <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
                   <div>
-                    <div className="font-bold text-white">{rev.author}</div>
-                    <div className="text-orange-400 font-medium">{rev.city}</div>
+                    <div className="font-bold text-slate-900">{rev.author}</div>
+                    <div className="text-orange-600 font-medium">{rev.city}</div>
                   </div>
-                  <span className="text-slate-500">{rev.date}</span>
+                  <span className="text-slate-400">{rev.date}</span>
                 </div>
               </div>
             ))}
@@ -708,11 +626,11 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </section>
 
-      {/* ❓ FOIRE AUX QUESTIONS */}
-      <section id="faq" className="py-14 sm:py-20 bg-slate-100/80 border-t border-slate-200 px-4 sm:px-6">
+      {/* ❓ FOIRE AUX QUESTIONS (100% THÈME CLAIR) */}
+      <section id="faq" className="py-14 sm:py-20 bg-slate-50 border-t border-slate-200 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-white border border-slate-200 px-3.5 py-1 rounded-full">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-600 bg-white border border-slate-200 px-3.5 py-1 rounded-full shadow-2xs">
               FAQ
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
@@ -722,7 +640,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
 
           <div className="space-y-3">
             {FAQ_ITEMS.map((item, index) => (
-              <div key={index} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+              <div key={index} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-2xs">
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                   className="w-full px-5 py-4 text-left font-bold text-slate-900 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors cursor-pointer"
