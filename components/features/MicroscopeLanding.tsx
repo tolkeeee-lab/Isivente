@@ -58,19 +58,24 @@ const BUNDLES: BundleOption[] = [
 
 const CAROUSEL_IMAGES = [
   { 
-    src: "/images/microscope-hero.jpg", 
-    alt: "Microscope Numérique Portable HD 1000X",
-    caption: "Boîtier ergonomique avec écran LCD couleur 2.0\" et bague de mise au point micrométrique"
+    src: "/images/microscope-monde-decouverte.jpg", 
+    alt: "Un autre monde dans ses mains - Mini microscope numérique",
+    caption: "Écran couleur LCD 2.0\" intégré, grossissement HD 1000X, éclairage 8 LEDs et batterie rechargeable USB"
   },
   { 
-    src: "/images/microscope-skin.jpg", 
-    alt: "Inspection de la peau et des pores au microscope",
-    caption: "Observation directe des pores cutanés, racines capillaires et micro-textures"
+    src: "/images/microscope-scientifique-action.jpg", 
+    alt: "Un petit scientifique en action - Observer Découvrir Apprendre",
+    caption: "Développe la curiosité scientifique des enfants et les éloigne naturellement des écrans de smartphones"
   },
   { 
-    src: "/images/microscope-circuit.jpg", 
-    alt: "Vérification des billets de banque et micro-soudures",
-    caption: "Contrôle des filigranes de sécurité et inspection des composants électroniques SMD"
+    src: "/images/microscope-detection-poux.jpg", 
+    alt: "Détection des poux, lentes et examen du cuir chevelu",
+    caption: "Examen direct et rapide du cuir chevelu, des racines, des fibres et des objets du quotidien"
+  },
+  { 
+    src: "/images/microscope-cadeau-unboxing.jpg", 
+    alt: "Le cadeau éducatif qui fait vraiment plaisir",
+    caption: "Idée cadeau originale et ludique prête à offrir avec son coffret complet et ses accessoires"
   },
 ];
 
@@ -271,8 +276,8 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             </div>
           </div>
 
-          {/* Miniatures */}
-          <div className="grid grid-cols-3 gap-2.5">
+          {/* Miniatures 4 photos */}
+          <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
             {CAROUSEL_IMAGES.map((img, idx) => (
               <button
                 key={idx}
@@ -307,6 +312,123 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             <div className="text-[10px] text-slate-500 font-mono">Batterie USB-C</div>
           </div>
         </div>
+
+        {/* ── SECTION VISUELLE 1 : UN PETIT SCIENTIFIQUE EN ACTION ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
+            <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
+              <img 
+                src="/images/microscope-scientifique-action.jpg" 
+                alt="Un petit scientifique en action"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-6 sm:p-8 space-y-4">
+              <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600 stroke-[1.75]" />
+                <span>Alternative Intelligente aux Écrans</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-[-0.02em] text-slate-900 leading-tight">
+                Éveillez sa curiosité et son intelligence loin des smartphones
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Offrez à votre enfant le plaisir d'observer la nature de ses propres yeux. Grâce à l'écran LCD haute définition, chaque feuille, fleur, insecte ou objet du quotidien devient une aventure scientifique captivante.
+              </p>
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <span>Stimule la concentration et le goût de la recherche</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <span>Prise en main immédiate et adaptée aux petites mains</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <span>Rechargeable par câble USB, sans piles à remplacer</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION VISUELLE 2 : DÉTECTION POUX & CUIR CHEVELU ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
+            <div className="p-6 sm:p-8 space-y-4 order-2 md:order-1">
+              <div className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
+                <Scan className="w-3.5 h-3.5 text-rose-600 stroke-[1.75]" />
+                <span>Santé & Hygiène Familiale</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-[-0.02em] text-slate-900 leading-tight">
+                Vérifiez les poux, lentes et la santé des cheveux en 5 secondes
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Plus besoin de chercher à l'aveugle ou de vous inquiéter inutilement. Posez simplement l'embout lumineux sur les racines des cheveux : l'écran affiche instantanément les micro-détails avec une netteté absolue.
+              </p>
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
+                  <span>Inspection des cheveux et du cuir chevelu sans douleur</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
+                  <span>Grossissement optique jusqu'à 1000X avec éclairage 8 LED</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
+                  <span>Utile pour toute la famille (peau, cheveux, petits bobos)</span>
+                </div>
+              </div>
+            </div>
+            <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px] order-1 md:order-2">
+              <img 
+                src="/images/microscope-detection-poux.jpg" 
+                alt="Détection des poux et cuir chevelu au microscope"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION VISUELLE 3 : LE CADEAU QUI FAIT VRAIMENT PLAISIR ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
+            <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
+              <img 
+                src="/images/microscope-cadeau-unboxing.jpg" 
+                alt="Le cadeau éducatif idéal pour enfant"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-6 sm:p-8 space-y-4">
+              <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600 stroke-[1.75]" />
+                <span>Idée Cadeau Prête à Offrir</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-[-0.02em] text-slate-900 leading-tight">
+                Le cadeau original et ludique qui fait briller les yeux
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Anniversaire, récompense scolaire ou fête : ce microscope est le cadeau parfait qui combine plaisir de jeu et apprentissage. Livré dans son coffret protecteur officiel avec tous ses câbles.
+              </p>
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <span>Coffret soigné prêt à emballer ou offrir</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <span>Appareil léger et robuste avec dragonne de sécurité</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <span>Test du produit autorisé à la livraison avant paiement</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── CAS D'USAGE & DOMAINES D'APPLICATION ── */}
         <section className="space-y-4">
@@ -402,7 +524,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           <UmeiStyleOrderSection
             productSlug="microscope"
             productTitle="Microscope Numérique Portable HD 1000X"
-            productImage="/images/microscope-hero.jpg"
+            productImage="/images/microscope-monde-decouverte.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => setSelectedBundle(b)}
