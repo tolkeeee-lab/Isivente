@@ -82,72 +82,56 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
       window.dispatchEvent(
         new CustomEvent("isivente_new_order", { detail: payload })
       );
-      // Cross-tab broadcast pour réveiller le dashboard admin dans un autre onglet
       if ("BroadcastChannel" in window) {
         const bc = new BroadcastChannel("isivente_orders_channel");
         bc.postMessage({ type: "new_order", data: payload });
         bc.close();
       }
       localStorage.setItem("isivente_last_order_trigger", JSON.stringify({ ...payload, _t: Date.now() }));
-      
-      // Déclencher le webhook de notification mobile & email avec keepalive garanti
-      try {
-        await fetch("/api/notify", {
-          method: "POST",
-          keepalive: true,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ order: payload }),
-        });
-      } catch (notifyErr) {
-        console.warn("Notification dispatch notice:", notifyErr);
-      }
     } catch (e) {
       console.warn("Realtime local trigger error:", e);
     }
   }
 
-  // 3. Insertion dans Supabase avec boucle de repli automatique en cas de colonne manquante
-  let attempts = 0;
+  // 3. Envoi prioritaire au serveur Next.js (/api/orders) qui insère dans Supabase et envoie l'email
   let finalResult = payload;
-  while (attempts < 5) {
-    attempts++;
-    const res = await supabase.from("orders").insert([payload]).select();
+  let serverSuccess = false;
 
-    if (!res.error) {
-      finalResult = res.data?.[0] || payload;
-      break;
+  try {
+    const srvRes = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const srvData = await srvRes.json().catch(() => ({}));
+    if (srvData.success && srvData.order) {
+      finalResult = srvData.order;
+      serverSuccess = true;
     }
+  } catch (srvErr) {
+    console.warn("Server POST error, fallback to direct client insert:", srvErr);
+  }
 
-    // Si une colonne n'existe pas dans la table Supabase, la retirer et réessayer
-    const match = res.error.message.match(/Could not find the '([^']+)' column/);
-    if (match && match[1]) {
-      const missingColumn = match[1];
-      delete payload[missingColumn];
-      continue;
-    }
-
-    // Si erreur de type sur order_number (ex: attendu integer)
-    if (res.error.message.includes("order_number") || res.error.code === "22P02") {
-      payload.order_number = randomNum;
-      continue;
-    }
-
-    console.warn("Supabase direct insert notice:", res.error.message);
-    // Fallback serveur immédiat : envoyer vers /api/orders pour insertion serveur
+  // Si le serveur n'a pas répondu, secours direct client Supabase + /api/notify
+  if (!serverSuccess) {
     try {
-      const srvRes = await fetch("/api/orders", {
+      const res = await supabase.from("orders").insert([payload]).select();
+      if (!res.error && res.data?.[0]) {
+        finalResult = res.data[0];
+      }
+    } catch (clientErr) {
+      console.warn("Client Supabase fallback error:", clientErr);
+    }
+
+    try {
+      await fetch("/api/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ order: payload }),
       });
-      const srvData = await srvRes.json();
-      if (srvData.success && srvData.order) {
-        finalResult = srvData.order;
-      }
-    } catch (srvErr) {
-      console.error("Server fallback insert error:", srvErr);
+    } catch (notifyErr) {
+      console.warn("Client fallback notify error:", notifyErr);
     }
-    break;
   }
 
   // Stocker dans le cache anti-doublon

@@ -84,8 +84,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    // Déclencher l'alerte email & mobile immédiatement
-    sendOrderNotification(data?.[0] || payload).catch(e => console.error("Server notify error:", e));
+    // Déclencher l'alerte email & mobile immédiatement de manière attendue (AWAITED)
+    try {
+      await sendOrderNotification(data?.[0] || payload);
+    } catch (e) {
+      console.error("Server notify error:", e);
+    }
 
     return NextResponse.json({
       success: true,
