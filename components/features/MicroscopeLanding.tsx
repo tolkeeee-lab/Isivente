@@ -7,6 +7,8 @@ import {
   Truck, 
   Star, 
   ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
   ZoomIn, 
   BatteryCharging, 
   Cpu, 
@@ -16,7 +18,10 @@ import {
   Coins, 
   Bug, 
   Sparkles,
-  Check
+  Volume2,
+  VolumeX,
+  Play,
+  Pause
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
@@ -25,32 +30,32 @@ import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 
 const BUNDLES: BundleOption[] = [
   {
+    id: "solo",
+    name: "Pack Découverte (1 Microscope)",
+    subtitle: "1 Microscope de poche avec écran couleur 2.0\", 8 LEDs et batterie rechargeable",
+    price: 29900,
+    originalPrice: 45000,
+    savings: 15100,
+    quantity: 1,
+    popular: false,
+  },
+  {
     id: "duo",
     name: "Pack Famille & Duo (2 Microscopes)",
     subtitle: "2 Microscopes HD 1000X complets avec câbles de charge et dragonnes",
-    price: 29900,
-    originalPrice: 50000,
+    price: 49900,
+    originalPrice: 70000,
     savings: 20100,
     quantity: 2,
     popular: true,
   },
   {
-    id: "solo",
-    name: "Pack Découverte (1 Microscope)",
-    subtitle: "1 Microscope de poche avec écran couleur 2.0\", 8 LEDs et batterie rechargeable",
-    price: 16900,
-    originalPrice: 25000,
-    savings: 8100,
-    quantity: 1,
-    popular: false,
-  },
-  {
     id: "pro_sd",
     name: "Pack Explorateur VIP (+ Carte SD 32Go)",
     subtitle: "1 Microscope HD 1000X + Carte mémoire 32Go pour capture photo et vidéo",
-    price: 21900,
-    originalPrice: 32000,
-    savings: 10100,
+    price: 34900,
+    originalPrice: 50000,
+    savings: 15100,
     quantity: 1,
     popular: false,
   },
@@ -162,6 +167,7 @@ import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/me
 export default function MicroscopeLanding({ slug }: { slug: string }) {
   const router = useRouter();
   const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
@@ -172,13 +178,57 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
   const orderSectionRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const explorationScrollRef = useRef<HTMLDivElement>(null);
+  const [isExplorationHovered, setIsExplorationHovered] = useState(false);
+
+  // Auto-play vidéo en boucle et sans blocage
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
+
+  // Défilement automatique du carrousel photo Hero (3.8s)
+  useEffect(() => {
+    if (isHeroHovered) return;
+    const timer = setInterval(() => {
+      setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
+    }, 3800);
+    return () => clearInterval(timer);
+  }, [isHeroHovered]);
+
+  // Défilement automatique de la galerie d'exploration TikTok
+  useEffect(() => {
+    if (isExplorationHovered) return;
+    const interval = setInterval(() => {
+      if (explorationScrollRef.current) {
+        const el = explorationScrollRef.current;
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (el.scrollLeft >= maxScroll - 15) {
+          el.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          el.scrollBy({ left: 240, behavior: "smooth" });
+        }
+      }
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [isExplorationHovered]);
+
+  const scrollExploration = (direction: "left" | "right") => {
+    if (explorationScrollRef.current) {
+      const offset = direction === "left" ? -240 : 240;
+      explorationScrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     trackUserSession(slug || "microscope", 0, false, "sess_" + Date.now());
     trackViewContent({
       content_name: "Microscope Numérique Portable HD 1000X",
       content_ids: ["microscope"],
-      value: 16900,
+      value: 29900,
       currency: "XOF",
     });
   }, [slug]);
@@ -275,7 +325,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(99,102,241,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
             <span>Commander</span>
-            <span className="font-mono tabular-nums text-indigo-100 text-[11px]">(16 900 F)</span>
+            <span className="font-mono tabular-nums text-indigo-100 text-[11px]">(29 900 F)</span>
           </button>
         </div>
       </header>
@@ -299,20 +349,41 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           </p>
         </div>
 
-        {/* ── GALERIE PHOTOS FOND BLANC BISEAUTÉ ── */}
-        <div className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-5 space-y-3">
+        {/* ── GALERIE PHOTOS FOND BLANC BISEAUTÉ AVEC DÉFILEMENT AUTO ── */}
+        <div 
+          onMouseEnter={() => setIsHeroHovered(true)}
+          onMouseLeave={() => setIsHeroHovered(false)}
+          className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-5 space-y-3"
+        >
           <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60">
             <img 
               src={CAROUSEL_IMAGES[activeImgIndex].src} 
               alt={CAROUSEL_IMAGES[activeImgIndex].alt}
               className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
             />
+            
+            {/* Boutons précédents / suivants discrets */}
+            <button
+              onClick={() => setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer"
+              aria-label="Image précédente"
+            >
+              <ChevronLeft className="w-4 h-4 stroke-[2]" />
+            </button>
+            <button
+              onClick={() => setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer"
+              aria-label="Image suivante"
+            >
+              <ChevronRight className="w-4 h-4 stroke-[2]" />
+            </button>
+
             <div className="absolute bottom-3 inset-x-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700 text-center font-medium shadow-md">
               {CAROUSEL_IMAGES[activeImgIndex].caption}
             </div>
           </div>
 
-          {/* Miniatures 4 photos */}
+          {/* Miniatures 4 photos avec indicateur actif */}
           <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
             {CAROUSEL_IMAGES.map((img, idx) => (
               <button
@@ -349,7 +420,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           </div>
         </div>
 
-        {/* ── SECTION VIDÉO DÉMONSTRATION TIKTOK LIVE ── */}
+        {/* ── SECTION VIDÉO DÉMONSTRATION TIKTOK (AUTOPLAY AVEC CONTRÔLES) ── */}
         <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-6">
           <div className="text-center space-y-2 max-w-xl mx-auto">
             <div className="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
@@ -360,21 +431,24 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
               Regardez ce que vos enfants peuvent observer en direct
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Voyez la simplicité d'utilisation et la précision optique en situation réelle.
+              La vidéo se lance automatiquement. Vous pouvez la mettre en pause ou réactiver le son à tout moment.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            {/* Lecteur Vidéo Vertical TikTok HD */}
+            {/* Lecteur Vidéo Vertical TikTok HD AutoPlay */}
             <div className="md:col-span-6 lg:col-span-5 flex justify-center">
               <div className="relative w-full max-w-[290px] aspect-[9/16] rounded-3xl overflow-hidden bg-slate-950 border-4 border-slate-900 shadow-2xl">
                 <video
+                  ref={videoRef}
                   src="/videos/microscope-demo.mp4"
                   poster="/images/microscope-video-cover.webp"
-                  controls
+                  autoPlay
+                  muted
                   playsInline
                   loop
-                  preload="metadata"
+                  controls
+                  preload="auto"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -427,7 +501,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                 onClick={scrollToOrder}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(99,102,241,0.4)] transition-all cursor-pointer"
               >
-                <span>Commander maintenant (16 900 FCFA)</span>
+                <span>Commander maintenant (29 900 FCFA)</span>
               </button>
             </div>
           </div>
@@ -608,8 +682,12 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           </div>
         </section>
 
-        {/* ── GALERIE D'EXPLORATION MICROSCOPIQUE (TIKTOK SLIDES) ── */}
-        <section className="space-y-4">
+        {/* ── GALERIE D'EXPLORATION MICROSCOPIQUE (TIKTOK SLIDES AVEC DÉFILEMENT AUTO) ── */}
+        <section 
+          onMouseEnter={() => setIsExplorationHovered(true)}
+          onMouseLeave={() => setIsExplorationHovered(false)}
+          className="space-y-4"
+        >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600">
@@ -620,12 +698,33 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                 Ce qui devient visible sous la lentille :
               </h2>
             </div>
-            <div className="text-[11px] text-slate-500 font-medium">
-              Faites glisser pour explorer toutes les observations →
+            
+            {/* Contrôles de navigation fléchés */}
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">
+                Défilement automatique • Explorer :
+              </span>
+              <button
+                onClick={() => scrollExploration("left")}
+                className="w-8 h-8 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+                aria-label="Défiler vers la gauche"
+              >
+                <ChevronLeft className="w-4 h-4 stroke-[2]" />
+              </button>
+              <button
+                onClick={() => scrollExploration("right")}
+                className="w-8 h-8 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-700 hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+                aria-label="Défiler vers la droite"
+              >
+                <ChevronRight className="w-4 h-4 stroke-[2]" />
+              </button>
             </div>
           </div>
 
-          <div className="flex gap-3.5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-thin -mx-2 px-2">
+          <div 
+            ref={explorationScrollRef}
+            className="flex gap-3.5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-thin -mx-2 px-2"
+          >
             {TIKTOK_EXPLORATION_SLIDES.map((slide, idx) => (
               <div 
                 key={idx}
@@ -799,12 +898,12 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
 
       {/* ── BARRE MOBILE FLOTTANTE POUR COMMANDER ── */}
       <StickyMobileCtaBar
-        price={16900}
+        price={29900}
         accentColor="#4f46e5"
         buttonText="Commander"
         targetSectionId="commander"
         whatsappNumber="2290192901817"
-        whatsappMessage="Bonjour Isivente, je souhaite commander le Microscope Numérique Portable HD 1000X à 16 900 FCFA avec livraison à domicile."
+        whatsappMessage="Bonjour Isivente, je souhaite commander le Microscope Numérique Portable HD 1000X à 29 900 FCFA avec livraison à domicile."
       />
 
     </div>
