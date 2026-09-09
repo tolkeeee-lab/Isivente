@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
@@ -12,75 +12,67 @@ import {
   Check,
   ArrowRight,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
   Zap,
   BatteryCharging,
   Clock,
   ShieldCheck,
   PackageCheck,
-  MessageCircle,
-  RefreshCw,
-  Utensils,
-  Smile,
+  Truck,
+  UtensilsCrossed,
   CheckCircle2,
+  ThumbsUp,
+  RotateCw,
+  Sparkle,
+  BadgeCheck,
 } from "lucide-react";
 
-/* ─────────────────────────────────────────── TYPES & DATA */
-interface Bundle {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-  originalPrice: number;
-  savings: number | null;
-  badge: string | null;
-  description: string;
-  popular?: boolean;
-  freeShipping?: boolean;
-}
-
-const BUNDLES: Bundle[] = [
+/* ─────────────────────────────────────────── PACKS & DONNÉES DE L'OFFRE */
+const BUNDLES: BundleOption[] = [
   {
     id: "solo",
-    name: "Éplucheur Automatique ChefPeel™ Pro",
+    name: "Pack Découverte (1 Éplucheur)",
     quantity: 1,
     price: 14900,
-    originalPrice: 19900,
-    savings: null,
-    badge: null,
-    description: "1x Éplucheur Automatique ChefPeel™ + Câble USB + Manuel",
+    original_price: 19900,
     popular: true,
-    freeShipping: false,
+  },
+  {
+    id: "duo",
+    name: "Pack Sérénité Duo (2 Éplucheurs)",
+    quantity: 2,
+    price: 24900,
+    original_price: 39800,
+    badge: "Offre Spéciale Cadeau (-5 000 F)",
+    popular: false,
   },
 ];
 
 const CAROUSEL_SLIDES = [
   {
     src: "/images/peeler-hero.jpg",
-    alt: "ChefPeelâ„¢ Pro â€” Ã‰plucheur Automatique de Fruits et LÃ©gumes",
-    label: "Ã‰pluchage Automatique 1 Seul Bouton",
+    alt: "ChefPeel™ Pro — Éplucheur Automatique d'Ail, Fruits et Légumes",
+    label: "Épluchage Automatique en 1 Seul Clic",
   },
   {
     src: "/images/peeler-usages.jpg",
-    alt: "Une machine pour plusieurs aliments : Ail, Pomme de terre, Pomme",
-    label: "Une Machine, Plusieurs Usages",
+    alt: "Polyvalence culinaire : Ail, Pommes de terre, Pommes et Légumes",
+    label: "Un Appareil, Multiples Usages en Cuisine",
   },
   {
     src: "/images/peeler-avant-apres.jpg",
-    alt: "Avant / AprÃ¨s : gain de temps et ail propre sans odeur sur les doigts",
-    label: "RÃ©sultat Impeccable Sans Effort",
+    alt: "Avant / Après : Gousses intactes sans odeur sur les mains",
+    label: "Résultat Impeccable Sans Effort",
   },
   {
     src: "/images/peeler-comment.jpg",
-    alt: "Comment Ã§a marche en 3 Ã©tapes simples",
-    label: "Fonctionnement Express en 3 Ã‰tapes",
+    alt: "Fonctionnement simple en 3 étapes rapides",
+    label: "Préparation Rapide en 3 Étapes",
   },
   {
     src: "/images/peeler-pourquoi.jpg",
-    alt: "Pourquoi choisir notre Ã©plucheur automatique",
-    label: "Moins de CorvÃ©e, Plus de Plaisir",
+    alt: "Pourquoi choisir l'éplucheur ChefPeel Pro",
+    label: "Moins de Corvées, Plus de Confort",
   },
 ];
 
@@ -89,57 +81,55 @@ const REVIEWS = [
     name: "Bernadette D.",
     city: "Cotonou (Cadjehoun)",
     stars: 5,
-    text: "Ã‰plucher l'ail pour mes assaisonnements Ã©tait mon pire calvaire avec les odeurs tenaces sur les mains. Avec cette machine, en 10 secondes tout un bol d'ail est prÃªt et propre sans aucune odeur sur mes doigts !",
+    text: "Éplucher l'ail pour mes marinades et assaisonnements était une véritable corvée avec les odeurs qui restaient sur les doigts. Avec cet éplucheur, en 10 secondes tout un bol d'ail est prêt, propre et intact !",
   },
   {
     name: "Marcelle T.",
     city: "Abomey-Calavi",
     stars: 5,
-    text: "Je gagne un temps fou le week-end pour la prÃ©paration des repas de famille. MÃªme mes pommes de terre et pommes sont Ã©pluchÃ©es sans fatigue. Je recommande vivement.",
+    text: "Je gagne un temps précieux chaque week-end pour la préparation des repas de famille. Même les pommes de terre et les petits légumes se préparent sans fatigue. C'est un appareil indispensable en cuisine.",
   },
   {
-    name: "SÃ©bastien A.",
+    name: "Sébastien A.",
     city: "Porto-Novo",
     stars: 5,
-    text: "J'ai offert le pack duo Ã  ma femme et Ã  ma mÃ¨re. Elles ne peuvent plus s'en passer en cuisine. La batterie tient longtemps et la recharge USB est super pratique.",
+    text: "J'ai commandé le pack duo pour offrir à ma femme et à ma mère. Elles en sont ravies au quotidien. La batterie tient très bien et la recharge par USB est ultra pratique.",
   },
 ];
 
 const FAQS = [
   {
-    q: "Quels aliments la machine peut-elle Ã©plucher ?",
-    a: "Elle est spÃ©cialement conÃ§ue pour les gousses d'ail (son efficacitÃ© est magique !), mais convient Ã©galement parfaitement pour les pommes de terre, les pommes, les carottes et autres petits fruits et lÃ©gumes du quotidien.",
+    q: "Quels sont les aliments adaptés à cet éplucheur ?",
+    a: "L'appareil est optimisé en priorité pour les gousses d'ail (son efficacité par friction est remarquable). Il convient également pour les petites pommes de terre, les pommes, les échalotes et divers petits fruits et légumes fermes.",
   },
   {
-    q: "AbÃ®me-t-elle les gousses d'ail ?",
-    a: "Non ! Le mÃ©canisme rotatif brevetÃ© retire dÃ©licatement la fine peau de l'ail par friction douce sans Ã©craser ni abÃ®mer la chair de la gousse. Vous obtenez un ail intact, prÃªt Ã  Ãªtre mixÃ© ou dÃ©coupÃ©.",
+    q: "Est-ce que le système abîme ou écrase les gousses d'ail ?",
+    a: "Non, absolument pas. Le mécanisme rotatif centrifuge retire délicatement la fine pellicule par frottement contrôlé sans écraser la chair. Vous obtenez des gousses entières, prêtes à être mixées, écrasées ou cuisinées.",
   },
   {
-    q: "Comment se recharge l'appareil et combien de temps dure la batterie ?",
-    a: "L'Ã©plucheur intÃ¨gre une batterie lithium de 1300 mAh rechargeable via cÃ¢ble USB (inclus). Une seule charge complÃ¨te offre des dizaines de sÃ©ances d'Ã©pluchage (jusqu'Ã  2 Ã  3 semaines d'utilisation quotidienne standard).",
+    q: "Quelle est l'autonomie de la batterie et comment la recharger ?",
+    a: "L'éplucheur intègre une batterie lithium haute performance de 1300 mAh rechargeable via un câble USB standard (inclus). Une seule charge complète permet d'assurer plusieurs dizaines de sessions d'épluchage (2 à 3 semaines d'utilisation quotidienne standard).",
   },
   {
-    q: "Est-il facile Ã  dÃ©monter et Ã  laver ?",
-    a: "ExtrÃªmement simple ! Le couvercle, le plateau et le bol transparent se dÃ©tachent en un clic et se rincent directement Ã  l'eau claire en moins de 30 secondes.",
+    q: "Le nettoyage est-il facile au quotidien ?",
+    a: "Très facile. Le bol transparent et le plateau intérieur se retirent d'un simple geste et se rincent directement à l'eau claire en moins de 20 secondes.",
   },
   {
-    q: "Comment fonctionne la livraison et le paiement au BÃ©nin ?",
-    a: "Nous livrons en 24h Ã  48h Ã  Cotonou, Abomey-Calavi, Porto-Novo et environs. Vous payez 100% Ã  la livraison (en espÃ¨ces ou Mobile Money MTN/Moov) aprÃ¨s avoir inspectÃ© votre colis.",
+    q: "Quels sont les délais de livraison et les modalités de paiement au Bénin ?",
+    a: "La livraison est effectuée en 24h à 48h à Cotonou, Abomey-Calavi, Porto-Novo et les communes environnantes. Le paiement s'effectue à 100% à la réception (en espèces ou par Mobile Money MTN / Moov) après vérification de votre colis.",
   },
 ];
 
-/* ─────────────────────────────────────────── COMPONENT */
+/* ─────────────────────────────────────────── COMPOSANT PRINCIPAL */
 export default function PeelerLanding({ slug }: { slug: string }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<Bundle>(BUNDLES[0]);
+  const [selected, setSelected] = useState<BundleOption>(BUNDLES[0]);
   const [includeBump, setIncludeBump] = useState(false);
   const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const upsellConfig = getProductUpsellConfig("peeler");
   const secondUnitOffer = upsellConfig?.secondUnit;
   const bumpOffer = upsellConfig?.bump;
 
-  const [slide, setSlide] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [phone2, setPhone2] = useState("");
@@ -147,11 +137,11 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const sessionIdRef = useRef<string>("");
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (!sessionIdRef.current) {
@@ -199,43 +189,12 @@ export default function PeelerLanding({ slug }: { slug: string }) {
     scrollToSection("commander");
   }, [slug]);
 
-  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const goToSlide = useCallback(
-    (idx: number) => {
-      if (isAnimating) return;
-      setIsAnimating(true);
-      setSlide((idx + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
-      setTimeout(() => setIsAnimating(false), 300);
-    },
-    [isAnimating]
-  );
-
-  const nextSlide = useCallback(() => {
-    goToSlide(slide + 1);
-  }, [goToSlide, slide]);
-
-  const prevSlide = useCallback(() => {
-    goToSlide(slide - 1);
-  }, [goToSlide, slide]);
-
-  const submittingRef = useRef(false);
-
-  useEffect(() => {
-    autoplayRef.current = setInterval(() => {
-      goToSlide(slide + 1);
-    }, 4500);
-    return () => {
-      if (autoplayRef.current) clearInterval(autoplayRef.current);
-    };
-  }, [slide, goToSlide]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submittingRef.current || submitting) return;
 
     if (!name.trim() || !phone.trim() || !address.trim()) {
-      alert("Veuillez renseigner votre nom, téléphone et adresse de livraison.");
+      alert("Veuillez renseigner votre nom, votre numéro de téléphone et votre adresse de livraison.");
       return;
     }
     submittingRef.current = true;
@@ -246,7 +205,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
       const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
       const finalTotal = selected.price + secondUnitPrice + bumpPrice;
       const finalBundleName = selected.name 
-        + (includeSecondUnit && secondUnitOffer ? ` + 2Ã¨me Ã‰plucheur (${secondUnitOffer.title})` : "")
+        + (includeSecondUnit && secondUnitOffer ? ` + 2ème Éplucheur (${secondUnitOffer.title})` : "")
         + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
 
       const order = await saveNewOrder({
@@ -265,7 +224,6 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         status: "pending",
       });
 
-      // Marquer la session comme convertie pour les analytics
       const sessId = sessionIdRef.current || ("sess_" + Date.now());
       trackUserSession(slug, 0, true, sessId);
 
@@ -288,30 +246,31 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-slate-900 selection:bg-blue-600/20 selection:text-blue-900">
+    <div className="min-h-screen bg-[#FDFBF7] text-slate-900 selection:bg-blue-600/20 selection:text-blue-900 font-sans antialiased pb-28 md:pb-0">
       
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� BANDEAU D'URGENCE / LIVRAISON EXPRESS â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
-      <div className="bg-[#0B1E3F] text-white text-[11px] sm:text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 tracking-wide border-b border-white/10">
+      {/* ── 1. BANDEAU D'ANNONCE SUPÉRIEUR ── */}
+      <div className="bg-[#0A1931] text-white text-[11px] sm:text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 tracking-wide border-b border-white/10">
         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-        <span>LIVRAISON EXPRESS 24Hâ€“48H AU BÃ‰NIN â€¢ PAIEMENT 100% Ã€ LA RÃ‰CEPTION DU COLIS</span>
+        <span>LIVRAISON EXPRESS 24H–48H AU BÉNIN • PAIEMENT 100% À LA RÉCEPTION DU COLIS</span>
       </div>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� HEADER NAVIGATION â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
+      {/* ── 2. HEADER DE MARQUE ÉPURÉ (FIGMA-GRADE) ── */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 md:px-8 py-3.5 shadow-2xs">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-[#0047AB] text-white flex items-center justify-center font-bold text-sm shadow-sm">
-              <Utensils className="w-4 h-4 text-amber-300" />
+              <UtensilsCrossed className="w-4 h-4 text-amber-300 stroke-[2]" />
             </div>
             <div>
               <span className="font-display font-extrabold text-base tracking-tight text-slate-900 block leading-none">
-                ChefPeel<span className="text-[#0047AB]">â„¢ Pro</span>
+                ChefPeel<span className="text-[#0047AB]">™ Pro</span>
               </span>
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Ã‰pluchage Automatique 1-Clic</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Épluchage Automatique 1-Clic</span>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={handleCtaClick}
             className="bg-[#0047AB] hover:bg-[#003580] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all duration-150 active:scale-95 flex items-center gap-1.5 cursor-pointer"
           >
@@ -321,11 +280,11 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         </div>
       </header>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� HERO SECTION AVEC CARROUSEL EN 1ER â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
-      <section className="pt-6 md:pt-10 pb-12 px-4 md:px-8 max-w-5xl mx-auto">
+      {/* ── 3. SECTION HERO : CARROUSEL 5 SLIDES + ACCROCHE ── */}
+      <section className="pt-6 md:pt-10 pb-10 px-4 md:px-8 max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           
-          {/* 1. CARROUSEL 5 IMAGES HD */}
+          {/* CARROUSEL D'IMAGES HD */}
           <div className="md:col-span-6 flex flex-col items-center">
             <HorizontalCarousel
               slides={CAROUSEL_SLIDES}
@@ -334,20 +293,20 @@ export default function PeelerLanding({ slug }: { slug: string }) {
             />
           </div>
 
-          {/* 2. TEXTE D'ACCROCHE & VALEUR */}
+          {/* ACCROCHE ET PROPOSITION DE VALEUR */}
           <div className="md:col-span-6 space-y-5 text-center md:text-left flex flex-col items-center md:items-start">
             
             <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200/80 px-3.5 py-1 rounded-full text-xs font-bold text-amber-900 shadow-2xs">
-              <div className="flex text-amber-500 text-xs">â˜…â˜…â˜…â˜…â˜…</div>
-              <span>4.9/5 (+1 150 cuisiniÃ¨res satisfaites au BÃ©nin)</span>
+              <div className="flex text-amber-500 text-xs">★★★★★</div>
+              <span>4.9/5 (+1 150 cuisinières satisfaites au Bénin)</span>
             </div>
 
             <h1 className="font-display font-extrabold text-2xl sm:text-4xl lg:text-5xl leading-[1.12] text-slate-900 tracking-tight">
-              L&apos;Ã©pluchage automatique, <span className="text-[#0047AB]">plus simple</span> et <span className="text-amber-600">sans effort.</span>
+              L&apos;épluchage de l&apos;ail, <span className="text-[#0047AB]">plus rapide</span> et <span className="text-amber-600">sans effort.</span>
             </h1>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
-              Fini la corvÃ©e d&apos;Ã©plucher l&apos;ail Ã  la main et les doigts qui sentent pendant des jours ! En <strong>1 seul clic</strong>, Ã©pluchez instantanÃ©ment votre ail, pommes de terre, pommes et lÃ©gumes.
+              Fini la corvée d&apos;éplucher les gousses à la main et les odeurs tenaces sur les doigts pendant des jours. En <strong>1 seul clic</strong>, obtenez un ail parfaitement propre, ainsi que vos pommes de terre et petits légumes.
             </p>
 
             {/* Bouton d'action principal */}
@@ -357,24 +316,24 @@ export default function PeelerLanding({ slug }: { slug: string }) {
                 onClick={handleCtaClick}
                 className="w-full sm:w-auto bg-[#0047AB] hover:bg-[#003580] text-white px-8 py-4 rounded-2xl font-bold text-base shadow-lg shadow-blue-900/25 hover:-translate-y-0.5 transition-all duration-150 active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
               >
-                <span>Commander â€” 14 900 FCFA</span>
+                <span>Commander — 14 900 FCFA</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Badges de RÃ©assurance */}
+            {/* Badges de Réassurance */}
             <div className="grid grid-cols-3 gap-2 w-full pt-2">
               <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center shadow-2xs">
                 <div className="text-[10px] font-bold uppercase text-slate-400">Paiement</div>
-                <div className="text-xs font-bold text-slate-800">Ã€ la livraison</div>
+                <div className="text-xs font-bold text-slate-800">À la livraison</div>
               </div>
               <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center shadow-2xs">
-                <div className="text-[10px] font-bold uppercase text-slate-400">DÃ©lai</div>
-                <div className="text-xs font-bold text-[#0047AB] font-mono">24hâ€“48h</div>
+                <div className="text-[10px] font-bold uppercase text-slate-400">Délai</div>
+                <div className="text-xs font-bold text-[#0047AB] font-mono">24h–48h</div>
               </div>
               <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center shadow-2xs">
                 <div className="text-[10px] font-bold uppercase text-slate-400">Colis</div>
-                <div className="text-xs font-bold text-slate-800">VÃ©rifiÃ© & TestÃ©</div>
+                <div className="text-xs font-bold text-slate-800">Vérifié & Testé</div>
               </div>
             </div>
 
@@ -383,13 +342,13 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� SÃ‰LECTION DES PACKS & FORMULAIRE COD (MODÃˆLE UMÃ‰I PLACÃ‰ DIRECTEMENT SOUS LA PRÃ‰SENTATION) â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
+      {/* ── 4. FORMULAIRE DE COMMANDE DIRECT (PLACEMENT PRIORITAIRE FIGMA-GRADE) ── */}
       <UmeiStyleOrderSection
         productSlug={slug}
-        productTitle="ChefPeelâ„¢ Pro â€” Ã‰plucheur Automatique Multifonction"
+        productTitle="ChefPeel™ Pro — Éplucheur Automatique Multifonction"
         bundles={BUNDLES}
         selectedBundle={selected}
-        onSelectBundle={(b) => setSelected(b as Bundle)}
+        onSelectBundle={(b) => setSelected(b as BundleOption)}
         customerName={name}
         setCustomerName={setName}
         customerPhone={phone}
@@ -418,63 +377,81 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         }}
       />
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� BANDEAU MARQUEE DES ATOUTS â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
-      <div className="bg-[#0B1E3F] text-white py-3.5 overflow-hidden border-y border-white/10">
+      {/* ── 5. BANDEAU DE POINTS FORTS (MARQUEE ÉLÉGANT) ── */}
+      <div className="bg-[#0A1931] text-white py-3.5 overflow-hidden border-y border-white/10">
         <div className="flex whitespace-nowrap font-mono text-xs sm:text-sm font-semibold tracking-wider">
           <span className="px-4 flex items-center gap-3">
-            ðŸ§„ FINI LES DOIGTS QUI SENTENT L&apos;AIL <em className="not-italic text-amber-400">âœº</em> ðŸ”‹ RECHARGEABLE USB 1300 mAh <em className="not-italic text-amber-400">âœº</em> ðŸ¥” AIL, POMME DE TERRE, POMME <em className="not-italic text-amber-400">âœº</em> âš¡ 1 SEUL BOUTON EN QUELQUES SECONDES <em className="not-italic text-amber-400">âœº</em> ðŸ§¼ NETTOYAGE EXPRESS 30s <em className="not-italic text-amber-400">âœº</em>
+            <span>FINI LES DOIGTS QUI SENTENT L&apos;AIL</span>
+            <span className="text-amber-400">✦</span>
+            <span>BATTERIE RECHARGEABLE USB 1300 mAh</span>
+            <span className="text-amber-400">✦</span>
+            <span>AIL, POMMES DE TERRE, LÉGUMES</span>
+            <span className="text-amber-400">✦</span>
+            <span>LANCEMENT EN 1 SEUL CLIC</span>
+            <span className="text-amber-400">✦</span>
+            <span>NETTOYAGE EXPRESS EN 20 SECONDES</span>
+            <span className="text-amber-400">✦</span>
           </span>
           <span className="px-4 flex items-center gap-3">
-            ðŸ§„ FINI LES DOIGTS QUI SENTENT L&apos;AIL <em className="not-italic text-amber-400">âœº</em> ðŸ”‹ RECHARGEABLE USB 1300 mAh <em className="not-italic text-amber-400">âœº</em> ðŸ¥” AIL, POMME DE TERRE, POMME <em className="not-italic text-amber-400">âœº</em> âš¡ 1 SEUL BOUTON EN QUELQUES SECONDES <em className="not-italic text-amber-400">âœº</em> ðŸ§¼ NETTOYAGE EXPRESS 30s <em className="not-italic text-amber-400">âœº</em>
+            <span>FINI LES DOIGTS QUI SENTENT L&apos;AIL</span>
+            <span className="text-amber-400">✦</span>
+            <span>BATTERIE RECHARGEABLE USB 1300 mAh</span>
+            <span className="text-amber-400">✦</span>
+            <span>AIL, POMMES DE TERRE, LÉGUMES</span>
+            <span className="text-amber-400">✦</span>
+            <span>LANCEMENT EN 1 SEUL CLIC</span>
+            <span className="text-amber-400">✦</span>
+            <span>NETTOYAGE EXPRESS EN 20 SECONDES</span>
+            <span className="text-amber-400">✦</span>
           </span>
         </div>
       </div>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� AVANT / APRÃˆS : TRANSFORMATION EN CUISINE â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
+      {/* ── 6. COMPARATIF AVANT / APRÈS : TRANSFORMATION EN CUISINE ── */}
       <section className="py-14 px-4 md:px-8 max-w-5xl mx-auto space-y-10">
         
         <div className="text-center max-w-xl mx-auto">
           <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
-            Comparatif RÃ©el
+            Comparatif Réel
           </span>
           <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
-            La Fin des CorvÃ©es Interminables en Cuisine
+            La fin des corvées interminables en cuisine
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            DÃ©couvrez la diffÃ©rence entre l&apos;Ã©pluchage manuel et la technologie ChefPeelâ„¢.
+            Découvrez la différence entre l&apos;épluchage manuel et la technologie ChefPeel™ Pro.
           </p>
         </div>
 
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           
-          {/* Image Avant/AprÃ¨s */}
+          {/* Image Avant/Après */}
           <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
             <img
               src="/images/peeler-avant-apres.jpg"
-              alt="Avant AprÃ¨s Ã‰pluchage Automatique"
+              alt="Avant et Après Épluchage Automatique ChefPeel Pro"
               className="w-full h-auto object-cover"
             />
           </div>
 
-          {/* Liste des Avantages */}
+          {/* Comparatif textuel détaillé */}
           <div className="space-y-4">
             
             <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1">
               <div className="font-bold text-xs uppercase tracking-wider text-rose-700 flex items-center gap-1.5">
-                <span>âœ• Avant (Ã€ la main)</span>
+                <span>✕ Avant (Épluchage manuel au couteau)</span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Peaux collÃ©es partout, ongles noircis, odeur tenace pendant plusieurs jours, yeux qui piquent et 20 Ã  30 minutes perdues pour chaque repas.
+                Peaux fines collées partout, ongles abîmés, odeur tenace qui persiste pendant plusieurs jours sur les mains et 20 à 30 minutes perdues pour chaque préparation de repas.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-blue-50/80 border-2 border-[#0047AB] space-y-1">
               <div className="font-bold text-xs uppercase tracking-wider text-[#0047AB] flex items-center gap-1.5">
-                <span>âœ“ Avec ChefPeelâ„¢ Pro</span>
+                <span>✓ Avec ChefPeel™ Pro</span>
                 <span className="text-[10px] bg-[#0047AB] text-white px-2 py-0.2 rounded-full">Automatique</span>
               </div>
               <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                Gousses d&apos;ail impeccables et intactes en quelques secondes, doigts 100% propres sans odeur, zÃ©ro gÃ¢chis et cuisine propre.
+                Gousses d&apos;ail impeccables et intactes en moins de 10 secondes, doigts 100% propres sans odeur, zéro gaspillage et plan de travail net.
               </p>
             </div>
 
@@ -484,8 +461,8 @@ export default function PeelerLanding({ slug }: { slug: string }) {
                 <div className="font-bold text-xs text-slate-800">10x plus rapide</div>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                <div className="text-[10px] uppercase font-bold text-slate-400">HygiÃ¨ne</div>
-                <div className="font-bold text-xs text-[#0047AB]">ZÃ©ro contact</div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">Hygiène</div>
+                <div className="font-bold text-xs text-[#0047AB]">Mains 100% propres</div>
               </div>
             </div>
 
@@ -495,25 +472,25 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
       </section>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� COMMENT Ã‡A MARCHE EN 3 Ã‰TAPES â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
+      {/* ── 7. COMMENT ÇA MARCHE EN 3 ÉTAPES SIMPLES ── */}
       <section className="py-12 px-4 md:px-8 max-w-5xl mx-auto space-y-8">
         
         <div className="text-center max-w-lg mx-auto">
           <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
-            SimplicitÃ© Absolue
+            Simplicité Absolue
           </span>
           <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
-            Comment Ã§a marche ?
+            Comment ça marche ?
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Seulement 3 Ã©tapes simples pour un rÃ©sultat parfait Ã  chaque fois.
+            Seulement 3 étapes simples pour un résultat rapide et parfait à chaque utilisation.
           </p>
         </div>
 
         <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-md bg-white">
           <img
             src="/images/peeler-comment.jpg"
-            alt="Comment utiliser l'Ã©plucheur en 3 Ã©tapes"
+            alt="Comment utiliser l'éplucheur ChefPeel Pro en 3 étapes"
             className="w-full h-auto object-cover"
           />
         </div>
@@ -521,92 +498,95 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1.5">
             <span className="w-7 h-7 rounded-full bg-[#0047AB] text-white font-bold text-xs inline-flex items-center justify-center">1</span>
-            <div className="font-bold text-sm text-slate-900">Placez vos aliments</div>
-            <p className="text-xs text-slate-500">Mettez vos gousses d&apos;ail ou morceaux de lÃ©gumes dans le bol transparent.</p>
+            <div className="font-bold text-sm text-slate-900">Déposez vos gousses</div>
+            <p className="text-xs text-slate-500">Séparez les gousses d&apos;ail et placez-les directement dans le bol transparent.</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1.5">
             <span className="w-7 h-7 rounded-full bg-[#0047AB] text-white font-bold text-xs inline-flex items-center justify-center">2</span>
             <div className="font-bold text-sm text-slate-900">Appuyez sur le bouton</div>
-            <p className="text-xs text-slate-500">Le moteur centrifuge sÃ©pare la peau dÃ©licatement en quelques secondes.</p>
+            <p className="text-xs text-slate-500">Le moteur centrifuge retire délicatement la peau par frottement en quelques secondes.</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1.5">
             <span className="w-7 h-7 rounded-full bg-[#0047AB] text-white font-bold text-xs inline-flex items-center justify-center">3</span>
-            <div className="font-bold text-sm text-slate-900">RÃ©cupÃ©rez l&apos;aliment prÃªt</div>
-            <p className="text-xs text-slate-500">Ouvrez le rÃ©ceptacle : vos aliments sont prÃªts Ã  Ãªtre cuisinÃ©s sans aucun dÃ©chet.</p>
+            <div className="font-bold text-sm text-slate-900">Récupérez vos aliments prêts</div>
+            <p className="text-xs text-slate-500">Ouvrez le réceptacle : vos gousses sont impeccablement épluchées et prêtes à être cuisinées.</p>
           </div>
         </div>
 
       </section>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� LES 4 PILIERS TECHNIQUES â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
-      <section className="py-12 px-4 md:px-8 max-w-5xl mx-auto space-y-6">
+      {/* ── 8. INFOGRAPHIE USAGES MULTIPLES ── */}
+      <section className="py-10 px-4 md:px-8 max-w-5xl mx-auto space-y-6">
         <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg bg-white">
           <img
             src="/images/peeler-usages.jpg"
-            alt="Une machine plusieurs usages"
+            alt="Une machine polyvalente pour tous les petits aliments de cuisine"
             className="w-full h-auto object-cover"
           />
         </div>
       </section>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� COFFRET DÃ‰BALLÃ‰ & UNBOXING â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
+      {/* ── 9. CONTENU DU COFFRET DÉBALLÉ (UNBOXING) ── */}
       <section className="py-10 px-4 md:px-8 max-w-4xl mx-auto">
-        <div className="bg-[#0B1E3F] text-white rounded-3xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <div className="bg-[#0A1931] text-white rounded-3xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <div className="space-y-4">
             <span className="text-xs font-mono uppercase tracking-widest text-sky-400 font-bold bg-sky-950/80 px-3 py-1 rounded-full border border-sky-500/30">
               Pack Cuisine Complet
             </span>
-            <h3 className="text-xl font-bold text-white font-display">Dans votre colis ChefPeelâ„¢ Pro</h3>
+            <h3 className="text-xl font-bold text-white font-display">Dans votre colis ChefPeel™ Pro</h3>
             <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
               <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">âœ“</span>
-                <span><strong>1x Ã‰plucheur Automatique ChefPeelâ„¢</strong> avec batterie 1300 mAh rechargeable</span>
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Éplucheur Automatique ChefPeel™ Pro</strong> avec batterie lithium 1300 mAh</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">âœ“</span>
-                <span><strong>1x Bol rotatif transparent</strong> dÃ©montable et lavable Ã  l'eau en 10s</span>
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Bol rotatif transparent</strong> en silicone alimentaire lavable en 20s</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">âœ“</span>
-                <span><strong>1x Plateau centrifuge en inox</strong> alimentaire anti-oxydation</span>
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Plateau centrifuge intérieur</strong> résistant et anti-adhérent</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">âœ“</span>
-                <span><strong>1x CÃ¢ble de recharge USB</strong> compatible tout chargeur de tÃ©lÃ©phone</span>
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
+                <span><strong>1x Câble de recharge rapide USB</strong> compatible tous chargeurs</span>
               </li>
             </ul>
           </div>
 
           <div className="bg-slate-800/90 border border-white/10 rounded-2xl p-5 text-center space-y-3">
-            <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Paiement 100% Ã  la Livraison</div>
-            <div className="text-lg font-bold text-white">Livraison 24h & Inspection Colis</div>
+            <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Paiement 100% à la Livraison</div>
+            <div className="text-lg font-bold text-white">Livraison 24h & Inspection du Colis</div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              VÃ©rifiez la machine et ses accessoires avec le livreur Ã  domicile avant tout paiement.
+              Vérifiez l&apos;appareil et ses accessoires avec le livreur à domicile avant tout règlement.
             </p>
             <button
               type="button"
               onClick={() => scrollToSection("commander")}
               className="w-full bg-[#0047AB] hover:bg-blue-600 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-blue-500/20 cursor-pointer"
             >
-              Commander ChefPeelâ„¢ (14 900 F)
+              Commander ChefPeel™ (14 900 FCFA)
             </button>
           </div>
         </div>
       </section>
 
-      {/* ════════════════ AVIS CLIENTS ════════════════ */}
+      {/* ── 10. AVIS CLIENTS VÉRIFIÉS DU BÉNIN ── */}
       <section className="py-12 px-4 md:px-8 max-w-4xl mx-auto space-y-6">
         <div className="text-center">
-          <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
+            Témoignages Vérifiés
+          </span>
+          <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900 mt-2">
             Ce que disent les cuisinières au Bénin
           </h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {REVIEWS.map((r) => (
-            <div key={r.name} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2">
+            <div key={r.name} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2.5">
               <div className="flex text-amber-500 text-xs">★★★★★</div>
               <p className="text-xs text-slate-600 italic leading-relaxed">&ldquo;{r.text}&rdquo;</p>
               <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-800">
@@ -618,24 +598,27 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� FAQ â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
+      {/* ── 11. FOIRE AUX QUESTIONS (ACCORDÉON FLUIDE) ── */}
       <section className="py-12 px-4 md:px-8 max-w-3xl mx-auto space-y-4">
         <div className="text-center mb-6">
-          <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900">
-            Questions FrÃ©quentes
+          <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
+            Foire Aux Questions
+          </span>
+          <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900 mt-2">
+            Questions Fréquentes
           </h3>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {FAQS.map((f, i) => (
-            <div key={f.q} className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden">
+            <div key={f.q} className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 className="w-full p-4 text-left font-bold text-xs sm:text-sm text-slate-900 flex items-center justify-between gap-3 cursor-pointer"
               >
                 <span>{f.q}</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${openFaq === i ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${openFaq === i ? "rotate-180 text-[#0047AB]" : ""}`} />
               </button>
               {openFaq === i && (
                 <div className="px-4 pb-4 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
@@ -647,18 +630,18 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {/* â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� FOOTER â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•�â•� */}
-      <footer className="bg-[#0B1E3F] text-white py-10 px-4 text-center border-t border-white/10 space-y-3 pb-24 md:pb-10">
+      {/* ── 12. FOOTER OFFICIEL ── */}
+      <footer className="bg-[#0A1931] text-white py-10 px-4 text-center border-t border-white/10 space-y-3 pb-24 md:pb-10">
         <div className="font-display font-bold text-base">ChefPeel™ Pro Bénin</div>
         <p className="text-xs text-slate-300 max-w-sm mx-auto">
-          Distribué par Isivente • Service client WhatsApp : +229 01 92 90 18 17
+          Distribué officiellement par Isivente • Service client WhatsApp : +229 01 92 90 18 17
         </p>
         <div className="text-[11px] text-slate-400 font-mono">
           © {new Date().getFullYear()} Isivente. Tous droits réservés.
         </div>
       </footer>
 
-      {/* 📱 STICKY MOBILE BAR (PRIX FIXE EN BAS & BOUTON COMMANDER) */}
+      {/* ── 13. STICKY MOBILE CTA BAR FIXE ── */}
       <StickyMobileCtaBar
         price={selected.price}
         targetSectionId="commander"
