@@ -338,6 +338,90 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           </div>
         </div>
 
+        {/* ── SECTION VIDÉO DÉMONSTRATION TIKTOK LIVE ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-6">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600 stroke-[1.75]" />
+              <span>Démonstration Vidéo en Direct</span>
+            </div>
+            <h2 className="text-xl sm:text-3xl font-bold tracking-[-0.02em] text-slate-900 leading-tight">
+              Regardez ce que vos enfants peuvent observer en direct
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Voyez la simplicité d'utilisation et la précision optique en situation réelle.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            {/* Lecteur Vidéo Vertical TikTok HD */}
+            <div className="md:col-span-6 lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-[290px] aspect-[9/16] rounded-3xl overflow-hidden bg-slate-950 border-4 border-slate-900 shadow-2xl">
+                <video
+                  src="/videos/microscope-demo.mp4"
+                  poster="/images/microscope-video-cover.webp"
+                  controls
+                  playsInline
+                  loop
+                  preload="metadata"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Témoignage & Points Forts Vidéo */}
+            <div className="md:col-span-6 lg:col-span-7 space-y-4">
+              <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 space-y-2">
+                <div className="flex text-amber-400 text-xs tracking-tight">★★★★★</div>
+                <p className="text-xs sm:text-sm font-semibold text-indigo-950 italic leading-relaxed">
+                  « Mes enfants adorent explorer la nature avec ce microscope ! Ils veulent vraiment tout observer dans le jardin et à la maison. »
+                </p>
+                <div className="text-[11px] text-indigo-700 font-medium">— Aurélie, Maman comblée</div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                    <ZoomIn className="w-4 h-4 stroke-[1.75]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">Grossissement instantané jusqu'à 1000X</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">Observation nette et sans déformation directement sur l'écran couleur 2.0".</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4 stroke-[1.75]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">100% Autonome & Transportable</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">Batterie rechargeable intégrée, 8 éclairages LEDs et dragonne de transport.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0 mt-0.5">
+                    <Sparkles className="w-4 h-4 stroke-[1.75]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">Plus de 200 000 familles conquises</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">Le jouet éducatif scientifique n°1 plébiscité par les parents et enseignants.</p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={scrollToOrder}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(99,102,241,0.4)] transition-all cursor-pointer"
+              >
+                <span>Commander maintenant (16 900 FCFA)</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* ── SECTION VISUELLE 1 : UN PETIT SCIENTIFIQUE EN ACTION ── */}
         <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
