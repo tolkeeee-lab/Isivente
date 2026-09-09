@@ -31,33 +31,13 @@ import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 const BUNDLES: BundleOption[] = [
   {
     id: "solo",
-    name: "Pack Découverte (1 Microscope)",
-    subtitle: "1 Microscope de poche avec écran couleur 2.0\", 8 LEDs et batterie rechargeable",
+    name: "Microscope Numérique Portable HD 1000X",
+    subtitle: "Appareil complet avec écran LCD 2.0\", éclairage 8 LED, batterie rechargeable et accessoires",
     price: 29900,
     originalPrice: 45000,
     savings: 15100,
     quantity: 1,
-    popular: false,
-  },
-  {
-    id: "duo",
-    name: "Pack Famille & Duo (2 Microscopes)",
-    subtitle: "2 Microscopes HD 1000X complets avec câbles de charge et dragonnes",
-    price: 49900,
-    originalPrice: 70000,
-    savings: 20100,
-    quantity: 2,
     popular: true,
-  },
-  {
-    id: "pro_sd",
-    name: "Pack Explorateur VIP (+ Carte SD 32Go)",
-    subtitle: "1 Microscope HD 1000X + Carte mémoire 32Go pour capture photo et vidéo",
-    price: 34900,
-    originalPrice: 50000,
-    savings: 15100,
-    quantity: 1,
-    popular: false,
   },
 ];
 

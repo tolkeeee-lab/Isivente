@@ -37,5 +37,5 @@
 ## 🛠️ 3. Application Systématique des Skills
 Chaque page doit obligatoirement mobiliser les compétences conjointes :
 1. **`impeccable-ui-artisan`** & **`art-director-figma-grade-ui`** : Grille 8pt, liserés biseautés, transitions cubic-bezier.
-2. **`ecommerce-conversion-cro-expert`** : Structure Hormozi, bundles solo/duo/trio avec calcul des économies, avis clients réels, formulaire Cash On Delivery (COD) optimisé pour le Bénin (Cotonou, Calavi, etc.).
+2. **`ecommerce-conversion-cro-expert`** : Structure Hormozi, OFFRE UNIQUE (1 seul article avec son prix direct, pas de packs multiples), avis clients réels, formulaire Cash On Delivery (COD) optimisé pour le Bénin (Cotonou, Calavi, etc.).
 3. **`anti-ai-slop`** : Finitions artisanales, icônes SVG fines, pas de superlatifs creux.
