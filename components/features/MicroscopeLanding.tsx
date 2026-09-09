@@ -95,7 +95,7 @@ const REVIEWS_DATA: CustomerReview[] = [
     title: "Outil parfait pour explorer et apprendre pour les enfants !!",
     comment: "J'en ai commandé deux pour mes petits-enfants de 2 ans et de 4 ans. Ils en sont ravis. Mon fils dit qu'ils prennent de très belles photos et que les images sont très nettes. N'hésitez pas à commander !",
     image: "/images/microscope-real-spider.jpg",
-    imageCaption: "Détails d'une araignée capturée sur l'écran 2.0\"",
+    imageCaption: "Grossissement net d'une araignée sur l'écran 2.0\"",
     verified: true,
   },
   {
@@ -118,17 +118,6 @@ const REVIEWS_DATA: CustomerReview[] = [
     comment: "Whaou top !! Mon fils de 4 ans adore ! Il l'emmène partout dans le jardin pour observer les insectes et les fleurs en direct sur l'écran.",
     image: "/images/microscope-real-ladybug.jpg",
     imageCaption: "Observation directe d'une coccinelle en extérieur",
-    verified: true,
-  },
-  {
-    name: "Paul D.",
-    location: "Testeur Vérifié",
-    rating: 5,
-    date: "Achat vérifié",
-    title: "Bien plus qu'un jouet !",
-    comment: "Un appareil éducatif et précis qui permet d'éveiller la curiosité des petits comme des grands. Voir des choses invisibles à l'œil nu : le tissage des tissus, les fibres, les micro-soudures. Je recommande vivement !",
-    image: "/images/microscope-real-fabric.jpg",
-    imageCaption: "Micro-fibres et maillage d'un tissu textile",
     verified: true,
   },
 ];
@@ -448,48 +437,48 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4.5">
             {REVIEWS_DATA.map((rev, idx) => (
               <div 
                 key={idx} 
-                className="p-4 rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_8px_-2px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row gap-4 items-stretch"
+                className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_2px_8px_-2px_rgba(0,0,0,0.04)] flex flex-col sm:flex-row gap-5 items-stretch"
               >
-                {/* Photo réelle recadrée à gauche */}
-                <div className="w-full sm:w-44 h-48 sm:h-auto rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60 relative shrink-0">
+                {/* Photo réelle cadrée bord à bord à gauche */}
+                <div className="w-full sm:w-60 h-60 sm:h-auto min-h-[200px] rounded-2xl overflow-hidden bg-slate-900 border border-slate-200/70 relative shrink-0 shadow-2xs">
                   <img 
                     src={rev.image} 
                     alt={rev.imageCaption} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
-                  <div className="absolute bottom-2 inset-x-2 bg-slate-900/80 backdrop-blur-xs text-white text-[9.5px] font-medium py-1 px-2 rounded-lg text-center leading-tight">
+                  <div className="absolute bottom-2.5 inset-x-2.5 bg-slate-950/85 backdrop-blur-sm text-white text-[10px] font-medium py-1.5 px-3 rounded-xl text-center leading-tight shadow-md border border-white/10">
                     {rev.imageCaption}
                   </div>
                 </div>
 
                 {/* Avis & Détails à droite */}
-                <div className="flex-1 flex flex-col justify-between space-y-2.5">
-                  <div className="space-y-1.5">
+                <div className="flex-1 flex flex-col justify-between py-1 space-y-3">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div>
-                        <div className="font-bold text-slate-900 text-xs tracking-tight">{rev.name}</div>
-                        <div className="text-[10px] text-slate-500 font-mono">{rev.location}</div>
+                        <div className="font-bold text-slate-900 text-sm tracking-tight">{rev.name}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">{rev.location}</div>
                       </div>
-                      <div className="flex text-amber-400 text-xs tracking-tight">
+                      <div className="flex text-amber-400 text-sm tracking-tight">
                         {"★".repeat(rev.rating)}
                       </div>
                     </div>
 
-                    <div className="text-xs font-bold text-slate-800 leading-snug">
+                    <div className="text-sm font-bold text-slate-900 leading-snug">
                       « {rev.title} »
                     </div>
 
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                       {rev.comment}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-1.5 text-[10.5px] text-emerald-700 font-semibold pt-2 border-t border-slate-100">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-semibold pt-3 border-t border-slate-100">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 stroke-[1.75]" />
                     <span>Achat vérifié Isivente</span>
                   </div>
                 </div>
