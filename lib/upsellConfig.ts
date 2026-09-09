@@ -294,7 +294,7 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       benefits: [
         "Système modulaire 3-en-1 complet (15 000 mAh)",
         "Mini-batterie de poche 5 000 mAh détachable incluse",
-        "Pochette rigide antichoc offerte pour chaque exemplaire",
+        "Câble de charge rapide USB-C & dragonne inclus",
         "Livraison groupée dans le même colis sans frais de port supplémentaires",
       ],
     },
@@ -310,7 +310,7 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       badge: "ÉCONOMISEZ 10 000 FCFA",
       benefits: [
         "Pack complet 15 000 mAh avec écran LED & mini bloc 5 000 mAh",
-        "Sacoche de transport rigide offerte",
+        "Câbles de charge USB-C & dragonne tressée inclus",
         "Paiement sécurisé à la réception",
       ],
     },

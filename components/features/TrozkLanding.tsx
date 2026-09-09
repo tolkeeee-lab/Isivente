@@ -47,7 +47,7 @@ const BUNDLES: BundleOption[] = [
   {
     id: "solo",
     name: "Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)",
-    subtitle: "Pack complet : 3 Modules magnétiques A+B+C + Câble de charge + Écran LED + Pochette rigide offerte",
+    subtitle: "Pack complet : 3 Modules magnétiques A+B+C + Câble de charge rapide USB-C + Écran LED",
     price: 29900,
     originalPrice: 45000,
     savings: 15100,
@@ -92,7 +92,7 @@ const REVIEWS_DATA = [
     city: "Calavi (Bidossessi)",
     rating: 5,
     date: "Il y a 3 jours",
-    comment: "Je l'ai prise à cause des coupures de courant fréquentes. Elle recharge mon iPhone 14 plus de 3 fois entièrement à pleine vitesse ! La pochette rigide offerte est très pratique pour la glisser dans mon sac.",
+    comment: "Je l'ai prise à cause des coupures de courant fréquentes. Elle recharge mon iPhone 14 plus de 3 fois entièrement à pleine vitesse ! Très pratique et compacte pour la glisser dans mon sac.",
   },
   {
     author: "Arnaud S.",
@@ -269,7 +269,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
       {/* 🌟 BANDEAU D'ANNONCE HAUT */}
       <div className="bg-orange-500 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 border-b border-orange-600 shadow-2xs">
         <span className="inline-block w-2 h-2 rounded-full bg-white animate-ping"></span>
-        <span>ÉDITION OFFICIELLE CYBERPUNK : <strong>Pochette de transport rigide offerte</strong> • Paiement à la livraison après inspection</span>
+        <span>ÉDITION OFFICIELLE CYBERPUNK : <strong>Pack 3-en-1 Complet (15 000 mAh)</strong> • Paiement à la livraison après inspection</span>
       </div>
 
       {/* 🌟 HEADER FIGMA-GRADE ÉPURÉ */}
@@ -350,11 +350,11 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
 
           <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
             <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-              <Box className="w-5 h-5" />
+              <Cable className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-900">Pochette Rigide Offerte</div>
-              <div className="text-[11px] text-slate-500 font-medium">Coffret zippé sur mesure inclus</div>
+              <div className="text-xs font-bold text-slate-900">Câbles & Prise Intégrés</div>
+              <div className="text-[11px] text-slate-500 font-medium">Prêt à l&apos;emploi sans fil qui traîne</div>
             </div>
           </div>
         </div>
@@ -561,8 +561,8 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               </div>
 
               <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase">Accessoire Inclus</span>
-                <span className="font-mono font-bold text-emerald-600 text-sm">Pochette rigide zippée antichoc offerte</span>
+                <span className="text-xs font-bold text-slate-500 uppercase">Accessoires Inclus</span>
+                <span className="font-mono font-bold text-emerald-600 text-sm">Câble USB-C tressé + Dragonne intégrée</span>
               </div>
             </div>
           </div>
