@@ -146,6 +146,8 @@ const FAQS_DATA = [
   }
 ];
 
+import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+
 export default function MicroscopeLanding({ slug }: { slug: string }) {
   const router = useRouter();
   const [activeImgIndex, setActiveImgIndex] = useState(0);
@@ -162,9 +164,22 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
 
   useEffect(() => {
     trackUserSession(slug || "microscope", 0, false, "sess_" + Date.now());
+    trackViewContent({
+      content_name: "Microscope Numérique Portable HD 1000X",
+      content_ids: ["microscope"],
+      value: 16900,
+      currency: "XOF",
+    });
   }, [slug]);
 
   const scrollToOrder = () => {
+    trackInitiateCheckout({
+      content_name: "Microscope Numérique Portable HD 1000X",
+      content_ids: ["microscope"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: selectedBundle.quantity || 1,
+    });
     orderSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -199,13 +214,23 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         status: "pending",
       });
 
+      // Stocker les infos pour Meta Pixel Purchase sur la page success
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Microscope Numérique Portable HD 1000X",
+          price: selectedBundle.price,
+          quantity: selectedBundle.quantity || 1,
+        }));
+      }
+
       fetch("/api/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ order }),
       }).catch(() => {});
 
-      router.push(`/p/microscope/success?order=${order.order_number || ""}`);
+      const successUrl = `/p/microscope/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
+      router.push(successUrl);
     } catch (err: any) {
       console.error("Order error:", err);
       setOrderError(err?.message || "Une erreur est survenue lors de l'enregistrement de votre commande.");
