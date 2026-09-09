@@ -264,12 +264,6 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         }));
       }
 
-      fetch("/api/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order }),
-      }).catch(() => {});
-
       const successUrl = `/p/microscope/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);
     } catch (err: any) {

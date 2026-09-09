@@ -147,37 +147,39 @@ export async function sendOrderNotification(order: NotificationOrderData) {
     }
   }
 
-  // 4. FORMSUBMIT FALLBACK
-  try {
-    const fsRes = await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Origin": "https://isivente.vercel.app",
-        "Referer": "https://isivente.vercel.app/",
-      },
-      body: JSON.stringify({
-        _subject: `🎉 NOUVELLE COMMANDE ISIVENTE - ${formattedAmount} (${order.product_title || "Produit"})`,
-        _template: "table",
-        _captcha: "false",
-        name: "Isivente Système",
-        email: "notifications@isivente.vercel.app",
-        "📦 Produit": order.product_title || "Non spécifié",
-        "🏷️ Formule / Pack": `${order.bundle_name || "Offre standard"} (x${order.quantity || 1})`,
-        "💰 Montant Total": formattedAmount,
-        "👤 Nom du Client": order.customer_name || "Client",
-        "📞 Téléphone": order.customer_phone || "Non renseigné",
-        "📍 Ville": city,
-        "🏠 Adresse / Quartier": address,
-        "🆔 N° Commande": String(order.order_number || "CMD-" + Date.now()),
-        "📅 Date & Heure": dateFormatted,
-        "💬 WhatsApp Direct": whatsappLink || "Numéro indisponible",
-      }),
-    });
-    results.formsubmit = fsRes.ok;
-  } catch (emailErr) {
-    console.error("FormSubmit notification error:", emailErr);
+  // 4. FORMSUBMIT FALLBACK (uniquement si aucun envoi direct n'a réussi)
+  if (!results.gmailSmtp && !results.resend) {
+    try {
+      const fsRes = await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Origin": "https://isivente.vercel.app",
+          "Referer": "https://isivente.vercel.app/",
+        },
+        body: JSON.stringify({
+          _subject: `🎉 NOUVELLE COMMANDE ISIVENTE - ${formattedAmount} (${order.product_title || "Produit"})`,
+          _template: "table",
+          _captcha: "false",
+          name: "Isivente Système",
+          email: "notifications@isivente.vercel.app",
+          "📦 Produit": order.product_title || "Non spécifié",
+          "🏷️ Formule / Pack": `${order.bundle_name || "Offre standard"} (x${order.quantity || 1})`,
+          "💰 Montant Total": formattedAmount,
+          "👤 Nom du Client": order.customer_name || "Client",
+          "📞 Téléphone": order.customer_phone || "Non renseigné",
+          "📍 Ville": city,
+          "🏠 Adresse / Quartier": address,
+          "🆔 N° Commande": String(order.order_number || "CMD-" + Date.now()),
+          "📅 Date & Heure": dateFormatted,
+          "💬 WhatsApp Direct": whatsappLink || "Numéro indisponible",
+        }),
+      });
+      results.formsubmit = fsRes.ok;
+    } catch (emailErr) {
+      console.error("FormSubmit notification error:", emailErr);
+    }
   }
 
   return results;
