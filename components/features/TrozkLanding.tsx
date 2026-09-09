@@ -60,32 +60,26 @@ const CAROUSEL_IMAGES = [
   { 
     src: "/images/trozk-hero.jpg", 
     alt: "Batterie Électrique Modulaire Trozk T3 Coloris Orange Vif",
-    caption: "Configuration 3-en-1 complète avec pochette de rangement sur mesure offerte"
   },
   { 
     src: "/images/trozk-modular.jpg", 
     alt: "Les 3 modules indépendants A, B et C du système modulaire",
-    caption: "Système modulaire 3-en-1 : Dragonne câble (A), Bloc maître 10 000 mAh (B) et Mini-bloc poche 5 000 mAh (C)"
   },
   { 
     src: "/images/trozk-direct-plug.jpg", 
     alt: "Mini-bloc 5000 mAh branché directement sous le téléphone",
-    caption: "Charge directe sans câble encombrant : téléphoner et jouer d'une seule main"
   },
   { 
     src: "/images/trozk-glow.jpg", 
     alt: "Batterie 15000 mAh avec charge rapide 22.5W",
-    caption: "Cellule de batterie de qualité automobile 21700 — Puissance de charge rapide 22.5W"
   },
   { 
     src: "/images/trozk-dimensions.jpg", 
     alt: "Dimensions officielles et caractéristiques techniques du modèle TP11",
-    caption: "Format compact ultra-portable : 80.4 mm (L) × 28.9 mm (P) × 116 mm (H)"
   },
   { 
     src: "/images/trozk-unboxing.jpg", 
     alt: "Coffret complet et vérification d'authenticité aux normes",
-    caption: "Authenticité certifiée aux normes de sécurité avec coffret et numéro SN unique"
   },
 ];
 
@@ -136,13 +130,6 @@ const FAQ_ITEMS = [
   },
 ];
 
-const LIVE_DEMO_SUBTITLES = [
-  { text: "Snap Magnétique Instantané : Assemblez ou séparez les 3 modules en 1 seconde", highlight: "Modularité 3-en-1" },
-  { text: "Charge Directe Sans Câble : Le mini-bloc 5000 mAh se branche directement sous le téléphone", highlight: "Zéro Câble Encombrant" },
-  { text: "Écran LED Interactif : Pourcentage précis et détection en direct de chaque module", highlight: "Contrôle en Temps Réel" },
-  { text: "Cellules 21700 Grade Automobile : 15 000 mAh réels pour 3 à 4 recharges complètes", highlight: "Puissance 22.5W Éclair" },
-];
-
 export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
@@ -153,12 +140,9 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
-  const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
 
-  // Contrôles vidéo Démo réelle (Bas de page)
-  const demoVideoRef = useRef<HTMLVideoElement>(null);
-  const [isDemoMuted, setIsDemoMuted] = useState(false);
-  const [isDemoPlaying, setIsDemoPlaying] = useState(true);
+  // Ref vidéo 3D pour boucler avant le logo de fin
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   const router = useRouter();
   const isSubmittingRef = useRef(false);
@@ -166,21 +150,12 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Gestion son démo
-  const toggleDemoMute = () => {
-    if (!demoVideoRef.current) return;
-    demoVideoRef.current.muted = !demoVideoRef.current.muted;
-    setIsDemoMuted(demoVideoRef.current.muted);
-  };
-
-  // Gestion lecture / pause démo
-  const toggleDemoPlay = () => {
-    if (!demoVideoRef.current) return;
-    if (demoVideoRef.current.paused) {
-      demoVideoRef.current.play().then(() => setIsDemoPlaying(true)).catch(() => {});
-    } else {
-      demoVideoRef.current.pause();
-      setIsDemoPlaying(false);
+  // Boucle fluide de la vidéo avant l'apparition du logo de fin (~13.5s)
+  const handleHeroTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (video.currentTime >= 13.5) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
     }
   };
 
@@ -192,15 +167,6 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
     }, 3800);
     return () => clearInterval(timer);
   }, [isHeroHovered]);
-
-  // Sous-titres démo
-  useEffect(() => {
-    if (!isDemoPlaying) return;
-    const subTimer = setInterval(() => {
-      setDemoSubtitleIndex((prev) => (prev + 1) % LIVE_DEMO_SUBTITLES.length);
-    }, 3500);
-    return () => clearInterval(subTimer);
-  }, [isDemoPlaying]);
 
   const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
   const startTimeRef = useRef(Date.now());
@@ -326,9 +292,9 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           </div>
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
-            <button onClick={() => scrollToSection("hero-showcase")} className="hover:text-slate-900 transition-colors">Aperçu Visuel</button>
+            <button onClick={() => scrollToSection("galerie")} className="hover:text-slate-900 transition-colors">Photos</button>
+            <button onClick={() => scrollToSection("hero-showcase")} className="hover:text-slate-900 transition-colors">Aperçu 3D</button>
             <button onClick={() => scrollToSection("modules")} className="hover:text-slate-900 transition-colors">Les 3 Modules</button>
-            <button onClick={() => scrollToSection("demo")} className="hover:text-slate-900 transition-colors">Démonstration</button>
             <button onClick={() => scrollToSection("specs")} className="hover:text-slate-900 transition-colors">Fiche Technique</button>
             <button onClick={() => scrollToSection("avis")} className="hover:text-slate-900 transition-colors">Avis clients</button>
             <button onClick={() => scrollToSection("faq")} className="hover:text-slate-900 transition-colors">FAQ</button>
@@ -344,186 +310,20 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </header>
 
-      {/* 🚀 HERO OFFICIEL TROZK : VIDÉO 3D MODULAIRE EN PLEINE LARGEUR (100% NEUTRE ET PURE SANS AUCUN OVERLAY) */}
-      <section id="hero-showcase" className="relative w-full bg-black overflow-hidden border-b border-slate-200">
-        <div className="relative w-full h-[55vh] sm:h-[70vh] lg:h-[85vh] max-h-[860px] flex items-center justify-center bg-black">
-          <video
-            src="/videos/trozk-hero-1.mp4"
-            poster="/images/trozk-video-hero-cover.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover object-center pointer-events-none"
-          />
-        </div>
-      </section>
-
-      {/* 🌟 3 BADGES DE RÉASSURANCE CLÉS DIRECTEMENT SOUS LE HERO */}
-      <section className="py-6 px-4 sm:px-6 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-4xl mx-auto">
-          <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
-              <Truck className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Livraison 24h & Test</div>
-              <div className="text-[11px] text-slate-500 font-medium">Paiement après vérification</div>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Cellules 21700 Grade EV</div>
-              <div className="text-[11px] text-slate-500 font-medium">Garantie fabricant 1 an</div>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-              <Box className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-900">Pochette Rigide Offerte</div>
-              <div className="text-[11px] text-slate-500 font-medium">Coffret zippé sur mesure inclus</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (PLACEMENT PRIORITAIRE SOUS HERO VIDÉO & BADGES) */}
-      <UmeiStyleOrderSection
-        productSlug={slug}
-        productTitle="Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)"
-        productImage="/images/trozk-hero.jpg"
-        bundles={BUNDLES}
-        selectedBundle={selectedBundle}
-        onSelectBundle={(b) => setSelectedBundle(b)}
-        customerName={customerName}
-        setCustomerName={setCustomerName}
-        customerPhone={customerPhone}
-        setCustomerPhone={setCustomerPhone}
-        customerPhone2={customerPhone2}
-        setCustomerPhone2={setCustomerPhone2}
-        city={city}
-        setCity={setCity}
-        address={address}
-        setAddress={setAddress}
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-        accentColor="#F97316"
-        whatsappNumber="2290192901817"
-        orderSuccess={orderSuccess}
-        orderNumber={orderInfo?.orderNumber}
-        onResetOrder={() => {
-          setOrderSuccess(false);
-          setOrderInfo(null);
-        }}
-      />
-
-      {/* 🎬 DÉMONSTRATION VIDÉO EN SITUATION RÉELLE AVEC CONTRÔLES COMPLETS */}
-      <section id="demo" className="py-14 sm:py-20 bg-slate-50 border-y border-slate-200 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-orange-600 font-bold bg-orange-100 px-3.5 py-1 rounded-full border border-orange-200 inline-flex items-center gap-1.5 shadow-2xs">
-              <Play className="w-3 h-3 fill-current text-orange-600" />
-              <span>Démonstration & Prise en Main Réelle</span>
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-              Regardez la batterie Trozk T3 en action
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto">
-              Découvrez la fluidité du détachement magnétique et le branchement direct sous le smartphone.
-            </p>
-          </div>
-
-          <div className="relative rounded-3xl overflow-hidden border border-slate-300/80 bg-black shadow-2xl max-w-2xl mx-auto aspect-[9/16] sm:aspect-[4/5] max-h-[580px] flex items-center justify-center">
-            <video
-              ref={demoVideoRef}
-              src="/videos/trozk-demo.mp4"
-              playsInline
-              loop
-              autoPlay
-              className="w-full h-full object-contain"
-            />
-            
-            {/* BOUTONS FLOTTANTS VIDÉO DÉMO */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
-              <button
-                onClick={toggleDemoMute}
-                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
-                title={isDemoMuted ? "Activer le son" : "Couper le son"}
-              >
-                {isDemoMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-              </button>
-
-              <button
-                onClick={toggleDemoPlay}
-                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
-                title={isDemoPlaying ? "Mettre en pause" : "Lire la vidéo"}
-              >
-                {isDemoPlaying ? <Pause className="w-4 h-4 text-orange-400" /> : <Play className="w-4 h-4 text-orange-400" />}
-              </button>
-            </div>
-
-            {/* OVERLAY DYNAMIQUE SOUS-TITRES */}
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-6 flex flex-col sm:flex-row items-center justify-between gap-3 z-20">
-              <div className="space-y-1 text-center sm:text-left">
-                <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider text-orange-400 bg-orange-950/90 px-2.5 py-0.5 rounded-md border border-orange-700/60">
-                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].highlight}
-                </span>
-                <p className="text-sm sm:text-base font-semibold text-white">
-                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].text}
-                </p>
-              </div>
-
-              <button
-                onClick={scrollToOrder}
-                className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all active:scale-95"
-              >
-                Commander (29 900 F)
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 📸 CARROUSEL DE PHOTOS AUTO-DÉFILANT AVEC PAUSE AU SURVOL */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-orange-600 bg-orange-50 border border-orange-200 px-3.5 py-1 rounded-full shadow-2xs">
-            Galerie & Finitions
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-            Explorez le Trozk T3 sous tous ses angles
-          </h2>
-        </div>
-
+      {/* 📸 1. CARROUSEL DE PHOTOS AVANT LA VIDÉO (AUTO-DÉFILANT, ÉPURÉ SANS TEXTES SURCHARGÉS) */}
+      <section id="galerie" className="pt-6 sm:pt-10 pb-8 px-4 sm:px-6 max-w-5xl mx-auto space-y-6">
         <div 
           className="max-w-4xl mx-auto"
           onMouseEnter={() => setIsHeroHovered(true)}
           onMouseLeave={() => setIsHeroHovered(false)}
         >
           <div className="relative rounded-3xl bg-slate-50 border border-slate-200/90 p-3 sm:p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
-            <div className="relative aspect-[4/3] sm:aspect-[16/9] max-h-[440px] rounded-2xl overflow-hidden bg-[#ECECEE] flex items-center justify-center">
+            <div className="relative aspect-[4/3] sm:aspect-[16/9] max-h-[460px] rounded-2xl overflow-hidden bg-[#ECECEE] flex items-center justify-center">
               <img 
                 src={CAROUSEL_IMAGES[activeImageIndex].src} 
                 alt={CAROUSEL_IMAGES[activeImageIndex].alt}
                 className="w-full h-full object-contain transition-all duration-500"
               />
-              
-              <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
-                <Flame className="w-4 h-4 text-orange-400" />
-                <span>Vue {activeImageIndex + 1} / {CAROUSEL_IMAGES.length}</span>
-              </div>
-
-              <div className="absolute bottom-4 left-4 right-4 bg-slate-900/85 backdrop-blur-md text-white/95 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-center shadow-lg">
-                {CAROUSEL_IMAGES[activeImageIndex].caption}
-              </div>
 
               {/* FLÈCHES DE NAVIGATION MANUELLE */}
               <button
@@ -558,6 +358,105 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
                 </button>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 🚀 2. VIDÉO 3D MODULAIRE EN PLEINE LARGEUR (BOUCLE PURE SANS LOGO DE FIN NI TEXTES) */}
+      <section id="hero-showcase" className="relative w-full bg-black overflow-hidden border-y border-slate-200">
+        <div className="relative w-full h-[55vh] sm:h-[70vh] lg:h-[82vh] max-h-[840px] flex items-center justify-center bg-black">
+          <video
+            ref={heroVideoRef}
+            src="/videos/trozk-hero-1.mp4"
+            poster="/images/trozk-video-hero-cover.jpg"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            onTimeUpdate={handleHeroTimeUpdate}
+            className="w-full h-full object-cover object-center pointer-events-none"
+          />
+        </div>
+      </section>
+
+      {/* 🌟 3 BADGES DE RÉASSURANCE CLÉS */}
+      <section className="py-6 px-4 sm:px-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-4xl mx-auto">
+          <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+              <Truck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-slate-900">Livraison 24h & Test</div>
+              <div className="text-[11px] text-slate-500 font-medium">Paiement après vérification</div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-slate-900">Cellules 21700 Grade EV</div>
+              <div className="text-[11px] text-slate-500 font-medium">Garantie fabricant 1 an</div>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-3.5 shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+              <Box className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-slate-900">Pochette Rigide Offerte</div>
+              <div className="text-[11px] text-slate-500 font-medium">Coffret zippé sur mesure inclus</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 🌟 FORMULAIRE DE COMMANDE DIRECTE (PLACEMENT PRIORITAIRE SOUS MÉDIAS & BADGES) */}
+      <UmeiStyleOrderSection
+        productSlug={slug}
+        productTitle="Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)"
+        productImage="/images/trozk-hero.jpg"
+        bundles={BUNDLES}
+        selectedBundle={selectedBundle}
+        onSelectBundle={(b) => setSelectedBundle(b)}
+        customerName={customerName}
+        setCustomerName={setCustomerName}
+        customerPhone={customerPhone}
+        setCustomerPhone={setCustomerPhone}
+        customerPhone2={customerPhone2}
+        setCustomerPhone2={setCustomerPhone2}
+        city={city}
+        setCity={setCity}
+        address={address}
+        setAddress={setAddress}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+        accentColor="#F97316"
+        whatsappNumber="2290192901817"
+        orderSuccess={orderSuccess}
+        orderNumber={orderInfo?.orderNumber}
+        onResetOrder={() => {
+          setOrderSuccess(false);
+          setOrderInfo(null);
+        }}
+      />
+
+      {/* 🎬 DÉMONSTRATION PRISE EN MAIN EN BOUCLE PURE */}
+      <section id="demo" className="py-12 sm:py-16 bg-slate-50 border-y border-slate-200 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="relative rounded-3xl overflow-hidden border border-slate-300/80 bg-black shadow-xl max-w-2xl mx-auto aspect-[9/16] sm:aspect-[4/5] max-h-[560px] flex items-center justify-center">
+            <video
+              src="/videos/trozk-demo.mp4"
+              playsInline
+              loop
+              autoPlay
+              muted
+              className="w-full h-full object-contain pointer-events-none"
+            />
           </div>
         </div>
       </section>
