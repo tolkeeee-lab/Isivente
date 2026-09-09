@@ -48,6 +48,18 @@ export default function ProductsPage() {
 
   const defaultProducts: ProductItem[] = [
     {
+      id: "microscope-default",
+      title: "Microscope Numérique Portable HD 1000X",
+      slug: "microscope",
+      price: 16900,
+      image_url: "/images/microscope-hero.jpg",
+      bundles: [
+        { name: "Pack Découverte (1 Microscope)", price: 16900 },
+        { name: "Pack Famille & Duo (2 Microscopes)", price: 29900 },
+        { name: "Pack Explorateur VIP (+ Carte SD 32Go)", price: 21900 }
+      ]
+    },
+    {
       id: "umei-default",
       title: "Brosse Démêlante Vapeur Uméi 3-en-1",
       slug: "umei",
