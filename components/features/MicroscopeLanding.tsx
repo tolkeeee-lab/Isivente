@@ -400,6 +400,38 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           </div>
         </div>
 
+        {/* ── FORMULAIRE DE COMMANDE ENCADRÉ (SOUS LE CARROUSEL) ── */}
+        <div ref={orderSectionRef} id="commander">
+          {orderError && (
+            <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
+              <XCircle className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
+              <span>{orderError}</span>
+            </div>
+          )}
+
+          <UmeiStyleOrderSection
+            productSlug="microscope"
+            productTitle="Microscope Numérique Portable HD 1000X"
+            productImage="/images/microscope-monde-decouverte.jpg"
+            bundles={BUNDLES}
+            selectedBundle={selectedBundle}
+            onSelectBundle={(b) => setSelectedBundle(b)}
+            customerName={customerName}
+            setCustomerName={setCustomerName}
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            customerPhone2={customerPhone2}
+            setCustomerPhone2={setCustomerPhone2}
+            city={city}
+            setCity={setCity}
+            address={address}
+            setAddress={setAddress}
+            accentColor="#4f46e5"
+            onSubmit={handleOrderSubmit}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+
         {/* ── SECTION VIDÉO DÉMONSTRATION TIKTOK (AUTOPLAY AVEC CONTRÔLES) ── */}
         <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-6">
           <div className="text-center space-y-2 max-w-xl mx-auto">
@@ -752,38 +784,6 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             </div>
           </div>
         </section>
-
-        {/* ── FORMULAIRE DE COMMANDE ENCADRÉ ── */}
-        <div ref={orderSectionRef} id="commander">
-          {orderError && (
-            <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
-              <XCircle className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
-              <span>{orderError}</span>
-            </div>
-          )}
-
-          <UmeiStyleOrderSection
-            productSlug="microscope"
-            productTitle="Microscope Numérique Portable HD 1000X"
-            productImage="/images/microscope-monde-decouverte.jpg"
-            bundles={BUNDLES}
-            selectedBundle={selectedBundle}
-            onSelectBundle={(b) => setSelectedBundle(b)}
-            customerName={customerName}
-            setCustomerName={setCustomerName}
-            customerPhone={customerPhone}
-            setCustomerPhone={setCustomerPhone}
-            customerPhone2={customerPhone2}
-            setCustomerPhone2={setCustomerPhone2}
-            city={city}
-            setCity={setCity}
-            address={address}
-            setAddress={setAddress}
-            accentColor="#4f46e5"
-            onSubmit={handleOrderSubmit}
-            isSubmitting={isSubmitting}
-          />
-        </div>
 
         {/* ── AVIS CLIENTS & PHOTOS RÉELLES DES ACHETEURS ── */}
         <section className="space-y-5">
