@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { sendOrderNotification } from "@/lib/notifyHelper";
 
 const defaultUrl = "https://uelognqedzqtvupwzejh.supabase.co";
 const defaultKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlbG9nbnFlZHpxdHZ1cHd6ZWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMTE0ODgsImV4cCI6MjEwMzc4NzQ4OH0.DjUgqgALNjMIIolen-L6blr4kxUgPi3TKUBeX-TnK9k";
@@ -82,6 +83,9 @@ export async function POST(req: NextRequest) {
       console.error("Supabase POST error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
+
+    // Déclencher l'alerte email & mobile immédiatement
+    sendOrderNotification(data?.[0] || payload).catch(e => console.error("Server notify error:", e));
 
     return NextResponse.json({
       success: true,
