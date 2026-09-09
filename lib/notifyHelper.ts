@@ -63,12 +63,16 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   `;
 
   // 1. GMAIL SMTP DIRECT VIA NODEMAILER (100% GRATUIT, 0 SPAM, INBOX DIRECTE)
-  const gmailUser = process.env.GMAIL_USER || process.env.EMAIL_USER;
-  const gmailAppPass = process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS;
+  const gmailUser = (process.env.GMAIL_USER || process.env.EMAIL_USER || "").trim();
+  const rawPass = process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS || "";
+  const gmailAppPass = rawPass.replace(/\s+/g, "").trim();
+
   if (gmailUser && gmailAppPass) {
     try {
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
         auth: {
           user: gmailUser,
           pass: gmailAppPass,
