@@ -66,6 +66,8 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const gmailUser = (process.env.GMAIL_USER || process.env.EMAIL_USER || "").trim();
   const rawPass = process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS || "";
   const gmailAppPass = rawPass.replace(/\s+/g, "").trim();
+  const orderRef = String(order.order_number || "CMD-" + Date.now().toString().slice(-6));
+  const emailSubject = `🚨 NOUVELLE COMMANDE #${orderRef} (${order.customer_name || "Client"}) - ${formattedAmount}`;
 
   if (gmailUser && gmailAppPass) {
     try {
@@ -80,9 +82,9 @@ export async function sendOrderNotification(order: NotificationOrderData) {
       });
 
       await transporter.sendMail({
-        from: `"Isivente Express" <${gmailUser}>`,
+        from: `"Isivente Commandes 📦" <${gmailUser}>`,
         to: recipientEmail,
-        subject: `🎉 NOUVELLE COMMANDE - ${formattedAmount} (${order.product_title || "Produit"})`,
+        subject: emailSubject,
         html: emailHtml,
       });
       results.gmailSmtp = true;
