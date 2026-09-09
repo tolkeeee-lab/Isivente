@@ -79,6 +79,17 @@ const CAROUSEL_IMAGES = [
   },
 ];
 
+const TIKTOK_EXPLORATION_SLIDES = [
+  { src: "/images/tiktok-slide-1.jpg", title: "Pétale de Fleur", subtitle: "Observation macro de la fleur" },
+  { src: "/images/tiktok-slide-2.jpg", title: "Détails Cellulaires", subtitle: "Grossissement 1000X des pigments" },
+  { src: "/images/tiktok-slide-3.jpg", title: "Ailes d'Insectes", subtitle: "Micro-écailles et transparence" },
+  { src: "/images/tiktok-slide-4.jpg", title: "Structure Microscopique", subtitle: "Détails invisibles à l'œil nu" },
+  { src: "/images/tiktok-slide-5.jpg", title: "Cristaux & Minéraux", subtitle: "Grains de sel et sable" },
+  { src: "/images/tiktok-slide-6.jpg", title: "Géométrie Minérale", subtitle: "Reflets et facettes cubiques" },
+  { src: "/images/tiktok-slide-7.jpg", title: "Prise en Main Enfant", subtitle: "Design ergonomique & léger" },
+  { src: "/images/tiktok-slide-8.jpg", title: "Coffret Prêt à Offrir", subtitle: "Pack complet avec dragonne" },
+];
+
 interface CustomerReview {
   name: string;
   location: string;
@@ -594,6 +605,48 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ── GALERIE D'EXPLORATION MICROSCOPIQUE (TIKTOK SLIDES) ── */}
+        <section className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600">
+                <ZoomIn className="w-3.5 h-3.5 stroke-[1.75]" />
+                <span>Exploration en Direct</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-[-0.02em]">
+                Ce qui devient visible sous la lentille :
+              </h2>
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium">
+              Faites glisser pour explorer toutes les observations →
+            </div>
+          </div>
+
+          <div className="flex gap-3.5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-thin -mx-2 px-2">
+            {TIKTOK_EXPLORATION_SLIDES.map((slide, idx) => (
+              <div 
+                key={idx}
+                className="min-w-[200px] sm:min-w-[220px] max-w-[240px] shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-slate-200/90 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.06)] flex flex-col hover:border-indigo-200 transition-all group"
+              >
+                <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden">
+                  <img 
+                    src={slide.src} 
+                    alt={slide.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  />
+                  <div className="absolute top-2.5 left-2.5 bg-slate-950/80 backdrop-blur-xs text-white text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-md border border-white/10">
+                    Zoom HD
+                  </div>
+                </div>
+                <div className="p-3 bg-white space-y-0.5">
+                  <div className="text-xs font-bold text-slate-900 leading-snug">{slide.title}</div>
+                  <div className="text-[11px] text-slate-500">{slide.subtitle}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
