@@ -105,18 +105,86 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// 3. UPDATE ORDER STATUS
+// 3. UPDATE ORDER STATUS OU UPGRADE UPSELL
 export async function PATCH(req: NextRequest) {
   try {
-    const { id, status } = await req.json();
+    const body = await req.json();
+    const supabase = getSupabaseClient();
 
+    // Cas A : Upgrade d'une commande avec une offre Upsell / Downsell
+    if (body.action === "upgrade_upsell" || (body.orderRef && body.additionalAmount)) {
+      const orderRef = String(body.orderRef || body.id || "");
+      const additionalAmount = Number(body.additionalAmount) || 0;
+      const addedItemTitle = String(body.addedItemTitle || "Offre Complémentaire");
+
+      if (!orderRef || additionalAmount <= 0) {
+        return NextResponse.json({ success: false, error: "orderRef et additionalAmount requis" }, { status: 400 });
+      }
+
+      // 1. Trouver la commande
+      const isUuid = orderRef.includes("-") && orderRef.length > 30;
+      let query = supabase.from("orders").select("*");
+      if (isUuid) {
+        query = query.eq("id", orderRef);
+      } else {
+        query = query.eq("order_number", orderRef);
+      }
+
+      const { data: existingList, error: findErr } = await query;
+      const existing = existingList?.[0];
+
+      if (findErr || !existing) {
+        console.warn("Upsell order not found in Supabase:", orderRef, findErr);
+        return NextResponse.json({ success: false, error: "Commande non trouvée pour l'upsell" }, { status: 404 });
+      }
+
+      const newTotal = (Number(existing.total_amount) || 0) + additionalAmount;
+      const currentBundle = existing.bundle_name || "Offre standard";
+      const newBundle = currentBundle.includes("[OFFRE VIP]")
+        ? `${currentBundle} + ${addedItemTitle}`
+        : `${currentBundle} + [OFFRE VIP] ${addedItemTitle}`;
+
+      // 2. Mettre à jour dans Supabase
+      const { data: updatedData, error: updateErr } = await supabase
+        .from("orders")
+        .update({
+          total_amount: newTotal,
+          bundle_name: newBundle,
+        })
+        .eq("id", existing.id)
+        .select();
+
+      if (updateErr) {
+        console.error("Upsell update Supabase error:", updateErr);
+        return NextResponse.json({ success: false, error: updateErr.message }, { status: 500 });
+      }
+
+      const updatedOrder = updatedData?.[0] || { ...existing, total_amount: newTotal, bundle_name: newBundle };
+
+      // 3. Déclencher l'alerte email & mobile spéciale UPSELL de manière attendue (AWAITED)
+      try {
+        await sendOrderNotification({
+          ...updatedOrder,
+          is_upsell: true,
+        });
+      } catch (notifyErr) {
+        console.error("Upsell notification error:", notifyErr);
+      }
+
+      return NextResponse.json({
+        success: true,
+        order: updatedOrder,
+        message: "Commande enrichie avec l'upsell et notification envoyée avec succès",
+      });
+    }
+
+    // Cas B : Mise à jour de statut standard
+    const { id, status } = body;
     if (!id || !status) {
       return NextResponse.json({ success: false, error: "ID et statut requis" }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
     const isUuid = id.includes("-") && id.length > 30;
-
     let query = supabase.from("orders").update({ status });
     if (isUuid) {
       query = query.eq("id", id);

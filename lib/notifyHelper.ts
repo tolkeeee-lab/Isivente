@@ -15,6 +15,7 @@ export interface NotificationOrderData {
   quantity?: number;
   status?: string;
   created_at?: string;
+  is_upsell?: boolean;
 }
 
 export async function sendOrderNotification(order: NotificationOrderData) {
@@ -25,6 +26,8 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const dateFormatted = new Date().toLocaleString("fr-FR", { timeZone: "Africa/Porto-Novo" });
   const city = order.shipping_city || order.city || "Cotonou";
   const address = order.shipping_address || order.address || "Non précisé";
+  const orderRef = String(order.order_number || "CMD-" + Date.now().toString().slice(-6));
+  const isUpsell = order.is_upsell || (order.bundle_name || "").includes("[OFFRE VIP]");
 
   const results: {
     gmailSmtp?: boolean;
@@ -33,21 +36,37 @@ export async function sendOrderNotification(order: NotificationOrderData) {
     formsubmit?: boolean;
   } = {};
 
+  const emailSubject = isUpsell
+    ? `🚀 UPSELL ACCEPTÉ #${orderRef} (${order.customer_name || "Client"}) - Nouveau Total : ${formattedAmount}`
+    : `🚨 NOUVELLE COMMANDE #${orderRef} (${order.customer_name || "Client"}) - ${formattedAmount}`;
+
+  const headerBg = isUpsell
+    ? "background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"
+    : "background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);";
+
+  const headerTitle = isUpsell
+    ? "🚀 UPSELL VIP AJOUTÉ AU COLIS !"
+    : "🎉 Nouvelle Commande Isivente !";
+
+  const headerSubtitle = isUpsell
+    ? "Le client a accepté l'offre supplémentaire. Le montant total et le colis ont été mis à jour."
+    : "Livraison Paiement à la réception (COD)";
+
   const emailHtml = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
-      <div style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 16px 20px; border-radius: 12px; margin-bottom: 20px;">
-        <h2 style="color: #ffffff; margin: 0; font-size: 20px;">🎉 Nouvelle Commande Isivente !</h2>
-        <p style="color: #ffedd5; margin: 4px 0 0 0; font-size: 13px;">Livraison Paiement à la réception (COD)</p>
+      <div style="${headerBg} padding: 18px 20px; border-radius: 12px; margin-bottom: 20px;">
+        <h2 style="color: #ffffff; margin: 0; font-size: 20px;">${headerTitle}</h2>
+        <p style="color: #f5f3ff; margin: 4px 0 0 0; font-size: 13px;">${headerSubtitle}</p>
       </div>
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;">
-        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📦 Produit :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #0f172a;">${order.product_title || "Non spécifié"}</td></tr>
-        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🏷️ Formule / Pack :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">${order.bundle_name || "Offre standard"} (x${order.quantity || 1})</td></tr>
-        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">💰 Montant Total :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #16a34a; font-size: 16px;">${formattedAmount}</td></tr>
-        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">👤 Nom du Client :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #0f172a;">${order.customer_name || "Client"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📦 Produit principal :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #0f172a;">${order.product_title || "Non spécifié"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🏷️ Contenu du Colis :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: ${isUpsell ? '#6d28d9' : '#334155'};">${order.bundle_name || "Offre standard"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">💰 Total à Encaisser :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #16a34a; font-size: 17px;">${formattedAmount}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">👤 Client :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #0f172a;">${order.customer_name || "Client"}</td></tr>
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📞 Téléphone :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #2563eb;"><a href="tel:${order.customer_phone}" style="color: #2563eb; text-decoration: none;">${order.customer_phone}</a></td></tr>
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📍 Ville :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">${city}</td></tr>
-        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🏠 Adresse :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">${address}</td></tr>
-        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🆔 N° Commande :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-family: monospace; font-weight: bold; color: #0f172a;">${order.order_number || "CMD"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🏠 Quartier / Adresse :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">${address}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🆔 Réf. Commande :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-family: monospace; font-weight: bold; color: #0f172a;">${orderRef}</td></tr>
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📅 Date :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b;">${dateFormatted}</td></tr>
       </table>
       ${
@@ -66,8 +85,6 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const gmailUser = (process.env.GMAIL_USER || process.env.EMAIL_USER || "").trim();
   const rawPass = process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS || "";
   const gmailAppPass = rawPass.replace(/\s+/g, "").trim();
-  const orderRef = String(order.order_number || "CMD-" + Date.now().toString().slice(-6));
-  const emailSubject = `🚨 NOUVELLE COMMANDE #${orderRef} (${order.customer_name || "Client"}) - ${formattedAmount}`;
 
   if (gmailUser && gmailAppPass) {
     try {
@@ -98,14 +115,15 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (botToken && chatId) {
     try {
-      const message = `🎉 *NOUVELLE COMMANDE ISIVENTE !*\n\n` +
+      const tgTitle = isUpsell ? "🚀 *UPSELL VIP ACCEPTÉ (PANIER BOOTSTÉ) !*" : "🎉 *NOUVELLE COMMANDE ISIVENTE !*";
+      const message = `${tgTitle}\n\n` +
         `📦 *Produit :* ${order.product_title || "Produit"}\n` +
-        `🏷️ *Pack :* ${order.bundle_name || "Pack Standard"} (x${order.quantity || 1})\n` +
-        `💰 *Montant :* \`${formattedAmount}\`\n` +
+        `🏷️ *Pack / Colis :* ${order.bundle_name || "Offre standard"}\n` +
+        `💰 *Nouveau Total :* \`${formattedAmount}\`\n` +
         `👤 *Client :* ${order.customer_name || "Client"}\n` +
         `📞 *Téléphone :* \`${order.customer_phone || "Non renseigné"}\`\n` +
         `📍 *Destination :* ${city} (${address})\n` +
-        `🆔 *Réf :* \`${order.order_number || "CMD"}\`\n` +
+        `🆔 *Réf :* \`${orderRef}\`\n` +
         `📅 *Date :* ${dateFormatted}\n\n` +
         (whatsappLink ? `👉 [Ouvrir WhatsApp Client](${whatsappLink})` : "");
 
@@ -137,7 +155,7 @@ export async function sendOrderNotification(order: NotificationOrderData) {
         body: JSON.stringify({
           from: "Isivente Alertes <onboarding@resend.dev>",
           to: [recipientEmail],
-          subject: `🎉 NOUVELLE COMMANDE - ${formattedAmount} (${order.product_title || "Produit"})`,
+          subject: emailSubject,
           html: emailHtml,
         }),
       });
@@ -159,19 +177,19 @@ export async function sendOrderNotification(order: NotificationOrderData) {
           "Referer": "https://isivente.vercel.app/",
         },
         body: JSON.stringify({
-          _subject: `🎉 NOUVELLE COMMANDE ISIVENTE - ${formattedAmount} (${order.product_title || "Produit"})`,
+          _subject: emailSubject,
           _template: "table",
           _captcha: "false",
           name: "Isivente Système",
           email: "notifications@isivente.vercel.app",
           "📦 Produit": order.product_title || "Non spécifié",
-          "🏷️ Formule / Pack": `${order.bundle_name || "Offre standard"} (x${order.quantity || 1})`,
+          "🏷️ Formule / Pack": order.bundle_name || "Offre standard",
           "💰 Montant Total": formattedAmount,
           "👤 Nom du Client": order.customer_name || "Client",
           "📞 Téléphone": order.customer_phone || "Non renseigné",
           "📍 Ville": city,
           "🏠 Adresse / Quartier": address,
-          "🆔 N° Commande": String(order.order_number || "CMD-" + Date.now()),
+          "🆔 N° Commande": orderRef,
           "📅 Date & Heure": dateFormatted,
           "💬 WhatsApp Direct": whatsappLink || "Numéro indisponible",
         }),

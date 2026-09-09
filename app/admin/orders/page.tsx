@@ -407,8 +407,15 @@ export default function OrdersPage() {
                           <Package className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                           <span>{order.product_title || "Brosse Uméi 3-en-1"}</span>
                         </div>
-                        <div className="text-[11px] text-slate-600 font-medium bg-slate-100 px-2 py-0.5 rounded-md inline-block mt-1 border border-slate-200/60">
-                          {order.bundle_name || order.bundle_id || "Pack Découverte"} (x{order.quantity || 1})
+                        <div className="mt-1 flex flex-col gap-1">
+                          <span className="text-[11px] text-slate-600 font-medium bg-slate-100 px-2 py-0.5 rounded-md inline-block border border-slate-200/60 w-fit">
+                            {(order.bundle_name || order.bundle_id || "Pack Découverte").split("[OFFRE VIP]")[0].trim()} (x{order.quantity || 1})
+                          </span>
+                          {(order.bundle_name || "").includes("[OFFRE VIP]") && (
+                            <span className="text-[10.5px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-md inline-flex items-center gap-1 border border-violet-200 w-fit animate-pulse">
+                              <span>🎁 + UPSELL : {(order.bundle_name || "").split("[OFFRE VIP]")[1]?.trim()}</span>
+                            </span>
+                          )}
                         </div>
                       </td>
 

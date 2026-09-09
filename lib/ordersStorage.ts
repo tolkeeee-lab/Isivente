@@ -258,30 +258,56 @@ export async function upgradeOrderWithUpsell(
   if (!orderRef || additionalAmount <= 0) return false;
 
   try {
-    // 1. Récupérer la commande dans Supabase
-    const isId = orderRef.includes("-") && orderRef.length > 30; // UUID check
-    let query = supabase.from("orders").select("*");
-    if (isId) {
-      query = query.eq("id", orderRef);
-    } else {
-      query = query.eq("order_number", orderRef);
+    // 1. Envoi prioritaire au serveur Next.js (/api/orders) pour mise à jour DB + alerte email AWAITED
+    let serverSuccess = false;
+    try {
+      const srvRes = await fetch("/api/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "upgrade_upsell",
+          orderRef,
+          additionalAmount,
+          addedItemTitle,
+        }),
+      });
+      const srvData = await srvRes.json().catch(() => ({}));
+      if (srvData.success) {
+        serverSuccess = true;
+      }
+    } catch (srvErr) {
+      console.warn("Server upsell PATCH error:", srvErr);
     }
 
-    const { data, error } = await query.single();
-    if (data && !error) {
-      const newAmount = (data.total_amount || 0) + additionalAmount;
-      const newBundle = `${data.bundle_name || "Pack initial"} + [OFFRE VIP] ${addedItemTitle}`;
+    // 2. Secours client direct Supabase si le serveur n'a pas répondu
+    if (!serverSuccess) {
+      const isId = orderRef.includes("-") && orderRef.length > 30;
+      let query = supabase.from("orders").select("*");
+      if (isId) {
+        query = query.eq("id", orderRef);
+      } else {
+        query = query.eq("order_number", orderRef);
+      }
 
-      await supabase
-        .from("orders")
-        .update({
-          total_amount: newAmount,
-          bundle_name: newBundle,
-        })
-        .eq("id", data.id);
+      const { data, error } = await query.single();
+      if (data && !error) {
+        const newAmount = (data.total_amount || 0) + additionalAmount;
+        const currentBundle = data.bundle_name || "Offre standard";
+        const newBundle = currentBundle.includes("[OFFRE VIP]")
+          ? `${currentBundle} + ${addedItemTitle}`
+          : `${currentBundle} + [OFFRE VIP] ${addedItemTitle}`;
+
+        await supabase
+          .from("orders")
+          .update({
+            total_amount: newAmount,
+            bundle_name: newBundle,
+          })
+          .eq("id", data.id);
+      }
     }
 
-    // 2. Mettre à jour le LocalStorage de secours
+    // 3. Mettre à jour le LocalStorage de secours
     if (typeof window !== "undefined") {
       const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (raw) {
@@ -289,10 +315,13 @@ export async function upgradeOrderWithUpsell(
           const list = JSON.parse(raw);
           const updated = list.map((o: any) => {
             if (o.order_number === orderRef || o.id === orderRef) {
+              const currentBundle = o.bundle_name || "Offre standard";
               return {
                 ...o,
                 total_amount: (o.total_amount || 0) + additionalAmount,
-                bundle_name: `${o.bundle_name || "Pack initial"} + [OFFRE VIP] ${addedItemTitle}`,
+                bundle_name: currentBundle.includes("[OFFRE VIP]")
+                  ? `${currentBundle} + ${addedItemTitle}`
+                  : `${currentBundle} + [OFFRE VIP] ${addedItemTitle}`,
               };
             }
             return o;
@@ -301,7 +330,7 @@ export async function upgradeOrderWithUpsell(
         } catch {}
       }
 
-      // Notifier le tableau de bord
+      // Notifier le tableau de bord en temps réel
       try {
         if ("BroadcastChannel" in window) {
           const bc = new BroadcastChannel("isivente_orders_channel");
