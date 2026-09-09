@@ -136,6 +136,13 @@ const FAQ_ITEMS = [
   },
 ];
 
+const LIVE_DEMO_SUBTITLES = [
+  { text: "Snap Magnétique Instantané : Assemblez ou séparez les 3 modules en 1 seconde", highlight: "Modularité 3-en-1" },
+  { text: "Charge Directe Sans Câble : Le mini-bloc 5000 mAh se branche directement sous le téléphone", highlight: "Zéro Câble Encombrant" },
+  { text: "Écran LED Interactif : Pourcentage précis et détection en direct de chaque module", highlight: "Contrôle en Temps Réel" },
+  { text: "Cellules 21700 Grade Automobile : 15 000 mAh réels pour 3 à 4 recharges complètes", highlight: "Puissance 22.5W Éclair" },
+];
+
 export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
@@ -146,11 +153,17 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const [demoSubtitleIndex, setDemoSubtitleIndex] = useState(0);
 
-  // Contrôles vidéo hero plein écran
+  // Contrôles vidéo Hero HD Trozk (Haut de page)
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isHeroMuted, setIsHeroMuted] = useState(true);
+  const [isHeroPlaying, setIsHeroPlaying] = useState(true);
+
+  // Contrôles vidéo Démo réelle (Bas de page)
+  const demoVideoRef = useRef<HTMLVideoElement>(null);
+  const [isDemoMuted, setIsDemoMuted] = useState(false);
+  const [isDemoPlaying, setIsDemoPlaying] = useState(true);
 
   const router = useRouter();
   const isSubmittingRef = useRef(false);
@@ -158,21 +171,39 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Gestion du son vidéo
-  const toggleSound = () => {
+  // Gestion du son vidéo Hero
+  const toggleHeroSound = () => {
     if (!heroVideoRef.current) return;
     heroVideoRef.current.muted = !heroVideoRef.current.muted;
-    setIsMuted(heroVideoRef.current.muted);
+    setIsHeroMuted(heroVideoRef.current.muted);
   };
 
-  // Gestion lecture / pause
-  const togglePlay = () => {
+  // Gestion lecture / pause Hero
+  const toggleHeroPlay = () => {
     if (!heroVideoRef.current) return;
     if (heroVideoRef.current.paused) {
-      heroVideoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      heroVideoRef.current.play().then(() => setIsHeroPlaying(true)).catch(() => {});
     } else {
       heroVideoRef.current.pause();
-      setIsPlaying(false);
+      setIsHeroPlaying(false);
+    }
+  };
+
+  // Gestion son démo
+  const toggleDemoMute = () => {
+    if (!demoVideoRef.current) return;
+    demoVideoRef.current.muted = !demoVideoRef.current.muted;
+    setIsDemoMuted(demoVideoRef.current.muted);
+  };
+
+  // Gestion lecture / pause démo
+  const toggleDemoPlay = () => {
+    if (!demoVideoRef.current) return;
+    if (demoVideoRef.current.paused) {
+      demoVideoRef.current.play().then(() => setIsDemoPlaying(true)).catch(() => {});
+    } else {
+      demoVideoRef.current.pause();
+      setIsDemoPlaying(false);
     }
   };
 
@@ -184,6 +215,15 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
     }, 3800);
     return () => clearInterval(timer);
   }, [isHeroHovered]);
+
+  // Sous-titres démo
+  useEffect(() => {
+    if (!isDemoPlaying) return;
+    const subTimer = setInterval(() => {
+      setDemoSubtitleIndex((prev) => (prev + 1) % LIVE_DEMO_SUBTITLES.length);
+    }, 3500);
+    return () => clearInterval(subTimer);
+  }, [isDemoPlaying]);
 
   const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
   const startTimeRef = useRef(Date.now());
@@ -311,6 +351,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
             <button onClick={() => scrollToSection("hero-showcase")} className="hover:text-slate-900 transition-colors">Aperçu Visuel</button>
             <button onClick={() => scrollToSection("modules")} className="hover:text-slate-900 transition-colors">Les 3 Modules</button>
+            <button onClick={() => scrollToSection("demo")} className="hover:text-slate-900 transition-colors">Démonstration</button>
             <button onClick={() => scrollToSection("specs")} className="hover:text-slate-900 transition-colors">Fiche Technique</button>
             <button onClick={() => scrollToSection("avis")} className="hover:text-slate-900 transition-colors">Avis clients</button>
             <button onClick={() => scrollToSection("faq")} className="hover:text-slate-900 transition-colors">FAQ</button>
@@ -326,15 +367,14 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         </div>
       </header>
 
-      {/* 🚀 HERO FULL-WIDTH VIDÉO CINÉMATIQUE SANS YOUTUBE (STYLE OFFICIEL TROZK.COM) */}
+      {/* 🚀 HERO OFFICIEL TROZK : VIDÉO 3D MODULAIRE EN PLEINE LARGEUR (CDN OFFICIEL TROZK) */}
       <section id="hero-showcase" className="relative w-full bg-slate-950 overflow-hidden border-b border-slate-200">
         
-        {/* CONTENEUR VIDÉO PLEIN ÉCRAN / HERO IMMERSIF */}
-        <div className="relative w-full h-[60vh] sm:h-[75vh] lg:h-[84vh] max-h-[860px] flex items-center justify-center">
+        <div className="relative w-full h-[65vh] sm:h-[80vh] lg:h-[88vh] max-h-[880px] flex items-center justify-center bg-black">
           
           <video
             ref={heroVideoRef}
-            src="/videos/trozk-demo.mp4"
+            src="/videos/trozk-hero-1.mp4"
             poster="/images/trozk-video-hero-cover.jpg"
             autoPlay
             muted
@@ -344,8 +384,8 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
             className="w-full h-full object-cover object-center"
           />
 
-          {/* DÉGRADÉ DE FOND ÉLÉGANT & CONTRASTE */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+          {/* DÉGRADÉ DE CONTRASTE SUBTIL */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25 pointer-events-none" />
 
           {/* BADGE HAUT GAUCHE ÉPURÉ */}
           <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 flex items-center gap-2 bg-black/50 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full border border-white/15 shadow-md">
@@ -356,18 +396,18 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           {/* CONTRÔLES FLOTTANTS DISCRETS (SON / PAUSE) HAUT DROITE */}
           <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center gap-2">
             <button
-              onClick={toggleSound}
+              onClick={toggleHeroSound}
               className="bg-black/50 hover:bg-black/75 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95 shadow-md"
-              title={isMuted ? "Activer le son" : "Couper le son"}
+              title={isHeroMuted ? "Activer le son" : "Couper le son"}
             >
-              {isMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+              {isHeroMuted ? <VolumeX className="w-4 h-4 text-slate-300" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
             </button>
             <button
-              onClick={togglePlay}
+              onClick={toggleHeroPlay}
               className="bg-black/50 hover:bg-black/75 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95 shadow-md"
-              title={isPlaying ? "Mettre en pause" : "Lire la vidéo"}
+              title={isHeroPlaying ? "Mettre en pause" : "Lire la vidéo"}
             >
-              {isPlaying ? <Pause className="w-4 h-4 text-orange-400" /> : <Play className="w-4 h-4 text-orange-400" />}
+              {isHeroPlaying ? <Pause className="w-4 h-4 text-orange-400" /> : <Play className="w-4 h-4 text-orange-400" />}
             </button>
           </div>
 
@@ -461,6 +501,73 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
           setOrderInfo(null);
         }}
       />
+
+      {/* 🎬 DÉMONSTRATION VIDÉO EN SITUATION RÉELLE AVEC CONTRÔLES COMPLETS */}
+      <section id="demo" className="py-14 sm:py-20 bg-slate-50 border-y border-slate-200 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-orange-600 font-bold bg-orange-100 px-3.5 py-1 rounded-full border border-orange-200 inline-flex items-center gap-1.5 shadow-2xs">
+              <Play className="w-3 h-3 fill-current text-orange-600" />
+              <span>Démonstration & Prise en Main Réelle</span>
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+              Regardez la batterie Trozk T3 en action
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto">
+              Découvrez la fluidité du détachement magnétique et le branchement direct sous le smartphone.
+            </p>
+          </div>
+
+          <div className="relative rounded-3xl overflow-hidden border border-slate-300/80 bg-black shadow-2xl max-w-2xl mx-auto aspect-[9/16] sm:aspect-[4/5] max-h-[580px] flex items-center justify-center">
+            <video
+              ref={demoVideoRef}
+              src="/videos/trozk-demo.mp4"
+              playsInline
+              loop
+              autoPlay
+              className="w-full h-full object-contain"
+            />
+            
+            {/* BOUTONS FLOTTANTS VIDÉO DÉMO */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+              <button
+                onClick={toggleDemoMute}
+                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
+                title={isDemoMuted ? "Activer le son" : "Couper le son"}
+              >
+                {isDemoMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+              </button>
+
+              <button
+                onClick={toggleDemoPlay}
+                className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2.5 rounded-full border border-white/20 transition-all cursor-pointer active:scale-95"
+                title={isDemoPlaying ? "Mettre en pause" : "Lire la vidéo"}
+              >
+                {isDemoPlaying ? <Pause className="w-4 h-4 text-orange-400" /> : <Play className="w-4 h-4 text-orange-400" />}
+              </button>
+            </div>
+
+            {/* OVERLAY DYNAMIQUE SOUS-TITRES */}
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-6 flex flex-col sm:flex-row items-center justify-between gap-3 z-20">
+              <div className="space-y-1 text-center sm:text-left">
+                <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider text-orange-400 bg-orange-950/90 px-2.5 py-0.5 rounded-md border border-orange-700/60">
+                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].highlight}
+                </span>
+                <p className="text-sm sm:text-base font-semibold text-white">
+                  {LIVE_DEMO_SUBTITLES[demoSubtitleIndex].text}
+                </p>
+              </div>
+
+              <button
+                onClick={scrollToOrder}
+                className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all active:scale-95"
+              >
+                Commander (29 900 F)
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 📸 CARROUSEL DE PHOTOS AUTO-DÉFILANT AVEC PAUSE AU SURVOL */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 max-w-5xl mx-auto space-y-8">
