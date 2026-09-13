@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { sendAbandonedLeadNotification } from "@/lib/notifyHelper";
 
 export const dynamic = "force-dynamic";
 
@@ -100,6 +101,13 @@ export async function POST(req: Request) {
       .from("leads")
       .upsert([payload], { onConflict: "id" })
       .select();
+
+    // Si c'est un nouveau prospect détecté, envoyer l'alerte email immédiatement
+    if (!existing && currentStatus === "abandoned") {
+      sendAbandonedLeadNotification(payload).catch((err) =>
+        console.error("Lead notification error:", err)
+      );
+    }
 
     return NextResponse.json({ success: true, lead: data?.[0] || payload });
   } catch (err: any) {

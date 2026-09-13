@@ -28,6 +28,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [abandonedCount, setAbandonedCount] = useState(0);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("isivente_is_admin", "true");
+      } catch {}
+    }
+
     const checkLeads = () => {
       getAllLeads().then((leads) => {
         const count = leads.filter((l) => l.status === "abandoned").length;
@@ -48,6 +54,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   const handleLogout = async () => {
+    try {
+      localStorage.removeItem("isivente_is_admin");
+    } catch {}
     await supabase.auth.signOut();
     window.location.href = "/login";
   };

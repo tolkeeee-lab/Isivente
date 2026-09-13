@@ -116,6 +116,25 @@ export async function saveOrUpdateLead(data: {
     // Fallback transparent sur localStorage
   }
 
+  // 3. Notification serveur & synchronisation en arrière-plan
+  if (typeof window !== "undefined") {
+    fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_name: lead.customer_name,
+        customer_phone: lead.customer_phone,
+        customer_phone2: lead.customer_phone2,
+        city: lead.city,
+        address: lead.address,
+        product_slug: lead.product_slug,
+        product_title: lead.product_title,
+        bundle_name: lead.bundle_name,
+        total_amount: lead.total_amount,
+      }),
+    }).catch(() => {});
+  }
+
   return lead;
 }
 

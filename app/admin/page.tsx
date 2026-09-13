@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllOrders, deleteOrder, OrderItem } from "@/lib/ordersStorage";
 import { supabase } from "@/lib/supabase";
-import { getAnalyticsStats, getAllProductsAnalytics, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
+import { getAnalyticsStats, getAllProductsAnalytics, resetAnalyticsStats, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
   TrendingUp, 
   ShoppingBag, 
@@ -20,7 +20,8 @@ import {
   CheckCircle2,
   XCircle,
   ChevronRight,
-  Trash2
+  Trash2,
+  RotateCcw
 } from "lucide-react";
 
 interface Stats {
@@ -160,6 +161,18 @@ export default function AdminDashboard() {
     navigator.clipboard.writeText(url);
     setCopiedSlug(slug);
     setTimeout(() => setCopiedSlug(null), 2000);
+  };
+
+  const handleResetAnalytics = async () => {
+    if (confirm("Voulez-vous remettre à zéro l'historique des clics et visites de test ? Cela effacera les vues/clics passés pour repartir à neuf.")) {
+      await resetAnalyticsStats();
+      const [analyticsData, perProductData] = await Promise.all([
+        getAnalyticsStats(),
+        getAllProductsAnalytics(),
+      ]);
+      setAnalytics(analyticsData);
+      setProductAnalytics(perProductData);
+    }
   };
 
   const getStatusBadge = (status?: string) => {
@@ -366,10 +379,20 @@ export default function AdminDashboard() {
               <p className="text-xs text-slate-400">CA Encaissé réel, commandes, CTR et temps moyen par produit</p>
             </div>
           </div>
-          <Link href="/admin/products" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors">
-            <span>Gérer le catalogue</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleResetAnalytics}
+              className="text-xs font-semibold text-slate-500 hover:text-rose-600 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-rose-200 hover:bg-rose-50/50 transition-all duration-150 active:scale-[0.98]"
+              title="Effacer les clics et vues de test pour repartir de zéro"
+            >
+              <RotateCcw className="w-3 h-3 text-slate-400 group-hover:text-rose-600" />
+              <span>Réinitialiser les clics de test</span>
+            </button>
+            <Link href="/admin/products" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors">
+              <span>Gérer le catalogue</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
 
         {/* RUBAN HORIZONTAL DÉFILABLE (évite d'allonger la page) */}

@@ -202,3 +202,128 @@ export async function sendOrderNotification(order: NotificationOrderData) {
 
   return results;
 }
+
+/**
+ * Envoie une notification immédiate lorsqu'un panier est abandonné / prospect chaud détecté
+ */
+export async function sendAbandonedLeadNotification(lead: {
+  customer_name: string;
+  customer_phone: string;
+  customer_phone2?: string;
+  city?: string;
+  address?: string;
+  product_title: string;
+  bundle_name?: string;
+  total_amount?: number;
+}) {
+  const recipientEmail = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || "tolkeeee@gmail.com";
+  const cleanPhone = (lead.customer_phone || "").replace(/\D/g, "");
+  const whatsappPhone = cleanPhone.startsWith("229") ? cleanPhone : `229${cleanPhone}`;
+  const prefilledMsg = encodeURIComponent(
+    `Bonjour ${lead.customer_name || ""}, j'ai vu que vous vous intéressiez à notre ${lead.product_title || "produit"} sur Isivente. Avez-vous rencontré une difficulté pour finaliser votre commande ? Nous pouvons vous livrer aujourd'hui avec paiement à la réception !`
+  );
+  const whatsappLink = cleanPhone ? `https://wa.me/${whatsappPhone}?text=${prefilledMsg}` : "";
+  const callLink = cleanPhone ? `tel:${cleanPhone}` : "";
+  const formattedAmount = lead.total_amount 
+    ? new Intl.NumberFormat("fr-FR").format(lead.total_amount) + " FCFA"
+    : "Non calculé";
+  const dateFormatted = new Date().toLocaleString("fr-FR", { timeZone: "Africa/Porto-Novo" });
+
+  const emailSubject = `⚠️ PANIER ABANDONNÉ : ${lead.customer_name || "Prospect"} (${cleanPhone}) - ${lead.product_title}`;
+
+  const emailHtml = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #fed7aa; border-radius: 16px; background-color: #ffffff;">
+      <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 18px 20px; border-radius: 12px; margin-bottom: 20px;">
+        <h2 style="color: #ffffff; margin: 0; font-size: 20px;">⚠️ Nouveau Prospect / Panier Abandonné !</h2>
+        <p style="color: #fef3c7; margin: 4px 0 0 0; font-size: 13px;">Un client a saisi ses coordonnées sans cliquer sur "Commander". Relancez-le rapidement !</p>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;">
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📦 Produit convoité :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #0f172a;">${lead.product_title}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🏷️ Formule / Pack :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">${lead.bundle_name || "Formule standard"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">💰 Valeur potentielle :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #d97706; font-size: 16px;">${formattedAmount}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">👤 Prospect :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #0f172a;">${lead.customer_name || "Client intéressé"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📞 Téléphone :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #2563eb;"><a href="${callLink}" style="color: #2563eb; text-decoration: none;">${cleanPhone}</a></td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📍 Ville :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #334155;">${lead.city || "Cotonou"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📅 Détecté le :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b;">${dateFormatted}</td></tr>
+      </table>
+
+      <div style="display: flex; gap: 12px; justify-content: center; text-align: center; margin-top: 16px;">
+        ${
+          whatsappLink
+            ? `<a href="${whatsappLink}" style="display: inline-block; background-color: #22c55e; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-right: 10px;">
+                💬 Relancer sur WhatsApp
+              </a>`
+            : ""
+        }
+        ${
+          callLink
+            ? `<a href="${callLink}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px;">
+                📞 Appeler directement
+              </a>`
+            : ""
+        }
+      </div>
+
+      <div style="margin-top: 24px; text-align: center;">
+        <a href="https://isivente.vercel.app/admin/prospects" style="color: #64748b; font-size: 12px; text-decoration: underline;">
+          Accéder au tableau des Paniers Abandonnés sur Isivente
+        </a>
+      </div>
+    </div>
+  `;
+
+  // Envoi Gmail SMTP
+  const gmailUser = (process.env.GMAIL_USER || process.env.EMAIL_USER || "").trim();
+  const rawPass = process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS || "";
+  const gmailAppPass = rawPass.replace(/\s+/g, "").trim();
+
+  if (gmailUser && gmailAppPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: gmailUser,
+          pass: gmailAppPass,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"Isivente Prospects ⚠️" <${gmailUser}>`,
+        to: recipientEmail,
+        subject: emailSubject,
+        html: emailHtml,
+      });
+      return { success: true };
+    } catch (smtpErr) {
+      console.error("Nodemailer Lead SMTP error:", smtpErr);
+    }
+  }
+
+  // Telegram fallback si configuré
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (botToken && chatId) {
+    try {
+      const message = `⚠️ *NOUVEAU PANIER ABANDONNÉ !*\n\n` +
+        `📦 *Produit :* ${lead.product_title}\n` +
+        `💰 *Valeur :* \`${formattedAmount}\`\n` +
+        `👤 *Prospect :* ${lead.customer_name || "Client"}\n` +
+        `📞 *Téléphone :* \`${cleanPhone}\`\n` +
+        `📍 *Ville :* ${lead.city || "Cotonou"}\n` +
+        `📅 *Date :* ${dateFormatted}\n\n` +
+        (whatsappLink ? `👉 [Ouvrir WhatsApp Client](${whatsappLink})\n` : "") +
+        `🔗 [Voir sur Isivente](https://isivente.vercel.app/admin/prospects)`;
+
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "Markdown" }),
+      });
+    } catch (tgErr) {}
+  }
+
+  return { success: true };
+}

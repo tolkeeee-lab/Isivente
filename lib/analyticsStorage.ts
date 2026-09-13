@@ -229,3 +229,29 @@ export async function getAllProductsAnalytics(): Promise<
     ...computeStats(sessions),
   }));
 }
+
+/**
+ * Réinitialise les statistiques de visites et clics (local + Supabase)
+ * Permet de supprimer les faux clics ou tests administrateur
+ */
+export async function resetAnalyticsStats(slug?: string) {
+  if (typeof window !== "undefined") {
+    if (slug) {
+      const remaining = getLocalSessions().filter((s) => s.slug !== slug);
+      try {
+        localStorage.setItem(ANALYTICS_LOCAL_KEY, JSON.stringify(remaining));
+      } catch {}
+    } else {
+      localStorage.removeItem(ANALYTICS_LOCAL_KEY);
+    }
+  }
+
+  try {
+    if (slug) {
+      await supabase.from("analytics").delete().eq("product_slug", slug);
+    } else {
+      // Supprime toutes les entrées existantes
+      await supabase.from("analytics").delete().neq("session_id", "___none___");
+    }
+  } catch {}
+}

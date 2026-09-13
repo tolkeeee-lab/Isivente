@@ -18,6 +18,13 @@ export function usePagePresence(slug: string) {
   useEffect(() => {
     if (!slug || typeof window === "undefined") return;
 
+    // Ignorer si l'utilisateur est administrateur (ne pas fausser les stats avec ses propres clics de test)
+    try {
+      if (localStorage.getItem("isivente_is_admin") === "true") {
+        return;
+      }
+    } catch {}
+
     // ID de session unique et stable pour toute la durée de la visite
     sessionIdRef.current = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     startTimeRef.current = Date.now();
