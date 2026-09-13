@@ -53,8 +53,39 @@ export default function AdminClicksPage() {
     { title: "Mini Caméra Espionne & Surveillance HD A9 Pro™", slug: "camera", price: 16900, image: "/images/camera-hero.jpg" },
   ];
 
+  const [productsList, setProductsList] = useState(defaultProducts);
+  const [metaAdClicks, setMetaAdClicks] = useState<number>(114); // Valeur de la campagne Meta actuelle
+  const [isEditingMetaClicks, setIsEditingMetaClicks] = useState(false);
+
   const loadData = async () => {
     try {
+      // Charger les produits de Supabase
+      try {
+        const { supabase } = await import("@/lib/supabase");
+        const { data: dbProds } = await supabase
+          .from("products")
+          .select("title, slug, price, image_url");
+        if (dbProds && dbProds.length > 0) {
+          const formatted = dbProds.map((p: any) => ({
+            title: p.title,
+            slug: p.slug,
+            price: p.price,
+            image: p.image_url || "/images/microscope-monde-decouverte.jpg",
+          }));
+          const existingSlugs = new Set(formatted.map((p: any) => p.slug));
+          const merged = [...formatted, ...defaultProducts.filter((p) => !existingSlugs.has(p.slug))];
+          setProductsList(merged);
+        }
+      } catch {}
+
+      // Charger les clics Meta sauvegardés
+      if (typeof window !== "undefined") {
+        const savedMetaClicks = localStorage.getItem("isivente_meta_ad_clicks");
+        if (savedMetaClicks) {
+          setMetaAdClicks(Number(savedMetaClicks) || 114);
+        }
+      }
+
       const [globalStats, perProduct, orders, leads] = await Promise.all([
         getAnalyticsStats(),
         getAllProductsAnalytics(),
@@ -84,6 +115,14 @@ export default function AdminClicksPage() {
       setLoading(false);
       setIsRefreshing(false);
     }
+  };
+
+  const handleSaveMetaClicks = (val: number) => {
+    setMetaAdClicks(val);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("isivente_meta_ad_clicks", String(val));
+    }
+    setIsEditingMetaClicks(false);
   };
 
   useEffect(() => {
@@ -137,6 +176,109 @@ export default function AdminClicksPage() {
             <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
             <span>Remettre les clics à zéro</span>
           </button>
+        </div>
+      </div>
+
+      {/* SECTION COMPARATIF META ADS VS SITE REEL */}
+      <div className="card-figma p-6 border-blue-200/90 bg-gradient-to-br from-blue-50/40 via-white to-slate-50/50 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              f
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="font-display font-bold text-base text-slate-900">Entonnoir Publicitaire Meta Ads</h2>
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  Campagne en direct
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                Rapprochement entre les clics sur votre publicité Facebook et les ventes réelles sur votre site.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 font-medium">Clics annoncés par Meta :</span>
+            {isEditingMetaClicks ? (
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  defaultValue={metaAdClicks}
+                  id="metaClicksInput"
+                  className="w-20 px-2 py-1 bg-white border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-900"
+                />
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("metaClicksInput") as HTMLInputElement;
+                    handleSaveMetaClicks(Number(el?.value) || 114);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-xs font-bold"
+                >
+                  Valider
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsEditingMetaClicks(true)}
+                className="font-mono font-bold text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1.5 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+                title="Cliquer pour ajuster le nombre de clics de votre gestionnaire de pub Facebook"
+              >
+                <span>{metaAdClicks} clics Meta</span>
+                <span className="text-[10px] text-blue-500">✎ Modifier</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* LES 4 ÉTAPES DU TUNNEL DE VENTE */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+          {/* Étape 1 : Pub Meta */}
+          <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+              1. Clics Pub Facebook
+            </span>
+            <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
+              {metaAdClicks}
+            </div>
+            <div className="text-[11px] text-slate-400">Clics sur lien Meta Ads</div>
+          </div>
+
+          {/* Étape 2 : Atterrissage sur le site */}
+          <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              2. Visites Réelles Site
+            </span>
+            <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
+              {analytics.totalViews}
+            </div>
+            <div className="text-[11px] text-slate-500 font-medium">
+              {metaAdClicks > 0 ? `${Math.min(100, Math.round((analytics.totalViews / metaAdClicks) * 100))}% parvenus` : "—"}
+            </div>
+          </div>
+
+          {/* Étape 3 : Paniers & Contacts capturés */}
+          <div className="p-3.5 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+              3. Paniers / Numéros
+            </span>
+            <div className="text-xl font-bold font-mono text-amber-950 tabular-nums">
+              {Object.values(leadsCountBySlug).reduce((a, b) => a + b, 0)}
+            </div>
+            <div className="text-[11px] text-amber-700 font-medium">À relancer sur WhatsApp</div>
+          </div>
+
+          {/* Étape 4 : Commandes */}
+          <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200/80 space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+              4. Commandes Finales
+            </span>
+            <div className="text-xl font-bold font-mono text-emerald-950 tabular-nums">
+              {Object.values(orderCountsBySlug).reduce((a, b) => a + b, 0)}
+            </div>
+            <div className="text-[11px] text-emerald-700 font-medium">Livrables en COD</div>
+          </div>
         </div>
       </div>
 
@@ -241,7 +383,7 @@ export default function AdminClicksPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-sans">
-              {defaultProducts.map((prod) => {
+              {productsList.map((prod) => {
                 const pa = productAnalytics.find((p) => p.slug === prod.slug);
                 const views = pa?.totalViews || 0;
                 const clicks = pa?.totalClicks || 0;
