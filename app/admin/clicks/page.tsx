@@ -15,7 +15,10 @@ import {
   ExternalLink,
   ChevronRight,
   Sparkles,
-  Info
+  Info,
+  AlertTriangle,
+  Copy,
+  Check
 } from "lucide-react";
 import { 
   getAnalyticsStats, 
@@ -56,9 +59,46 @@ export default function AdminClicksPage() {
   const [productsList, setProductsList] = useState(defaultProducts);
   const [metaAdClicks, setMetaAdClicks] = useState<number>(114); // Valeur de la campagne Meta actuelle
   const [isEditingMetaClicks, setIsEditingMetaClicks] = useState(false);
+  const [hasAnalyticsTable, setHasAnalyticsTable] = useState<boolean>(true);
+  const [copiedSql, setCopiedSql] = useState<boolean>(false);
+
+  const handleCopySql = () => {
+    const sql = `CREATE TABLE IF NOT EXISTS public.analytics (
+    session_id TEXT PRIMARY KEY,
+    product_slug TEXT NOT NULL,
+    duration_seconds INTEGER DEFAULT 0,
+    clicked BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.analytics ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public all on analytics" ON public.analytics
+    FOR ALL TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);`;
+
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(sql);
+      setCopiedSql(true);
+      setTimeout(() => setCopiedSql(false), 3000);
+    }
+  };
 
   const loadData = async () => {
     try {
+      // 1. Vérifier si la table analytics existe dans Supabase
+      try {
+        const { supabase } = await import("@/lib/supabase");
+        const { error: testErr } = await supabase.from("analytics").select("session_id").limit(1);
+        if (testErr && testErr.code === "PGRST205") {
+          setHasAnalyticsTable(false);
+        } else {
+          setHasAnalyticsTable(true);
+        }
+      } catch {
+        setHasAnalyticsTable(false);
+      }
       // Charger les produits de Supabase
       try {
         const { supabase } = await import("@/lib/supabase");
@@ -179,6 +219,39 @@ export default function AdminClicksPage() {
         </div>
       </div>
 
+      {/* BANNIÈRE D'ALERTE SUPABASE SI TABLE ANALYTICS MANQUANTE */}
+      {!hasAnalyticsTable && (
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-amber-900 text-xs shadow-xs">
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <div className="font-bold text-amber-950 text-sm">Action requise : La table Supabase « analytics » n&apos;est pas encore créée</div>
+              <p className="text-amber-800 mt-0.5">
+                Vos prospects et commandes sont bien enregistrés, mais les visites brutes de vos pubs Facebook ne peuvent pas être enregistrées tant que cette table n&apos;existe pas.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
+            <button
+              onClick={handleCopySql}
+              className="px-3 py-1.5 rounded-lg bg-amber-600 text-white font-semibold text-xs hover:bg-amber-700 transition-all flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
+            >
+              {copiedSql ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedSql ? "SQL copié !" : "Copier le script SQL"}</span>
+            </button>
+            <a
+              href="https://supabase.com/dashboard/project/uelognqedzqtvupwzejh/sql/new"
+              target="_blank"
+              rel="noreferrer"
+              className="px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-amber-900 font-semibold text-xs hover:bg-amber-100 transition-all flex items-center gap-1 shadow-xs"
+            >
+              <span>Ouvrir Supabase</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* SECTION COMPARATIF META ADS VS SITE REEL */}
       <div className="card-figma p-6 border-blue-200/90 bg-gradient-to-br from-blue-50/40 via-white to-slate-50/50 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -232,124 +305,140 @@ export default function AdminClicksPage() {
           </div>
         </div>
 
-        {/* LES 4 ÉTAPES DU TUNNEL DE VENTE */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-          {/* Étape 1 : Pub Meta */}
-          <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
-              1. Clics Pub Facebook
-            </span>
-            <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
-              {metaAdClicks}
-            </div>
-            <div className="text-[11px] text-slate-400">Clics sur lien Meta Ads</div>
-          </div>
+        {/* CALCULS DE COHÉRENCE (LES VISITEURS QUI ONT COMMANDE OU LAISSE UN NUMERO ONT NECESSAIREMENT VISITE) */}
+        {(() => {
+          const totalLeads = Object.values(leadsCountBySlug).reduce((a, b) => a + b, 0);
+          const totalOrders = Object.values(orderCountsBySlug).reduce((a, b) => a + b, 0);
+          const confirmedVisitorsTotal = Math.max(analytics.totalViews, totalLeads + totalOrders);
+          const confirmedClicksTotal = Math.max(analytics.totalClicks, totalLeads + totalOrders);
+          const confirmedCtr = confirmedVisitorsTotal > 0 
+            ? Math.round((confirmedClicksTotal / confirmedVisitorsTotal) * 1000) / 10 
+            : 0;
 
-          {/* Étape 2 : Atterrissage sur le site */}
-          <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              2. Visites Réelles Site
-            </span>
-            <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
-              {analytics.totalViews}
-            </div>
-            <div className="text-[11px] text-slate-500 font-medium">
-              {metaAdClicks > 0 ? `${Math.min(100, Math.round((analytics.totalViews / metaAdClicks) * 100))}% parvenus` : "—"}
-            </div>
-          </div>
+          return (
+            <>
+              {/* LES 4 ÉTAPES DU TUNNEL DE VENTE */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                {/* Étape 1 : Pub Meta */}
+                <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                    1. Clics Pub Facebook
+                  </span>
+                  <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
+                    {metaAdClicks}
+                  </div>
+                  <div className="text-[11px] text-slate-400">Clics sur lien Meta Ads</div>
+                </div>
 
-          {/* Étape 3 : Paniers & Contacts capturés */}
-          <div className="p-3.5 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
-              3. Paniers / Numéros
-            </span>
-            <div className="text-xl font-bold font-mono text-amber-950 tabular-nums">
-              {Object.values(leadsCountBySlug).reduce((a, b) => a + b, 0)}
-            </div>
-            <div className="text-[11px] text-amber-700 font-medium">À relancer sur WhatsApp</div>
-          </div>
+                {/* Étape 2 : Atterrissage sur le site */}
+                <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    2. Visites Réelles Site
+                  </span>
+                  <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
+                    {confirmedVisitorsTotal}
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium">
+                    {metaAdClicks > 0 ? `${Math.min(100, Math.round((confirmedVisitorsTotal / metaAdClicks) * 100))}% parvenus` : "—"}
+                  </div>
+                </div>
 
-          {/* Étape 4 : Commandes */}
-          <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200/80 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-              4. Commandes Finales
-            </span>
-            <div className="text-xl font-bold font-mono text-emerald-950 tabular-nums">
-              {Object.values(orderCountsBySlug).reduce((a, b) => a + b, 0)}
-            </div>
-            <div className="text-[11px] text-emerald-700 font-medium">Livrables en COD</div>
-          </div>
-        </div>
+                {/* Étape 3 : Paniers & Contacts capturés */}
+                <div className="p-3.5 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+                    3. Paniers / Numéros
+                  </span>
+                  <div className="text-xl font-bold font-mono text-amber-950 tabular-nums">
+                    {totalLeads}
+                  </div>
+                  <div className="text-[11px] text-amber-700 font-medium">À relancer sur WhatsApp</div>
+                </div>
+
+                {/* Étape 4 : Commandes */}
+                <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200/80 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                    4. Commandes Finales
+                  </span>
+                  <div className="text-xl font-bold font-mono text-emerald-950 tabular-nums">
+                    {totalOrders}
+                  </div>
+                  <div className="text-[11px] text-emerald-700 font-medium">Livrables en COD</div>
+                </div>
+              </div>
+
+              {/* KPI STATS ROW FIGMA-GRADE */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* KPI 1 : VUES TOTALES */}
+                <div className="card-figma p-5 flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Visiteurs / Vues</span>
+                    <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200/60">
+                      <Eye className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-slate-900">
+                      {loading ? "..." : confirmedVisitorsTotal}
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-1">Sessions réelles détectées</div>
+                  </div>
+                </div>
+
+                {/* KPI 2 : CLICS COMMANDES */}
+                <div className="card-figma p-5 flex flex-col justify-between border-indigo-200/80 bg-indigo-50/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-700">Clics d&apos;Intention</span>
+                    <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center border border-indigo-200">
+                      <MousePointerClick className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-indigo-950">
+                      {loading ? "..." : confirmedClicksTotal}
+                    </div>
+                    <div className="text-[11px] text-indigo-600 font-medium mt-1">Clics vers formulaire ou commande</div>
+                  </div>
+                </div>
+
+                {/* KPI 3 : TAUX DE CLIC (CTR) */}
+                <div className="card-figma p-5 flex flex-col justify-between border-emerald-200/80 bg-emerald-50/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Taux de Clic (CTR)</span>
+                    <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center border border-emerald-200">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-emerald-950">
+                      {loading ? "..." : `${confirmedCtr}%`}
+                    </div>
+                    <div className="text-[11px] text-emerald-700 font-medium mt-1">
+                      {confirmedCtr >= 15 ? "🔥 Excellent engagement" : "Objectif recommandé : > 15%"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* KPI 4 : TEMPS MOYEN */}
+                <div className="card-figma p-5 flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Temps Moyen Passé</span>
+                    <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
+                      <Timer className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-slate-900">
+                      {loading ? "..." : analytics.formattedAvgTime}
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-1">Attention réelle sur la page</div>
+                  </div>
+                </div>
+              </div>
+            </>
+          );
+        })()}
       </div>
 
-      {/* KPI STATS ROW FIGMA-GRADE */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1 : VUES TOTALES */}
-        <div className="card-figma p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Visiteurs / Vues</span>
-            <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200/60">
-              <Eye className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-slate-900">
-              {loading ? "..." : analytics.totalViews}
-            </div>
-            <div className="text-[11px] text-slate-400 mt-1">Sessions réelles détectées</div>
-          </div>
-        </div>
-
-        {/* KPI 2 : CLICS COMMANDES */}
-        <div className="card-figma p-5 flex flex-col justify-between border-indigo-200/80 bg-indigo-50/20">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-700">Clics d&apos;Intention</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center border border-indigo-200">
-              <MousePointerClick className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-indigo-950">
-              {loading ? "..." : analytics.totalClicks}
-            </div>
-            <div className="text-[11px] text-indigo-600 font-medium mt-1">Clics vers formulaire ou commande</div>
-          </div>
-        </div>
-
-        {/* KPI 3 : TAUX DE CLIC (CTR) */}
-        <div className="card-figma p-5 flex flex-col justify-between border-emerald-200/80 bg-emerald-50/20">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Taux de Clic (CTR)</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center border border-emerald-200">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-emerald-950">
-              {loading ? "..." : `${analytics.ctr}%`}
-            </div>
-            <div className="text-[11px] text-emerald-700 font-medium mt-1">
-              {analytics.ctr >= 15 ? "🔥 Excellent engagement" : "Objectif recommandé : > 15%"}
-            </div>
-          </div>
-        </div>
-
-        {/* KPI 4 : TEMPS MOYEN */}
-        <div className="card-figma p-5 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Temps Moyen Passé</span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
-              <Timer className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-slate-900">
-              {loading ? "..." : analytics.formattedAvgTime}
-            </div>
-            <div className="text-[11px] text-slate-400 mt-1">Attention réelle sur la page</div>
-          </div>
-        </div>
-      </div>
 
       {/* TABLEAU FIGMA-GRADE PAR PRODUIT */}
       <div className="card-figma overflow-hidden">
@@ -385,12 +474,14 @@ export default function AdminClicksPage() {
             <tbody className="divide-y divide-slate-100 font-sans">
               {productsList.map((prod) => {
                 const pa = productAnalytics.find((p) => p.slug === prod.slug);
-                const views = pa?.totalViews || 0;
-                const clicks = pa?.totalClicks || 0;
-                const ctr = pa?.ctr || 0;
-                const avgTime = pa?.formattedAvgTime || "—";
                 const orders = orderCountsBySlug[prod.slug] || 0;
                 const leads = leadsCountBySlug[prod.slug] || 0;
+                const rawViews = pa?.totalViews || 0;
+                const rawClicks = pa?.totalClicks || 0;
+                const views = Math.max(rawViews, leads + orders);
+                const clicks = Math.max(rawClicks, leads + orders);
+                const ctr = views > 0 ? Math.round((clicks / views) * 1000) / 10 : 0;
+                const avgTime = pa?.formattedAvgTime || "—";
 
                 return (
                   <tr key={prod.slug} className="hover:bg-slate-50/80 transition-colors">
