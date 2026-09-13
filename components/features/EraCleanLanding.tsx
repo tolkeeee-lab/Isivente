@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
@@ -175,27 +176,10 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
   const submittingRef = useRef(false);
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // ID de session stable — généré UNE SEULE FOIS au montage du composant
-  const sessionIdRef = useRef(
-    "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8)
-  );
-  const startTimeRef = useRef(Date.now());
-  const clickedRef = useRef(false);
-
-  useEffect(() => {
-    const save = () => {
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      trackUserSession(slug, duration, clickedRef.current, sessionIdRef.current);
-    };
-
-    window.addEventListener("beforeunload", save);
-    return () => {
-      save(); // cleanup React (navigation SPA)
-      window.removeEventListener("beforeunload", save);
-    };
-  }, [slug]);
+  const { recordInteraction } = usePagePresence(slug);
 
   const scroll = (id: string) => {
+    recordInteraction();
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -242,10 +226,9 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
         address,
         status: "pending" as const,
       });
-      // Marquer la session comme cliquée (conversion)
-      clickedRef.current = true;
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      await trackUserSession(slug, duration, true, sessionIdRef.current);
+      // Marquer la session et le lead comme convertis
+      recordInteraction();
+      markLeadConverted(phone, slug);
       const orderNum = res?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
       setOrderNumber(orderNum);
       setOrderSuccess(true);

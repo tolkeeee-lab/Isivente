@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
@@ -140,34 +141,8 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   const [orderInfo, setOrderInfo] = useState<any>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const sessionIdRef = useRef<string>("");
   const submittingRef = useRef(false);
-
-  useEffect(() => {
-    if (!sessionIdRef.current) {
-      sessionIdRef.current = "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9);
-    }
-    const sessId = sessionIdRef.current;
-    trackUserSession(slug, 0, false, sessId);
-
-    const startTime = Date.now();
-    let sent = false;
-
-    const flush = () => {
-      if (sent) return;
-      sent = true;
-      const elapsed = Math.round((Date.now() - startTime) / 1000);
-      if (elapsed >= 1) {
-        trackUserSession(slug, elapsed, false, sessId);
-      }
-    };
-
-    window.addEventListener("beforeunload", flush);
-    return () => {
-      window.removeEventListener("beforeunload", flush);
-      flush();
-    };
-  }, [slug]);
+  const { recordInteraction } = usePagePresence(slug);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -184,10 +159,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   };
 
   const handleCtaClick = useCallback(() => {
-    const sessId = sessionIdRef.current || ("sess_" + Date.now());
-    trackUserSession(slug, 0, true, sessId);
+    recordInteraction();
     scrollToSection("commander");
-  }, [slug]);
+  }, [recordInteraction]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,8 +198,8 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         status: "pending",
       });
 
-      const sessId = sessionIdRef.current || ("sess_" + Date.now());
-      trackUserSession(slug, 0, true, sessId);
+      recordInteraction();
+      markLeadConverted(phone, slug);
 
       const orderNum = order?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
       setOrderInfo({ order_number: orderNum });

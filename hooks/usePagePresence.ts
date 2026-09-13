@@ -30,7 +30,10 @@ export function usePagePresence(slug: string) {
     startTimeRef.current = Date.now();
 
     const flushDuration = () => {
-      const elapsed = Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
+      const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
+      // Ignorer les rebonds immédiats de moins de 2 secondes pour ne jamais enregistrer de session fantôme à 1s
+      if (elapsed < 2 && !clickedRef.current) return;
+
       // Éviter d'enregistrer si pas de changement
       if (elapsed > lastSavedDurationRef.current) {
         lastSavedDurationRef.current = elapsed;
@@ -38,10 +41,10 @@ export function usePagePresence(slug: string) {
       }
     };
 
-    // 1. Enregistrement initial (au bout de 2 secondes pour valider la visite humaine)
+    // 1. Enregistrement initial (au bout de 2.5 secondes pour valider la visite humaine)
     const initialTimer = setTimeout(() => {
       flushDuration();
-    }, 2000);
+    }, 2500);
 
     // 2. Pulsation continue toutes les 5 secondes (Heartbeat)
     const interval = setInterval(() => {
@@ -75,7 +78,7 @@ export function usePagePresence(slug: string) {
 
   const recordInteraction = () => {
     clickedRef.current = true;
-    const elapsed = Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
+    const elapsed = Math.max(2, Math.round((Date.now() - startTimeRef.current) / 1000));
     trackUserSession(slug, elapsed, true, sessionIdRef.current);
   };
 

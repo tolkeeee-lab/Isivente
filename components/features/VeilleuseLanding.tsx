@@ -22,7 +22,8 @@ import {
   SunMedium
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
@@ -152,24 +153,10 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
     return () => clearInterval(timer);
   }, []);
 
-  const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
-  const startTimeRef = useRef(Date.now());
-  const clickedRef = useRef(false);
-
-  useEffect(() => {
-    const save = () => {
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      trackUserSession(slug, duration, clickedRef.current, sessionIdRef.current);
-    };
-
-    window.addEventListener("beforeunload", save);
-    return () => {
-      save();
-      window.removeEventListener("beforeunload", save);
-    };
-  }, [slug]);
+  const { recordInteraction } = usePagePresence(slug);
 
   const scrollToOrder = () => {
+    recordInteraction();
     const el = document.getElementById("commander");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -217,9 +204,8 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
       };
 
       const res = await saveNewOrder(orderPayload);
-      clickedRef.current = true;
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      await trackUserSession(slug, duration, true, sessionIdRef.current);
+      recordInteraction();
+      markLeadConverted(customerPhone, slug);
 
       const orderNum = res?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
       setOrderInfo({ order_number: orderNum });

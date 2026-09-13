@@ -108,16 +108,18 @@ function computeStats(sessions: AnalyticsSession[]): AnalyticsStats {
   const ctr =
     Math.round((totalClicks / Math.max(1, totalViews)) * 1000) / 10;
 
-  // Filtrer les sessions avec une vraie présence pour calculer la moyenne de temps
-  // Pour éviter que les anciennes sessions figées à 1s ne faussent les statistiques :
-  const meaningfulSessions = sessions.filter((s) => (s.durationSeconds || 0) > 1 || s.clicked);
-  const targetSessions = meaningfulSessions.length > 0 ? meaningfulSessions : sessions;
+  // Filtrer les sessions avec une vraie présence (> 2s) pour calculer la moyenne de temps
+  const validDurationSessions = sessions.filter((s) => (s.durationSeconds || 0) > 2);
 
-  const totalTime = targetSessions.reduce(
+  if (validDurationSessions.length === 0) {
+    return { totalViews, totalClicks, ctr, avgTimeSpentSeconds: 0, formattedAvgTime: "—" };
+  }
+
+  const totalTime = validDurationSessions.reduce(
     (acc, s) => acc + (s.durationSeconds || 0),
     0
   );
-  const avgTimeSpentSeconds = Math.round(totalTime / Math.max(1, targetSessions.length));
+  const avgTimeSpentSeconds = Math.round(totalTime / validDurationSessions.length);
 
   const minutes = Math.floor(avgTimeSpentSeconds / 60);
   const seconds = avgTimeSpentSeconds % 60;

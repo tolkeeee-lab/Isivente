@@ -35,7 +35,8 @@ import {
   Warehouse
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
@@ -165,22 +166,7 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
     return () => clearInterval(subTimer);
   }, [isDemoPlaying]);
 
-  const sessionIdRef = useRef("sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8));
-  const startTimeRef = useRef(Date.now());
-  const clickedRef = useRef(false);
-
-  useEffect(() => {
-    const save = () => {
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      trackUserSession(slug, duration, clickedRef.current, sessionIdRef.current);
-    };
-
-    window.addEventListener("beforeunload", save);
-    return () => {
-      save();
-      window.removeEventListener("beforeunload", save);
-    };
-  }, [slug]);
+  const { recordInteraction } = usePagePresence(slug);
 
   const scrollToOrder = () => {
     const el = document.getElementById("commander");
@@ -237,9 +223,8 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
         status: "pending",
       });
 
-      clickedRef.current = true;
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      await trackUserSession(slug, duration, true, sessionIdRef.current);
+      recordInteraction();
+      markLeadConverted(customerPhone, slug);
 
       const orderNumber = createdOrder?.order_number || `ISV-${Math.floor(100000 + Math.random() * 900000)}`;
       setOrderInfo({ orderNumber, total: finalTotal, name: customerName, phone: customerPhone });
