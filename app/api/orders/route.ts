@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { sendOrderNotification } from "@/lib/notifyHelper";
+import { sendMetaConversionApiEvent } from "@/lib/metaConversionsApi";
 
 const defaultUrl = "https://uelognqedzqtvupwzejh.supabase.co";
 const defaultKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlbG9nbnFlZHpxdHZ1cHd6ZWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMTE0ODgsImV4cCI6MjEwMzc4NzQ4OH0.DjUgqgALNjMIIolen-L6blr4kxUgPi3TKUBeX-TnK9k";
@@ -89,6 +90,51 @@ export async function POST(req: NextRequest) {
       await sendOrderNotification(data?.[0] || payload);
     } catch (e) {
       console.error("Server notify error:", e);
+    }
+
+    // Déclencher l'événement d'achat serveur Meta Conversions API (CAPI)
+    try {
+      const userAgent = req.headers.get("user-agent") || undefined;
+      const clientIp = 
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+        req.headers.get("x-real-ip") || 
+        undefined;
+      const cookies = req.cookies;
+      const fbp = cookies.get("_fbp")?.value;
+      const fbc = cookies.get("_fbc")?.value;
+
+      const nameParts = (payload.customer_name || "").trim().split(/\s+/);
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+      const city = payload.city || payload.shipping_city || "Cotonou";
+
+      sendMetaConversionApiEvent({
+        event_name: "Purchase",
+        event_id: orderNumberStr,
+        event_source_url: req.headers.get("referer") || undefined,
+        user_data: {
+          phone: phone,
+          first_name: firstName,
+          last_name: lastName,
+          city: city,
+          country: "bj",
+          external_id: orderNumberStr,
+          client_ip_address: clientIp,
+          client_user_agent: userAgent,
+          fbp,
+          fbc,
+        },
+        custom_data: {
+          currency: "XOF",
+          value: totalAmount,
+          content_name: payload.product_title || payload.product_slug,
+          content_ids: [payload.product_slug],
+          order_id: orderNumberStr,
+          num_items: quantity,
+        },
+      }).catch(e => console.error("Meta CAPI Purchase error:", e));
+    } catch (e) {
+      console.error("Meta CAPI trigger error:", e);
     }
 
     return NextResponse.json({

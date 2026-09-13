@@ -24,7 +24,8 @@ import {
   Pause
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 
@@ -142,10 +143,11 @@ const FAQS_DATA = [
   }
 ];
 
-import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 
 export default function MicroscopeLanding({ slug }: { slug: string }) {
   const router = useRouter();
+  const { recordInteraction } = usePagePresence(slug || "microscope");
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -204,7 +206,6 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
   };
 
   useEffect(() => {
-    trackUserSession(slug || "microscope", 0, false, "sess_" + Date.now());
     trackViewContent({
       content_name: "Microscope Numérique Portable HD 1000X",
       content_ids: ["microscope"],
@@ -214,6 +215,14 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
   }, [slug]);
 
   const scrollToOrder = () => {
+    recordInteraction();
+    trackAddToCart({
+      content_name: "Microscope Numérique Portable HD 1000X",
+      content_ids: ["microscope"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: selectedBundle.quantity || 1,
+    });
     trackInitiateCheckout({
       content_name: "Microscope Numérique Portable HD 1000X",
       content_ids: ["microscope"],
@@ -239,6 +248,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
     }
 
     setIsSubmitting(true);
+    recordInteraction();
 
     try {
       const order = await saveNewOrder({
@@ -254,6 +264,9 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         total_amount: selectedBundle.price,
         status: "pending",
       });
+
+      // Marquer le prospect comme converti en commande validée
+      await markLeadConverted(customerPhone, "microscope");
 
       // Stocker les infos pour Meta Pixel Purchase sur la page success
       if (typeof window !== "undefined") {
@@ -409,7 +422,16 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             productImage="/images/microscope-monde-decouverte.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
-            onSelectBundle={(b) => setSelectedBundle(b)}
+            onSelectBundle={(b) => {
+              setSelectedBundle(b);
+              trackAddToCart({
+                content_name: `Microscope Numérique HD - ${b.name}`,
+                content_ids: ["microscope", b.id || "solo"],
+                value: b.price,
+                currency: "XOF",
+                num_items: b.quantity || 1,
+              });
+            }}
             customerName={customerName}
             setCustomerName={setCustomerName}
             customerPhone={customerPhone}

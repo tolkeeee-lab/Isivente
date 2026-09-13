@@ -30,21 +30,25 @@ function SuccessContent() {
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
   useEffect(() => {
-    // Meta Pixel: Track Purchase si présent
+    // Meta Pixel: Track Purchase garanti (avec secours paramètres URL)
     try {
-      const pendingMeta = sessionStorage.getItem("isivente_last_purchase_meta");
-      if (pendingMeta) {
-        const parsed = JSON.parse(pendingMeta);
-        trackPurchase({
-          content_name: parsed.title || slug,
-          content_ids: [slug],
-          value: total || parsed.price || 0,
-          currency: "XOF",
-          num_items: parsed.quantity || 1,
-          order_id: orderRef || undefined,
-        });
-        sessionStorage.removeItem("isivente_last_purchase_meta");
-      }
+      let parsed: any = null;
+      try {
+        const pendingMeta = sessionStorage.getItem("isivente_last_purchase_meta");
+        if (pendingMeta) {
+          parsed = JSON.parse(pendingMeta);
+          sessionStorage.removeItem("isivente_last_purchase_meta");
+        }
+      } catch {}
+
+      trackPurchase({
+        content_name: parsed?.title || `Produit ${slug.toUpperCase()}`,
+        content_ids: [slug],
+        value: total || parsed?.price || 14900,
+        currency: "XOF",
+        num_items: parsed?.quantity || 1,
+        order_id: orderRef || undefined,
+      });
     } catch {}
   }, [slug, orderRef, total]);
 

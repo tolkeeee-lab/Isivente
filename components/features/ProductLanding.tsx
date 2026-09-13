@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted } from "@/lib/leadsStorage";
 import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
@@ -90,10 +91,8 @@ export default function ProductLanding({ slug }: { slug: string }) {
     return () => clearInterval(timer);
   }, [imagesList.length]);
 
-  // Analytics
-  const sessionIdRef = useRef(
-    "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8)
-  );
+  // Suivi de présence réelle et d'engagement
+  const { recordInteraction } = usePagePresence(slug);
   const startTimeRef = useRef(Date.now());
   const clickedRef = useRef(false);
 
@@ -149,21 +148,10 @@ export default function ProductLanding({ slug }: { slug: string }) {
     load();
   }, [slug]);
 
-  /* ─── Analytics tracking ─── */
-  useEffect(() => {
-    const save = () => {
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      trackUserSession(slug, duration, clickedRef.current, sessionIdRef.current);
-    };
-    window.addEventListener("beforeunload", save);
-    return () => {
-      save();
-      window.removeEventListener("beforeunload", save);
-    };
-  }, [slug]);
 
   /* ─── Helpers ─── */
   const scrollToSection = (id: string) => {
+    recordInteraction();
     if ((id === "order-form" || id === "commander") && product) {
       trackInitiateCheckout({
         content_name: product.title,
@@ -226,6 +214,9 @@ export default function ProductLanding({ slug }: { slug: string }) {
         status: "pending" as const,
       });
 
+      recordInteraction();
+      await markLeadConverted(customerPhone, slug);
+
       // Meta Pixel: Purchase
       trackPurchase({
         content_name: product.title,
@@ -242,10 +233,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
           quantity: selectedBundle.quantity || 1,
         }));
       } catch {}
-
-      clickedRef.current = true;
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      await trackUserSession(slug, duration, true, sessionIdRef.current);
 
       const orderRef = createdOrder?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
       setOrderNumber(orderRef);

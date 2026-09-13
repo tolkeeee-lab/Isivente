@@ -72,6 +72,13 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
 /* Slug aliases → canonical slug */
 const SLUG_ALIASES: Record<string, string> = {
   microscope: "microscope",
+  "microscope-enfant-optiview": "microscope",
+  "microscope-enfant": "microscope",
+  "microscope-optiview": "microscope",
+  optiview: "microscope",
+  "microscope-hd": "microscope",
+  "microscope-1000x": "microscope",
+  "microscope-portable": "microscope",
   micro: "microscope",
   zoom: "microscope",
   loupe: "microscope",
@@ -95,9 +102,9 @@ const SLUG_ALIASES: Record<string, string> = {
   "mini-caméra": "camera",
   "camera-espion": "camera",
   "caméra-espion": "camera",
-  "camera": "camera",
-  "caméra": "camera",
-  "camerà": "camera",
+  camera: "camera",
+  caméra: "camera",
+  camerà: "camera",
   "camera-a9": "camera",
   "a9-pro": "camera",
   surveillance: "camera",
@@ -125,7 +132,20 @@ const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 function cleanSlug(raw: string): string {
   try {
     const decoded = decodeURIComponent(raw).toLowerCase().trim();
-    return SLUG_ALIASES[decoded] || decoded;
+    if (SLUG_ALIASES[decoded]) return SLUG_ALIASES[decoded];
+
+    // Détection universelle par mot-clé pour que TOUS les liens publicitaires fonctionnent toujours
+    if (decoded.includes("microscope") || decoded.includes("optiview") || decoded.includes("enfant") || decoded.includes("loupe")) return "microscope";
+    if (decoded.includes("umei") || decoded.includes("brosse") || decoded.includes("demelante") || decoded.includes("démêlante")) return "umei";
+    if (decoded.includes("eraclean") || decoded.includes("frigo") || decoded.includes("purificateur") || decoded.includes("odeur")) return "eraclean";
+    if (decoded.includes("turbofan") || decoded.includes("ventilateur") || decoded.includes("ceinture") || decoded.includes("fan")) return "turbofan";
+    if (decoded.includes("peeler") || decoded.includes("chefpeel") || decoded.includes("eplucheur") || decoded.includes("éplucheur")) return "peeler";
+    if (decoded.includes("stabilis") || decoded.includes("trepied") || decoded.includes("trépied") || decoded.includes("gimbal") || decoded.includes("z3")) return "stabilisateur";
+    if (decoded.includes("veilleuse") || decoded.includes("projecteur") || decoded.includes("galaxie") || decoded.includes("friosz")) return "veilleuse";
+    if (decoded.includes("camera") || decoded.includes("caméra") || decoded.includes("espion") || decoded.includes("a9")) return "camera";
+    if (decoded.includes("trozk") || decoded.includes("batterie") || decoded.includes("powerbank") || decoded.includes("modulaire")) return "trozk";
+
+    return decoded;
   } catch {
     return raw.toLowerCase().trim();
   }

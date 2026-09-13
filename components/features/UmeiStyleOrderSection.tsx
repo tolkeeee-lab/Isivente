@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Check,
   CheckCircle2,
@@ -15,6 +15,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { playOrderSound } from "@/lib/soundEffects";
+import { trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
+import { saveOrUpdateLead, markLeadConverted } from "@/lib/leadsStorage";
 
 export interface BundleOption {
   id?: string;
@@ -269,9 +271,115 @@ export default function UmeiStyleOrderSection({
   );
   const deliveryDelay = selectedCityObj ? selectedCityObj.delay : "24h à 48h";
 
-  // Redirection WhatsApp automatique après succès
+  // Suivi Meta Pixel & CAPI automatique (AddToCart & InitiateCheckout)
+  const checkoutTrackedRef = useRef(false);
+  const handleInteractionTrigger = () => {
+    if (!checkoutTrackedRef.current) {
+      checkoutTrackedRef.current = true;
+      trackAddToCart({
+        content_name: productTitle,
+        content_ids: [normalizedSlug || "product"],
+        value: totalPrice,
+        currency: "XOF",
+        num_items: currentBundle.quantity || 1,
+      });
+      trackInitiateCheckout({
+        content_name: productTitle,
+        content_ids: [normalizedSlug || "product"],
+        value: totalPrice,
+        currency: "XOF",
+        num_items: currentBundle.quantity || 1,
+      });
+    }
+  };
+
+  // Capture silencieuse en temps réel des prospects (Paniers abandonnés)
+  const captureTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const captureGhostLead = () => {
+    const digits = (customerPhone || "").replace(/\D/g, "");
+    if (digits.length >= 8) {
+      const payload = {
+        customer_name: customerName,
+        customer_phone: digits,
+        customer_phone2: customerPhone2,
+        city: city || "Cotonou",
+        address: address || "",
+        product_slug: normalizedSlug || productSlug,
+        product_title: productTitle,
+        bundle_name: currentBundle.name,
+        total_amount: totalPrice,
+      };
+      // Sauvegarde locale instantanée
+      saveOrUpdateLead(payload);
+      // Transmission silencieuse au serveur
+      try {
+        fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }).catch(() => {});
+
+        // Envoyer InitiateCheckout à Meta CAPI avec les données de correspondance avancée (EMQ 9+)
+        const nameParts = (customerName || "").trim().split(/\s+/);
+        fetch("/api/pixel/event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event_name: "InitiateCheckout",
+            event_source_url: window.location.href,
+            user_data: {
+              phone: digits,
+              first_name: nameParts[0] || "",
+              last_name: nameParts.slice(1).join(" ") || "",
+              city: city || "Cotonou",
+            },
+            custom_data: {
+              content_name: productTitle,
+              content_ids: [normalizedSlug || productSlug],
+              value: totalPrice,
+              currency: "XOF",
+              num_items: currentBundle.quantity || 1,
+            },
+          }),
+        }).catch(() => {});
+      } catch {}
+    }
+  };
+
+  // Dès que le client a tapé au moins 8 chiffres ou qu'il modifie ses infos, déclencher la capture après 1 seconde
+  useEffect(() => {
+    const digits = (customerPhone || "").replace(/\D/g, "");
+    if (digits.length >= 8) {
+      if (captureTimeoutRef.current) clearTimeout(captureTimeoutRef.current);
+      captureTimeoutRef.current = setTimeout(() => {
+        captureGhostLead();
+      }, 1000);
+    }
+    return () => {
+      if (captureTimeoutRef.current) clearTimeout(captureTimeoutRef.current);
+    };
+  }, [customerPhone, customerName, city, address, currentBundle, totalPrice]);
+
+  // Redirection WhatsApp automatique après succès & Conversion du lead
   useEffect(() => {
     if (orderSuccess) {
+      const digits = (customerPhone || "").replace(/\D/g, "");
+      if (digits) {
+        markLeadConverted(digits, normalizedSlug || productSlug);
+        try {
+          fetch("/api/leads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customer_phone: digits,
+              product_slug: normalizedSlug || productSlug,
+              action: "convert",
+            }),
+          }).catch(() => {});
+        } catch {}
+      }
+
       const finalOrderNum =
         orderNumber || "ISV-" + Math.floor(100000 + Math.random() * 900000);
       const whatsappMsg = encodeURIComponent(
@@ -475,6 +583,8 @@ export default function UmeiStyleOrderSection({
                 type="text"
                 required
                 value={customerName}
+                onFocus={handleInteractionTrigger}
+                onBlur={captureGhostLead}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Ex: Paul Dossou"
                 className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
@@ -503,6 +613,8 @@ export default function UmeiStyleOrderSection({
                   type="tel"
                   required
                   value={customerPhone}
+                  onFocus={handleInteractionTrigger}
+                  onBlur={captureGhostLead}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="97 00 00 00"
                   className="w-full pl-16 pr-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-mono font-semibold"
@@ -525,6 +637,7 @@ export default function UmeiStyleOrderSection({
                 <select
                   value={city}
                   required
+                  onFocus={handleInteractionTrigger}
                   onChange={(e) => setCity(e.target.value)}
                   className="w-full px-3 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
                 >
@@ -545,6 +658,7 @@ export default function UmeiStyleOrderSection({
                   type="text"
                   required
                   value={address}
+                  onFocus={handleInteractionTrigger}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Ex: Haie Vive, face pharmacie"
                   className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"

@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted } from "@/lib/leadsStorage";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
@@ -55,25 +56,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
   const [orderNumber, setOrderNumber] = useState("");
   const isSubmittingRef = useRef(false);
 
-  // ID de session stable
-  const sessionIdRef = useRef(
-    "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8)
-  );
-  const startTimeRef = useRef(Date.now());
-  const clickedRef = useRef(false);
-
-  useEffect(() => {
-    const save = () => {
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      trackUserSession(slug || "umei", duration, clickedRef.current, sessionIdRef.current);
-    };
-
-    window.addEventListener("beforeunload", save);
-    return () => {
-      save();
-      window.removeEventListener("beforeunload", save);
-    };
-  }, [slug]);
+  const { recordInteraction } = usePagePresence(slug || "umei");
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -121,9 +104,8 @@ export default function UmeiLanding({ slug }: { slug: string }) {
       };
 
       const res = await saveNewOrder(orderData);
-      clickedRef.current = true;
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      await trackUserSession(slug || "umei", duration, true, sessionIdRef.current);
+      recordInteraction();
+      await markLeadConverted(customerPhone, slug || "umei");
       const orderNum = res?.order_number || ("ISV-" + Math.floor(100000 + Math.random() * 900000));
       setOrderNumber(orderNum);
       setOrderSuccess(true);

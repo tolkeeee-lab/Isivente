@@ -42,3 +42,48 @@ CREATE POLICY "Allow public delete on orders" ON public.orders
 
 -- Activer la réplication Realtime pour les alertes instantanées
 ALTER PUBLICATION supabase_realtime ADD TABLE public.orders;
+
+-- ==============================================================================
+-- 👥 TABLE DES PROSPECTS & PANIERS ABANDONNÉS (Capture Temps Réel)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.leads (
+    id TEXT PRIMARY KEY,
+    customer_name TEXT DEFAULT 'Client intéressé',
+    customer_phone TEXT NOT NULL,
+    customer_phone2 TEXT,
+    city TEXT DEFAULT 'Cotonou',
+    address TEXT,
+    product_slug TEXT NOT NULL,
+    product_title TEXT NOT NULL,
+    bundle_name TEXT,
+    total_amount NUMERIC DEFAULT 0,
+    status TEXT DEFAULT 'abandoned',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public all on leads" ON public.leads
+    FOR ALL TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);
+
+-- ==============================================================================
+-- 📊 TABLE DES ANALYTICS (Durée et Présence Réelle)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.analytics (
+    session_id TEXT PRIMARY KEY,
+    product_slug TEXT NOT NULL,
+    duration_seconds INTEGER DEFAULT 0,
+    clicked BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.analytics ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public all on analytics" ON public.analytics
+    FOR ALL TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);
+

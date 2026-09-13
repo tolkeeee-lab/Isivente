@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
@@ -14,15 +14,30 @@ import {
   ExternalLink,
   Sparkles,
   Wallet,
-  RefreshCw
+  RefreshCw,
+  PhoneCall
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { getAllLeads } from "@/lib/leadsStorage";
 import OrderRealtimeListener from "@/components/features/OrderRealtimeListener";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [abandonedCount, setAbandonedCount] = useState(0);
+
+  useEffect(() => {
+    const checkLeads = () => {
+      getAllLeads().then((leads) => {
+        const count = leads.filter((l) => l.status === "abandoned").length;
+        setAbandonedCount(count);
+      });
+    };
+    checkLeads();
+    const interval = setInterval(checkLeads, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleRefresh = () => {
     if (isRefreshing) return;
@@ -41,6 +56,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Vue d'ensemble", href: "/admin", icon: LayoutDashboard },
     { name: "Bénéfice Réel & Finance", href: "/admin/finance", icon: Wallet },
     { name: "Commandes", href: "/admin/orders", icon: ShoppingBag },
+    { 
+      name: "Paniers Abandonnés", 
+      href: "/admin/prospects", 
+      icon: PhoneCall,
+      badge: abandonedCount > 0 ? abandonedCount : undefined 
+    },
     { name: "Produits & Liens", href: "/admin/products", icon: Package },
     { name: "Paramètres", href: "/admin/settings", icon: Settings },
   ];
@@ -102,7 +123,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               >
                 <item.icon className={`w-4 h-4 stroke-[1.75] ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
                 <span>{item.name}</span>
-                {isActive && (
+                {item.badge !== undefined && (
+                  <span className="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white font-mono tabular-nums shadow-2xs">
+                    {item.badge}
+                  </span>
+                )}
+                {isActive && item.badge === undefined && (
                   <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                 )}
               </Link>
