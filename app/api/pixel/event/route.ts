@@ -18,12 +18,14 @@ export async function POST(req: NextRequest) {
     const reqUserData = body.user_data || {};
     const fbp = cookies.get("_fbp")?.value || reqUserData.fbp;
     const fbc = cookies.get("_fbc")?.value || reqUserData.fbc;
+    const testEventCode = body.test_event_code || req.nextUrl.searchParams.get("test_event_code") || undefined;
 
     // Relais serveur Meta CAPI en tâche de fond non bloquante avec données utilisateur
     sendMetaConversionApiEvent({
       event_name: eventName,
       event_source_url: eventSourceUrl,
       event_id: body.event_id,
+      test_event_code: testEventCode,
       user_data: {
         phone: reqUserData.phone,
         first_name: reqUserData.first_name,

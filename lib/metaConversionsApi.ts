@@ -34,6 +34,7 @@ export interface MetaCapiEventOptions {
   event_time?: number;
   event_source_url?: string;
   event_id?: string;
+  test_event_code?: string;
   user_data?: {
     phone?: string;
     email?: string;
@@ -111,7 +112,13 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
         },
       },
     ],
+    test_event_code: options.test_event_code || process.env.META_TEST_EVENT_CODE || undefined,
   };
+
+  // Nettoyer si undefined
+  if (!payload.test_event_code) {
+    delete (payload as any).test_event_code;
+  }
 
   try {
     const url = `https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${token}`;
