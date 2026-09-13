@@ -15,7 +15,8 @@ import {
   Sparkles,
   Wallet,
   RefreshCw,
-  PhoneCall
+  PhoneCall,
+  MousePointerClick
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { getAllLeads } from "@/lib/leadsStorage";
@@ -71,6 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       icon: PhoneCall,
       badge: abandonedCount > 0 ? abandonedCount : undefined 
     },
+    { name: "Clics & Visiteurs", href: "/admin/clicks", icon: MousePointerClick },
     { name: "Produits & Liens", href: "/admin/products", icon: Package },
     { name: "Paramètres", href: "/admin/settings", icon: Settings },
   ];
