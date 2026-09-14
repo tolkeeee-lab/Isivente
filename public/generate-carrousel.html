@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Générateur Carrousel Publicitaire HD - Stabilisateur Z3</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: #0f172a; color: #f8fafc; padding: 30px; }
+    h1 { text-align: center; margin-bottom: 8px; font-size: 28px; }
+    p.sub { text-align: center; color: #94a3b8; margin-bottom: 24px; font-size: 14px; }
+    
+    #status {
+      text-align: center; padding: 12px 20px; border-radius: 12px; margin: 0 auto 30px;
+      max-width: 600px; font-weight: 700; font-size: 15px;
+      background: #1e293b; border: 1px solid #334155; color: #38bdf8;
+    }
+
+    .slides-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .slide-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+    }
+    .slide-header {
+      padding: 12px 16px;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .badge {
+      background: #f59e0b; color: #0f172a; padding: 3px 8px; border-radius: 6px; font-size: 11px; text-transform: uppercase;
+    }
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1/1;
+      background: #000;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .slide-footer {
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn-download {
+      flex: 1;
+      background: #38bdf8;
+      hover: background: #0284c7;
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    .btn-download:hover {
+      background: #7dd3fc;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎨 Studio Carrousel Meta Ads • Stabilisateur Z3 Zoom™</h1>
+  <p class="sub">Génération automatique des 5 affiches publicitaires au format 1080x1080 (Figma-grade)</p>
+
+  <div id="status">⏳ Chargement des visuels et composition graphique en cours...</div>
+
+  <div class="slides-grid" id="grid">
+    <!-- Slide 1 -->
+    <div class="slide-card">
+      <div class="slide-header">
+        <span>Slide 1 : Hook Scroll-Stopper</span>
+        <span class="badge">Carte 1</span>
+      </div>
+      <div class="canvas-wrapper"><canvas id="c1" width="1080" height="1080"></canvas></div>
+      <div class="slide-footer"><a id="dl1" class="btn-download" download="carrousel-z3-slide-1.jpg">📥 Télécharger Slide 1 (1080p)</a></div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide-card">
+      <div class="slide-header">
+        <span>Slide 2 : Puissance MagSafe 20N</span>
+        <span class="badge">Carte 2</span>
+      </div>
+      <div class="canvas-wrapper"><canvas id="c2" width="1080" height="1080"></canvas></div>
+      <div class="slide-footer"><a id="dl2" class="btn-download" download="carrousel-z3-slide-2.jpg">📥 Télécharger Slide 2 (1080p)</a></div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide-card">
+      <div class="slide-header">
+        <span>Slide 3 : Autonomie 10m & Trépied</span>
+        <span class="badge">Carte 3</span>
+      </div>
+      <div class="canvas-wrapper"><canvas id="c3" width="1080" height="1080"></canvas></div>
+      <div class="slide-footer"><a id="dl3" class="btn-download" download="carrousel-z3-slide-3.jpg">📥 Télécharger Slide 3 (1080p)</a></div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide-card">
+      <div class="slide-header">
+        <span>Slide 4 : 3-en-1 & Rotation 360°</span>
+        <span class="badge">Carte 4</span>
+      </div>
+      <div class="canvas-wrapper"><canvas id="c4" width="1080" height="1080"></canvas></div>
+      <div class="slide-footer"><a id="dl4" class="btn-download" download="carrousel-z3-slide-4.jpg">📥 Télécharger Slide 4 (1080p)</a></div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide-card">
+      <div class="slide-header">
+        <span>Slide 5 : Offre Promo & Paiement Livraison</span>
+        <span class="badge" style="background:#10b981; color:#fff;">Clôture</span>
+      </div>
+      <div class="canvas-wrapper"><canvas id="c5" width="1080" height="1080"></canvas></div>
+      <div class="slide-footer"><a id="dl5" class="btn-download" style="background:#10b981; color:#fff;" download="carrousel-z3-slide-5.jpg">📥 Télécharger Slide 5 (1080p)</a></div>
+    </div>
+  </div>
+
+  <script>
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Erreur chargement: " + src));
+        img.src = src;
+      });
+    }
+
+    function drawRoundedRect(ctx, x, y, width, height, radius, fillStyle, strokeStyle, strokeWidth) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+      }
+      if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = strokeWidth || 1;
+        ctx.stroke();
+      }
+    }
+
+    async function buildCarrousel() {
+      const status = document.getElementById("status");
+      try {
+        // 1. Charger les 5 vraies photos
+        const [imgHero, imgMagSafe, imgRemote, imgAngles, imgPerche] = await Promise.all([
+          loadImage("/images/stabilisateur-hero.jpg"),
+          loadImage("/images/stabilisateur-force-magnetique-20n.jpg"),
+          loadImage("/images/stabilisateur-telecommande-10m.jpg"),
+          loadImage("/images/stabilisateur-angles-rotation-360.jpg"),
+          loadImage("/images/stabilisateur-perche-extensible.jpg")
+        ]);
+
+        // ==========================================
+        // SLIDE 1 : SCROLL-STOPPER HOOK
+        // ==========================================
+        const c1 = document.getElementById("c1");
+        const ctx1 = c1.getContext("2d");
+        // Fond photo
+        ctx1.drawImage(imgHero, 0, 0, 1080, 1080);
+        // Dégradé supérieur pour texte
+        const gTop1 = ctx1.createLinearGradient(0, 0, 0, 480);
+        gTop1.addColorStop(0, "rgba(8, 10, 16, 0.96)");
+        gTop1.addColorStop(0.65, "rgba(8, 10, 16, 0.85)");
+        gTop1.addColorStop(1, "rgba(8, 10, 16, 0)");
+        ctx1.fillStyle = gTop1;
+        ctx1.fillRect(0, 0, 1080, 480);
+
+        // Dégradé inférieur
+        const gBot1 = ctx1.createLinearGradient(0, 720, 0, 1080);
+        gBot1.addColorStop(0, "rgba(8, 10, 16, 0)");
+        gBot1.addColorStop(0.35, "rgba(8, 10, 16, 0.88)");
+        gBot1.addColorStop(1, "rgba(8, 10, 16, 0.98)");
+        ctx1.fillStyle = gBot1;
+        ctx1.fillRect(0, 720, 1080, 360);
+
+        // Badge Hook
+        drawRoundedRect(ctx1, 60, 50, 420, 48, 24, "rgba(245, 158, 11, 0.2)", "#f59e0b", 2);
+        ctx1.fillStyle = "#fbbf24";
+        ctx1.font = "800 20px -apple-system, sans-serif";
+        ctx1.fillText("🔥 VIDÉASTES & CRÉATEURS PRO", 80, 82);
+
+        // Titre Choc
+        ctx1.fillStyle = "#ffffff";
+        ctx1.font = "900 62px -apple-system, sans-serif";
+        ctx1.fillText("ARRÊTEZ DE FILMER", 60, 170);
+        ctx1.fillStyle = "#f59e0b";
+        ctx1.fillText("COMME EN 2015.", 60, 240);
+
+        ctx1.fillStyle = "#cbd5e1";
+        ctx1.font = "600 26px -apple-system, sans-serif";
+        ctx1.fillText("Passez à la fluidité cinéma sans équipement lourd.", 60, 295);
+
+        // Footer Card
+        drawRoundedRect(ctx1, 60, 880, 960, 140, 28, "rgba(15, 23, 42, 0.92)", "rgba(255,255,255,0.15)", 1.5);
+        ctx1.fillStyle = "#ffffff";
+        ctx1.font = "800 28px -apple-system, sans-serif";
+        ctx1.fillText("WONEW Z3 ZOOM™ • 3-en-1 Studio", 95, 935);
+        ctx1.fillStyle = "#10b981";
+        ctx1.font = "700 22px -apple-system, sans-serif";
+        ctx1.fillText("✓ Aimant 20N   ✓ Trépied   ✓ Télécommande sans fil", 95, 980);
+
+        // Bouton Glisser
+        drawRoundedRect(ctx1, 780, 915, 200, 70, 20, "#f59e0b", null, 0);
+        ctx1.fillStyle = "#0f172a";
+        ctx1.font = "900 24px -apple-system, sans-serif";
+        ctx1.fillText("GLISSER ›", 820, 958);
+
+        // ==========================================
+        // SLIDE 2 : PUISSANCE MAGSAFE 20N
+        // ==========================================
+        const c2 = document.getElementById("c2");
+        const ctx2 = c2.getContext("2d");
+        ctx2.drawImage(imgMagSafe, 0, 0, 1080, 1080);
+
+        const gTop2 = ctx2.createLinearGradient(0, 0, 0, 420);
+        gTop2.addColorStop(0, "rgba(8, 10, 16, 0.96)");
+        gTop2.addColorStop(0.7, "rgba(8, 10, 16, 0.82)");
+        gTop2.addColorStop(1, "rgba(8, 10, 16, 0)");
+        ctx2.fillStyle = gTop2;
+        ctx2.fillRect(0, 0, 1080, 420);
+
+        const gBot2 = ctx2.createLinearGradient(0, 800, 0, 1080);
+        gBot2.addColorStop(0, "rgba(8, 10, 16, 0)");
+        gBot2.addColorStop(1, "rgba(8, 10, 16, 0.98)");
+        ctx2.fillStyle = gBot2;
+        ctx2.fillRect(0, 800, 1080, 280);
+
+        drawRoundedRect(ctx2, 60, 50, 460, 48, 24, "rgba(239, 68, 68, 0.2)", "#ef4444", 2);
+        ctx2.fillStyle = "#fca5a5";
+        ctx2.font = "800 20px -apple-system, sans-serif";
+        ctx2.fillText("🔒 SÉCURITÉ MAXIMALE • TEST DE CHUTE", 80, 82);
+
+        ctx2.fillStyle = "#ffffff";
+        ctx2.font = "900 58px -apple-system, sans-serif";
+        ctx2.fillText("AIMANT 20N SURPUISSANT.", 60, 170);
+        ctx2.fillStyle = "#38bdf8";
+        ctx2.fillText("NE TOMBE JAMAIS.", 60, 240);
+
+        ctx2.fillStyle = "#cbd5e1";
+        ctx2.font = "600 26px -apple-system, sans-serif";
+        ctx2.fillText("Même en secouant vigoureusement ou en courant.", 60, 295);
+
+        // Callout bas
+        drawRoundedRect(ctx2, 60, 900, 960, 120, 24, "rgba(15, 23, 42, 0.92)", "rgba(56, 189, 248, 0.3)", 1.5);
+        ctx2.fillStyle = "#38bdf8";
+        ctx2.font = "800 26px -apple-system, sans-serif";
+        ctx2.fillText("COMPATIBLE IPHONE & ANDROID", 95, 950);
+        ctx2.fillStyle = "#ffffff";
+        ctx2.font = "600 22px -apple-system, sans-serif";
+        ctx2.fillText("🎁 3 Bagues métalliques universelles offertes dans la boîte", 95, 990);
+
+        // ==========================================
+        // SLIDE 3 : TÉLÉCOMMANDE 10M & AUTONOMIE
+        // ==========================================
+        const c3 = document.getElementById("c3");
+        const ctx3 = c3.getContext("2d");
+        ctx3.drawImage(imgRemote, 0, 0, 1080, 1080);
+
+        const gTop3 = ctx3.createLinearGradient(0, 0, 0, 440);
+        gTop3.addColorStop(0, "rgba(8, 10, 16, 0.96)");
+        gTop3.addColorStop(0.7, "rgba(8, 10, 16, 0.82)");
+        gTop3.addColorStop(1, "rgba(8, 10, 16, 0)");
+        ctx3.fillStyle = gTop3;
+        ctx3.fillRect(0, 0, 1080, 440);
+
+        drawRoundedRect(ctx3, 60, 50, 430, 48, 24, "rgba(16, 185, 129, 0.2)", "#10b981", 2);
+        ctx3.fillStyle = "#6ee7b7";
+        ctx3.font = "800 20px -apple-system, sans-serif";
+        ctx3.fillText("🎯 100% LIBERTÉ • CRÉATEUR SOLO", 80, 82);
+
+        ctx3.fillStyle = "#ffffff";
+        ctx3.font = "900 56px -apple-system, sans-serif";
+        ctx3.fillText("MARRE DE SUPPLIER", 60, 165);
+        ctx3.fillStyle = "#10b981";
+        ctx3.fillText("POUR QU'ON TE FILME ?", 60, 230);
+
+        ctx3.fillStyle = "#cbd5e1";
+        ctx3.font = "600 26px -apple-system, sans-serif";
+        ctx3.fillText("Pose le trépied, recule jusqu'à 10 mètres, et clique.", 60, 285);
+
+        // Callout bas
+        drawRoundedRect(ctx3, 60, 900, 960, 120, 24, "rgba(15, 23, 42, 0.92)", "rgba(16, 185, 129, 0.3)", 1.5);
+        ctx3.fillStyle = "#10b981";
+        ctx3.font = "800 26px -apple-system, sans-serif";
+        ctx3.fillText("TÉLÉCOMMANDE TYPE-C AIMANTÉE (ZÉRO PILE)", 95, 950);
+        ctx3.fillStyle = "#ffffff";
+        ctx3.font = "600 22px -apple-system, sans-serif";
+        ctx3.fillText("Déclenchement photo, vidéo et contrôle du zoom à distance.", 95, 990);
+
+        // ==========================================
+        // SLIDE 4 : 3-EN-1 MULTI-ANGLES
+        // ==========================================
+        const c4 = document.getElementById("c4");
+        const ctx4 = c4.getContext("2d");
+        ctx4.drawImage(imgAngles, 0, 0, 1080, 1080);
+
+        const gTop4 = ctx4.createLinearGradient(0, 0, 0, 420);
+        gTop4.addColorStop(0, "rgba(8, 10, 16, 0.96)");
+        gTop4.addColorStop(0.7, "rgba(8, 10, 16, 0.82)");
+        gTop4.addColorStop(1, "rgba(8, 10, 16, 0)");
+        ctx4.fillStyle = gTop4;
+        ctx4.fillRect(0, 0, 1080, 420);
+
+        drawRoundedRect(ctx4, 60, 50, 440, 48, 24, "rgba(168, 85, 247, 0.2)", "#a855f7", 2);
+        ctx4.fillStyle = "#d8b4fe";
+        ctx4.font = "800 20px -apple-system, sans-serif";
+        ctx4.fillText("📐 1 SEUL PRIX = 3 ÉQUIPEMENTS", 80, 82);
+
+        ctx4.fillStyle = "#ffffff";
+        ctx4.font = "900 58px -apple-system, sans-serif";
+        ctx4.fillText("POIGNÉE + TRÉPIED", 60, 170);
+        ctx4.fillStyle = "#a855f7";
+        ctx4.fillText("+ PERCHE TÉLESCOPIQUE.", 60, 240);
+
+        ctx4.fillStyle = "#cbd5e1";
+        ctx4.font = "600 26px -apple-system, sans-serif";
+        ctx4.fillText("Rotation 360° : Passe de TikTok à YouTube en 1 clic.", 60, 295);
+
+        // Callout bas
+        drawRoundedRect(ctx4, 60, 900, 960, 120, 24, "rgba(15, 23, 42, 0.92)", "rgba(168, 85, 247, 0.3)", 1.5);
+        ctx4.fillStyle = "#c084fc";
+        ctx4.font = "800 26px -apple-system, sans-serif";
+        ctx4.fillText("POIDS PLUME 210G • SE GLISSE DANS UNE POCHE", 95, 950);
+        ctx4.fillStyle = "#ffffff";
+        ctx4.font = "600 22px -apple-system, sans-serif";
+        ctx4.fillText("Emportez votre mini studio partout sans vous encombrer.", 95, 990);
+
+        // ==========================================
+        // SLIDE 5 : OFFRE IRRÉSISTIBLE & CLÔTURE
+        // ==========================================
+        const c5 = document.getElementById("c5");
+        const ctx5 = c5.getContext("2d");
+        ctx5.drawImage(imgPerche, 0, 0, 1080, 1080);
+
+        // Fond sombre intégral avec dégradé feutré
+        const gDark5 = ctx5.createLinearGradient(0, 0, 0, 1080);
+        gDark5.addColorStop(0, "rgba(8, 10, 16, 0.95)");
+        gDark5.addColorStop(0.35, "rgba(8, 10, 16, 0.75)");
+        gDark5.addColorStop(0.7, "rgba(8, 10, 16, 0.85)");
+        gDark5.addColorStop(1, "rgba(8, 10, 16, 0.98)");
+        ctx5.fillStyle = gDark5;
+        ctx5.fillRect(0, 0, 1080, 1080);
+
+        drawRoundedRect(ctx5, 60, 50, 480, 48, 24, "rgba(245, 158, 11, 0.2)", "#f59e0b", 2);
+        ctx5.fillStyle = "#fbbf24";
+        ctx5.font = "800 20px -apple-system, sans-serif";
+        ctx5.fillText("🎁 OFFRE OFFICIELLE • STOCK LIMITÉ BÉNIN", 80, 82);
+
+        ctx5.fillStyle = "#ffffff";
+        ctx5.font = "900 60px -apple-system, sans-serif";
+        ctx5.fillText("PACK COMPLET STUDIO", 60, 170);
+        ctx5.fillStyle = "#f59e0b";
+        ctx5.fillText("PRÊT À L'EMPLOI.", 60, 240);
+
+        // Grande Carte Offre
+        drawRoundedRect(ctx5, 60, 310, 960, 420, 32, "rgba(15, 23, 42, 0.95)", "rgba(245, 158, 11, 0.5)", 2.5);
+        
+        ctx5.fillStyle = "#94a3b8";
+        ctx5.font = "800 26px -apple-system, sans-serif";
+        ctx5.fillText("PRIX NORMAL :", 110, 390);
+        ctx5.fillStyle = "#ef4444";
+        ctx5.font = "800 32px monospace";
+        ctx5.fillText("65 000 FCFA", 320, 390);
+        // Ligne barrée sur 65 000
+        ctx5.strokeStyle = "#ef4444";
+        ctx5.lineWidth = 4;
+        ctx5.beginPath(); ctx5.moveTo(310, 380); ctx5.lineTo(540, 380); ctx5.stroke();
+
+        ctx5.fillStyle = "#ffffff";
+        ctx5.font = "900 32px -apple-system, sans-serif";
+        ctx5.fillText("PRIX PROMO CETTE SEMAINE :", 110, 470);
+
+        ctx5.fillStyle = "#f59e0b";
+        ctx5.font = "900 78px monospace";
+        ctx5.fillText("49 900 FCFA", 110, 565);
+
+        drawRoundedRect(ctx5, 680, 480, 280, 60, 16, "rgba(16, 185, 129, 0.2)", "#10b981", 2);
+        ctx5.fillStyle = "#10b981";
+        ctx5.font = "800 24px -apple-system, sans-serif";
+        ctx5.fillText("ÉCONOMIE -15 100 F", 705, 520);
+
+        // Inclus dans le pack
+        ctx5.fillStyle = "#e2e8f0";
+        ctx5.font = "600 22px -apple-system, sans-serif";
+        ctx5.fillText("✓ 1x Stabilisateur Z3  ✓ 1x Trépied dépliant  ✓ 1x Télécommande Type-C  ✓ 3x Bagues MagSafe", 110, 660);
+
+        // Carte Réassurance Bas
+        drawRoundedRect(ctx5, 60, 780, 960, 130, 24, "rgba(30, 41, 59, 0.95)", "rgba(255,255,255,0.15)", 1.5);
+        ctx5.fillStyle = "#ffffff";
+        ctx5.font = "800 28px -apple-system, sans-serif";
+        ctx5.fillText("🤝 PAIEMENT À LA LIVRAISON", 100, 835);
+        ctx5.fillStyle = "#38bdf8";
+        ctx5.font = "700 22px -apple-system, sans-serif";
+        ctx5.fillText("Inspectez le produit avant de payer • Livraison 24H Cotonou & environs", 100, 875);
+
+        // Gros Bouton Commander
+        drawRoundedRect(ctx5, 60, 940, 960, 90, 24, "linear-gradient(90deg, #10b981, #059669)", null, 0);
+        ctx5.fillStyle = "#10b981";
+        drawRoundedRect(ctx5, 60, 940, 960, 90, 24, "#10b981", null, 0);
+        ctx5.fillStyle = "#ffffff";
+        ctx5.font = "900 32px -apple-system, sans-serif";
+        ctx5.textAlign = "center";
+        ctx5.fillText("COMMANDER MAINTENANT ›", 540, 998);
+        ctx5.textAlign = "left";
+
+        // Mettre à jour les liens de téléchargement
+        document.getElementById("dl1").href = c1.toDataURL("image/jpeg", 0.95);
+        document.getElementById("dl2").href = c2.toDataURL("image/jpeg", 0.95);
+        document.getElementById("dl3").href = c3.toDataURL("image/jpeg", 0.95);
+        document.getElementById("dl4").href = c4.toDataURL("image/jpeg", 0.95);
+        document.getElementById("dl5").href = c5.toDataURL("image/jpeg", 0.95);
+
+        // 2. Envoyer au backend pour sauvegarde physique dans public/images/
+        status.innerHTML = "💾 Sauvegarde automatique des fichiers JPG sur votre serveur...";
+        
+        await Promise.all([
+          fetch("/api/save-carrousel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename: "carrousel-z3-slide-1.jpg", base64Data: c1.toDataURL("image/jpeg", 0.95) })
+          }),
+          fetch("/api/save-carrousel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename: "carrousel-z3-slide-2.jpg", base64Data: c2.toDataURL("image/jpeg", 0.95) })
+          }),
+          fetch("/api/save-carrousel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename: "carrousel-z3-slide-3.jpg", base64Data: c3.toDataURL("image/jpeg", 0.95) })
+          }),
+          fetch("/api/save-carrousel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename: "carrousel-z3-slide-4.jpg", base64Data: c4.toDataURL("image/jpeg", 0.95) })
+          }),
+          fetch("/api/save-carrousel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename: "carrousel-z3-slide-5.jpg", base64Data: c5.toDataURL("image/jpeg", 0.95) })
+          })
+        ]);
+
+        status.style.background = "rgba(16, 185, 129, 0.2)";
+        status.style.borderColor = "#10b981";
+        status.style.color = "#6ee7b7";
+        status.innerHTML = "✅ Les 5 affiches publicitaires HD 1080p ont été générées et enregistrées avec succès !";
+      } catch (err) {
+        status.style.background = "rgba(239, 68, 68, 0.2)";
+        status.style.borderColor = "#ef4444";
+        status.style.color = "#fca5a5";
+        status.innerHTML = "❌ Erreur : " + err.message;
+        console.error(err);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", buildCarrousel);
+  </script>
+</body>
+</html>
