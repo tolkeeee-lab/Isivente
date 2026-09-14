@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllOrders, updateOrderStatus as updateStorageStatus, deleteOrder, OrderItem } from "@/lib/ordersStorage";
+import { getAllOrders, updateOrderStatus as updateStorageStatus, deleteOrder, saveNewOrder, OrderItem } from "@/lib/ordersStorage";
+import { supabase } from "@/lib/supabase";
 import { 
   Search, 
   Phone, 
@@ -17,7 +18,10 @@ import {
   ExternalLink,
   ChevronDown,
   Trash2,
-  Download
+  Download,
+  Plus,
+  X,
+  UserCheck
 } from "lucide-react";
 
 export default function OrdersPage() {
@@ -27,16 +31,58 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showManualModal, setShowManualModal] = useState(false);
+  const [manualLoading, setManualLoading] = useState(false);
+  const [manualForm, setManualForm] = useState({
+    customer_name: "",
+    customer_phone: "",
+    city: "Cotonou",
+    address: "",
+    product_slug: "microscope",
+    product_title: "Microscope Numérique Portable HD 1000X",
+    total_amount: 29900,
+  });
 
-  const fetchOrders = async () => {
-    setLoading(true);
+  const fetchOrders = async (silent = false) => {
+    if (!silent) setLoading(true);
     const data = await getAllOrders();
     setOrders(data);
-    setLoading(false);
+    if (!silent) setLoading(false);
   };
 
   useEffect(() => {
     fetchOrders();
+
+    // 1. Polling silencieux toutes les 8 secondes
+    const interval = setInterval(() => {
+      fetchOrders(true);
+    }, 8000);
+
+    // 2. Événement local nouvelle commande
+    const handleLocal = () => fetchOrders(true);
+    window.addEventListener("isivente_new_order", handleLocal);
+
+    // 3. BroadcastChannel cross-tab
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      bc = new BroadcastChannel("isivente_orders_channel");
+      bc.onmessage = () => fetchOrders(true);
+    }
+
+    // 4. Écoute Supabase Realtime directe
+    const channel = supabase
+      .channel("orders-page-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+        fetchOrders(true);
+      })
+      .subscribe();
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("isivente_new_order", handleLocal);
+      if (bc) bc.close();
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleStatusChange = async (id: string | undefined, newStatus: string) => {
@@ -45,6 +91,45 @@ export default function OrdersPage() {
     await updateStorageStatus(id, newStatus);
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
     setUpdatingId(null);
+  };
+
+  const handleCreateManualOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualForm.customer_name.trim() || !manualForm.customer_phone.trim()) {
+      alert("Veuillez renseigner au moins le nom et le numéro de téléphone.");
+      return;
+    }
+    setManualLoading(true);
+    try {
+      await saveNewOrder({
+        customer_name: manualForm.customer_name.trim(),
+        customer_phone: manualForm.customer_phone.trim(),
+        shipping_city: manualForm.city || "Cotonou",
+        shipping_address: manualForm.address.trim() || `${manualForm.city} - Commande WhatsApp`,
+        product_slug: manualForm.product_slug,
+        product_title: manualForm.product_title,
+        bundle_name: "Commande directe WhatsApp",
+        quantity: 1,
+        total_amount: Number(manualForm.total_amount) || 29900,
+        status: "pending",
+      });
+      alert("✅ Commande WhatsApp enregistrée avec succès !");
+      setShowManualModal(false);
+      setManualForm({
+        customer_name: "",
+        customer_phone: "",
+        city: "Cotonou",
+        address: "",
+        product_slug: "microscope",
+        product_title: "Microscope Numérique Portable HD 1000X",
+        total_amount: 29900,
+      });
+      fetchOrders();
+    } catch (err: any) {
+      alert("Erreur lors de l'enregistrement : " + err.message);
+    } finally {
+      setManualLoading(false);
+    }
   };
 
   const handleDelete = async (order: OrderItem) => {
@@ -203,7 +288,17 @@ export default function OrdersPage() {
 
           <button
             type="button"
-            onClick={fetchOrders}
+            onClick={() => setShowManualModal(true)}
+            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+            title="Ajouter manuellement une commande reçue par WhatsApp ou appel"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>+ Saisie WhatsApp</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => fetchOrders()}
             disabled={loading}
             className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
           >
@@ -480,6 +575,155 @@ export default function OrdersPage() {
           </table>
         </div>
       </div>
+
+      {/* 📝 MODAL DE SAISIE COMMANDE DIRECTE WHATSAPP */}
+      {showManualModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  <UserCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-sm text-slate-900">Ajouter une Commande WhatsApp</h3>
+                  <p className="text-[11px] text-slate-400">Pour les clients qui commandent directement en message privé</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowManualModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateManualOrder} className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Nom et Prénom du client *</label>
+                <input
+                  type="text"
+                  required
+                  value={manualForm.customer_name}
+                  onChange={(e) => setManualForm({ ...manualForm, customer_name: e.target.value })}
+                  placeholder="Ex: Salem Bosconovitch"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-900 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Numéro de téléphone / WhatsApp *</label>
+                <input
+                  type="tel"
+                  required
+                  value={manualForm.customer_phone}
+                  onChange={(e) => setManualForm({ ...manualForm, customer_phone: e.target.value })}
+                  placeholder="Ex: 0197100210"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-slate-900 font-mono font-semibold focus:outline-none focus:border-slate-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Ville *</label>
+                  <select
+                    value={manualForm.city}
+                    onChange={(e) => setManualForm({ ...manualForm, city: e.target.value })}
+                    className="w-full px-2.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-900 font-medium bg-white"
+                  >
+                    <option value="Cotonou">Cotonou</option>
+                    <option value="Abomey-Calavi">Abomey-Calavi</option>
+                    <option value="Porto-Novo">Porto-Novo</option>
+                    <option value="Parakou">Parakou</option>
+                    <option value="Ouidah">Ouidah</option>
+                    <option value="Bohicon">Bohicon</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Quartier / Repère</label>
+                  <input
+                    type="text"
+                    value={manualForm.address}
+                    onChange={(e) => setManualForm({ ...manualForm, address: e.target.value })}
+                    placeholder="Ex: Akpakpa"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-900 font-medium"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Produit commandé *</label>
+                <select
+                  value={manualForm.product_slug}
+                  onChange={(e) => {
+                    const slug = e.target.value;
+                    const map: Record<string, { title: string; price: number }> = {
+                      microscope: { title: "Microscope Numérique Portable HD 1000X", price: 29900 },
+                      trozk: { title: "Système Électrique Modulaire 3-en-1 Trozk T3™ (15 000 mAh)", price: 29900 },
+                      eraclean: { title: "Purificateur d'Air & Anti-Odeurs EraClean™", price: 19900 },
+                      turbofan: { title: "Ventilateur Ceinture TurboFan™ Max", price: 16900 },
+                      peeler: { title: "Éplucheur Automatique ChefPeel™ Pro", price: 14900 },
+                      stabilisateur: { title: "Stabilisateur Trépied Z3 Zoom™", price: 49900 },
+                      veilleuse: { title: "Veilleuse Projecteur LED 3D FRIOSZ", price: 14900 },
+                      camera: { title: "Mini Caméra Espionne HD A9 Pro™", price: 16900 },
+                      umei: { title: "Brosse Démêlante Vapeur Uméi 3-en-1", price: 14900 },
+                    };
+                    const sel = map[slug] || { title: "Produit Isivente", price: 29900 };
+                    setManualForm({
+                      ...manualForm,
+                      product_slug: slug,
+                      product_title: sel.title,
+                      total_amount: sel.price,
+                    });
+                  }}
+                  className="w-full px-2.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-900 font-medium bg-white"
+                >
+                  <option value="microscope">Microscope Numérique HD 1000X (29 900 F)</option>
+                  <option value="trozk">Batterie Modulaire Trozk T3™ (29 900 F)</option>
+                  <option value="eraclean">Purificateur d&apos;Air EraClean™ (19 900 F)</option>
+                  <option value="turbofan">Ventilateur Ceinture TurboFan™ (16 900 F)</option>
+                  <option value="peeler">Éplucheur ChefPeel™ Pro (14 900 F)</option>
+                  <option value="stabilisateur">Stabilisateur Trépied Z3 (49 900 F)</option>
+                  <option value="veilleuse">Veilleuse Projecteur 3D (14 900 F)</option>
+                  <option value="camera">Mini Caméra Espionne HD A9 (16 900 F)</option>
+                  <option value="umei">Brosse Démêlante Uméi (14 900 F)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Montant à encaisser (FCFA) *</label>
+                <input
+                  type="number"
+                  required
+                  value={manualForm.total_amount}
+                  onChange={(e) => setManualForm({ ...manualForm, total_amount: Number(e.target.value) || 0 })}
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-slate-900"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowManualModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={manualLoading}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  {manualLoading && <RefreshCw className="w-3 h-3 animate-spin" />}
+                  <span>Enregistrer la commande</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
