@@ -15,7 +15,9 @@ export interface OrderItem {
   shipping_city?: string;
   address?: string;
   shipping_address?: string;
-  status?: "pending" | "shipped" | "delivered" | "cancelled" | string;
+  status?: "pending" | "confirmed" | "reserved" | "postponed" | "shipped" | "delivered" | "cancelled" | string;
+  reservation_date?: string;
+  notes?: string;
   created_at?: string;
 }
 
@@ -70,6 +72,8 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
     total_amount: totalAmount,
     quantity: quantity,
     status: status,
+    reservation_date: orderData.reservation_date || "",
+    notes: orderData.notes || "",
     created_at: createdAt,
   };
 
@@ -157,6 +161,8 @@ function normalizeOrder(o: any): OrderItem {
     product_title: o.product_title || "Brosse Démêlante Vapeur Uméi 3-en-1",
     quantity: Number(o.quantity || 1),
     status: o.status || "pending",
+    reservation_date: o.reservation_date || "",
+    notes: o.notes || "",
     created_at: o.created_at || new Date().toISOString()
   };
 }
@@ -235,15 +241,50 @@ export async function getAllOrders(): Promise<OrderItem[]> {
   });
 }
 
-/** Met à jour le statut d'une commande dans Supabase */
-export async function updateOrderStatus(orderId: string, newStatus: string): Promise<void> {
+/** Met à jour le statut d'une commande dans Supabase et dans le cache local */
+export async function updateOrderStatus(
+  orderId: string, 
+  newStatus: string, 
+  extraData?: { notes?: string; reservation_date?: string }
+): Promise<void> {
   try {
+    const updatePayload: Record<string, any> = { status: newStatus };
+    if (extraData?.notes !== undefined) updatePayload.notes = extraData.notes;
+    if (extraData?.reservation_date !== undefined) updatePayload.reservation_date = extraData.reservation_date;
+
     await supabase
       .from("orders")
-      .update({ status: newStatus })
+      .update(updatePayload)
       .eq("id", orderId);
   } catch (error) {
     console.error("Supabase update error:", error);
+  }
+
+  // Mettre à jour aussi le LocalStorage
+  if (typeof window !== "undefined") {
+    try {
+      const keys = [LOCAL_STORAGE_KEY, "orders", "isivente_orders"];
+      for (const k of keys) {
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            const updated = list.map((o: any) => {
+              if (String(o.id) === String(orderId) || String(o.order_number) === String(orderId)) {
+                return {
+                  ...o,
+                  status: newStatus,
+                  ...(extraData?.notes !== undefined ? { notes: extraData.notes } : {}),
+                  ...(extraData?.reservation_date !== undefined ? { reservation_date: extraData.reservation_date } : {}),
+                };
+              }
+              return o;
+            });
+            localStorage.setItem(k, JSON.stringify(updated));
+          }
+        }
+      }
+    } catch {}
   }
 }
 

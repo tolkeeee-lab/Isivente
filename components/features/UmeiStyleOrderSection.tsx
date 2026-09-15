@@ -13,6 +13,7 @@ import {
   MapPin,
   Clock,
   ArrowRight,
+  Bookmark,
 } from "lucide-react";
 import { playOrderSound } from "@/lib/soundEffects";
 import { trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
@@ -49,6 +50,8 @@ interface UmeiStyleOrderSectionProps {
   setCity: (val: string) => void;
   address: string;
   setAddress: (val: string) => void;
+  reservationDate?: string;
+  setReservationDate?: (val: string) => void;
   includeBump?: boolean;
   setIncludeBump?: (val: boolean) => void;
   bumpOffer?: any;
@@ -198,6 +201,8 @@ export default function UmeiStyleOrderSection({
   setCity,
   address,
   setAddress,
+  reservationDate,
+  setReservationDate,
   isSubmitting,
   onSubmit,
   accentColor,
@@ -206,6 +211,14 @@ export default function UmeiStyleOrderSection({
   orderNumber,
   onResetOrder,
 }: UmeiStyleOrderSectionProps) {
+  const [orderType, setOrderType] = useState<"immediate" | "reservation">("immediate");
+  const [internalReservationDate, setInternalReservationDate] = useState("");
+  const currentReservationDate = reservationDate !== undefined ? reservationDate : internalReservationDate;
+  const handleReservationChange = (val: string) => {
+    setInternalReservationDate(val);
+    if (setReservationDate) setReservationDate(val);
+  };
+
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   const normalizedSlug = (productSlug || "").toLowerCase();
 
@@ -681,6 +694,56 @@ export default function UmeiStyleOrderSection({
                 />
               </div>
             )}
+
+            {/* OPTION DE LIVRAISON OU RÉSERVATION */}
+            <div className="pt-2 border-t border-slate-100">
+              <label className="text-xs font-bold text-slate-700 block mb-2">
+                Délai de livraison souhaité :
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOrderType("immediate")}
+                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    orderType === "immediate"
+                      ? "border-emerald-500 bg-emerald-50/70 text-emerald-950 shadow-xs"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <span>⚡ Dès que possible</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOrderType("reservation")}
+                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    orderType === "reservation"
+                      ? "border-amber-500 bg-amber-50/70 text-amber-950 shadow-xs"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <Bookmark className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Réserver pour plus tard</span>
+                </button>
+              </div>
+
+              {orderType === "reservation" && (
+                <div className="mt-2.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                  <label className="text-[11px] font-bold text-amber-800 block mb-1">
+                    À quelle date ou période souhaitez-vous recevoir votre colis ?
+                  </label>
+                  <input
+                    type="text"
+                    value={currentReservationDate}
+                    onChange={(e) => handleReservationChange(e.target.value)}
+                    placeholder="Ex: Samedi prochain, Fin du mois (28), le 5 octobre..."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 text-xs bg-amber-50/40 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 font-medium"
+                  />
+                  <p className="text-[10.5px] text-slate-400 mt-1">
+                    💡 Votre colis est mis de côté gratuitement. Notre équipe vous contactera la veille pour confirmer.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* 3. RÉCAPITULATIF DU TOTAL & BOUTON COMMANDE */}
@@ -711,7 +774,11 @@ export default function UmeiStyleOrderSection({
                 </span>
               ) : (
                 <>
-                  <span>Confirmer ma commande ({fmt(totalPrice)} F)</span>
+                  <span>
+                    {orderType === "reservation"
+                      ? `Confirmer ma réservation (${fmt(totalPrice)} F)`
+                      : `Confirmer ma commande (${fmt(totalPrice)} F)`}
+                  </span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
