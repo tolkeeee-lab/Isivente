@@ -7,24 +7,27 @@ import {
   Truck, 
   Star, 
   ChevronDown, 
-  ChevronLeft,
-  ChevronRight,
+  ChevronLeft, 
+  ChevronRight, 
   Eye, 
   BatteryCharging, 
   CheckCircle2, 
   XCircle, 
-  Sparkles,
-  Flame,
-  Volume2,
-  VolumeX,
-  Moon,
-  Sun,
-  Activity,
-  Headphones,
-  Laptop,
-  HeartPulse,
-  Clock,
-  Feather
+  Sparkles, 
+  Flame, 
+  Volume2, 
+  VolumeX, 
+  Moon, 
+  Sun, 
+  Activity, 
+  Headphones, 
+  Laptop, 
+  HeartPulse, 
+  Clock, 
+  Feather,
+  Waves,
+  Play,
+  RotateCcw
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
@@ -47,7 +50,7 @@ const BUNDLES: BundleOption[] = [
   },
 ];
 
-/* ─── PHOTOS CARROUSEL HERO PRINCIPAL ─── */
+/* ─── PHOTOS DU CARROUSEL HERO GLISSANT ─── */
 const CAROUSEL_IMAGES = [
   { 
     src: "/images/masseur-oculaire-hero.jpg", 
@@ -72,7 +75,7 @@ const CAROUSEL_IMAGES = [
   { 
     src: "/images/masseur-oculaire-box.jpg", 
     alt: "Coffret complet unboxing avec masque, pochette, câble et notice",
-    caption: "Coffret officiel prêt à offrir : masque pliable, câble USB-C renforcé, pochette velours et manuel"
+    caption: "Coffret officiel complet prêt à offrir : masque pliable, câble USB-C renforcé, pochette velours et manuel"
   },
 ];
 
@@ -93,13 +96,13 @@ const EXPLORATION_SLIDES = [
   {
     src: "/images/masseur-oculaire-sleep.jpg",
     title: "Rituel de Nuit & Sommeil",
-    subtitle: "Chaleur douce 42°C pour s'endormir sans médicaments",
+    subtitle: "Chaleur douce 42°C pour s'endormir sans somnifère",
     badge: "SOMMEIL PROFOND"
   },
   {
     src: "/images/masseur-review-femme.jpg",
     title: "Soin Beauté & Anti-Cernes",
-    subtitle: "Drainage lymphatique pour dégonfler les yeux au réveil",
+    subtitle: "Drainage lymphatique pour décongestionner les yeux au réveil",
     badge: "SPA À DOMICILE"
   },
   {
@@ -110,7 +113,7 @@ const EXPLORATION_SLIDES = [
   },
 ];
 
-/* ─── AVIS CLIENTS VÉRIFIÉS ─── */
+/* ─── AVIS CLIENTS VÉRIFIÉS AU BÉNIN ─── */
 interface CustomerReview {
   name: string;
   location: string;
@@ -198,41 +201,70 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
   const orderSectionRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const explorationScrollRef = useRef<HTMLDivElement>(null);
   const [isExplorationHovered, setIsExplorationHovered] = useState(false);
 
-  // Auto-play vidéo en boucle sans blocage
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
-  }, []);
+  // État interactif pour le banc de démonstration technologique 4D
+  const [activeDemoMode, setActiveDemoMode] = useState<"vitalite" | "detente" | "sommeil" | "silence">("vitalite");
+  const [isDemoHeatOn, setIsDemoHeatOn] = useState(true);
 
-  // Défilement automatique du carrousel Hero (3.8s)
+  // Swipe tactile pour le carrousel Hero sur mobile
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 40) {
+      // Glissement vers la gauche -> image suivante
+      nextSlide();
+    } else if (diff < -40) {
+      // Glissement vers la droite -> image précédente
+      prevSlide();
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
+  const nextSlide = () => {
+    setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
+  };
+
+  const prevSlide = () => {
+    setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length);
+  };
+
+  // Défilement automatique fluide du carrousel Hero (3.5 secondes)
   useEffect(() => {
     if (isHeroHovered) return;
     const timer = setInterval(() => {
       setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
-    }, 3800);
+    }, 3500);
     return () => clearInterval(timer);
-  }, [isHeroHovered]);
+  }, [isHeroHovered, activeImgIndex]);
 
-  // Défilement automatique de la galerie d'exploration (2.8s)
+  // Défilement automatique fluide de la galerie d'exploration
   useEffect(() => {
     if (isExplorationHovered) return;
     const interval = setInterval(() => {
       if (explorationScrollRef.current) {
         const el = explorationScrollRef.current;
         const maxScroll = el.scrollWidth - el.clientWidth;
-        if (el.scrollLeft >= maxScroll - 15) {
+        if (el.scrollLeft >= maxScroll - 20) {
           el.scrollTo({ left: 0, behavior: "smooth" });
         } else {
           el.scrollBy({ left: 240, behavior: "smooth" });
         }
       }
-    }, 2800);
+    }, 3000);
     return () => clearInterval(interval);
   }, [isExplorationHovered]);
 
@@ -372,37 +404,65 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
           </p>
         </div>
 
-        {/* ── GALERIE PHOTOS HERO AVEC DÉFILEMENT AUTO 3.8s ── */}
+        {/* ── GALERIE PHOTOS HERO GLISSANTE AVEC VRAI DÉFILEMENT HORIZONTAL (PILIER 3) ── */}
         <div 
           onMouseEnter={() => setIsHeroHovered(true)}
           onMouseLeave={() => setIsHeroHovered(false)}
-          className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-5 space-y-3"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-5 space-y-3 select-none"
         >
+          {/* Fenêtre de vue du slider avec rail coulissant (vrai glissement fluide) */}
           <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60">
-            <img 
-              src={CAROUSEL_IMAGES[activeImgIndex].src} 
-              alt={CAROUSEL_IMAGES[activeImgIndex].alt}
-              className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
-            />
+            <div 
+              className="flex w-full h-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
+              style={{ transform: `translateX(-${activeImgIndex * 100}%)` }}
+            >
+              {CAROUSEL_IMAGES.map((img, idx) => (
+                <div key={idx} className="relative w-full h-full shrink-0">
+                  <img 
+                    src={img.src} 
+                    alt={img.alt}
+                    draggable={false}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
             
             {/* Boutons de navigation manuelle fléchés */}
             <button
-              onClick={() => setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer"
+              onClick={prevSlide}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
               aria-label="Image précédente"
             >
               <ChevronLeft className="w-4 h-4 stroke-[2]" />
             </button>
             <button
-              onClick={() => setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer"
+              onClick={nextSlide}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
               aria-label="Image suivante"
             >
               <ChevronRight className="w-4 h-4 stroke-[2]" />
             </button>
 
-            {/* Légende sous l'image */}
-            <div className="absolute bottom-3 inset-x-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700 text-center font-medium shadow-md">
+            {/* Indicateurs de points / barres de progression animés */}
+            <div className="absolute top-3 inset-x-0 flex justify-center gap-1.5 z-10">
+              {CAROUSEL_IMAGES.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImgIndex(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    activeImgIndex === idx ? "w-7 bg-indigo-600 shadow-sm" : "w-2 bg-white/80 backdrop-blur-xs"
+                  }`}
+                  aria-label={`Slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Légende sous l'image active */}
+            <div className="absolute bottom-3 inset-x-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700 text-center font-medium shadow-md z-10">
               {CAROUSEL_IMAGES[activeImgIndex].caption}
             </div>
           </div>
@@ -485,42 +545,109 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
           />
         </div>
 
-        {/* ── SECTION VIDÉO DÉMONSTRATION AUTOPLAY (PILIER 4) ── */}
+        {/* ── DÉMONSTRATION TECHNOLOGIQUE 4D & THERMOTHÉRAPIE (100% PRODUIT MASQUE, ZERO VIDEO EXTERNE) ── */}
         <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-6">
           <div className="text-center space-y-2 max-w-xl mx-auto">
             <div className="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
               <Sparkles className="w-3.5 h-3.5 text-indigo-600 stroke-[1.75]" />
-              <span>Démonstration en Vidéo</span>
+              <span>Démonstration Interactive 4D</span>
             </div>
             <h2 className="text-xl sm:text-3xl font-bold tracking-[-0.02em] text-slate-900 leading-tight">
-              Voyez comment la pression pneumatique et la chaleur agissent
+              Comment la pression pneumatique et la chaleur agissent en direct
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              La vidéo se lance automatiquement en boucle. Vous pouvez activer le son ou faire pause à tout moment.
+              Sélectionnez un mode thérapeutique pour visualiser l'action synchronisée des coussins d'air et du thermostat 42°C.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            {/* Lecteur Vidéo Vertical */}
-            <div className="md:col-span-6 lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-[290px] aspect-[9/16] rounded-3xl overflow-hidden bg-slate-950 border-4 border-slate-900 shadow-2xl">
-                <video
-                  ref={videoRef}
-                  src="/videos/masseur-oculaire-demo.mp4"
-                  poster="/images/masseur-oculaire-temple.jpg"
-                  autoPlay
-                  muted
-                  playsInline
-                  loop
-                  controls
-                  preload="auto"
-                  className="w-full h-full object-cover"
+            {/* Visualisation interactive du masque oculaire */}
+            <div className="md:col-span-6 lg:col-span-6 flex justify-center">
+              <div className="relative w-full max-w-[380px] rounded-3xl overflow-hidden bg-slate-900 border border-slate-200/80 shadow-xl group">
+                <img 
+                  src="/images/masseur-oculaire-temple.jpg" 
+                  alt="Démonstration du masque oculaire thérapeutique"
+                  className="w-full h-[360px] sm:h-[400px] object-cover"
                 />
+
+                {/* Badge température thermique animé */}
+                <div className="absolute top-4 left-4 bg-slate-950/85 backdrop-blur-md border border-white/10 rounded-2xl px-3 py-2 text-white flex items-center gap-2.5 shadow-lg">
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+                  <div>
+                    <div className="text-[10px] text-slate-400 font-medium">Chaleur continue</div>
+                    <div className="text-xs font-mono font-bold text-amber-300">42°C Régulée</div>
+                  </div>
+                </div>
+
+                {/* Badge Point d'acupression Taiyang */}
+                <div className="absolute top-4 right-4 bg-slate-950/85 backdrop-blur-md border border-white/10 rounded-2xl px-3 py-2 text-white flex items-center gap-2 shadow-lg">
+                  <Activity className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                  <div className="text-right">
+                    <div className="text-[10px] text-slate-400 font-medium">Point Taiyang</div>
+                    <div className="text-xs font-bold text-indigo-200">Tempes détendues</div>
+                  </div>
+                </div>
+
+                {/* Panneau de contrôle interactif des 4 modes */}
+                <div className="absolute bottom-3 inset-x-3 bg-slate-950/90 backdrop-blur-md border border-white/10 rounded-2xl p-3 space-y-2 text-white shadow-2xl">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-200">Mode actif :</span>
+                    <span className="font-bold text-indigo-300 uppercase tracking-wide text-[11px]">
+                      {activeDemoMode === "vitalite" && "Vitalité 4D (Complet)"}
+                      {activeDemoMode === "detente" && "Détente Thermique (42°C)"}
+                      {activeDemoMode === "sommeil" && "Sommeil & Mélatonine"}
+                      {activeDemoMode === "silence" && "Silence Total (Bureau)"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-1.5 pt-1">
+                    <button
+                      onClick={() => setActiveDemoMode("vitalite")}
+                      className={`py-1.5 px-2 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                        activeDemoMode === "vitalite" 
+                          ? "bg-indigo-600 text-white shadow-sm" 
+                          : "bg-white/10 text-slate-300 hover:bg-white/20"
+                      }`}
+                    >
+                      Vitalité
+                    </button>
+                    <button
+                      onClick={() => setActiveDemoMode("detente")}
+                      className={`py-1.5 px-2 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                        activeDemoMode === "detente" 
+                          ? "bg-amber-600 text-white shadow-sm" 
+                          : "bg-white/10 text-slate-300 hover:bg-white/20"
+                      }`}
+                    >
+                      Détente
+                    </button>
+                    <button
+                      onClick={() => setActiveDemoMode("sommeil")}
+                      className={`py-1.5 px-2 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                        activeDemoMode === "sommeil" 
+                          ? "bg-emerald-600 text-white shadow-sm" 
+                          : "bg-white/10 text-slate-300 hover:bg-white/20"
+                      }`}
+                    >
+                      Sommeil
+                    </button>
+                    <button
+                      onClick={() => setActiveDemoMode("silence")}
+                      className={`py-1.5 px-2 rounded-xl text-[10px] font-semibold transition-all cursor-pointer text-center ${
+                        activeDemoMode === "silence" 
+                          ? "bg-slate-700 text-white shadow-sm" 
+                          : "bg-white/10 text-slate-300 hover:bg-white/20"
+                      }`}
+                    >
+                      Silence
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Points Forts & Témoignage */}
-            <div className="md:col-span-6 lg:col-span-7 space-y-4">
+            <div className="md:col-span-6 lg:col-span-6 space-y-4">
               <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 space-y-2">
                 <div className="flex text-amber-400 text-xs tracking-tight">★★★★★</div>
                 <p className="text-xs sm:text-sm font-semibold text-indigo-950 italic leading-relaxed">
@@ -747,7 +874,7 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
           </div>
         </section>
 
-        {/* ── GALERIE D'EXPLORATION DU QUOTIDIEN (AUTO-DÉFILANT 2.8s) ── */}
+        {/* ── GALERIE D'EXPLORATION DU QUOTIDIEN (AUTO-DÉFILANT FLUIDE) ── */}
         <section 
           onMouseEnter={() => setIsExplorationHovered(true)}
           onMouseLeave={() => setIsExplorationHovered(false)}
@@ -838,7 +965,7 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
           </div>
         </section>
 
-        {/* ── AVIS CLIENTS & PHOTOS RÉELLES ── */}
+        {/* ── AVIS CLIENTS & PHOTOS RÉELLES AU BÉNIN ── */}
         <section className="space-y-5">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600">
