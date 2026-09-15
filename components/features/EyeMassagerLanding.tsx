@@ -34,6 +34,7 @@ import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
+import ExitIntentModal from "@/components/features/ExitIntentModal";
 import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 
 /* ─── PILIER 1 : OFFRE UNIQUE (24 900 FCFA) SANS MULTI-PACKS ─── */
@@ -45,6 +46,20 @@ const BUNDLES: BundleOption[] = [
     price: 24900,
     originalPrice: 45000,
     savings: 20100,
+    quantity: 1,
+    popular: true,
+  },
+];
+
+/* ─── OFFRE SPÉCIALE SORTIE (EXIT-INTENT : -3 000 FCFA) ─── */
+const DISCOUNTED_BUNDLES: BundleOption[] = [
+  {
+    id: "solo-sortie",
+    name: "Masque de Massage Oculaire Thérapeutique 4D (Remise Spéciale -3 000 F)",
+    subtitle: "Remise spéciale de sortie appliquée • Coffret complet avec pochette, câble USB-C et garantie 1 an",
+    price: 21900,
+    originalPrice: 24900,
+    savings: 3000,
     quantity: 1,
     popular: true,
   },
@@ -203,10 +218,27 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
   const orderSectionRef = useRef<HTMLDivElement>(null);
   const explorationScrollRef = useRef<HTMLDivElement>(null);
   const [isExplorationHovered, setIsExplorationHovered] = useState(false);
+  const [hasClaimedExitDiscount, setHasClaimedExitDiscount] = useState(false);
 
   // État interactif pour le banc de démonstration technologique 4D
   const [activeDemoMode, setActiveDemoMode] = useState<"vitalite" | "detente" | "sommeil" | "silence">("vitalite");
   const [isDemoHeatOn, setIsDemoHeatOn] = useState(true);
+
+  // Réclamation du bon de réduction spécial de sortie (-3 000 FCFA)
+  const handleClaimExitDiscount = () => {
+    setHasClaimedExitDiscount(true);
+    setSelectedBundle(DISCOUNTED_BUNDLES[0]);
+    setTimeout(() => {
+      orderSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+    trackAddToCart({
+      content_name: "Masque Oculaire (Remise Spéciale Sortie)",
+      content_ids: ["masseur-oculaire", "solo-sortie"],
+      value: 21900,
+      currency: "XOF",
+      num_items: 1,
+    });
+  };
 
   // Swipe tactile pour le carrousel Hero sur mobile
   const touchStartX = useRef<number | null>(null);
@@ -506,6 +538,20 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
 
         {/* ── PILIER 2 : FORMULAIRE DE COMMANDE DIRECTEMENT SOUS LE HERO & BADGES ── */}
         <div ref={orderSectionRef} id="commander">
+          {/* Bandeau confirmation de la remise spéciale de sortie */}
+          {hasClaimedExitDiscount && (
+            <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-xs font-semibold flex items-center justify-between gap-3 shadow-xs animate-in zoom-in-95 duration-150">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div>
+                  <div className="font-bold text-slate-900">Remise spéciale de 3 000 FCFA déduite avec succès !</div>
+                  <div className="text-[11px] text-emerald-700 font-normal">Votre Masque Oculaire passe à 21 900 FCFA avec livraison 24h et test à réception.</div>
+                </div>
+              </div>
+              <span className="font-mono font-bold text-sm text-emerald-700 tabular-nums shrink-0">21 900 F</span>
+            </div>
+          )}
+
           {orderError && (
             <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
               <XCircle className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
@@ -517,7 +563,7 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
             productSlug="masseur-oculaire"
             productTitle="Masque de Massage Oculaire Thérapeutique 4D Chauffant & Bluetooth"
             productImage="/images/masseur-oculaire-hero.jpg"
-            bundles={BUNDLES}
+            bundles={hasClaimedExitDiscount ? DISCOUNTED_BUNDLES : BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => {
               setSelectedBundle(b);
@@ -1056,14 +1102,31 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
 
       </main>
 
-      {/* ── BARRE MOBILE FLOTTANTE POUR COMMANDER (PRIX UNIFORME 24 900 FCFA) ── */}
+      {/* ── BARRE MOBILE FLOTTANTE POUR COMMANDER ── */}
       <StickyMobileCtaBar
-        price={24900}
+        price={hasClaimedExitDiscount ? 21900 : 24900}
         accentColor="#4f46e5"
         buttonText="Commander"
         targetSectionId="commander"
         whatsappNumber="2290192901817"
-        whatsappMessage="Bonjour Isivente, je souhaite commander le Masque de Massage Oculaire Thérapeutique 4D à 24 900 FCFA avec livraison à domicile."
+        whatsappMessage={
+          hasClaimedExitDiscount
+            ? "Bonjour Isivente, je souhaite commander le Masque Oculaire avec la remise spéciale à 21 900 FCFA avec livraison à domicile."
+            : "Bonjour Isivente, je souhaite commander le Masque de Massage Oculaire Thérapeutique 4D à 24 900 FCFA avec livraison à domicile."
+        }
+      />
+
+      {/* ── MODALE D'EXIT-INTENT HAUTE CONVERSION (-3 000 FCFA & WHATSAPP) ── */}
+      <ExitIntentModal
+        productTitle="Masque de Massage Oculaire Thérapeutique 4D"
+        productImage="/images/masseur-oculaire-hero.jpg"
+        originalPrice={24900}
+        discountPrice={21900}
+        discountAmount={3000}
+        whatsappNumber="2290192901817"
+        whatsappPrefill="Bonjour Isivente, je souhaite réserver le Masque Oculaire avec la remise à 21 900 FCFA pour une livraison la semaine prochaine."
+        onClaimDiscount={handleClaimExitDiscount}
+        storageKey="isivente_exit_masseur_oculaire"
       />
 
     </div>
