@@ -45,6 +45,7 @@ export default function AdminClicksPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const defaultProducts = [
+    { title: "Masque de Massage Oculaire Thérapeutique 4D Chauffant", slug: "masseur-oculaire", price: 24900, image: "/images/masseur-oculaire-hero.jpg" },
     { title: "Microscope Numérique Portable HD 1000X", slug: "microscope", price: 29900, image: "/images/microscope-monde-decouverte.jpg" },
     { title: "Brosse Démêlante Vapeur Uméi 3-en-1", slug: "umei", price: 14900, image: "/images/umei-hero-real.jpg" },
     { title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™", slug: "trozk", price: 29900, image: "/images/trozk-hero.jpg" },

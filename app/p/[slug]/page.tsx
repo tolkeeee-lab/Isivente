@@ -10,9 +10,16 @@ import UmeiLanding from "@/components/features/UmeiLanding";
 import CameraLanding from "@/components/features/CameraLanding";
 import TrozkLanding from "@/components/features/TrozkLanding";
 import MicroscopeLanding from "@/components/features/MicroscopeLanding";
+import EyeMassagerLanding from "@/components/features/EyeMassagerLanding";
 
 /* ─── Données OG statiques pour les pages custom ─── */
 const CUSTOM_META: Record<string, { title: string; description: string; image: string; price: number }> = {
+  "masseur-oculaire": {
+    title: "Masque de Massage Oculaire Thérapeutique 4D Chauffant & Bluetooth",
+    description: "Acupression sur les tempes, thermothérapie 42°C et audio Bluetooth. Élimine fatigue des écrans, migraines et insomnies. Livraison 24h au Bénin.",
+    image: "/images/masseur-oculaire-hero.jpg",
+    price: 24900,
+  },
   microscope: {
     title: "Microscope Numérique Portable HD 1000X",
     description: "Écran couleur 2.0\", 8 LEDs ultra-lumineuses, zoom 1000X pour observer peau, billets de banque, électronique et nature. Livraison 24h au Bénin.",
@@ -71,6 +78,16 @@ const CUSTOM_META: Record<string, { title: string; description: string; image: s
 
 /* Slug aliases → canonical slug */
 const SLUG_ALIASES: Record<string, string> = {
+  "masseur-oculaire": "masseur-oculaire",
+  masseur: "masseur-oculaire",
+  yeux: "masseur-oculaire",
+  "massage-oculaire": "masseur-oculaire",
+  "masseur-yeux": "masseur-oculaire",
+  "eye-massager": "masseur-oculaire",
+  optirelax: "masseur-oculaire",
+  "masque-yeux": "masseur-oculaire",
+  "masque-oculaire": "masseur-oculaire",
+  "masque-massage": "masseur-oculaire",
   microscope: "microscope",
   "microscope-enfant-optiview": "microscope",
   "microscope-enfant": "microscope",
@@ -135,6 +152,7 @@ function cleanSlug(raw: string): string {
     if (SLUG_ALIASES[decoded]) return SLUG_ALIASES[decoded];
 
     // Détection universelle par mot-clé pour que TOUS les liens publicitaires fonctionnent toujours
+    if (decoded.includes("masseur") || decoded.includes("oculaire") || decoded.includes("yeux") || decoded.includes("eye") || decoded.includes("optirelax")) return "masseur-oculaire";
     if (decoded.includes("microscope") || decoded.includes("optiview") || decoded.includes("enfant") || decoded.includes("loupe")) return "microscope";
     if (decoded.includes("umei") || decoded.includes("brosse") || decoded.includes("demelante") || decoded.includes("démêlante")) return "umei";
     if (decoded.includes("eraclean") || decoded.includes("frigo") || decoded.includes("purificateur") || decoded.includes("odeur")) return "eraclean";
@@ -229,6 +247,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const canonical = cleanSlug(slug);
 
   // ── Pages custom existantes ──
+  if (canonical === "masseur-oculaire") {
+    return <EyeMassagerLanding slug="masseur-oculaire" />;
+  }
+
   if (canonical === "microscope") {
     return <MicroscopeLanding slug="microscope" />;
   }

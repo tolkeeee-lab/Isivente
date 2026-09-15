@@ -350,6 +350,41 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       ],
     },
   },
+
+  "masseur-oculaire": {
+    secondUnit: {
+      id: "masseur-oculaire-second-unit",
+      title: "Offrez un 2ème Masque Oculaire 4D à votre conjoint(e) ou parent",
+      subtitle: "Faites profiter un proche de la détente absolue et du sommeil réparateur avec 8 000 FCFA de réduction",
+      description: "Recevez un 2ème exemplaire neuf sous scellé dans son coffret complet pour seulement 16 900 FCFA au lieu de 24 900 FCFA.",
+      price: 16900,
+      originalPrice: 24900,
+      savings: 8000,
+      image: "/images/masseur-oculaire-hero.jpg",
+      badge: "🎁 OFFRE 2ÈME PIÈCE (-32%)",
+      benefits: [
+        "Coffret complet neuf avec câble et pochette",
+        "Livré ensemble dans le même colis sans frais en plus",
+        "Paiement groupé au livreur après vérification",
+      ],
+    },
+    upsell: {
+      id: "masseur-oculaire-duo-gift",
+      title: "Ajoutez un 2ème Masque Oculaire Thérapeutique à prix cassé",
+      subtitle: "Offrez le secret d'un regard reposé et d'un sommeil sans migraine",
+      description: "Profitez de cette opportunité unique pour obtenir un 2ème exemplaire complet dans son coffret officiel pour seulement 16 900 FCFA au lieu de 24 900 FCFA.",
+      price: 16900,
+      originalPrice: 24900,
+      savings: 8000,
+      image: "/images/masseur-oculaire-hero.jpg",
+      badge: "ÉCONOMISEZ 8 000 FCFA",
+      benefits: [
+        "Coffret complet prêt à offrir",
+        "Idéal pour conjoint(e), parent ou collègue",
+        "Paiement après vérification au livreur",
+      ],
+    },
+  },
 };
 
 /**
