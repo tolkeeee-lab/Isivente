@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
 import { 
   Plus, 
   Edit2, 
@@ -46,98 +47,7 @@ export default function ProductsPage() {
   const [formImage, setFormImage] = useState("");
   const [formBundles, setFormBundles] = useState<ProductBundle[]>([]);
 
-  const defaultProducts: ProductItem[] = [
-    {
-      id: "microscope-default",
-      title: "Microscope Numérique Portable HD 1000X",
-      slug: "microscope",
-      price: 29900,
-      image_url: "/images/microscope-monde-decouverte.jpg",
-      bundles: [
-        { name: "Microscope Numérique Portable HD 1000X", price: 29900 }
-      ]
-    },
-    {
-      id: "umei-default",
-      title: "Brosse Démêlante Vapeur Uméi 3-en-1",
-      slug: "umei",
-      price: 14900,
-      image_url: "/images/umei-hero-real.jpg",
-      bundles: [
-        { name: "Brosse Démêlante Vapeur Uméi 3-en-1", price: 14900 }
-      ]
-    },
-    {
-      id: "eraclean-default",
-      title: "Purificateur d'Air & Anti-Odeurs EraClean™",
-      slug: "eraclean",
-      price: 19900,
-      image_url: "/images/eraclean-studio.jpg",
-      bundles: [
-        { name: "Purificateur d'Air & Anti-Odeurs EraClean™", price: 19900 }
-      ]
-    },
-    {
-      id: "turbofan-default",
-      title: "Ventilateur Ceinture & Powerbank TurboFan™ Max",
-      slug: "turbofan",
-      price: 16900,
-      image_url: "/images/turbofan-studio.jpg",
-      bundles: [
-        { name: "Ventilateur TurboFan™ Max 8000mAh", price: 16900 }
-      ]
-    },
-    {
-      id: "peeler-default",
-      title: "Éplucheur Automatique ChefPeel™ Pro",
-      slug: "peeler",
-      price: 14900,
-      image_url: "/images/peeler-hero.jpg",
-      bundles: [
-        { name: "Éplucheur Automatique ChefPeel™ Pro", price: 14900 }
-      ]
-    },
-    {
-      id: "stabilisateur-default",
-      title: "Stabilisateur Pro-Mobile Z3 Zoom™",
-      slug: "stabilisateur",
-      price: 49900,
-      image_url: "/images/stabilisateur-hero.jpg",
-      bundles: [
-        { name: "Stabilisateur Pro-Mobile Z3 Zoom™", price: 49900 }
-      ]
-    },
-    {
-      id: "veilleuse-default",
-      title: "Veilleuse Projecteur LED 3D Tactile FRIOSZ FP-032",
-      slug: "veilleuse",
-      price: 14900,
-      image_url: "/images/projecteur-hero.jpg",
-      bundles: [
-        { name: "Veilleuse Projecteur LED 3D Tactile FRIOSZ", price: 14900 }
-      ]
-    },
-    {
-      id: "camera-default",
-      title: "Mini Caméra Espionne & Surveillance Magnétique HD A9 Pro™",
-      slug: "camera",
-      price: 16900,
-      image_url: "/images/camera-hero.jpg",
-      bundles: [
-        { name: "Mini Caméra Espionne & Surveillance HD A9 Pro", price: 16900 }
-      ]
-    },
-    {
-      id: "trozk-default",
-      title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™ (15 000 mAh)",
-      slug: "trozk",
-      price: 29900,
-      image_url: "/images/trozk-hero.jpg",
-      bundles: [
-        { name: "Batterie Modulaire 3-en-1 Trozk T3 (15 000 mAh)", price: 29900 }
-      ]
-    }
-  ];
+  const defaultProducts: ProductItem[] = DEFAULT_CATALOG;
 
   const fetchProducts = async () => {
     setLoading(true);

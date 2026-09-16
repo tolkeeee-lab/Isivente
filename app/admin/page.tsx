@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllOrders, deleteOrder, OrderItem } from "@/lib/ordersStorage";
 import { supabase } from "@/lib/supabase";
+import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
 import { getAnalyticsStats, getAllProductsAnalytics, resetAnalyticsStats, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
   TrendingUp, 
@@ -61,17 +62,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
-  const defaultProductsList = [
-    { title: "Microscope Numérique Portable HD 1000X", slug: "microscope", price: 29900, image: "/images/microscope-monde-decouverte.jpg" },
-    { title: "Brosse Démêlante Vapeur Uméi 3-en-1", slug: "umei", price: 14900, image: "/images/umei-hero-real.jpg" },
-    { title: "Purificateur d'Air EraClean™ 10 Ans", slug: "eraclean", price: 19900, image: "/images/eraclean-studio.jpg" },
-    { title: "Ventilateur Ceinture & Powerbank TurboFan™", slug: "turbofan", price: 16900, image: "/images/turbofan-studio.jpg" },
-    { title: "Éplucheur Automatique ChefPeel™ Pro", slug: "peeler", price: 14900, image: "/images/peeler-hero.jpg" },
-    { title: "Stabilisateur Trépied Z3 Zoom™", slug: "stabilisateur", price: 49900, image: "/images/stabilisateur-hero.jpg" },
-    { title: "Veilleuse Projecteur LED 3D FRIOSZ", slug: "veilleuse", price: 14900, image: "/images/projecteur-hero.jpg" },
-    { title: "Mini Caméra Espionne & Surveillance HD A9 Pro™", slug: "camera", price: 16900, image: "/images/camera-hero.jpg" },
-    { title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™", slug: "trozk", price: 29900, image: "/images/trozk-hero.jpg" },
-  ];
+  const defaultProductsList = getAdminDashboardProducts();
 
   const [productsList, setProductsList] = useState(defaultProductsList);
 

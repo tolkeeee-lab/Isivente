@@ -29,6 +29,7 @@ import {
 } from "@/lib/analyticsStorage";
 import { getAllOrders } from "@/lib/ordersStorage";
 import { getAllLeads } from "@/lib/leadsStorage";
+import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
 
 export default function AdminClicksPage() {
   const [analytics, setAnalytics] = useState<AnalyticsStats>({
@@ -44,18 +45,7 @@ export default function AdminClicksPage() {
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const defaultProducts = [
-    { title: "Masque de Massage Oculaire Thérapeutique 4D Chauffant", slug: "masseur-oculaire", price: 24900, image: "/images/masseur-oculaire-hero.jpg" },
-    { title: "Microscope Numérique Portable HD 1000X", slug: "microscope", price: 29900, image: "/images/microscope-monde-decouverte.jpg" },
-    { title: "Brosse Démêlante Vapeur Uméi 3-en-1", slug: "umei", price: 14900, image: "/images/umei-hero-real.jpg" },
-    { title: "Batterie Modulaire 3-en-1 Trozk T3 Cyberpunk™", slug: "trozk", price: 29900, image: "/images/trozk-hero.jpg" },
-    { title: "Purificateur d'Air EraClean™ 10 Ans", slug: "eraclean", price: 19900, image: "/images/eraclean-studio.jpg" },
-    { title: "Ventilateur Ceinture & Powerbank TurboFan™", slug: "turbofan", price: 16900, image: "/images/turbofan-studio.jpg" },
-    { title: "Éplucheur Automatique ChefPeel™ Pro", slug: "peeler", price: 14900, image: "/images/peeler-hero.jpg" },
-    { title: "Stabilisateur Trépied Z3 Zoom™", slug: "stabilisateur", price: 49900, image: "/images/stabilisateur-hero.jpg" },
-    { title: "Veilleuse Projecteur LED 3D FRIOSZ", slug: "veilleuse", price: 14900, image: "/images/projecteur-hero.jpg" },
-    { title: "Mini Caméra Espionne & Surveillance HD A9 Pro™", slug: "camera", price: 16900, image: "/images/camera-hero.jpg" },
-  ];
+  const defaultProducts = getAdminDashboardProducts();
 
   const [productsList, setProductsList] = useState(defaultProducts);
   const [metaAdClicks, setMetaAdClicks] = useState<number>(114); // Valeur de la campagne Meta actuelle

@@ -9,6 +9,7 @@ import {
   OrderItem 
 } from "@/lib/ordersStorage";
 import { supabase } from "@/lib/supabase";
+import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
 import { 
   Search, 
   Phone, 
@@ -1231,15 +1232,7 @@ export default function OrdersPage() {
                   value={manualForm.product_slug}
                   onChange={(e) => {
                     const slug = e.target.value;
-                    const catalog: Record<string, { title: string; price: number }> = {
-                      microscope: { title: "Microscope Numérique Portable HD 1000X", price: 29900 },
-                      trozk: { title: "Station de Charge Trozk T3 Rapide 65W", price: 29900 },
-                      stabilisateur: { title: "Stabilisateur Pro-Mobile Z3 Zoom™", price: 49900 },
-                      eraclean: { title: "Purificateur Alimentaire EraClean", price: 32800 },
-                      umei: { title: "Brosse Démêlante Vapeur Uméi 3-en-1", price: 14900 },
-                      camera: { title: "Caméra de Surveillance WiFi 360°", price: 24900 },
-                    };
-                    const item = catalog[slug] || catalog.microscope;
+                    const item = DEFAULT_CATALOG.find(p => p.slug === slug) || DEFAULT_CATALOG[0];
                     setManualForm({
                       ...manualForm,
                       product_slug: slug,
@@ -1249,12 +1242,11 @@ export default function OrdersPage() {
                   }}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:border-slate-900 outline-none"
                 >
-                  <option value="microscope">Microscope Numérique HD 1000X (29 900 F)</option>
-                  <option value="trozk">Station de Charge Trozk T3 (29 900 F)</option>
-                  <option value="stabilisateur">Stabilisateur Z3 Zoom™ (49 900 F)</option>
-                  <option value="eraclean">Purificateur EraClean (32 800 F)</option>
-                  <option value="umei">Brosse Uméi 3-en-1 (14 900 F)</option>
-                  <option value="camera">Caméra WiFi 360° (24 900 F)</option>
+                  {DEFAULT_CATALOG.map((item) => (
+                    <option key={item.slug} value={item.slug}>
+                      {item.shortTitle || item.title} ({new Intl.NumberFormat("fr-FR").format(item.price)} F)
+                    </option>
+                  ))}
                 </select>
               </div>
 
