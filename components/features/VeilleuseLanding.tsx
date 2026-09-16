@@ -424,9 +424,7 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
               <video 
                 src="/videos/veilleuse-demo.mp4"
                 poster="/images/projecteur-galaxie.jpg"
-                autoPlay
-                loop
-                muted
+                preload="metadata"
                 playsInline
                 controls
                 className="w-full h-full object-cover"

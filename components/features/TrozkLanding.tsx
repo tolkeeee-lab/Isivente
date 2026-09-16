@@ -298,13 +298,13 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         <div className="relative w-full h-[55vh] sm:h-[70vh] lg:h-[82vh] max-h-[840px] flex items-center justify-center bg-black">
           <video
             ref={heroVideoRef}
-            src="/videos/trozk-hero-1.mp4"
+            src="/videos/trozk-demo.mp4"
             poster="/images/trozk-video-hero-cover.jpg"
             autoPlay
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             onTimeUpdate={handleHeroTimeUpdate}
             className="w-full h-full object-cover object-center pointer-events-none"
           />
