@@ -98,7 +98,7 @@ const REVIEWS: ReviewItem[] = [
     stars: 5,
     title: "Incroyable ! Mon frigo est maintenant inodore",
     text: "C'est tellement incroyable que j'en ai pris 2 pour 2 frigos différents et sa durabilité est perceptible. Ça ne sent rien et son efficacité est impressionnante sur le poisson et les viandes.",
-    image: "/images/eraclean-real-review-ad.jpg",
+    image: "/images/eraclean-frigo.jpg",
     verified: true,
   },
   {
@@ -107,7 +107,7 @@ const REVIEWS: ReviewItem[] = [
     stars: 5,
     title: "Élimine les odeurs en moins de 30 minutes",
     text: "Nous avons acheté un nouveau frigo et on sentait toujours les restes qu'on y mettait (viandes, oignons). Ça a complètement fait disparaître les odeurs en moins de 30 minutes. Sors-le de la boîte et mets-le au frigo, il dure 10 ans !",
-    image: "/images/eraclean-brandi-review-ad.jpg",
+    image: "/images/eraclean-dressing.jpg",
     verified: true,
   },
   {
@@ -116,7 +116,7 @@ const REVIEWS: ReviewItem[] = [
     stars: 5,
     title: "Mes légumes restent frais 2× plus longtemps",
     text: "Une solution simple et ultra-efficace pour maintenir un environnement frais sans mauvaise odeur. Sa conception compacte n'occupe pas d'espace sur les étagères. Plus aucun gaspillage alimentaire.",
-    image: "/images/eraclean-ad-creative.jpg",
+    image: "/images/eraclean-comparison-ad.jpg",
     verified: true,
   },
 ];

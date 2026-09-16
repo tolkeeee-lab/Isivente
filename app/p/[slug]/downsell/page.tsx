@@ -28,6 +28,15 @@ const PRODUCT_THEMES: Record<
     badgeText: string;
   }
 > = {
+  "masseur-oculaire": {
+    primary: "#0D9488",
+    primaryHover: "#0F766E",
+    primaryLight: "#F0FDFA",
+    border: "#99F6E4",
+    textPrimary: "#115E59",
+    badgeBg: "#CCFBF1",
+    badgeText: "#0F766E",
+  },
   umei: {
     primary: "#FF5C93",
     primaryHover: "#E13D74",
