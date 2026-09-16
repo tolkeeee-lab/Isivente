@@ -8,6 +8,7 @@ import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
+import CloudVideoPlayer from "@/components/ui/CloudVideoPlayer";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import {
   Check,
@@ -418,26 +419,16 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
           </p>
         </div>
 
-        {/* Lecteur Vidéo Réel */}
-        <div
-          className="relative rounded-3xl overflow-hidden shadow-2xl border bg-slate-900 aspect-video max-w-3xl mx-auto"
-          style={{ borderColor: `${C.accent}30` }}
-        >
-          <div className="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 z-10">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span>Test en direct</span>
-          </div>
-
-          <video
-            src="/videos/eraclean-demo.mp4"
+        {/* Lecteur Vidéo Haute Performance (0 bande passante Vercel dès qu'un lien YouTube est fourni) */}
+        <div className="max-w-3xl mx-auto">
+          <CloudVideoPlayer
+            youtubeId={process.env.NEXT_PUBLIC_ERACLEAN_YOUTUBE_ID}
+            localSrc="/videos/eraclean-demo.mp4"
             poster="/images/eraclean-2.jpg"
-            controls
-            playsInline
-            preload="metadata"
-            className="w-full h-full object-cover"
-          >
-            Votre navigateur ne supporte pas la lecture de vidéo HTML5.
-          </video>
+            title="Démonstration Purificateur EraClean"
+            aspectRatio="16/9"
+            liveBadgeText="Test en direct"
+          />
         </div>
       </section>
 
