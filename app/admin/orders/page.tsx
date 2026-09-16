@@ -49,9 +49,15 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // ── Mode d'affichage des sections dans le tableau de triage ──
-  const [triageFilter, setTriageFilter] = useState<"all" | "confirmed" | "reserved" | "postponed">("all");
+  const [triageFilter, setTriageFilter] = useState<"all" | "pending" | "confirmed" | "reserved" | "postponed">("all");
 
   // ── Filtres dédiés et autonomes pour chaque section du tableau à part ──
+  const [pendingFilters, setPendingFilters] = useState({
+    search: "",
+    city: "all",
+    product: "all",
+  });
+
   const [confirmedFilters, setConfirmedFilters] = useState({
     search: "",
     city: "all",
@@ -234,11 +240,13 @@ export default function OrdersPage() {
   };
 
   // ── Calcul des groupes de triage ──
+  const pendingOrders = useMemo(() => orders.filter(o => o.status === "pending" || !o.status), [orders]);
   const confirmedOrders = useMemo(() => orders.filter(o => o.status === "confirmed"), [orders]);
   const reservedOrders = useMemo(() => orders.filter(o => o.status === "reserved"), [orders]);
   const postponedOrders = useMemo(() => orders.filter(o => o.status === "postponed"), [orders]);
   
-  const totalTriageCount = confirmedOrders.length + reservedOrders.length + postponedOrders.length;
+  const totalTriageCount = pendingOrders.length + confirmedOrders.length + reservedOrders.length + postponedOrders.length;
+  const totalPendingAmount = pendingOrders.reduce((acc, o) => acc + (o.total_amount || 0), 0);
   const totalConfirmedAmount = confirmedOrders.reduce((acc, o) => acc + (o.total_amount || 0), 0);
   const totalReservedAmount = reservedOrders.reduce((acc, o) => acc + (o.total_amount || 0), 0);
   const totalPostponedAmount = postponedOrders.reduce((acc, o) => acc + (o.total_amount || 0), 0);
@@ -261,6 +269,26 @@ export default function OrdersPage() {
     });
     return Array.from(set).sort();
   }, [orders]);
+
+  // ── Filtrage autonome : Section 0 (Nouvelles reçues à confirmer) ──
+  const filteredPendingOrders = useMemo(() => {
+    return pendingOrders.filter(order => {
+      const q = pendingFilters.search.toLowerCase().trim();
+      const matchesSearch = !q || (
+        (order.customer_name || "").toLowerCase().includes(q) ||
+        (order.customer_phone || "").toLowerCase().includes(q) ||
+        (order.shipping_city || order.city || "").toLowerCase().includes(q) ||
+        (order.shipping_address || order.address || "").toLowerCase().includes(q) ||
+        String(order.order_number || "").toLowerCase().includes(q)
+      );
+
+      const cityVal = (order.shipping_city || order.city || "").toLowerCase();
+      const matchesCity = pendingFilters.city === "all" || cityVal === pendingFilters.city.toLowerCase();
+      const matchesProduct = pendingFilters.product === "all" || order.product_title === pendingFilters.product;
+
+      return matchesSearch && matchesCity && matchesProduct;
+    });
+  }, [pendingOrders, pendingFilters]);
 
   // ── Filtrage autonome : Section 1 (Validées) ──
   const filteredConfirmedOrders = useMemo(() => {
@@ -524,9 +552,38 @@ export default function OrdersPage() {
       {viewMode === "triage" && (
         <div className="space-y-6">
 
-          {/* 3 CARTES STATISTIQUES EN HAUT DU TABLEAU DE TRIAGE */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* 4 CARTES STATISTIQUES EN HAUT DU TABLEAU DE TRIAGE */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
+            {/* Carte Nouvelles Reçues (À Traiter) */}
+            <div 
+              onClick={() => setTriageFilter(triageFilter === "pending" ? "all" : "pending")}
+              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-blue-500 hover:shadow-md ${
+                triageFilter === "pending" ? "ring-2 ring-blue-500/40 bg-blue-50/20" : ""
+              } ${pendingOrders.length > 0 ? "ring-1 ring-blue-400/30" : ""}`}
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
+                    {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />}
+                    <Package className="w-3.5 h-3.5" />
+                    <span>Nouvelles Reçues</span>
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-slate-900 mt-1">
+                    {pendingOrders.length}
+                  </div>
+                </div>
+                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg ${
+                  pendingOrders.length > 0 ? "bg-blue-600 text-white shadow-xs" : "bg-blue-100 text-blue-800"
+                }`}>
+                  {fmt(totalPendingAmount)} F
+                </span>
+              </div>
+              <p className="text-[11.5px] text-slate-500 mt-2">
+                Commandes passées sur le site en attente de confirmation.
+              </p>
+            </div>
+
             {/* Carte Validées */}
             <div 
               onClick={() => setTriageFilter(triageFilter === "confirmed" ? "all" : "confirmed")}
@@ -622,7 +679,16 @@ export default function OrdersPage() {
                     triageFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  Toutes les sections ({totalTriageCount})
+                  Toutes ({totalTriageCount})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTriageFilter("pending")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    triageFilter === "pending" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-blue-700"
+                  }`}
+                >
+                  🚨 Nouvelles ({pendingOrders.length})
                 </button>
                 <button
                   type="button"
@@ -658,6 +724,100 @@ export default function OrdersPage() {
               Chaque section dispose ci-dessous de ses propres filtres autonomes (recherche, ville, date, produit).
             </div>
           </div>
+
+          {/* ═══════════════════════════════════════════════════════════
+              SECTION 0 DU TABLEAU : LES NOUVELLES COMMANDES DU SITE (À CONFIRMER)
+             ═══════════════════════════════════════════════════════════ */}
+          {(triageFilter === "all" || triageFilter === "pending") && pendingOrders.length > 0 && (
+            <div className="card-figma overflow-hidden border-blue-300 shadow-sm ring-1 ring-blue-400/20">
+              
+              {/* En-tête de la section À Confirmer */}
+              <div className="bg-blue-50/90 px-5 py-3.5 border-b border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                    <Package className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="font-display font-bold text-sm text-blue-950 flex items-center gap-2">
+                      <span>Section 0 • Nouvelles Commandes Reçues (À Traiter)</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-blue-200 text-blue-900 font-bold animate-pulse">
+                        Action requise
+                      </span>
+                    </h2>
+                    <p className="text-[11px] text-blue-800">
+                      Commandes passées sur le site en attente de confirmation client avant expédition.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <span className="text-xs font-mono font-bold bg-white text-blue-900 px-3 py-1 rounded-lg border border-blue-200 shadow-xs">
+                    {filteredPendingOrders.length} affichée{filteredPendingOrders.length > 1 ? "s" : ""} / {pendingOrders.length} • {fmt(filteredPendingOrders.reduce((a, o) => a + (o.total_amount || 0), 0))} F
+                  </span>
+                </div>
+              </div>
+
+              {/* BARRE DE FILTRES DÉDIÉE À LA SECTION NOUVELLES COMMANDES */}
+              <div className="bg-blue-50/30 px-4 py-2.5 border-b border-blue-100 flex flex-wrap items-center gap-2 text-xs">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={pendingFilters.search}
+                    onChange={(e) => setPendingFilters(prev => ({ ...prev, search: e.target.value }))}
+                    placeholder="Filtrer les nouvelles commandes (nom, tél, N° commande, adresse)..."
+                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Filtre par Ville */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase">Ville :</span>
+                  <select
+                    value={pendingFilters.city}
+                    onChange={(e) => setPendingFilters(prev => ({ ...prev, city: e.target.value }))}
+                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
+                  >
+                    <option value="all">Toutes les villes</option>
+                    {cityOptions.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Filtre par Produit */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase">Produit :</span>
+                  <select
+                    value={pendingFilters.product}
+                    onChange={(e) => setPendingFilters(prev => ({ ...prev, product: e.target.value }))}
+                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer max-w-[180px] truncate"
+                  >
+                    <option value="all">Tous les produits</option>
+                    {productOptions.map(p => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Réinitialiser si filtre actif */}
+                {(pendingFilters.search || pendingFilters.city !== "all" || pendingFilters.product !== "all") && (
+                  <button
+                    type="button"
+                    onClick={() => setPendingFilters({ search: "", city: "all", product: "all" })}
+                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    title="Effacer les filtres de cette section"
+                  >
+                    <X className="w-3 h-3" />
+                    <span>Réinitialiser</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Tableau de la section Nouvelles Commandes */}
+              {renderOrderTable(filteredPendingOrders, "global")}
+            </div>
+          )}
 
           {/* ═══════════════════════════════════════════════════════════
               SECTION 1 DU TABLEAU : LES COMMANDES VALIDÉES

@@ -217,7 +217,7 @@ export default function FinanceDashboardPage() {
 
         productStats[slug].shippedCount += qty;
         productStats[slug].shippedRev += amt;
-      } else if (order.status === "pending") {
+      } else if (order.status === "pending" || order.status === "confirmed" || order.status === "reserved" || order.status === "postponed") {
         pendingOrdersCount++;
         pendingRevenue += amt;
         totalRevenue += amt;

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllOrders, deleteOrder, OrderItem } from "@/lib/ordersStorage";
 import { supabase } from "@/lib/supabase";
-import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
+import { getAdminDashboardProducts, DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import { getAnalyticsStats, getAllProductsAnalytics, resetAnalyticsStats, AnalyticsStats, ProductAnalyticsStats } from "@/lib/analyticsStorage";
 import { 
   TrendingUp, 
@@ -70,13 +70,13 @@ export default function AdminDashboard() {
     async function fetchData() {
       // Fetch products from Supabase and merge with defaults
       try {
-        const { data: dbProducts } = await supabase.from("products").select("title, slug, price, image_url").order("created_at", { ascending: true });
+        const { data: dbProducts } = await supabase.from("products").select("title, slug, price, images").order("created_at", { ascending: true });
         if (dbProducts && dbProducts.length > 0) {
           const formatted = dbProducts.map((p: any) => ({
             title: p.title,
             slug: p.slug,
             price: p.price,
-            image: p.image_url || "/images/default-hero.jpg",
+            image: (p.images && p.images[0]?.url) || (DEFAULT_CATALOG_MAP[p.slug]?.image_url) || "/images/microscope-monde-decouverte.jpg",
           }));
           const slugsFromDb = new Set(formatted.map((p: any) => p.slug));
           const missingDefaults = defaultProductsList.filter(dp => !slugsFromDb.has(dp.slug));
@@ -105,26 +105,28 @@ export default function AdminDashboard() {
         productMap[pSlug].totalOrders++;
 
         const amt = order.total_amount || 0;
+        const st = (order.status || 'pending').toLowerCase();
 
-        if (order.status === 'pending') {
-          pending++;
-          pendingRev += amt;
-          productMap[pSlug].totalRevenue += amt;
-        } else if (order.status === 'shipped') {
+        if (st === 'shipped') {
           shipped++;
           shippedRev += amt;
           productMap[pSlug].totalRevenue += amt;
-        } else if (order.status === 'delivered') {
+        } else if (st === 'delivered') {
           delivered++;
           deliveredRev += amt;
           productMap[pSlug].deliveredOrders++;
           productMap[pSlug].deliveredRevenue += amt;
           productMap[pSlug].totalRevenue += amt;
-        } else if (order.status === 'cancelled') {
+        } else if (st === 'cancelled') {
           cancelled++;
+        } else {
+          // pending, confirmed, reserved, postponed
+          pending++;
+          pendingRev += amt;
+          productMap[pSlug].totalRevenue += amt;
         }
 
-        if (['delivered', 'shipped', 'pending'].includes(order.status || '')) {
+        if (st !== 'cancelled') {
           totalRev += amt;
         }
       });
@@ -168,6 +170,27 @@ export default function AdminDashboard() {
 
   const getStatusBadge = (status?: string) => {
     switch (status) {
+      case "confirmed":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+            <CheckCircle2 className="w-3 h-3 stroke-[2]" />
+            Validée
+          </span>
+        );
+      case "reserved":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/60">
+            <Clock className="w-3 h-3 stroke-[2]" />
+            Réservée
+          </span>
+        );
+      case "postponed":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60">
+            <Clock className="w-3 h-3 stroke-[2]" />
+            Reportée
+          </span>
+        );
       case "pending":
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60">
@@ -184,7 +207,7 @@ export default function AdminDashboard() {
         );
       case "delivered":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200/60">
             <CheckCircle2 className="w-3 h-3 stroke-[2]" />
             Livrée & Encaissée
           </span>

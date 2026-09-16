@@ -29,7 +29,7 @@ import {
 } from "@/lib/analyticsStorage";
 import { getAllOrders } from "@/lib/ordersStorage";
 import { getAllLeads } from "@/lib/leadsStorage";
-import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
+import { getAdminDashboardProducts, DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export default function AdminClicksPage() {
   const [analytics, setAnalytics] = useState<AnalyticsStats>({
@@ -95,13 +95,13 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
         const { supabase } = await import("@/lib/supabase");
         const { data: dbProds } = await supabase
           .from("products")
-          .select("title, slug, price, image_url");
+          .select("title, slug, price, images");
         if (dbProds && dbProds.length > 0) {
           const formatted = dbProds.map((p: any) => ({
             title: p.title,
             slug: p.slug,
             price: p.price,
-            image: p.image_url || "/images/microscope-monde-decouverte.jpg",
+            image: (p.images && p.images[0]?.url) || (DEFAULT_CATALOG_MAP[p.slug]?.image_url) || "/images/microscope-monde-decouverte.jpg",
           }));
           const existingSlugs = new Set(formatted.map((p: any) => p.slug));
           const merged = [...formatted, ...defaultProducts.filter((p) => !existingSlugs.has(p.slug))];

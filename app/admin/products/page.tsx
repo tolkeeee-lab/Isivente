@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
+import { DEFAULT_CATALOG, DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import { 
   Plus, 
   Edit2, 
@@ -56,8 +56,8 @@ export default function ProductsPage() {
       
       const supabaseProducts = (data || []).map((p: any) => ({
         ...p,
-        image_url: p.image_url || (p.images && p.images[0]?.url) || "/images/projecteur-hero.jpg",
-        bundles: p.bundles || []
+        image_url: p.image_url || (p.images && p.images[0]?.url) || (DEFAULT_CATALOG_MAP[p.slug]?.image_url) || "/images/projecteur-hero.jpg",
+        bundles: (p.bundles && p.bundles.length > 0) ? p.bundles : (DEFAULT_CATALOG_MAP[p.slug]?.bundles || [])
       }));
 
       // Fusionner : Supabase a priorité, puis on ajoute les defaults manquants
