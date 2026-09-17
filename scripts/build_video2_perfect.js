@@ -149,6 +149,8 @@ async function run() {
   const videoArgs = [
     '-i', v1Source,
     '-i', mixedAudio,
+    '-map', '0:v:0',
+    '-map', '1:a:0',
     '-t', '29.23',
     '-vf', fullVideoFilter,
     '-c:v', 'libx264',
