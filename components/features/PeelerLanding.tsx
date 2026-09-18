@@ -1,11 +1,14 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+import type { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
@@ -143,6 +146,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
   const submittingRef = useRef(false);
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -196,6 +200,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         address: address.trim(),
         shipping_address: address.trim(),
         status: "pending",
+        ...utm,
       });
 
       recordInteraction();
@@ -400,11 +405,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
           
           {/* Image Avant/Après */}
           <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-            <img
-              src="/images/peeler-avant-apres.jpg"
+            <img fetchPriority="high"               src="/images/peeler-avant-apres.jpg"
               alt="Avant et Après Épluchage Automatique ChefPeel Pro"
-              className="w-full h-auto object-cover"
-            />
+              className="w-full h-auto object-cover" loading="eager" />
           </div>
 
           {/* Comparatif textuel détaillé */}
@@ -462,11 +465,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         </div>
 
         <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-md bg-white">
-          <img
-            src="/images/peeler-comment.jpg"
+          <img src="/images/peeler-comment.jpg"
             alt="Comment utiliser l'éplucheur ChefPeel Pro en 3 étapes"
-            className="w-full h-auto object-cover"
-          />
+            className="w-full h-auto object-cover" loading="lazy" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -494,11 +495,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
       {/* ── 8. INFOGRAPHIE USAGES MULTIPLES ── */}
       <section className="py-10 px-4 md:px-8 max-w-5xl mx-auto space-y-6">
         <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg bg-white">
-          <img
-            src="/images/peeler-usages.jpg"
+          <img src="/images/peeler-usages.jpg"
             alt="Une machine polyvalente pour tous les petits aliments de cuisine"
-            className="w-full h-auto object-cover"
-          />
+            className="w-full h-auto object-cover" loading="lazy" />
         </div>
       </section>
 

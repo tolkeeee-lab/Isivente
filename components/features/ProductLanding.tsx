@@ -1,14 +1,16 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
 import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import {
@@ -93,6 +95,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
 
   // Suivi de présence réelle et d'engagement
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
   const startTimeRef = useRef(Date.now());
   const clickedRef = useRef(false);
 

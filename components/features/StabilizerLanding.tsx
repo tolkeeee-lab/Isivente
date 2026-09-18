@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -24,9 +25,10 @@ import {
   Pause
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
@@ -192,6 +194,7 @@ const FRENCH_SUBTITLES = [
   }, []);
 
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
 
   const scrollToOrder = () => {
     recordInteraction();
@@ -629,12 +632,9 @@ const FRENCH_SUBTITLES = [
               {/* IMAGE HD MAGSAFE 20N */}
               <div className="lg:col-span-6 order-2 lg:order-1">
                 <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
-                  <img
-                    src="/images/stabilisateur-force-magnetique-20n.jpg"
+                  <img fetchPriority="high"                     src="/images/stabilisateur-force-magnetique-20n.jpg"
                     alt="Force magnétique ultra-forte de 20N et compatibilité universelle"
-                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
-                    loading="lazy"
-                  />
+                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out" loading="eager" />
                   <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-amber-400 border border-amber-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wide">
                     FORCE MAGNÉTIQUE 20N
                   </div>
@@ -712,12 +712,9 @@ const FRENCH_SUBTITLES = [
             <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm space-y-5 hover:border-slate-300 transition-all flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xs group aspect-4/3">
-                  <img
-                    src="/images/stabilisateur-angles-rotation-360.jpg"
+                  <img src="/images/stabilisateur-angles-rotation-360.jpg"
                     alt="Prise de vue sous n'importe quel angle support horizontal et vertical"
-                    className="w-full h-full object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
-                    loading="lazy"
-                  />
+                    className="w-full h-full object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out" loading="lazy" />
                   <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-sky-400 border border-sky-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
                     PORTRAIT & PAYSAGE 360°
                   </div>
@@ -742,12 +739,9 @@ const FRENCH_SUBTITLES = [
             <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm space-y-5 hover:border-slate-300 transition-all flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xs group aspect-4/3">
-                  <img
-                    src="/images/stabilisateur-perche-extensible.jpg"
+                  <img src="/images/stabilisateur-perche-extensible.jpg"
                     alt="Perche à selfie portable et extensible pour photos de groupe"
-                    className="w-full h-full object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
-                    loading="lazy"
-                  />
+                    className="w-full h-full object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out" loading="lazy" />
                   <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-emerald-400 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
                     EXTENSION ALUMINIUM
                   </div>
@@ -826,12 +820,9 @@ const FRENCH_SUBTITLES = [
               {/* VISUEL HD TÉLÉCOMMANDE 10M */}
               <div className="lg:col-span-6">
                 <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
-                  <img
-                    src="/images/stabilisateur-telecommande-10m.jpg"
+                  <img src="/images/stabilisateur-telecommande-10m.jpg"
                     alt="Télécommande sans fil 10 mètres détachable et rechargeable par USB-C"
-                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
-                    loading="lazy"
-                  />
+                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out" loading="lazy" />
                   <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-amber-400 border border-amber-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
                     PORTÉE 10 MÈTRES SANS FIL
                   </div>
@@ -862,12 +853,9 @@ const FRENCH_SUBTITLES = [
               {/* IMAGE HD DU GUIDE OFFICIEL */}
               <div className="lg:col-span-6">
                 <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
-                  <img
-                    src="/images/stabilisateur-guide-fonctions.jpg"
+                  <img src="/images/stabilisateur-guide-fonctions.jpg"
                     alt="Guide des fonctions d'accessibilité appairage Bluetooth WONEW-M et voyants LED"
-                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out"
-                    loading="lazy"
-                  />
+                    className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-500 ease-out" loading="lazy" />
                   <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-emerald-400 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-mono font-bold">
                     APPAIRAGE BLUETOOTH « WONEW-M »
                   </div>

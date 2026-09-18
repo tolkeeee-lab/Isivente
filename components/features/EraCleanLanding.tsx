@@ -1,11 +1,13 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import CloudVideoPlayer from "@/components/ui/CloudVideoPlayer";
@@ -178,6 +180,7 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
 
   const scroll = (id: string) => {
     recordInteraction();
@@ -637,11 +640,9 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
                   className="rounded-2xl overflow-hidden border border-slate-200/80 bg-white shadow-sm flex flex-col hover:-translate-y-1 transition-all duration-200"
                 >
                   <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
-                    <img
-                      src={zone.img}
+                    <img fetchPriority="high"                       src={zone.img}
                       alt={zone.label}
-                      className="w-full h-full object-cover"
-                    />
+                      className="w-full h-full object-cover" loading="eager" />
                     <span className="absolute top-2.5 right-2.5 bg-slate-900/85 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                       {zone.badge}
                     </span>
@@ -725,12 +726,9 @@ export default function EraCleanLanding({ slug }: { slug: string }) {
                 <div>
                   {r.image && (
                     <div className="mb-4 rounded-xl overflow-hidden border border-slate-200/80 aspect-4/3 bg-slate-50">
-                      <img
-                        src={r.image}
+                      <img src={r.image}
                         alt={`Photo de l'avis de ${r.name}`}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
+                        className="w-full h-full object-cover" loading="lazy" />
                     </div>
                   )}
 

@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -30,9 +31,11 @@ import {
   RotateCcw
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+import type { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
 import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
@@ -204,6 +207,8 @@ const FAQS_DATA = [
 export default function EyeMassagerLanding({ slug }: { slug: string }) {
   const router = useRouter();
   const { recordInteraction } = usePagePresence(slug || "masseur-oculaire");
+  const utm = useUTM();
+
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -365,6 +370,7 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
         quantity: selectedBundle.quantity || 1,
         total_amount: selectedBundle.price,
         status: "pending",
+        ...utm,
       });
 
       await markLeadConverted(customerPhone, "masseur-oculaire");
@@ -453,12 +459,11 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
             >
               {CAROUSEL_IMAGES.map((img, idx) => (
                 <div key={idx} className="relative w-full h-full shrink-0">
-                  <img 
+                  <img fetchPriority="high" 
                     src={img.src} 
                     alt={img.alt}
                     draggable={false}
-                    className="w-full h-full object-cover"
-                  />
+                    className="w-full h-full object-cover" loading="eager" />
                 </div>
               ))}
             </div>
@@ -511,7 +516,7 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
                     : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300"
                 }`}
               >
-                <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                <img src={img.src} alt={img.alt} className="w-full h-full object-cover" loading="lazy" />
               </button>
             ))}
           </div>
@@ -610,11 +615,9 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
             {/* Visualisation interactive du masque oculaire */}
             <div className="md:col-span-6 lg:col-span-6 flex justify-center">
               <div className="relative w-full max-w-[380px] rounded-3xl overflow-hidden bg-slate-900 border border-slate-200/80 shadow-xl group">
-                <img 
-                  src="/images/masseur-oculaire-temple.jpg" 
+                <img src="/images/masseur-oculaire-temple.jpg" 
                   alt="Démonstration du masque oculaire thérapeutique"
-                  className="w-full h-[360px] sm:h-[400px] object-cover"
-                />
+                  className="w-full h-[360px] sm:h-[400px] object-cover" loading="lazy" />
 
                 {/* Badge température thermique animé */}
                 <div className="absolute top-4 left-4 bg-slate-950/85 backdrop-blur-md border border-white/10 rounded-2xl px-3 py-2 text-white flex items-center gap-2.5 shadow-lg">
@@ -749,11 +752,9 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
         <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
-              <img 
-                src="/images/masseur-oculaire-screen.jpg" 
+              <img src="/images/masseur-oculaire-screen.jpg" 
                 alt="Soulagement de la fatigue des écrans au bureau"
-                className="w-full h-full object-cover"
-              />
+                className="w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="p-6 sm:p-8 space-y-4">
               <div className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
@@ -814,11 +815,9 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
               </div>
             </div>
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px] order-1 md:order-2">
-              <img 
-                src="/images/masseur-oculaire-temple.jpg" 
+              <img src="/images/masseur-oculaire-temple.jpg" 
                 alt="Acupression sur les tempes et thermothérapie"
-                className="w-full h-full object-cover"
-              />
+                className="w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
         </section>
@@ -827,11 +826,9 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
         <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
-              <img 
-                src="/images/masseur-oculaire-sleep.jpg" 
+              <img src="/images/masseur-oculaire-sleep.jpg" 
                 alt="Endormissement en 15 minutes au lit"
-                className="w-full h-full object-cover"
-              />
+                className="w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="p-6 sm:p-8 space-y-4">
               <div className="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
@@ -969,11 +966,9 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
                 className="min-w-[210px] sm:min-w-[230px] max-w-[250px] shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-slate-200/90 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.06)] flex flex-col hover:border-indigo-200 transition-all group"
               >
                 <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden">
-                  <img 
-                    src={slide.src} 
+                  <img src={slide.src} 
                     alt={slide.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                  />
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" loading="lazy" />
                   <div className="absolute top-2.5 left-2.5 bg-slate-950/80 backdrop-blur-xs text-white text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-md border border-white/10">
                     {slide.badge}
                   </div>
@@ -1034,11 +1029,9 @@ export default function EyeMassagerLanding({ slug }: { slug: string }) {
               >
                 {/* Photo réelle cadrée bord à bord à gauche */}
                 <div className="w-full sm:w-60 h-60 sm:h-auto min-h-[200px] rounded-2xl overflow-hidden bg-slate-900 border border-slate-200/70 relative shrink-0 shadow-2xs">
-                  <img 
-                    src={rev.image} 
+                  <img src={rev.image} 
                     alt={rev.imageCaption} 
-                    className="w-full h-full object-cover object-center"
-                  />
+                    className="w-full h-full object-cover object-center" loading="lazy" />
                   <div className="absolute bottom-2.5 inset-x-2.5 bg-slate-950/85 backdrop-blur-sm text-white text-[10px] font-medium py-1.5 px-3 rounded-xl text-center leading-tight shadow-md border border-white/10">
                     {rev.imageCaption}
                   </div>

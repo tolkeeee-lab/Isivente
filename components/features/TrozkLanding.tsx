@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -38,9 +39,11 @@ import {
   Maximize2
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+import type { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
@@ -166,6 +169,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
   }, [isHeroHovered]);
 
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
 
   const scrollToOrder = () => {
     recordInteraction();
@@ -221,6 +225,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         shipping_address: address,
         address: address,
         status: "pending",
+        ...utm,
       });
 
       recordInteraction();
@@ -385,11 +390,10 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
         >
           <div className="relative rounded-3xl bg-slate-50 border border-slate-200/90 p-3 sm:p-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
             <div className="relative aspect-[4/3] sm:aspect-[16/9] max-h-[460px] rounded-2xl overflow-hidden bg-[#ECECEE] flex items-center justify-center">
-              <img 
+              <img fetchPriority="high" 
                 src={CAROUSEL_IMAGES[activeImageIndex].src} 
                 alt={CAROUSEL_IMAGES[activeImageIndex].alt}
-                className="w-full h-full object-contain transition-all duration-500"
-              />
+                className="w-full h-full object-contain transition-all duration-500" loading="eager" />
 
               {/* FLÈCHES DE NAVIGATION MANUELLE */}
               <button
@@ -420,7 +424,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
                       : "border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400"
                   }`}
                 >
-                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" loading="lazy" />
                 </button>
               ))}
             </div>
@@ -522,7 +526,7 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-center">
-              <img src="/images/trozk-dimensions.jpg" alt="Dimensions Trozk TP11" className="w-full max-h-[380px] object-contain rounded-2xl" />
+              <img src="/images/trozk-dimensions.jpg" alt="Dimensions Trozk TP11" className="w-full max-h-[380px] object-contain rounded-2xl" loading="lazy" />
             </div>
 
             <div className="space-y-3.5">

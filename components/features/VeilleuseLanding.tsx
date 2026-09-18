@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -22,9 +23,10 @@ import {
   SunMedium
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
@@ -154,6 +156,7 @@ export default function VeilleuseLanding({ slug = "veilleuse" }: { slug?: string
   }, []);
 
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
 
   const scrollToOrder = () => {
     recordInteraction();

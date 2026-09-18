@@ -1,12 +1,14 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { 
   Check, 
@@ -57,6 +59,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
   const isSubmittingRef = useRef(false);
 
   const { recordInteraction } = usePagePresence(slug || "umei");
+  const utm = useUTM();
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -198,11 +201,10 @@ export default function UmeiLanding({ slug }: { slug: string }) {
                   3-en-1 vapeur + huile + clic
                 </div>
 
-                <img 
+                <img fetchPriority="high" 
                   src="/images/umei-hero-real.jpg" 
                   alt="Brosse vapeur uméi en action" 
-                  className="rounded-[28px] sm:rounded-[32px] w-full shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] object-cover"
-                />
+                  className="rounded-[28px] sm:rounded-[32px] w-full shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] object-cover" loading="eager" />
 
                 <div className="absolute -bottom-2 right-0 sm:-right-4 w-[80px] h-[80px] sm:w-[88px] sm:h-[88px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] rotate-12 z-20 pointer-events-none">
                   Sans chaleur agressive
@@ -287,8 +289,8 @@ export default function UmeiLanding({ slug }: { slug: string }) {
             </p>
           </div>
 
-          <div className="bg-white p-2.5 sm:p-4 rounded-[24px] sm:rounded-[28px] shadow-[0_20px_50px_-15px_rgba(139,111,224,0.35)] border border-[#8B6FE0]/20 max-w-3xl mx-auto">
-            <div className="relative rounded-2xl overflow-hidden bg-[#241B36] aspect-video flex items-center justify-center">
+          <div className="bg-white p-2.5 sm:p-4 rounded-[24px] sm:rounded-[28px] shadow-[0_20px_50px_-15px_rgba(139,111,224,0.35)] border border-[#8B6FE0]/20 max-w-xs sm:max-w-sm mx-auto">
+            <div className="relative rounded-2xl overflow-hidden bg-[#241B36] aspect-[9/16] flex items-center justify-center">
               
               <div className="absolute top-2.5 left-2.5 bg-[#241B36]/85 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 z-10">
                 <span className="w-2 h-2 rounded-full bg-[#FF5C93] animate-ping"></span>
@@ -297,12 +299,13 @@ export default function UmeiLanding({ slug }: { slug: string }) {
 
               <video 
                 src="/videos/demo-umei.mp4"
-                poster="/images/umei-hero-real.jpg"
+                poster="/images/demo-umei-poster.jpg"
                 autoPlay
                 loop
                 muted
                 playsInline
                 controls
+                preload="metadata"
                 className="w-full h-full object-cover"
               >
                 Votre navigateur ne supporte pas la lecture de vidéos.
@@ -399,11 +402,9 @@ export default function UmeiLanding({ slug }: { slug: string }) {
       <section className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           <div className="md:col-span-5 flex justify-center">
-            <img 
-              src="/images/umei-clic-real.jpg" 
+            <img src="/images/umei-clic-real.jpg" 
               alt="Gros plan sur les picots et le clic de la brosse uméi" 
-              className="rounded-[24px] sm:rounded-[28px] shadow-[0_20px_50px_-20px_rgba(139,111,224,0.4)] w-full max-w-xs sm:max-w-sm object-cover"
-            />
+              className="rounded-[24px] sm:rounded-[28px] shadow-[0_20px_50px_-20px_rgba(139,111,224,0.4)] w-full max-w-xs sm:max-w-sm object-cover" loading="lazy" />
           </div>
           
           <div className="md:col-span-7 space-y-4 text-center md:text-left">

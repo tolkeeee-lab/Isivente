@@ -19,6 +19,11 @@ export interface OrderItem {
   reservation_date?: string;
   notes?: string;
   created_at?: string;
+  // ── Attribution publicitaire UTM ──
+  utm_source?: string;    // ex: "meta" | "whatsapp"
+  utm_medium?: string;    // ex: "paid"
+  utm_campaign?: string;  // ex: "microscope"
+  utm_content?: string;   // ex: "video_parents" | "video_agriculture"
 }
 
 const LOCAL_STORAGE_KEY = "isivente_orders_store";
@@ -75,6 +80,11 @@ export async function saveNewOrder(orderData: OrderItem): Promise<any> {
     reservation_date: orderData.reservation_date || "",
     notes: orderData.notes || "",
     created_at: createdAt,
+    // ── Attribution UTM (null si trafic organique) ──
+    utm_source: orderData.utm_source || null,
+    utm_medium: orderData.utm_medium || null,
+    utm_campaign: orderData.utm_campaign || null,
+    utm_content: orderData.utm_content || null,
   };
 
   // 1. Sauvegarde locale de sécurité

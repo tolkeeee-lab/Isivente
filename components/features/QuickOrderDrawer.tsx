@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { OfferItem, getProductUpsellConfig } from "@/lib/upsellConfig";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import { playOrderSound } from "@/lib/soundEffects";
 
@@ -69,6 +70,7 @@ export default function QuickOrderDrawer({
   whatsappNumber = "2290192901817",
   initialBundle,
 }: QuickOrderDrawerProps) {
+  const utm = useUTM();
   const [selectedBundle, setSelectedBundle] = useState<BundleOption | null>(
     initialBundle || bundles[0] || null
   );
@@ -201,6 +203,7 @@ export default function QuickOrderDrawer({
         shipping_address: address,
         address: address,
         status: "pending",
+        ...utm,
       });
 
       const finalNum =

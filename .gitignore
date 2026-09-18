@@ -29,3 +29,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# script media & scratch
+scripts/**/*.mp4
+scripts/**/*.wav
+scripts/**/*.mp3
+scripts/**/*.exe
+scripts/**/frames*/
+scripts/**/*_prod/
+scripts/cuts_test/
+scripts/video_review/
+scripts/tiktok_microscope/
+scripts/eye_massager/
+scripts/test_*/
+scripts/merged_ad/
+scripts/final_ad_frames/
+scripts/umei_frame_*.jpg

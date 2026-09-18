@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -35,9 +36,11 @@ import {
   Warehouse
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+import type { BundleOption } from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
@@ -167,6 +170,7 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
   }, [isDemoPlaying]);
 
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
 
   const scrollToOrder = () => {
     const el = document.getElementById("commander");
@@ -221,6 +225,7 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
         shipping_address: address,
         address: address,
         status: "pending",
+        ...utm,
       });
 
       recordInteraction();
@@ -298,11 +303,10 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
           {/* GALERIE INTERACTIVE */}
           <div className="lg:col-span-6 flex flex-col items-center">
             <div className="relative w-full max-w-[460px] aspect-square rounded-3xl bg-white border border-slate-200/80 p-3 shadow-[0_12px_36px_-8px_rgba(0,0,0,0.08)] overflow-hidden group">
-              <img 
+              <img fetchPriority="high" 
                 src={CAROUSEL_IMAGES[activeImageIndex].src} 
                 alt={CAROUSEL_IMAGES[activeImageIndex].alt}
-                className="w-full h-full object-cover rounded-2xl transition-all duration-500 group-hover:scale-[1.02]"
-              />
+                className="w-full h-full object-cover rounded-2xl transition-all duration-500 group-hover:scale-[1.02]" loading="eager" />
               <div className="absolute top-5 left-5 bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 <span>Micro-Format Discret</span>
@@ -324,7 +328,7 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
                       : "border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400"
                   }`}
                 >
-                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover" loading="lazy" />
                 </button>
               ))}
             </div>
@@ -468,11 +472,9 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
           </div>
 
           <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-2xl max-w-3xl mx-auto">
-            <img 
-              src="/images/camera-app.jpg" 
+            <img src="/images/camera-app.jpg" 
               alt="Simulation flux vidéo en direct"
-              className="w-full h-auto object-cover max-h-[460px] opacity-90"
-            />
+              className="w-full h-auto object-cover max-h-[460px] opacity-90" loading="lazy" />
             
             {/* OVERLAY DYNAMIQUE SOUS-TITRES */}
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6 flex flex-col sm:flex-row items-center justify-between gap-4">

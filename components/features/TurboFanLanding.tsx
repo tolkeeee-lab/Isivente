@@ -1,11 +1,13 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { useUTM } from "@/lib/utm";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+const UmeiStyleOrderSection = dynamic(() => import("@/components/features/UmeiStyleOrderSection"), { ssr: false });
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
 import { getProductUpsellConfig } from "@/lib/upsellConfig";
@@ -154,6 +156,7 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -231,6 +234,7 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
         address: address.trim(),
         shipping_address: address.trim(),
         status: "pending",
+        ...utm,
       });
 
       // Marquer la session et le lead comme convertis
@@ -455,11 +459,9 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
           {/* CARTE 1 : CLIP DE CEINTURE */}
           <div className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 shadow-md flex flex-col hover:-translate-y-1 transition-all duration-200">
             <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
-              <img
-                src="/images/turbofan-ceinture.jpg"
+              <img fetchPriority="high"                 src="/images/turbofan-ceinture.jpg"
                 alt="TurboFan clipsé à la ceinture"
-                className="w-full h-full object-cover"
-              />
+                className="w-full h-full object-cover" loading="eager" />
               <span className="absolute top-3 left-3 bg-slate-950/80 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
                 Mode Ceinture
               </span>
@@ -480,11 +482,9 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
           {/* CARTE 2 : TOUR DE COU */}
           <div className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 shadow-md flex flex-col hover:-translate-y-1 transition-all duration-200">
             <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
-              <img
-                src="/images/turbofan-cou.jpg"
+              <img src="/images/turbofan-cou.jpg"
                 alt="TurboFan porté en tour de cou"
-                className="w-full h-full object-cover"
-              />
+                className="w-full h-full object-cover" loading="lazy" />
               <span className="absolute top-3 left-3 bg-slate-950/80 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
                 Mode Tour de Cou
               </span>
@@ -505,11 +505,9 @@ export default function TurboFanLanding({ slug }: { slug: string }) {
           {/* CARTE 3 : POWERBANK SMARTPHONE */}
           <div className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 shadow-md flex flex-col hover:-translate-y-1 transition-all duration-200">
             <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
-              <img
-                src="/images/turbofan-powerbank.jpg"
+              <img src="/images/turbofan-powerbank.jpg"
                 alt="TurboFan servant de batterie externe"
-                className="w-full h-full object-cover"
-              />
+                className="w-full h-full object-cover" loading="lazy" />
               <span className="absolute top-3 left-3 bg-slate-950/80 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
                 Mode Powerbank
               </span>

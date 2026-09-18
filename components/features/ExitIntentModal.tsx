@@ -131,7 +131,7 @@ export default function ExitIntentModal({
           {/* Carte Produit avec Tarif Réduit */}
           <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3.5">
             <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-200 border border-slate-300/50 shrink-0">
-              <img src={productImage} alt={productTitle} className="w-full h-full object-cover" />
+              <img src={productImage} alt={productTitle} className="w-full h-full object-cover" loading="lazy" />
             </div>
             <div className="space-y-1 flex-1">
               <div className="text-xs font-bold text-slate-900 line-clamp-1">{productTitle}</div>
