@@ -2,25 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 export async function GET(req: NextRequest) {
+  // Protection de sécurité : autoriser en dev ou si secret administrateur fourni
+  const secretParam = req.nextUrl.searchParams.get("secret");
+  const adminSecret = process.env.ADMIN_API_SECRET;
+  const isDev = process.env.NODE_ENV !== "production";
+
+  if (!isDev && (!adminSecret || secretParam !== adminSecret)) {
+    return NextResponse.json(
+      { success: false, error: "Accès restreint. Paramètre secret administrateur requis." },
+      { status: 403 }
+    );
+  }
+
   const gmailUser = (process.env.GMAIL_USER || process.env.EMAIL_USER || "").trim();
   const rawPass = process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS || "";
   const gmailAppPass = rawPass.replace(/\s+/g, "").trim();
   const recipientEmail = process.env.NOTIFICATION_EMAIL || gmailUser || "tolkeeee@gmail.com";
 
-  const diag = {
-    has_GMAIL_USER: Boolean(gmailUser),
-    gmailUser_value: gmailUser ? `${gmailUser.slice(0, 4)}***@${gmailUser.split("@")[1] || "gmail.com"}` : "NON DEFINI",
-    has_GMAIL_APP_PASSWORD: Boolean(gmailAppPass),
-    password_length: gmailAppPass.length,
-    recipientEmail: recipientEmail,
-  };
-
   if (!gmailUser || !gmailAppPass) {
     return NextResponse.json({
       success: false,
-      error: "Variables d'environnement GMAIL_USER ou GMAIL_APP_PASSWORD non trouvées sur Vercel.",
-      diagnostic: diag,
-      solution: "Vérifiez que GMAIL_USER et GMAIL_APP_PASSWORD sont bien enregistrés dans Vercel > Settings > Environment Variables, puis faites un Redeploy.",
+      error: "Variables d'environnement GMAIL_USER ou GMAIL_APP_PASSWORD non configurées sur le serveur.",
     }, { status: 400 });
   }
 
@@ -58,18 +60,13 @@ export async function GET(req: NextRequest) {
       success: true,
       message: `Email de test envoyé avec succès à ${recipientEmail} !`,
       messageId: info.messageId,
-      diagnostic: diag,
     });
   } catch (err: any) {
-    console.error("Test email error:", err);
+    console.error("Test email error:", err?.message);
     return NextResponse.json({
       success: false,
-      error: err.message,
-      code: err.code,
-      diagnostic: diag,
-      aide: err.message?.includes("Invalid login") || err.code === "EAUTH"
-        ? "Erreur d'authentification Google : Le mot de passe d'application de 16 lettres n'est pas reconnu. Générez un nouveau mot de passe sur https://myaccount.google.com/apppasswords et mettez-le dans GMAIL_APP_PASSWORD sur Vercel."
-        : "Erreur lors de la connexion au serveur Gmail SMTP.",
+      error: "Erreur lors de la connexion au serveur Gmail SMTP.",
+      details: isDev ? err?.message : undefined,
     }, { status: 500 });
   }
 }

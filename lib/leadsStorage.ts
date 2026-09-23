@@ -18,22 +18,36 @@ export interface LeadRecord {
 
 const LEADS_STORAGE_KEY = "isivente_leads_abandoned";
 
-/* ── LocalStorage Helpers ── */
+// Mémoire tampon de secours si localStorage est indisponible ou saturé
+let memoryLeadsFallback: LeadRecord[] = [];
+
+/* ── LocalStorage Helpers Sécurisés ── */
 export function getLocalLeads(): LeadRecord[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(LEADS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        memoryLeadsFallback = parsed;
+        return parsed;
+      }
+    }
+  } catch (e) {
+    // Mode privé ou cookies désactivés
   }
+  return memoryLeadsFallback;
 }
 
 export function saveLocalLeads(leads: LeadRecord[]) {
+  const safeLeads = Array.isArray(leads) ? leads.slice(0, 1000) : [];
+  memoryLeadsFallback = safeLeads;
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(leads.slice(0, 1000)));
-  } catch {}
+    localStorage.setItem(LEADS_STORAGE_KEY, JSON.stringify(safeLeads));
+  } catch (e) {
+    // Quota dépassé
+  }
 }
 
 /**
@@ -53,21 +67,24 @@ export async function saveOrUpdateLead(data: {
   const cleanPhone = (data.customer_phone || "").replace(/\D/g, "");
   if (cleanPhone.length < 8) return null;
 
+  const rawSlug = String(data.product_slug || "product").trim();
+  const cleanSlug = /^[a-zA-Z0-9_\-]+$/.test(rawSlug) ? rawSlug.slice(0, 50) : "product";
+
   const now = new Date().toISOString();
   // Générer un ID prévisible basé sur le téléphone et le produit pour dédupliquer
-  const leadId = `lead_${cleanPhone}_${data.product_slug || "product"}`;
+  const leadId = `lead_${cleanPhone}_${cleanSlug}`;
 
   const lead: LeadRecord = {
     id: leadId,
-    customer_name: (data.customer_name || "").trim() || "Client intéressé",
+    customer_name: (data.customer_name || "").trim().slice(0, 100) || "Client intéressé",
     customer_phone: cleanPhone,
-    customer_phone2: data.customer_phone2?.trim() || "",
-    city: data.city?.trim() || "Cotonou",
-    address: data.address?.trim() || "",
-    product_slug: data.product_slug || "microscope",
-    product_title: data.product_title || "Produit Isivente",
-    bundle_name: data.bundle_name || "Offre standard",
-    total_amount: data.total_amount || 0,
+    customer_phone2: (data.customer_phone2 || "").trim().slice(0, 20),
+    city: (data.city || "").trim().slice(0, 100) || "Cotonou",
+    address: (data.address || "").trim().slice(0, 250),
+    product_slug: cleanSlug,
+    product_title: (data.product_title || "").trim().slice(0, 150) || "Produit Isivente",
+    bundle_name: (data.bundle_name || "").trim().slice(0, 150) || "Offre standard",
+    total_amount: Number(data.total_amount) || 0,
     status: "abandoned",
     created_at: now,
     updated_at: now,
@@ -78,7 +95,6 @@ export async function saveOrUpdateLead(data: {
     const localList = getLocalLeads();
     const existingIdx = localList.findIndex((l) => l.id === leadId);
     if (existingIdx >= 0) {
-      // Si déjà converti en commande, ne pas repasser en abandoned
       if (localList[existingIdx].status === "converted") {
         lead.status = "converted";
       }
@@ -90,7 +106,7 @@ export async function saveOrUpdateLead(data: {
     }
   }
 
-  // 2. Sauvegarde Supabase (si table 'leads' existe)
+  // 2. Sauvegarde Supabase en arrière-plan
   try {
     await supabase.from("leads").upsert(
       [
@@ -113,26 +129,32 @@ export async function saveOrUpdateLead(data: {
       { onConflict: "id" }
     );
   } catch (err) {
-    // Fallback transparent sur localStorage
+    // Fallback transparent
   }
 
-  // 3. Notification serveur & synchronisation en arrière-plan
+  // 3. Notification serveur avec timeout
   if (typeof window !== "undefined") {
-    fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customer_name: lead.customer_name,
-        customer_phone: lead.customer_phone,
-        customer_phone2: lead.customer_phone2,
-        city: lead.city,
-        address: lead.address,
-        product_slug: lead.product_slug,
-        product_title: lead.product_title,
-        bundle_name: lead.bundle_name,
-        total_amount: lead.total_amount,
-      }),
-    }).catch(() => {});
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+      fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_name: lead.customer_name,
+          customer_phone: lead.customer_phone,
+          customer_phone2: lead.customer_phone2,
+          city: lead.city,
+          address: lead.address,
+          product_slug: lead.product_slug,
+          product_title: lead.product_title,
+          bundle_name: lead.bundle_name,
+          total_amount: lead.total_amount,
+        }),
+        signal: controller.signal,
+      }).then(() => clearTimeout(timeoutId)).catch(() => {});
+    } catch (e) {}
   }
 
   return lead;
