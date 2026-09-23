@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  LayoutDashboard,
   Package,
   MousePointerClick,
   Users,
@@ -20,6 +21,11 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   const navItems = [
+    {
+      href: "/admin",
+      label: "Vue d'ensemble",
+      icon: LayoutDashboard,
+    },
     {
       href: "/admin/orders",
       label: "Commandes & Dispatch",
@@ -51,7 +57,7 @@ export default function AdminLayout({
             
             {/* Logo / Marque */}
             <div className="flex items-center gap-3 shrink-0">
-              <Link href="/admin/orders" className="flex items-center gap-2">
+              <Link href="/admin" className="flex items-center gap-2">
                 <span className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm">
                   IS
                 </span>
@@ -64,7 +70,9 @@ export default function AdminLayout({
             {/* Onglets de navigation principaux */}
             <nav className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1">
               {navItems.map((item) => {
-                const isActive = pathname.startsWith(item.href);
+                const isActive = item.href === "/admin" 
+                  ? pathname === "/admin" 
+                  : pathname.startsWith(item.href);
                 const Icon = item.icon;
                 return (
                   <Link
