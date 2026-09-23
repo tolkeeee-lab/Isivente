@@ -45,36 +45,36 @@ const BUNDLES: BundleOption[] = [
 
 const CAROUSEL_IMAGES = [
   { 
-    src: "/images/microscope-monde-decouverte.jpg", 
+    src: "/images/microscope-monde-decouverte.webp", 
     alt: "Un autre monde dans ses mains - Mini microscope numérique",
     caption: "Écran couleur LCD 2.0\" intégré, grossissement HD 1000X, éclairage 8 LEDs et batterie rechargeable USB"
   },
   { 
-    src: "/images/microscope-scientifique-action.jpg", 
+    src: "/images/microscope-scientifique-action.webp", 
     alt: "Un petit scientifique en action - Observer Découvrir Apprendre",
     caption: "Développe la curiosité scientifique des enfants et les éloigne naturellement des écrans de smartphones"
   },
   { 
-    src: "/images/microscope-detection-poux.jpg", 
+    src: "/images/microscope-detection-poux.webp", 
     alt: "Détection des poux, lentes et examen du cuir chevelu",
     caption: "Examen direct et rapide du cuir chevelu, des racines, des fibres et des objets du quotidien"
   },
   { 
-    src: "/images/microscope-cadeau-unboxing.jpg", 
+    src: "/images/microscope-cadeau-unboxing.webp", 
     alt: "Le cadeau éducatif qui fait vraiment plaisir",
     caption: "Idée cadeau originale et ludique prête à offrir avec son coffret complet et ses accessoires"
   },
 ];
 
 const TIKTOK_EXPLORATION_SLIDES = [
-  { src: "/images/tiktok-slide-1.jpg", title: "Pétale de Fleur", subtitle: "Observation macro de la fleur" },
-  { src: "/images/tiktok-slide-2.jpg", title: "Détails Cellulaires", subtitle: "Grossissement 1000X des pigments" },
-  { src: "/images/tiktok-slide-3.jpg", title: "Ailes d'Insectes", subtitle: "Micro-écailles et transparence" },
-  { src: "/images/tiktok-slide-4.jpg", title: "Structure Microscopique", subtitle: "Détails invisibles à l'œil nu" },
-  { src: "/images/tiktok-slide-5.jpg", title: "Cristaux & Minéraux", subtitle: "Grains de sel et sable" },
-  { src: "/images/tiktok-slide-6.jpg", title: "Géométrie Minérale", subtitle: "Reflets et facettes cubiques" },
-  { src: "/images/tiktok-slide-7.jpg", title: "Prise en Main Enfant", subtitle: "Design ergonomique & léger" },
-  { src: "/images/tiktok-slide-8.jpg", title: "Coffret Prêt à Offrir", subtitle: "Pack complet avec dragonne" },
+  { src: "/images/tiktok-slide-1.webp", title: "Pétale de Fleur", subtitle: "Observation macro de la fleur" },
+  { src: "/images/tiktok-slide-2.webp", title: "Détails Cellulaires", subtitle: "Grossissement 1000X des pigments" },
+  { src: "/images/tiktok-slide-3.webp", title: "Ailes d'Insectes", subtitle: "Micro-écailles et transparence" },
+  { src: "/images/tiktok-slide-4.webp", title: "Structure Microscopique", subtitle: "Détails invisibles à l'œil nu" },
+  { src: "/images/tiktok-slide-5.webp", title: "Cristaux & Minéraux", subtitle: "Grains de sel et sable" },
+  { src: "/images/tiktok-slide-6.webp", title: "Géométrie Minérale", subtitle: "Reflets et facettes cubiques" },
+  { src: "/images/tiktok-slide-7.webp", title: "Prise en Main Enfant", subtitle: "Design ergonomique & léger" },
+  { src: "/images/tiktok-slide-8.webp", title: "Coffret Prêt à Offrir", subtitle: "Pack complet avec dragonne" },
 ];
 
 interface CustomerReview {
@@ -97,7 +97,7 @@ const REVIEWS_DATA: CustomerReview[] = [
     date: "Achat vérifié",
     title: "Outil parfait pour explorer et apprendre pour les enfants !!",
     comment: "J'en ai commandé deux pour mes petits-enfants de 2 ans et de 4 ans. Ils en sont ravis. Mon fils dit qu'ils prennent de très belles photos et que les images sont très nettes. N'hésitez pas à commander !",
-    image: "/images/microscope-real-spider.jpg",
+    image: "/images/microscope-real-spider.webp",
     imageCaption: "Grossissement net d'une araignée sur l'écran 2.0\"",
     verified: true,
   },
@@ -108,7 +108,7 @@ const REVIEWS_DATA: CustomerReview[] = [
     date: "Achat vérifié",
     title: "Le plaisir commence tout de suite",
     comment: "Un jouet vraiment sympa où tu peux apprendre beaucoup. Très intéressant pour les enfants de 4 à 14 ans, mais n'importe qui peut être émerveillé par les détails des choses autour de nous. Très facile à utiliser et s'amuse même avec des objets du quotidien.",
-    image: "/images/microscope-real-leaf.jpg",
+    image: "/images/microscope-real-leaf.webp",
     imageCaption: "Nervures et cellules végétales d'une feuille",
     verified: true,
   },
@@ -119,7 +119,7 @@ const REVIEWS_DATA: CustomerReview[] = [
     date: "Achat vérifié",
     title: "Vraiment génial !",
     comment: "Whaou top !! Mon fils de 4 ans adore ! Il l'emmène partout dans le jardin pour observer les insectes et les fleurs en direct sur l'écran.",
-    image: "/images/microscope-real-ladybug.jpg",
+    image: "/images/microscope-real-ladybug.webp",
     imageCaption: "Observation directe d'une coccinelle en extérieur",
     verified: true,
   },
@@ -167,12 +167,25 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
   const explorationScrollRef = useRef<HTMLDivElement>(null);
   const [isExplorationHovered, setIsExplorationHovered] = useState(false);
 
-  // Auto-play vidéo en boucle et sans blocage
+  // Auto-play vidéo uniquement lorsqu'elle est visible à l'écran (Lazy-Load 0 Ko au chargement)
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.muted = true;
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
   }, []);
 
   // Défilement automatique du carrousel photo Hero (3.8s)
@@ -349,6 +362,9 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             <img 
               src={CAROUSEL_IMAGES[activeImgIndex].src} 
               alt={CAROUSEL_IMAGES[activeImgIndex].alt}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
             />
             
@@ -385,7 +401,13 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                     : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300"
                 }`}
               >
-                <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                <img 
+                  src={img.src} 
+                  alt={img.alt} 
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover" 
+                />
               </button>
             ))}
           </div>
@@ -474,12 +496,10 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                   ref={videoRef}
                   src="/videos/microscope-demo.mp4"
                   poster="/images/microscope-video-cover.webp"
-                  autoPlay
-                  muted
                   playsInline
                   loop
                   controls
-                  preload="auto"
+                  preload="none"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -543,8 +563,10 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
               <img 
-                src="/images/microscope-scientifique-action.jpg" 
+                src="/images/microscope-scientifique-action.webp" 
                 alt="Un petit scientifique en action"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -608,8 +630,10 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             </div>
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px] order-1 md:order-2">
               <img 
-                src="/images/microscope-detection-poux.jpg" 
+                src="/images/microscope-detection-poux.webp" 
                 alt="Détection des poux et cuir chevelu au microscope"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -621,8 +645,10 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
               <img 
-                src="/images/microscope-cadeau-unboxing.jpg" 
+                src="/images/microscope-cadeau-unboxing.webp" 
                 alt="Le cadeau éducatif idéal pour enfant"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </div>

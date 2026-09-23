@@ -7,6 +7,18 @@ import MicroscopeLanding from "@/components/features/MicroscopeLanding";
 import CameraLanding from "@/components/features/CameraLanding";
 import TrozkLanding from "@/components/features/TrozkLanding";
 
+export function generateStaticParams() {
+  return [
+    { slug: "microscope" },
+    { slug: "camera" },
+    { slug: "masseur-oculaire" },
+    { slug: "eye-massager" },
+    { slug: "umei" },
+    { slug: "peeler" },
+    { slug: "trozk" },
+  ];
+}
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }

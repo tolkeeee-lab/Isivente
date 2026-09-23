@@ -177,7 +177,7 @@ export default function ProspectsPage() {
         </div>
 
         <button
-          onClick={fetchLeads}
+          onClick={() => fetchLeads(false)}
           disabled={loading}
           className="flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all shadow-2xs cursor-pointer"
         >
