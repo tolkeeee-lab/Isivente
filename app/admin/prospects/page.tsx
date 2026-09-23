@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { 
   getAllLeads, 
+  getLocalLeads,
   updateLeadStatus, 
   deleteLead, 
   LeadRecord 
@@ -21,31 +22,38 @@ import {
   Package, 
   MapPin, 
   ChevronRight, 
-  Sparkles,
-  ArrowUpRight,
-  ExternalLink
+  Sparkles, 
+  ArrowUpRight, 
+  ExternalLink 
 } from "lucide-react";
 
 export default function ProspectsPage() {
-  const [leads, setLeads] = useState<LeadRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<LeadRecord[]>(() => getLocalLeads());
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      return getLocalLeads().length === 0;
+    }
+    return false;
+  });
   const [filter, setFilter] = useState<"all" | "abandoned" | "contacted" | "converted">("abandoned");
   const [searchQuery, setSearchQuery] = useState("");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
-  const fetchLeads = async () => {
-    setLoading(true);
+  const fetchLeads = async (silent = false) => {
+    if (!silent && leads.length === 0) setLoading(true);
     const data = await getAllLeads();
     setLeads(data);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchLeads();
-    // Rafraîchissement automatique toutes les 12 secondes
+    const hasLocal = getLocalLeads().length > 0;
+    fetchLeads(hasLocal);
+
+    // Rafraîchissement automatique toutes les 30 secondes
     const interval = setInterval(() => {
       getAllLeads().then((data) => setLeads(data));
-    }, 12000);
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 

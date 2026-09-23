@@ -50,14 +50,37 @@ export async function saveNewOrder(orderData: Partial<Order>) {
   }
 }
 
+const ORDERS_STORAGE_KEY = 'isivente_cached_orders';
+
+export function getLocalOrders(): Order[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveLocalOrders(orders: Order[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders.slice(0, 1000)));
+  } catch {}
+}
+
 export async function getOrders(): Promise<Order[]> {
   try {
     const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
     if (error) throw error;
-    return data || [];
+    if (data && data.length > 0) {
+      saveLocalOrders(data);
+      return data;
+    }
+    return getLocalOrders();
   } catch (err) {
     console.error('Error fetching orders:', err);
-    return [];
+    return getLocalOrders();
   }
 }
 

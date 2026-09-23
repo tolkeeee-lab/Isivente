@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { 
   getAllOrders, 
+  getLocalOrders,
   updateOrderStatus as updateStorageStatus, 
   deleteOrder, 
   saveNewOrder, 
@@ -38,8 +39,13 @@ import {
 } from "lucide-react";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<OrderItem[]>(() => getLocalOrders());
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      return getLocalOrders().length === 0;
+    }
+    return false;
+  });
   
   // ── Mode d'affichage principal : Triage commercial vs Flux logistique global ──
   const [viewMode, setViewMode] = useState<"triage" | "logistics">("triage");
@@ -102,19 +108,21 @@ export default function OrdersPage() {
   });
 
   const fetchOrders = async (silent = false) => {
-    if (!silent) setLoading(true);
+    if (!silent && orders.length === 0) setLoading(true);
     const data = await getAllOrders();
     setOrders(data);
-    if (!silent) setLoading(false);
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchOrders();
+    // Si on a déjà des commandes en local, fetch en arrière-plan sans bloquer
+    const hasLocal = getLocalOrders().length > 0;
+    fetchOrders(hasLocal);
 
-    // 1. Polling silencieux toutes les 8 secondes
+    // 1. Polling silencieux espacé (30 secondes)
     const interval = setInterval(() => {
       fetchOrders(true);
-    }, 8000);
+    }, 30000);
 
     // 2. Événement local nouvelle commande
     const handleLocal = () => fetchOrders(true);
