@@ -359,7 +359,7 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       price: 19900,
       originalPrice: 29900,
       savings: 10000,
-      image: "/images/microscope-monde-decouverte.jpg",
+      image: "/images/microscope-video-cover.webp",
       badge: "🎁 2ÈME EXEMPLAIRE (-33%)",
       benefits: [
         "Microscope complet neuf sous blister",
@@ -375,7 +375,7 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       price: 19900,
       originalPrice: 29900,
       savings: 10000,
-      image: "/images/microscope-monde-decouverte.jpg",
+      image: "/images/microscope-video-cover.webp",
       badge: "ÉCONOMISEZ 10 000 FCFA",
       benefits: [
         "Écran 2.0\" couleur haute définition",

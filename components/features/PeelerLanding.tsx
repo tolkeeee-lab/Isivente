@@ -56,26 +56,6 @@ const CAROUSEL_SLIDES = [
     alt: "ChefPeel™ Pro — Éplucheur Automatique d'Ail, Fruits et Légumes",
     label: "Épluchage Automatique en 1 Seul Clic",
   },
-  {
-    src: "/images/peeler-usages.jpg",
-    alt: "Polyvalence culinaire : Ail, Pommes de terre, Pommes et Légumes",
-    label: "Un Appareil, Multiples Usages en Cuisine",
-  },
-  {
-    src: "/images/peeler-avant-apres.jpg",
-    alt: "Avant / Après : Gousses intactes sans odeur sur les mains",
-    label: "Résultat Impeccable Sans Effort",
-  },
-  {
-    src: "/images/peeler-comment.jpg",
-    alt: "Fonctionnement simple en 3 étapes rapides",
-    label: "Préparation Rapide en 3 Étapes",
-  },
-  {
-    src: "/images/peeler-pourquoi.jpg",
-    alt: "Pourquoi choisir l'éplucheur ChefPeel Pro",
-    label: "Moins de Corvées, Plus de Confort",
-  },
 ];
 
 const REVIEWS = [
@@ -398,8 +378,8 @@ export default function PeelerLanding({ slug }: { slug: string }) {
           {/* Image Avant/Après */}
           <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
             <img
-              src="/images/peeler-avant-apres.jpg"
-              alt="Avant et Après Épluchage Automatique ChefPeel Pro"
+              src="/images/peeler-hero.jpg"
+              alt="Épluchage Automatique ChefPeel Pro"
               className="w-full h-auto object-cover"
             />
           </div>
@@ -460,9 +440,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
         <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-md bg-white">
           <img
-            src="/images/peeler-comment.jpg"
+            src="/images/peeler-hero.jpg"
             alt="Comment utiliser l'éplucheur ChefPeel Pro en 3 étapes"
-            className="w-full h-auto object-cover"
+            className="w-full h-auto object-cover max-h-[400px]"
           />
         </div>
 
@@ -492,9 +472,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
       <section className="py-10 px-4 md:px-8 max-w-5xl mx-auto space-y-6">
         <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg bg-white">
           <img
-            src="/images/peeler-usages.jpg"
+            src="/images/peeler-hero.jpg"
             alt="Une machine polyvalente pour tous les petits aliments de cuisine"
-            className="w-full h-auto object-cover"
+            className="w-full h-auto object-cover max-h-[400px]"
           />
         </div>
       </section>

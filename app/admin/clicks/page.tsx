@@ -101,7 +101,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
             title: p.title,
             slug: p.slug,
             price: p.price,
-            image: (p.images && p.images[0]?.url) || (DEFAULT_CATALOG_MAP[p.slug]?.image_url) || "/images/microscope-monde-decouverte.jpg",
+            image: (p.images && p.images[0]?.url) || (DEFAULT_CATALOG_MAP[p.slug]?.image_url) || "/images/microscope-video-cover.webp",
           }));
           const existingSlugs = new Set(formatted.map((p: any) => p.slug));
           const merged = [...formatted, ...defaultProducts.filter((p) => !existingSlugs.has(p.slug))];
