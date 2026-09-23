@@ -45,36 +45,41 @@ const BUNDLES: BundleOption[] = [
 
 const CAROUSEL_IMAGES = [
   { 
-    src: "/images/microscope-monde-decouverte.webp", 
-    alt: "Un autre monde dans ses mains - Mini microscope numérique",
+    src: "/images/microscope-real-infographic.webp", 
+    alt: "Microscope Numérique Portable HD 1000X - Présentation complète",
     caption: "Écran couleur LCD 2.0\" intégré, grossissement HD 1000X, éclairage 8 LEDs et batterie rechargeable USB"
   },
   { 
-    src: "/images/microscope-scientifique-action.webp", 
-    alt: "Un petit scientifique en action - Observer Découvrir Apprendre",
-    caption: "Développe la curiosité scientifique des enfants et les éloigne naturellement des écrans de smartphones"
+    src: "/images/microscope-real-action-broccoli.webp", 
+    alt: "Observation microscopique nette et directe sur l'écran couleur",
+    caption: "Grossissement optique et numérique instantané : observez les cellules et fibres végétales en direct"
   },
   { 
-    src: "/images/microscope-detection-poux.webp", 
-    alt: "Détection des poux, lentes et examen du cuir chevelu",
-    caption: "Examen direct et rapide du cuir chevelu, des racines, des fibres et des objets du quotidien"
+    src: "/images/microscope-real-action-leaf.webp", 
+    alt: "Éclairage 8 LEDs haute luminosité sur feuille végétale",
+    caption: "8 LEDs puissantes réglables pour explorer dans toutes les conditions sans aucun reflet gênant"
   },
   { 
-    src: "/images/microscope-cadeau-unboxing.webp", 
-    alt: "Le cadeau éducatif qui fait vraiment plaisir",
-    caption: "Idée cadeau originale et ludique prête à offrir avec son coffret complet et ses accessoires"
+    src: "/images/microscope-real-kids-outdoor.webp", 
+    alt: "Alternative intelligente et passionnante aux écrans de smartphones",
+    caption: "Stimule la curiosité naturelle et le goût de la découverte scientifique en plein air"
+  },
+  { 
+    src: "/images/microscope-real-desk.webp", 
+    alt: "Microscope complet sur bureau d'étude",
+    caption: "Léger, compact et autonome : prêt pour les devoirs, la SVT et les découvertes du quotidien"
   },
 ];
 
 const TIKTOK_EXPLORATION_SLIDES = [
-  { src: "/images/tiktok-slide-1.webp", title: "Pétale de Fleur", subtitle: "Observation macro de la fleur" },
-  { src: "/images/tiktok-slide-2.webp", title: "Détails Cellulaires", subtitle: "Grossissement 1000X des pigments" },
-  { src: "/images/tiktok-slide-3.webp", title: "Ailes d'Insectes", subtitle: "Micro-écailles et transparence" },
-  { src: "/images/tiktok-slide-4.webp", title: "Structure Microscopique", subtitle: "Détails invisibles à l'œil nu" },
-  { src: "/images/tiktok-slide-5.webp", title: "Cristaux & Minéraux", subtitle: "Grains de sel et sable" },
-  { src: "/images/tiktok-slide-6.webp", title: "Géométrie Minérale", subtitle: "Reflets et facettes cubiques" },
-  { src: "/images/tiktok-slide-7.webp", title: "Prise en Main Enfant", subtitle: "Design ergonomique & léger" },
-  { src: "/images/tiktok-slide-8.webp", title: "Coffret Prêt à Offrir", subtitle: "Pack complet avec dragonne" },
+  { src: "/images/microscope-real-action-broccoli.webp", title: "Cellules Végétales", subtitle: "Grossissement direct 1000X" },
+  { src: "/images/microscope-macro-fibre.webp", title: "Fibres Textiles", subtitle: "Tissage agrandi à 400X" },
+  { src: "/images/microscope-macro-gears.webp", title: "Mécanique & Précision", subtitle: "Rouages et micro-gravures" },
+  { src: "/images/microscope-real-action-leaf.webp", title: "Nervures Botaniques", subtitle: "Structure interne des feuilles" },
+  { src: "/images/microscope-real-bark-zoom.webp", title: "Écorce & Fibres", subtitle: "Texture et reliefs haute définition" },
+  { src: "/images/microscope-macro-fabric.webp", title: "Tissus & Matières", subtitle: "Observation du micro-maillage" },
+  { src: "/images/microscope-macro-nature.webp", title: "Exploration Nature", subtitle: "Découverte autonome en plein air" },
+  { src: "/images/microscope-real-infographic.webp", title: "Pack Complet", subtitle: "Appareil, dragonne et câble USB" },
 ];
 
 interface CustomerReview {
@@ -92,13 +97,13 @@ interface CustomerReview {
 const REVIEWS_DATA: CustomerReview[] = [
   {
     name: "rbrown",
-    location: "Client Amazon Vérifié",
+    location: "Client Vérifié",
     rating: 5,
     date: "Achat vérifié",
     title: "Outil parfait pour explorer et apprendre pour les enfants !!",
-    comment: "J'en ai commandé deux pour mes petits-enfants de 2 ans et de 4 ans. Ils en sont ravis. Mon fils dit qu'ils prennent de très belles photos et que les images sont très nettes. N'hésitez pas à commander !",
-    image: "/images/microscope-real-spider.webp",
-    imageCaption: "Grossissement net d'une araignée sur l'écran 2.0\"",
+    comment: "J'en ai commandé deux pour mes enfants. Ils en sont ravis. Ils prennent de très belles photos et les images sont ultra nettes directement sur l'écran. N'hésitez pas à commander !",
+    image: "/images/microscope-real-action-broccoli.webp",
+    imageCaption: "Grossissement net des cellules végétales sur l'écran 2.0\"",
     verified: true,
   },
   {
@@ -107,9 +112,9 @@ const REVIEWS_DATA: CustomerReview[] = [
     rating: 5,
     date: "Achat vérifié",
     title: "Le plaisir commence tout de suite",
-    comment: "Un jouet vraiment sympa où tu peux apprendre beaucoup. Très intéressant pour les enfants de 4 à 14 ans, mais n'importe qui peut être émerveillé par les détails des choses autour de nous. Très facile à utiliser et s'amuse même avec des objets du quotidien.",
-    image: "/images/microscope-real-leaf.webp",
-    imageCaption: "Nervures et cellules végétales d'une feuille",
+    comment: "Un appareil vraiment bien conçu où les enfants apprennent énormément en s'amusant. Très intuitif pour les 4 à 14 ans, mais même les adultes sont bluffés par la netteté des détails du quotidien.",
+    image: "/images/microscope-real-action-leaf.webp",
+    imageCaption: "Nervures et cellules végétales d'une feuille sous éclairage 8 LED",
     verified: true,
   },
   {
@@ -118,9 +123,9 @@ const REVIEWS_DATA: CustomerReview[] = [
     rating: 5,
     date: "Achat vérifié",
     title: "Vraiment génial !",
-    comment: "Whaou top !! Mon fils de 4 ans adore ! Il l'emmène partout dans le jardin pour observer les insectes et les fleurs en direct sur l'écran.",
-    image: "/images/microscope-real-ladybug.webp",
-    imageCaption: "Observation directe d'une coccinelle en extérieur",
+    comment: "Reçu en 24h avec le livreur à Cotonou. Mes enfants ont passé l'après-midi à observer tout ce qui bouge et les tissus des vêtements. La batterie tient très bien et l'écran est hyper clair.",
+    image: "/images/microscope-macro-fibre.webp",
+    imageCaption: "Micro-fibres textiles révélées avec netteté à 400X",
     verified: true,
   },
 ];
@@ -389,8 +394,8 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             </div>
           </div>
 
-          {/* Miniatures 4 photos avec indicateur actif */}
-          <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
+          {/* Miniatures 5 photos avec indicateur actif */}
+          <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
             {CAROUSEL_IMAGES.map((img, idx) => (
               <button
                 key={idx}
@@ -444,7 +449,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           <UmeiStyleOrderSection
             productSlug="microscope"
             productTitle="Microscope Numérique Portable HD 1000X"
-            productImage="/images/microscope-monde-decouverte.jpg"
+            productImage="/images/microscope-real-infographic.webp"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => {
@@ -496,10 +501,12 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                   ref={videoRef}
                   src="/videos/microscope-demo.mp4"
                   poster="/images/microscope-video-cover.webp"
+                  autoPlay
+                  muted
                   playsInline
                   loop
                   controls
-                  preload="none"
+                  preload="auto"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -563,8 +570,8 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
               <img 
-                src="/images/microscope-scientifique-action.webp" 
-                alt="Un petit scientifique en action"
+                src="/images/microscope-real-kids-outdoor.webp" 
+                alt="Alternative intelligente et passionnante aux écrans pour enfants"
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover"
@@ -630,8 +637,8 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             </div>
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px] order-1 md:order-2">
               <img 
-                src="/images/microscope-detection-poux.webp" 
-                alt="Détection des poux et cuir chevelu au microscope"
+                src="/images/microscope-real-bark-zoom.webp" 
+                alt="Observation haute définition des micro-textures et fibres"
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover"
@@ -645,8 +652,8 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
             <div className="relative aspect-square sm:aspect-auto sm:h-full bg-slate-100 min-h-[300px]">
               <img 
-                src="/images/microscope-cadeau-unboxing.webp" 
-                alt="Le cadeau éducatif idéal pour enfant"
+                src="/images/microscope-real-desk.webp" 
+                alt="Microscope éducatif complet sur bureau d'étude"
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover"
