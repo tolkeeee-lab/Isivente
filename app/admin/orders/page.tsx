@@ -39,13 +39,8 @@ import {
 } from "lucide-react";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<OrderItem[]>(() => getLocalOrders());
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      return getLocalOrders().length === 0;
-    }
-    return false;
-  });
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // ── Mode d'affichage principal : Triage commercial vs Flux logistique global ──
   const [viewMode, setViewMode] = useState<"triage" | "logistics">("triage");
@@ -115,9 +110,12 @@ export default function OrdersPage() {
   };
 
   useEffect(() => {
-    // Si on a déjà des commandes en local, fetch en arrière-plan sans bloquer
-    const hasLocal = getLocalOrders().length > 0;
-    fetchOrders(hasLocal);
+    const local = getLocalOrders();
+    if (local.length > 0) {
+      setOrders(local);
+      setLoading(false);
+    }
+    fetchOrders(local.length > 0);
 
     // 1. Polling silencieux espacé (30 secondes)
     const interval = setInterval(() => {
