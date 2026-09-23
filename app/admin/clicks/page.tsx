@@ -52,6 +52,17 @@ export default function AdminClicksPage() {
   const [isEditingMetaClicks, setIsEditingMetaClicks] = useState(false);
   const [hasAnalyticsTable, setHasAnalyticsTable] = useState<boolean>(true);
   const [copiedSql, setCopiedSql] = useState<boolean>(false);
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+
+  const handleCopyLink = (slug: string) => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://isivente.vercel.app";
+    const url = `${origin}/p/${slug}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      setCopiedSlug(slug);
+      setTimeout(() => setCopiedSlug(null), 2500);
+    }
+  };
 
   const handleCopySql = () => {
     const sql = `CREATE TABLE IF NOT EXISTS public.analytics (
@@ -536,15 +547,39 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                     </td>
 
                     <td className="py-3.5 px-4 text-right">
-                      <a
-                        href={`/p/${prod.slug}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                      >
-                        <span>Visiter</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
+                      <div className="inline-flex items-center gap-1.5 justify-end">
+                        <button
+                          type="button"
+                          onClick={() => handleCopyLink(prod.slug)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                            copiedSlug === prod.slug
+                              ? "bg-emerald-600 text-white shadow-xs"
+                              : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                          }`}
+                        >
+                          {copiedSlug === prod.slug ? (
+                            <>
+                              <Check className="w-3 h-3 stroke-[2.5]" />
+                              <span>Copié !</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Copier</span>
+                            </>
+                          )}
+                        </button>
+
+                        <a
+                          href={`/p/${prod.slug}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                        >
+                          <span>Visiter</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 );

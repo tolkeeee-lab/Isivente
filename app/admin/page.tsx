@@ -37,8 +37,11 @@ import {
   Phone,
   Truck,
   Store,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Check
 } from "lucide-react";
+import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
 
 export default function AdminOverviewPage() {
   const [orders, setOrders] = useState<OrderItem[]>(() => getLocalOrders());
@@ -58,6 +61,22 @@ export default function AdminOverviewPage() {
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+
+  const productsList = useMemo(() => getAdminDashboardProducts(), []);
+
+  const handleCopyLink = (slug: string, withUtm = false) => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://isivente.vercel.app";
+    const url = withUtm
+      ? `${origin}/p/${slug}?utm_source=meta&utm_medium=cpc&utm_campaign=${slug}_ads`
+      : `${origin}/p/${slug}`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      setCopiedSlug(withUtm ? `${slug}_utm` : slug);
+      setTimeout(() => setCopiedSlug(null), 2500);
+    }
+  };
 
   const loadAllData = async (silent = false) => {
     if (!silent && orders.length === 0) setLoading(true);
@@ -400,6 +419,110 @@ export default function AdminOverviewPage() {
             <div className="text-[11px] text-slate-400 truncate">Attribution campagnes & créatifs</div>
           </div>
         </Link>
+      </div>
+
+      {/* ── SECTION BOÎTE À OUTILS : VOS LANDING PAGES PRODUITS (VISITER & COPIER LE LIEN) ── */}
+      <div className="card-figma p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <Store className="w-4 h-4 text-indigo-600" />
+              <h2 className="font-display font-bold text-base sm:text-lg text-slate-900">
+                Vos Landing Pages Produits en Ligne
+              </h2>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                {productsList.length} pages actives
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Accédez directement à vos pages de vente pour tester ou copiez leur lien en 1 clic pour vos publicités (Facebook Ads, TikTok, WhatsApp).
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
+          {productsList.map((prod) => {
+            const isCopied = copiedSlug === prod.slug;
+            const isCopiedUtm = copiedSlug === `${prod.slug}_utm`;
+
+            return (
+              <div
+                key={prod.slug}
+                className="p-3.5 rounded-2xl bg-white border border-slate-200/90 hover:border-indigo-300 hover:shadow-xs transition-all flex flex-col justify-between gap-3"
+              >
+                <div className="flex items-center gap-3">
+                  <img
+                    src={prod.image}
+                    alt={prod.title}
+                    className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-50"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-xs sm:text-sm text-slate-900 truncate">
+                      {prod.title}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="font-mono text-xs font-bold text-indigo-600">
+                        {fmt(prod.price)} FCFA
+                      </span>
+                      <span className="text-slate-300">•</span>
+                      <span className="font-mono text-[11px] text-slate-400 truncate">
+                        /p/{prod.slug}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Boutons d'action : Visiter & Copier */}
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                  <a
+                    href={`/p/${prod.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 py-1.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <span>Visiter</span>
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLink(prod.slug, false)}
+                    className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      isCopied
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "bg-slate-900 hover:bg-slate-800 text-white"
+                    }`}
+                  >
+                    {isCopied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span>Copié !</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copier lien</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLink(prod.slug, true)}
+                    title="Copier avec tracking UTM Meta Ads (?utm_source=meta&...)"
+                    className={`py-1.5 px-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                      isCopiedUtm
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                        : "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
+                    }`}
+                  >
+                    {isCopiedUtm ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <span className="font-mono text-[10px] font-bold">UTM</span>}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* ── GRILLE PRINCIPALE : DERNIÈRES COMMANDES (60%) vs ACTIONS PRIORITAIRES (40%) ── */}
