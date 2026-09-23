@@ -235,9 +235,9 @@ export default function UmeiStyleOrderSection({
 
   const theme = accentColor
     ? {
-        ...baseTheme,
-        primary: accentColor,
-      }
+      ...baseTheme,
+      primary: accentColor,
+    }
     : baseTheme;
 
   // Liste de packs par défaut si non fournie
@@ -331,7 +331,7 @@ export default function UmeiStyleOrderSection({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }).catch(() => {});
+        }).catch(() => { });
 
         // Envoyer InitiateCheckout à Meta CAPI avec les données de correspondance avancée (EMQ 9+)
         const nameParts = (customerName || "").trim().split(/\s+/);
@@ -355,8 +355,8 @@ export default function UmeiStyleOrderSection({
               num_items: currentBundle.quantity || 1,
             },
           }),
-        }).catch(() => {});
-      } catch {}
+        }).catch(() => { });
+      } catch { }
     }
   };
 
@@ -389,21 +389,21 @@ export default function UmeiStyleOrderSection({
               product_slug: normalizedSlug || productSlug,
               action: "convert",
             }),
-          }).catch(() => {});
-        } catch {}
+          }).catch(() => { });
+        } catch { }
       }
 
       const finalOrderNum =
         orderNumber || "ISV-" + Math.floor(100000 + Math.random() * 900000);
       const whatsappMsg = encodeURIComponent(
         `Bonjour Isivente, je viens de valider ma commande sur le site !\n\n` +
-          `📦 *Produit :* ${productTitle}\n` +
-          `🔢 *Formule :* ${currentBundle.name}\n` +
-          `💰 *Total à régler :* ${fmt(totalPrice)} FCFA (Paiement à la livraison)\n` +
-          `🔖 *N° Commande :* ${finalOrderNum}\n` +
-          `👤 *Nom :* ${customerName}\n` +
-          `📍 *Ville & Quartier :* ${city} - ${address}\n\n` +
-          `Merci de confirmer l'expédition de mon colis.`
+        `📦 *Produit :* ${productTitle}\n` +
+        `🔢 *Formule :* ${currentBundle.name}\n` +
+        `💰 *Total à régler :* ${fmt(totalPrice)} FCFA (Paiement à la livraison)\n` +
+        `🔖 *N° Commande :* ${finalOrderNum}\n` +
+        `👤 *Nom :* ${customerName}\n` +
+        `📍 *Ville & Quartier :* ${city} - ${address}\n\n` +
+        `Merci de confirmer l'expédition de mon colis.`
       );
       const timer = setTimeout(() => {
         window.location.href = `https://wa.me/${whatsappNumber}?text=${whatsappMsg}`;
@@ -419,13 +419,13 @@ export default function UmeiStyleOrderSection({
 
     const whatsappMsg = encodeURIComponent(
       `Bonjour Isivente, je viens de valider ma commande sur le site !\n\n` +
-        `📦 *Produit :* ${productTitle}\n` +
-        `🔢 *Formule :* ${currentBundle.name}\n` +
-        `💰 *Total à régler :* ${fmt(totalPrice)} FCFA (Paiement à la livraison)\n` +
-        `🔖 *N° Commande :* ${finalOrderNum}\n` +
-        `👤 *Nom :* ${customerName}\n` +
-        `📍 *Ville & Quartier :* ${city} - ${address}\n\n` +
-        `Merci de confirmer l'expédition de mon colis.`
+      `📦 *Produit :* ${productTitle}\n` +
+      `🔢 *Formule :* ${currentBundle.name}\n` +
+      `💰 *Total à régler :* ${fmt(totalPrice)} FCFA (Paiement à la livraison)\n` +
+      `🔖 *N° Commande :* ${finalOrderNum}\n` +
+      `👤 *Nom :* ${customerName}\n` +
+      `📍 *Ville & Quartier :* ${city} - ${address}\n\n` +
+      `Merci de confirmer l'expédition de mon colis.`
     );
 
     return (
@@ -517,7 +517,7 @@ export default function UmeiStyleOrderSection({
       className="py-10 px-4 max-w-[580px] mx-auto w-full scroll-mt-20 sm:scroll-mt-24"
     >
       <div className="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/80 shadow-[0_12px_40px_-16px_rgba(0,0,0,0.06)]">
-        
+
         {/* Titre sobre */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold tracking-wide uppercase mb-2">
@@ -533,9 +533,9 @@ export default function UmeiStyleOrderSection({
         </div>
 
         <form onSubmit={onSubmit} className="space-y-5">
-          
+
           {/* 1. RÉCAPITULATIF DU PRODUIT UNIQUE ADAPTÉ AUX COULEURS DU PRODUIT */}
-          <div 
+          <div
             className="p-4 rounded-2xl flex items-center justify-between gap-3 transition-all border shadow-xs"
             style={{
               backgroundColor: theme.primaryLight,
@@ -543,7 +543,7 @@ export default function UmeiStyleOrderSection({
             }}
           >
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs text-white"
                 style={{
                   backgroundColor: theme.primary,
@@ -552,7 +552,7 @@ export default function UmeiStyleOrderSection({
                 <Package className="w-4 h-4 text-white" />
               </div>
               <div>
-                <div 
+                <div
                   className="font-bold text-xs sm:text-sm tracking-tight"
                   style={{ color: theme.textPrimary }}
                 >
@@ -564,13 +564,13 @@ export default function UmeiStyleOrderSection({
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div 
+              <div
                 className="font-mono font-extrabold text-sm sm:text-base tabular-nums"
                 style={{ color: theme.primary }}
               >
                 {fmt(totalPrice)} FCFA
               </div>
-              <span 
+              <span
                 className="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mt-0.5 border"
                 style={{
                   backgroundColor: theme.badgeBg,
@@ -585,7 +585,7 @@ export default function UmeiStyleOrderSection({
 
           {/* 2. LES 3 CHAMPS ESSENTIELS */}
           <div className="space-y-3.5 pt-1">
-            
+
             {/* Champ 1 : Nom et Prénom */}
             <div className="space-y-1 text-left">
               <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
@@ -704,22 +704,20 @@ export default function UmeiStyleOrderSection({
                 <button
                   type="button"
                   onClick={() => setOrderType("immediate")}
-                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                    orderType === "immediate"
+                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${orderType === "immediate"
                       ? "border-emerald-500 bg-emerald-50/70 text-emerald-950 shadow-xs"
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                  }`}
+                    }`}
                 >
                   <span>⚡ Dès que possible</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setOrderType("reservation")}
-                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                    orderType === "reservation"
+                  className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${orderType === "reservation"
                       ? "border-amber-500 bg-amber-50/70 text-amber-950 shadow-xs"
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                  }`}
+                    }`}
                 >
                   <Bookmark className="w-3.5 h-3.5 text-amber-600" />
                   <span>Réserver pour plus tard</span>
@@ -750,7 +748,7 @@ export default function UmeiStyleOrderSection({
           <div className="pt-3 border-t border-slate-100 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-slate-600">Total à payer à la livraison :</span>
-              <span 
+              <span
                 className="text-xl font-bold font-mono tabular-nums"
                 style={{ color: theme.primary }}
               >

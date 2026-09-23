@@ -54,8 +54,8 @@ async function sendServerBridge(eventName: string, customData: Record<string, an
         event_source_url: window.location.href,
       }),
       keepalive: true,
-    }).catch(() => {});
-  } catch {}
+    }).catch(() => { });
+  } catch { }
 }
 
 /**

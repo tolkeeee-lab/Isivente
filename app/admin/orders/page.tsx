@@ -1,23 +1,23 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { 
-  getAllOrders, 
+import {
+  getAllOrders,
   getLocalOrders,
-  updateOrderStatus as updateStorageStatus, 
-  deleteOrder, 
-  saveNewOrder, 
-  OrderItem 
+  updateOrderStatus as updateStorageStatus,
+  deleteOrder,
+  saveNewOrder,
+  OrderItem
 } from "@/lib/ordersStorage";
 import { supabase } from "@/lib/supabase";
 import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
-import { 
-  Search, 
-  Phone, 
-  MapPin, 
-  Package, 
-  Calendar, 
-  RefreshCw, 
+import {
+  Search,
+  Phone,
+  MapPin,
+  Package,
+  Calendar,
+  RefreshCw,
   MessageSquare,
   Truck,
   CheckCircle2,
@@ -46,10 +46,10 @@ export default function OrdersPage() {
     }
     return false;
   });
-  
+
   // ── Mode d'affichage principal : Triage commercial vs Flux logistique global ──
   const [viewMode, setViewMode] = useState<"triage" | "logistics">("triage");
-  
+
   // ── Filtres pour le flux logistique global ──
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,7 +86,7 @@ export default function OrdersPage() {
   // ── États d'actions ──
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  
+
   // ── Modale d'édition de note / date de réservation ──
   const [editingNoteOrder, setEditingNoteOrder] = useState<OrderItem | null>(null);
   const [noteForm, setNoteForm] = useState({ reservation_date: "", notes: "" });
@@ -153,15 +153,15 @@ export default function OrdersPage() {
 
   // ── Changement de statut 1-Clic ──
   const handleStatusChange = async (
-    id: string | undefined, 
-    newStatus: string, 
+    id: string | undefined,
+    newStatus: string,
     extraData?: { notes?: string; reservation_date?: string }
   ) => {
     if (!id) return;
     setUpdatingId(id);
     await updateStorageStatus(id, newStatus, extraData);
-    setOrders(prev => prev.map(o => o.id === id ? { 
-      ...o, 
+    setOrders(prev => prev.map(o => o.id === id ? {
+      ...o,
       status: newStatus,
       ...(extraData?.notes !== undefined ? { notes: extraData.notes } : {}),
       ...(extraData?.reservation_date !== undefined ? { reservation_date: extraData.reservation_date } : {}),
@@ -252,7 +252,7 @@ export default function OrdersPage() {
   const confirmedOrders = useMemo(() => orders.filter(o => o.status === "confirmed"), [orders]);
   const reservedOrders = useMemo(() => orders.filter(o => o.status === "reserved"), [orders]);
   const postponedOrders = useMemo(() => orders.filter(o => o.status === "postponed"), [orders]);
-  
+
   const totalTriageCount = pendingOrders.length + confirmedOrders.length + reservedOrders.length + postponedOrders.length;
   const totalPendingAmount = pendingOrders.reduce((acc, o) => acc + (o.total_amount || 0), 0);
   const totalConfirmedAmount = confirmedOrders.reduce((acc, o) => acc + (o.total_amount || 0), 0);
@@ -338,11 +338,11 @@ export default function OrdersPage() {
       let matchesPeriod = true;
       const combinedDate = `${order.reservation_date || ""} ${order.notes || ""}`.toLowerCase();
       if (reservedFilters.period === "payday") {
-        matchesPeriod = combinedDate.includes("25") || combinedDate.includes("26") || 
-                        combinedDate.includes("27") || combinedDate.includes("28") || 
-                        combinedDate.includes("29") || combinedDate.includes("30") || 
-                        combinedDate.includes("31") || combinedDate.includes("paie") || 
-                        combinedDate.includes("salaire") || combinedDate.includes("fin de mois");
+        matchesPeriod = combinedDate.includes("25") || combinedDate.includes("26") ||
+          combinedDate.includes("27") || combinedDate.includes("28") ||
+          combinedDate.includes("29") || combinedDate.includes("30") ||
+          combinedDate.includes("31") || combinedDate.includes("paie") ||
+          combinedDate.includes("salaire") || combinedDate.includes("fin de mois");
       } else if (reservedFilters.period === "has_date") {
         matchesPeriod = !!order.reservation_date && order.reservation_date.trim().length > 0;
       } else if (reservedFilters.period === "no_date") {
@@ -464,7 +464,7 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-6 animate-[staggerFadeUp_240ms_cubic-bezier(0.16,1,0.3,1)_both]">
-      
+
       {/* ── HEADER PAGE & ACTIONS GLOBALES ── */}
       <div className="card-figma p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -512,11 +512,10 @@ export default function OrdersPage() {
           <button
             type="button"
             onClick={() => setViewMode("triage")}
-            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-2 ${
-              viewMode === "triage"
+            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-2 ${viewMode === "triage"
                 ? "bg-white text-slate-950 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
-            }`}
+              }`}
           >
             <Layers className="w-3.5 h-3.5 text-indigo-600" />
             <span>Tableau Triage & Suivi (Validées • Réservées • Plus tard)</span>
@@ -528,11 +527,10 @@ export default function OrdersPage() {
           <button
             type="button"
             onClick={() => setViewMode("logistics")}
-            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-2 ${
-              viewMode === "logistics"
+            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-2 ${viewMode === "logistics"
                 ? "bg-white text-slate-950 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
-            }`}
+              }`}
           >
             <Truck className="w-3.5 h-3.5 text-slate-500" />
             <span>Flux Logistique Global (Toutes les commandes)</span>
@@ -562,13 +560,12 @@ export default function OrdersPage() {
 
           {/* 4 CARTES STATISTIQUES EN HAUT DU TABLEAU DE TRIAGE */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
+
             {/* Carte Nouvelles Reçues (À Traiter) */}
-            <div 
+            <div
               onClick={() => setTriageFilter(triageFilter === "pending" ? "all" : "pending")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-blue-500 hover:shadow-md ${
-                triageFilter === "pending" ? "ring-2 ring-blue-500/40 bg-blue-50/20" : ""
-              } ${pendingOrders.length > 0 ? "ring-1 ring-blue-400/30" : ""}`}
+              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-blue-500 hover:shadow-md ${triageFilter === "pending" ? "ring-2 ring-blue-500/40 bg-blue-50/20" : ""
+                } ${pendingOrders.length > 0 ? "ring-1 ring-blue-400/30" : ""}`}
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -581,9 +578,8 @@ export default function OrdersPage() {
                     {pendingOrders.length}
                   </div>
                 </div>
-                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg ${
-                  pendingOrders.length > 0 ? "bg-blue-600 text-white shadow-xs" : "bg-blue-100 text-blue-800"
-                }`}>
+                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg ${pendingOrders.length > 0 ? "bg-blue-600 text-white shadow-xs" : "bg-blue-100 text-blue-800"
+                  }`}>
                   {fmt(totalPendingAmount)} F
                 </span>
               </div>
@@ -593,11 +589,10 @@ export default function OrdersPage() {
             </div>
 
             {/* Carte Validées */}
-            <div 
+            <div
               onClick={() => setTriageFilter(triageFilter === "confirmed" ? "all" : "confirmed")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-emerald-500 hover:shadow-md ${
-                triageFilter === "confirmed" ? "ring-2 ring-emerald-500/40 bg-emerald-50/20" : ""
-              }`}
+              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-emerald-500 hover:shadow-md ${triageFilter === "confirmed" ? "ring-2 ring-emerald-500/40 bg-emerald-50/20" : ""
+                }`}
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -619,11 +614,10 @@ export default function OrdersPage() {
             </div>
 
             {/* Carte Réservations */}
-            <div 
+            <div
               onClick={() => setTriageFilter(triageFilter === "reserved" ? "all" : "reserved")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-amber-500 hover:shadow-md ${
-                triageFilter === "reserved" ? "ring-2 ring-amber-500/40 bg-amber-50/20" : ""
-              }`}
+              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-amber-500 hover:shadow-md ${triageFilter === "reserved" ? "ring-2 ring-amber-500/40 bg-amber-50/20" : ""
+                }`}
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -645,11 +639,10 @@ export default function OrdersPage() {
             </div>
 
             {/* Carte Mises à plus tard */}
-            <div 
+            <div
               onClick={() => setTriageFilter(triageFilter === "postponed" ? "all" : "postponed")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-purple-500 hover:shadow-md ${
-                triageFilter === "postponed" ? "ring-2 ring-purple-500/40 bg-purple-50/20" : ""
-              }`}
+              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-purple-500 hover:shadow-md ${triageFilter === "postponed" ? "ring-2 ring-purple-500/40 bg-purple-50/20" : ""
+                }`}
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -683,45 +676,40 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("all")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    triageFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                    }`}
                 >
                   Toutes ({totalTriageCount})
                 </button>
                 <button
                   type="button"
                   onClick={() => setTriageFilter("pending")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    triageFilter === "pending" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-blue-700"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "pending" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-blue-700"
+                    }`}
                 >
                   🚨 Nouvelles ({pendingOrders.length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setTriageFilter("confirmed")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    triageFilter === "confirmed" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-emerald-700"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "confirmed" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-emerald-700"
+                    }`}
                 >
                   1. Validées ({confirmedOrders.length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setTriageFilter("reserved")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    triageFilter === "reserved" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-amber-700"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "reserved" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-amber-700"
+                    }`}
                 >
                   2. Réservations ({reservedOrders.length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setTriageFilter("postponed")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    triageFilter === "postponed" ? "bg-purple-600 text-white shadow-xs" : "text-slate-600 hover:text-purple-700"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "postponed" ? "bg-purple-600 text-white shadow-xs" : "text-slate-600 hover:text-purple-700"
+                    }`}
                 >
                   3. Plus tard ({postponedOrders.length})
                 </button>
@@ -738,7 +726,7 @@ export default function OrdersPage() {
              ═══════════════════════════════════════════════════════════ */}
           {(triageFilter === "all" || triageFilter === "pending") && pendingOrders.length > 0 && (
             <div className="card-figma overflow-hidden border-blue-300 shadow-sm ring-1 ring-blue-400/20">
-              
+
               {/* En-tête de la section À Confirmer */}
               <div className="bg-blue-50/90 px-5 py-3.5 border-b border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
@@ -832,7 +820,7 @@ export default function OrdersPage() {
              ═══════════════════════════════════════════════════════════ */}
           {(triageFilter === "all" || triageFilter === "confirmed") && (
             <div className="card-figma overflow-hidden border-emerald-200/80 shadow-xs">
-              
+
               {/* En-tête de la section Validées */}
               <div className="bg-emerald-50/90 px-5 py-3.5 border-b border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
@@ -926,7 +914,7 @@ export default function OrdersPage() {
              ═══════════════════════════════════════════════════════════ */}
           {(triageFilter === "all" || triageFilter === "reserved") && (
             <div className="card-figma overflow-hidden border-amber-200/80 shadow-xs">
-              
+
               {/* En-tête de la section Réservations */}
               <div className="bg-amber-50/90 px-5 py-3.5 border-b border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
@@ -1038,7 +1026,7 @@ export default function OrdersPage() {
              ═══════════════════════════════════════════════════════════ */}
           {(triageFilter === "all" || triageFilter === "postponed") && (
             <div className="card-figma overflow-hidden border-purple-200/80 shadow-xs">
-              
+
               {/* En-tête de la section Mises à plus tard */}
               <div className="bg-purple-50/90 px-5 py-3.5 border-b border-purple-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
@@ -1135,7 +1123,7 @@ export default function OrdersPage() {
          ═══════════════════════════════════════════════════════════════════ */}
       {viewMode === "logistics" && (
         <div className="space-y-6">
-          
+
           {/* BARRE DE RECHERCHE ET ONGLETS */}
           <div className="card-figma p-4 sm:p-5 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4">
             <div className="relative flex-1">
@@ -1159,16 +1147,14 @@ export default function OrdersPage() {
                     key={tab.id}
                     type="button"
                     onClick={() => setFilter(tab.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-2 transition-all duration-150 cursor-pointer active:scale-[0.97] ${
-                      isActive
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-2 transition-all duration-150 cursor-pointer active:scale-[0.97] ${isActive
                         ? "bg-slate-900 text-white shadow-sm"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
-                    }`}
+                      }`}
                   >
                     <span>{tab.label}</span>
-                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full ${
-                      isActive ? "bg-white/20 text-white" : "bg-white text-slate-600 border border-slate-200"
-                    }`}>
+                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full ${isActive ? "bg-white/20 text-white" : "bg-white text-slate-600 border border-slate-200"
+                      }`}>
                       {count}
                     </span>
                   </button>
@@ -1279,7 +1265,7 @@ export default function OrdersPage() {
             </div>
 
             <form onSubmit={handleCreateManualOrder} className="space-y-3 text-xs">
-              
+
               {/* Statut initial de la commande */}
               <div>
                 <label className="font-bold text-slate-700 block mb-1">
@@ -1289,33 +1275,30 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "confirmed" }))}
-                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${
-                      manualForm.status === "confirmed" 
-                        ? "bg-emerald-600 text-white border-emerald-600 shadow-xs" 
+                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "confirmed"
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-                    }`}
+                      }`}
                   >
                     ✅ Validée
                   </button>
                   <button
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "reserved" }))}
-                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${
-                      manualForm.status === "reserved" 
-                        ? "bg-amber-500 text-white border-amber-500 shadow-xs" 
+                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "reserved"
+                        ? "bg-amber-500 text-white border-amber-500 shadow-xs"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-                    }`}
+                      }`}
                   >
                     📅 Réservation
                   </button>
                   <button
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "postponed" }))}
-                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${
-                      manualForm.status === "postponed" 
-                        ? "bg-purple-600 text-white border-purple-600 shadow-xs" 
+                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "postponed"
+                        ? "bg-purple-600 text-white border-purple-600 shadow-xs"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-                    }`}
+                      }`}
                   >
                     ⏳ Plus tard
                   </button>
@@ -1503,8 +1486,8 @@ export default function OrdersPage() {
               );
 
               return (
-                <tr 
-                  key={order.id || `ord_${idx}`} 
+                <tr
+                  key={order.id || `ord_${idx}`}
                   className="hover:bg-slate-50/70 transition-colors"
                 >
                   {/* 1. N° COMMANDE */}
@@ -1519,11 +1502,10 @@ export default function OrdersPage() {
                       <span className="font-mono text-[11px] text-slate-500 font-medium">{order.customer_phone || "-"}</span>
                       {phoneDigits && (
                         <a
-                          href={`https://wa.me/229${phoneDigits}?text=${
-                            order.status === "reserved" ? whatsappReservationMsg :
-                            order.status === "postponed" ? whatsappRelanceMsg :
-                            whatsappDeliveryMsg
-                          }`}
+                          href={`https://wa.me/229${phoneDigits}?text=${order.status === "reserved" ? whatsappReservationMsg :
+                              order.status === "postponed" ? whatsappRelanceMsg :
+                                whatsappDeliveryMsg
+                            }`}
                           target="_blank"
                           rel="noreferrer"
                           className="text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-200/60 inline-flex items-center gap-0.5"
@@ -1590,15 +1572,14 @@ export default function OrdersPage() {
                       value={order.status || "pending"}
                       disabled={updatingId === order.id}
                       onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                      className={`text-xs font-bold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition-all ${
-                        order.status === "confirmed" ? "bg-emerald-50 text-emerald-800 border-emerald-300" :
-                        order.status === "reserved" ? "bg-amber-50 text-amber-800 border-amber-300" :
-                        order.status === "postponed" ? "bg-purple-50 text-purple-800 border-purple-300" :
-                        order.status === "shipped" ? "bg-sky-50 text-sky-800 border-sky-300" :
-                        order.status === "delivered" ? "bg-emerald-100 text-emerald-900 border-emerald-400" :
-                        order.status === "cancelled" ? "bg-rose-50 text-rose-800 border-rose-300" :
-                        "bg-slate-100 text-slate-700 border-slate-200"
-                      }`}
+                      className={`text-xs font-bold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition-all ${order.status === "confirmed" ? "bg-emerald-50 text-emerald-800 border-emerald-300" :
+                          order.status === "reserved" ? "bg-amber-50 text-amber-800 border-amber-300" :
+                            order.status === "postponed" ? "bg-purple-50 text-purple-800 border-purple-300" :
+                              order.status === "shipped" ? "bg-sky-50 text-sky-800 border-sky-300" :
+                                order.status === "delivered" ? "bg-emerald-100 text-emerald-900 border-emerald-400" :
+                                  order.status === "cancelled" ? "bg-rose-50 text-rose-800 border-rose-300" :
+                                    "bg-slate-100 text-slate-700 border-slate-200"
+                        }`}
                     >
                       <option value="confirmed">✅ Validée</option>
                       <option value="reserved">📅 Réservation</option>
@@ -1613,7 +1594,7 @@ export default function OrdersPage() {
                   {/* 8. ACTIONS RAPIDES 1-CLIC */}
                   <td className="py-3 px-4 text-center whitespace-nowrap">
                     <div className="flex items-center justify-center gap-1">
-                      
+
                       {/* Si pas encore validée : bouton Valider 1-clic */}
                       {order.status !== "confirmed" && (
                         <button

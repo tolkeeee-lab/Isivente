@@ -150,7 +150,7 @@ export const getAllOrders = getOrders;
 export async function updateOrderStatus(
   orderIdOrNumber: string,
   status: string,
-  extraData?: { notes?: string; reservation_date?: string; [key: string]: any }
+  extraData?: { notes?: string; reservation_date?: string;[key: string]: any }
 ) {
   if (!orderIdOrNumber) return;
 

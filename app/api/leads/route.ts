@@ -12,8 +12,8 @@ function getSupabase() {
   return createServerClient(url, key, {
     cookies: {
       get() { return undefined; },
-      set() {},
-      remove() {},
+      set() { },
+      remove() { },
     },
   });
 }

@@ -69,15 +69,14 @@ export async function sendOrderNotification(order: NotificationOrderData) {
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🆔 Réf. Commande :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-family: monospace; font-weight: bold; color: #0f172a;">${orderRef}</td></tr>
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📅 Date :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b;">${dateFormatted}</td></tr>
       </table>
-      ${
-        whatsappLink
-          ? `<div style="text-align: center; margin-top: 16px;">
+      ${whatsappLink
+      ? `<div style="text-align: center; margin-top: 16px;">
               <a href="${whatsappLink}" style="display: inline-block; background-color: #22c55e; color: #ffffff; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);">
                 💬 Contacter le client sur WhatsApp
               </a>
             </div>`
-          : ""
-      }
+      : ""
+    }
     </div>
   `;
 
@@ -224,7 +223,7 @@ export async function sendAbandonedLeadNotification(lead: {
   );
   const whatsappLink = cleanPhone ? `https://wa.me/${whatsappPhone}?text=${prefilledMsg}` : "";
   const callLink = cleanPhone ? `tel:${cleanPhone}` : "";
-  const formattedAmount = lead.total_amount 
+  const formattedAmount = lead.total_amount
     ? new Intl.NumberFormat("fr-FR").format(lead.total_amount) + " FCFA"
     : "Non calculé";
   const dateFormatted = new Date().toLocaleString("fr-FR", { timeZone: "Africa/Porto-Novo" });
@@ -249,20 +248,18 @@ export async function sendAbandonedLeadNotification(lead: {
       </table>
 
       <div style="display: flex; gap: 12px; justify-content: center; text-align: center; margin-top: 16px;">
-        ${
-          whatsappLink
-            ? `<a href="${whatsappLink}" style="display: inline-block; background-color: #22c55e; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-right: 10px;">
+        ${whatsappLink
+      ? `<a href="${whatsappLink}" style="display: inline-block; background-color: #22c55e; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-right: 10px;">
                 💬 Relancer sur WhatsApp
               </a>`
-            : ""
-        }
-        ${
-          callLink
-            ? `<a href="${callLink}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px;">
+      : ""
+    }
+        ${callLink
+      ? `<a href="${callLink}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px;">
                 📞 Appeler directement
               </a>`
-            : ""
-        }
+      : ""
+    }
       </div>
 
       <div style="margin-top: 24px; text-align: center;">
@@ -322,7 +319,7 @@ export async function sendAbandonedLeadNotification(lead: {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "Markdown" }),
       });
-    } catch (tgErr) {}
+    } catch (tgErr) { }
   }
 
   return { success: true };
