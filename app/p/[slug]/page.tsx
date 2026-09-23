@@ -6,6 +6,12 @@ import EyeMassagerLanding from "@/components/features/EyeMassagerLanding";
 import MicroscopeLanding from "@/components/features/MicroscopeLanding";
 import CameraLanding from "@/components/features/CameraLanding";
 import TrozkLanding from "@/components/features/TrozkLanding";
+import StabilisateurLanding from "@/components/features/StabilisateurLanding";
+import EraCleanLanding from "@/components/features/EraCleanLanding";
+import TurboFanLanding from "@/components/features/TurboFanLanding";
+import VeilleuseLanding from "@/components/features/VeilleuseLanding";
+import ProductLanding from "@/components/features/ProductLanding";
+import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export function generateStaticParams() {
   return [
@@ -16,6 +22,11 @@ export function generateStaticParams() {
     { slug: "umei" },
     { slug: "peeler" },
     { slug: "trozk" },
+    { slug: "stabilisateur" },
+    { slug: "stabilizer" },
+    { slug: "eraclean" },
+    { slug: "turbofan" },
+    { slug: "veilleuse" },
   ];
 }
 
@@ -25,8 +36,9 @@ interface PageProps {
 
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
+  const normalizedSlug = slug.toLowerCase();
 
-  switch (slug.toLowerCase()) {
+  switch (normalizedSlug) {
     case "umei":
       return <UmeiLanding slug="umei" />;
     case "peeler":
@@ -40,7 +52,21 @@ export default async function ProductPage({ params }: PageProps) {
       return <CameraLanding slug="camera" />;
     case "trozk":
       return <TrozkLanding slug="trozk" />;
+    case "stabilisateur":
+    case "stabilizer":
+      return <StabilisateurLanding slug="stabilisateur" />;
+    case "eraclean":
+      return <EraCleanLanding slug="eraclean" />;
+    case "turbofan":
+      return <TurboFanLanding slug="turbofan" />;
+    case "veilleuse":
+      return <VeilleuseLanding slug="veilleuse" />;
     default:
+      // If the slug exists in our catalog or database, render universal ProductLanding
+      if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
+        return <ProductLanding slug={normalizedSlug} />;
+      }
       return notFound();
   }
 }
+
