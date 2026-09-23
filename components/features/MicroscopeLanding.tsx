@@ -45,29 +45,9 @@ const BUNDLES: BundleOption[] = [
 
 const CAROUSEL_IMAGES = [
   { 
-    src: "/images/microscope-real-infographic.webp", 
-    alt: "Microscope Numérique Portable HD 1000X - Présentation complète",
-    caption: "Écran couleur LCD 2.0\" intégré, grossissement HD 1000X, éclairage 8 LEDs et batterie rechargeable USB"
-  },
-  { 
-    src: "/images/microscope-real-action-broccoli.webp", 
-    alt: "Observation microscopique nette et directe sur l'écran couleur",
-    caption: "Grossissement optique et numérique instantané : observez les cellules et fibres végétales en direct"
-  },
-  { 
-    src: "/images/microscope-real-action-leaf.webp", 
-    alt: "Éclairage 8 LEDs haute luminosité sur feuille végétale",
-    caption: "8 LEDs puissantes réglables pour explorer dans toutes les conditions sans aucun reflet gênant"
-  },
-  { 
-    src: "/images/microscope-real-kids-outdoor.webp", 
-    alt: "Alternative intelligente et passionnante aux écrans de smartphones",
-    caption: "Stimule la curiosité naturelle et le goût de la découverte scientifique en plein air"
-  },
-  { 
-    src: "/images/microscope-real-desk.webp", 
-    alt: "Microscope complet sur bureau d'étude",
-    caption: "Léger, compact et autonome : prêt pour les devoirs, la SVT et les découvertes du quotidien"
+    src: "/images/microscope-real-desk.jpg", 
+    alt: "Microscope Numérique Portable HD 1000X - Un outil, mille possibilités !",
+    caption: "Microscope Numérique Portable HD 1000X : écran couleur LCD 2.0\", zoom optique & numérique et éclairage 8 LED"
   },
 ];
 
@@ -195,7 +175,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
 
   // Défilement automatique du carrousel photo Hero (3.8s)
   useEffect(() => {
-    if (isHeroHovered) return;
+    if (isHeroHovered || CAROUSEL_IMAGES.length <= 1) return;
     const timer = setInterval(() => {
       setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
     }, 3800);
@@ -361,61 +341,70 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         <div 
           onMouseEnter={() => setIsHeroHovered(true)}
           onMouseLeave={() => setIsHeroHovered(false)}
-          className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-5 space-y-3"
+          className="max-w-2xl mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-4 space-y-3"
         >
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60">
+          <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60 shadow-inner">
             <img 
-              src={CAROUSEL_IMAGES[activeImgIndex].src} 
-              alt={CAROUSEL_IMAGES[activeImgIndex].alt}
+              src={CAROUSEL_IMAGES[activeImgIndex]?.src || "/images/microscope-real-desk.jpg"} 
+              alt={CAROUSEL_IMAGES[activeImgIndex]?.alt || "Microscope Numérique Portable HD 1000X"}
               loading="eager"
               decoding="async"
               fetchPriority="high"
               className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
             />
             
-            {/* Boutons précédents / suivants discrets */}
-            <button
-              onClick={() => setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer"
-              aria-label="Image précédente"
-            >
-              <ChevronLeft className="w-4 h-4 stroke-[2]" />
-            </button>
-            <button
-              onClick={() => setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer"
-              aria-label="Image suivante"
-            >
-              <ChevronRight className="w-4 h-4 stroke-[2]" />
-            </button>
+            {/* Boutons précédents / suivants (actifs si plusieurs photos) */}
+            {CAROUSEL_IMAGES.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
+                  aria-label="Image précédente"
+                >
+                  <ChevronLeft className="w-4 h-4 stroke-[2]" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
+                  aria-label="Image suivante"
+                >
+                  <ChevronRight className="w-4 h-4 stroke-[2]" />
+                </button>
+              </>
+            )}
 
-            <div className="absolute bottom-3 inset-x-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-3 text-xs text-slate-700 text-center font-medium shadow-md">
-              {CAROUSEL_IMAGES[activeImgIndex].caption}
+            <div className="absolute bottom-3 inset-x-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-2.5 sm:p-3 text-xs text-slate-700 text-center font-medium shadow-md">
+              {CAROUSEL_IMAGES[activeImgIndex]?.caption}
             </div>
           </div>
 
-          {/* Miniatures 5 photos avec indicateur actif */}
-          <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
-            {CAROUSEL_IMAGES.map((img, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveImgIndex(idx)}
-                className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.97] cursor-pointer ${
-                  activeImgIndex === idx 
-                    ? "border-indigo-600 ring-2 ring-indigo-600/20 shadow-sm" 
-                    : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300"
-                }`}
-              >
-                <img 
-                  src={img.src} 
-                  alt={img.alt} 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover" 
-                />
-              </button>
-            ))}
-          </div>
+          {/* Miniatures interactives synchronisées (visibles si plusieurs photos) */}
+          {CAROUSEL_IMAGES.length > 1 && (
+            <div className={`grid grid-cols-${Math.min(CAROUSEL_IMAGES.length, 5)} gap-2 sm:gap-2.5`}>
+              {CAROUSEL_IMAGES.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveImgIndex(idx)}
+                  className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.97] cursor-pointer ${
+                    activeImgIndex === idx 
+                      ? "border-indigo-600 ring-2 ring-indigo-600/20 shadow-sm" 
+                      : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300"
+                  }`}
+                >
+                  <img 
+                    src={img.src} 
+                    alt={img.alt} 
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover" 
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── BADGES TECHNIQUES ── */}
@@ -449,7 +438,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
           <UmeiStyleOrderSection
             productSlug="microscope"
             productTitle="Microscope Numérique Portable HD 1000X"
-            productImage="/images/microscope-real-infographic.webp"
+            productImage="/images/microscope-real-desk.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => {

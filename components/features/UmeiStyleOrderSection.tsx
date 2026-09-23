@@ -91,6 +91,16 @@ const THEME_PALETTES: Record<
     badgeBg: "#FFE4EC",
     badgeText: "#BE185D",
   },
+  microscope: {
+    primary: "#4F46E5",
+    primaryHover: "#4338CA",
+    primaryLight: "#EEF2FF",
+    border: "#C7D2FE",
+    textPrimary: "#312E81",
+    ringColor: "rgba(79, 70, 229, 0.25)",
+    badgeBg: "#E0E7FF",
+    badgeText: "#3730A3",
+  },
   eraclean: {
     primary: "#2563EB",
     primaryHover: "#1D4ED8",
