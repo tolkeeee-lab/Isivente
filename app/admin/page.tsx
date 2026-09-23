@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
   getAllOrders,
@@ -34,6 +34,7 @@ import {
   Calendar,
   Sparkles,
   ChevronRight,
+  ChevronLeft,
   Phone,
   Truck,
   Store,
@@ -44,8 +45,8 @@ import {
 import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
 
 export default function AdminOverviewPage() {
-  const [orders, setOrders] = useState<OrderItem[]>(() => getLocalOrders());
-  const [leads, setLeads] = useState<LeadRecord[]>(() => getLocalLeads());
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [leads, setLeads] = useState<LeadRecord[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsStats>({
     totalViews: 0,
     totalClicks: 0,
@@ -53,15 +54,20 @@ export default function AdminOverviewPage() {
     avgTimeSpentSeconds: 0,
     formattedAvgTime: "—",
   });
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      return getLocalOrders().length === 0;
-    }
-    return false;
-  });
+  const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+
+  const kpiScrollRef = useRef<HTMLDivElement>(null);
+  const productsScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollContainer = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
+    if (ref.current) {
+      const scrollAmount = direction === "left" ? -320 : 320;
+      ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   const productsList = useMemo(() => getAdminDashboardProducts(), []);
 
@@ -99,8 +105,13 @@ export default function AdminOverviewPage() {
   };
 
   useEffect(() => {
-    const hasLocal = getLocalOrders().length > 0;
-    loadAllData(hasLocal);
+    const localO = getLocalOrders();
+    const localL = getLocalLeads();
+    if (localO.length > 0) setOrders(localO);
+    if (localL.length > 0) setLeads(localL);
+    if (localO.length > 0 || localL.length > 0) setLoading(false);
+
+    loadAllData(localO.length > 0);
 
     // Rafraîchissement automatique toutes les 30s
     const interval = setInterval(() => {
@@ -268,94 +279,124 @@ export default function AdminOverviewPage() {
         </div>
       </div>
 
-      {/* ── LES 4 CARTES KPI MAÎTRESSES (FIGMA-GRADE) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        
-        {/* KPI 1 : CA Confirmé */}
-        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-emerald-500">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              CA Confirmé & Livré
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
-              <TrendingUp className="w-4 h-4 stroke-[2]" />
-            </div>
+      {/* ── LES 4 CARTES KPI MAÎTRESSES (DÉFILEMENT HORIZONTAL FLUIDE & TACTILE) ── */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Indicateurs Clés (KPI)</span>
+            <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">• Défilement horizontal</span>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
-              {loading ? "…" : fmt(metrics.confirmedRevenue)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
-            </div>
-            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Commandes validées :</span>
-              <span className="font-bold text-emerald-600 font-mono">{metrics.confirmedOrdersCount}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* KPI 2 : Nouvelles Commandes À Confirmer */}
-        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-blue-500">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
-              {metrics.pendingOrdersCount > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />}
-              <span>À Confirmer</span>
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
-              <Package className="w-4 h-4 stroke-[2]" />
-            </div>
-          </div>
-          <div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
-              {loading ? "…" : metrics.pendingOrdersCount} <span className="text-xs font-normal text-slate-500 font-sans">commandes</span>
-            </div>
-            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Montant à valider :</span>
-              <span className="font-bold text-blue-700 font-mono">{fmt(metrics.pendingRevenue)} F</span>
-            </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => scrollContainer(kpiScrollRef, "left")}
+              className="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+              title="Défiler vers la gauche"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollContainer(kpiScrollRef, "right")}
+              className="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+              title="Défiler vers la droite"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* KPI 3 : Paniers Abandonnés (CA Récupérable) */}
-        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-rose-500">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700">
-              Paniers Abandonnés
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
-              <AlertCircle className="w-4 h-4 stroke-[2]" />
+        <div
+          ref={kpiScrollRef}
+          className="flex overflow-x-auto scrollbar-none gap-3 sm:gap-4 pb-2 pt-0.5 snap-x snap-mandatory scroll-smooth -mx-3 px-3 sm:mx-0 sm:px-0"
+        >
+          
+          {/* KPI 1 : CA Confirmé */}
+          <div className="min-w-[260px] sm:min-w-[280px] lg:min-w-[290px] flex-1 shrink-0 snap-start card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-emerald-500">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                CA Confirmé & Livré
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+                <TrendingUp className="w-4 h-4 stroke-[2]" />
+              </div>
+            </div>
+            <div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
+                {loading ? "…" : fmt(metrics.confirmedRevenue)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Commandes validées :</span>
+                <span className="font-bold text-emerald-600 font-mono">{metrics.confirmedOrdersCount}</span>
+              </div>
             </div>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
-              {loading ? "…" : fmt(metrics.recoverableRevenue)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
-            </div>
-            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Clients à relancer :</span>
-              <span className="font-bold text-rose-600 font-mono">{metrics.abandonedLeadsCount} prospects</span>
-            </div>
-          </div>
-        </div>
 
-        {/* KPI 4 : Trafic Ads & Visiteurs */}
-        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-purple-500">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              Trafic & Attention Ads
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
-              <MousePointerClick className="w-4 h-4 stroke-[2]" />
+          {/* KPI 2 : Nouvelles Commandes À Confirmer */}
+          <div className="min-w-[260px] sm:min-w-[280px] lg:min-w-[290px] flex-1 shrink-0 snap-start card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-blue-500">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
+                {metrics.pendingOrdersCount > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />}
+                <span>À Confirmer</span>
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                <Package className="w-4 h-4 stroke-[2]" />
+              </div>
+            </div>
+            <div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
+                {loading ? "…" : metrics.pendingOrdersCount} <span className="text-xs font-normal text-slate-500 font-sans">commandes</span>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Montant à valider :</span>
+                <span className="font-bold text-blue-700 font-mono">{fmt(metrics.pendingRevenue)} F</span>
+              </div>
             </div>
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
-              {loading ? "…" : analytics.totalViews} <span className="text-xs font-normal text-slate-500 font-sans">visites</span>
-            </div>
-            <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Clics boutons d&apos;achat :</span>
-              <span className="font-bold text-purple-700 font-mono">{analytics.totalClicks} ({analytics.ctr.toFixed(1)}%)</span>
-            </div>
-          </div>
-        </div>
 
+          {/* KPI 3 : Paniers Abandonnés (CA Récupérable) */}
+          <div className="min-w-[260px] sm:min-w-[280px] lg:min-w-[290px] flex-1 shrink-0 snap-start card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-rose-500">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700">
+                Paniers Abandonnés
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
+                <AlertCircle className="w-4 h-4 stroke-[2]" />
+              </div>
+            </div>
+            <div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
+                {loading ? "…" : fmt(metrics.recoverableRevenue)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Clients à relancer :</span>
+                <span className="font-bold text-rose-600 font-mono">{metrics.abandonedLeadsCount} prospects</span>
+              </div>
+            </div>
+          </div>
+
+          {/* KPI 4 : Trafic Ads & Visiteurs */}
+          <div className="min-w-[260px] sm:min-w-[280px] lg:min-w-[290px] flex-1 shrink-0 snap-start card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-purple-500">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Trafic & Attention Ads
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
+                <MousePointerClick className="w-4 h-4 stroke-[2]" />
+              </div>
+            </div>
+            <div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
+                {loading ? "…" : analytics.totalViews} <span className="text-xs font-normal text-slate-500 font-sans">visites</span>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Clics boutons d&apos;achat :</span>
+                <span className="font-bold text-purple-700 font-mono">{analytics.totalClicks} ({analytics.ctr.toFixed(1)}%)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       {/* ── BARRE DE RACCOURCIS RAPIDES ── */}
@@ -421,7 +462,7 @@ export default function AdminOverviewPage() {
         </Link>
       </div>
 
-      {/* ── SECTION BOÎTE À OUTILS : VOS LANDING PAGES PRODUITS (VISITER & COPIER LE LIEN) ── */}
+      {/* ── SECTION BOÎTE À OUTILS : VOS LANDING PAGES PRODUITS (DÉFILEMENT HORIZONTAL FLUIDE) ── */}
       <div className="card-figma p-5 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div>
@@ -435,12 +476,34 @@ export default function AdminOverviewPage() {
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Accédez directement à vos pages de vente pour tester ou copiez leur lien en 1 clic pour vos publicités (Facebook Ads, TikTok, WhatsApp).
+              Glissez horizontalement pour parcourir vos pages. Visitez ou copiez le lien en 1 clic pour vos publicités (Facebook Ads, TikTok, WhatsApp).
             </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
+            <button
+              type="button"
+              onClick={() => scrollContainer(productsScrollRef, "left")}
+              className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+              title="Défiler vers la gauche"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollContainer(productsScrollRef, "right")}
+              className="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+              title="Défiler vers la droite"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
+        <div
+          ref={productsScrollRef}
+          className="flex overflow-x-auto scrollbar-none gap-3.5 pb-2 pt-1 snap-x snap-mandatory scroll-smooth -mx-1 px-1"
+        >
           {productsList.map((prod) => {
             const isCopied = copiedSlug === prod.slug;
             const isCopiedUtm = copiedSlug === `${prod.slug}_utm`;
@@ -448,7 +511,7 @@ export default function AdminOverviewPage() {
             return (
               <div
                 key={prod.slug}
-                className="p-3.5 rounded-2xl bg-white border border-slate-200/90 hover:border-indigo-300 hover:shadow-xs transition-all flex flex-col justify-between gap-3"
+                className="w-[280px] sm:w-[320px] shrink-0 snap-start p-3.5 rounded-2xl bg-white border border-slate-200/90 hover:border-indigo-300 hover:shadow-xs transition-all flex flex-col justify-between gap-3"
               >
                 <div className="flex items-center gap-3">
                   <img
