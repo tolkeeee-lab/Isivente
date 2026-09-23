@@ -466,15 +466,15 @@ export default function OrdersPage() {
     <div className="space-y-6 animate-[staggerFadeUp_240ms_cubic-bezier(0.16,1,0.3,1)_both]">
 
       {/* ── HEADER PAGE & ACTIONS GLOBALES ── */}
-      <div className="card-figma p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+      <div className="card-figma p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="min-w-0 w-full sm:w-auto">
           <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 mb-1 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>Pilotage Commercial & Dispatch</span>
           </div>
-          <h1 className="font-display font-bold text-2xl text-slate-900 flex items-center gap-3">
+          <h1 className="font-display font-bold text-xl sm:text-2xl text-slate-900 flex items-center gap-2.5 flex-wrap">
             <span>Gestion des Commandes</span>
-            <span className="bg-slate-100 text-slate-700 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-200">
+            <span className="bg-slate-100 text-slate-700 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-200 shrink-0">
               {orders.length} total
             </span>
           </h1>
@@ -483,11 +483,11 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setShowManualModal(true)}
-            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
             title="Ajouter une commande reçue par WhatsApp ou appel téléphonique"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -498,7 +498,7 @@ export default function OrdersPage() {
             type="button"
             onClick={() => fetchOrders()}
             disabled={loading}
-            className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 stroke-[2] ${loading ? 'animate-spin text-indigo-600' : 'text-slate-500'}`} />
             <span>Actualiser</span>
@@ -508,18 +508,20 @@ export default function OrdersPage() {
 
       {/* ── SÉLECTEUR DE VUE PRINCIPAL : TABLEAU DE TRIAGE DÉDIÉ vs FLUX GÉNÉRAL ── */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-2 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div className="flex p-1 bg-slate-100/80 rounded-xl">
+        <div className="flex flex-col sm:flex-row p-1 bg-slate-100/80 rounded-xl gap-1 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setViewMode("triage")}
-            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-2 ${viewMode === "triage"
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-between sm:justify-center gap-2 ${viewMode === "triage"
                 ? "bg-white text-slate-950 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
               }`}
           >
-            <Layers className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Tableau Triage & Suivi (Validées • Réservées • Plus tard)</span>
-            <span className="bg-indigo-50 text-indigo-700 text-[10.5px] font-mono px-2 py-0.2 rounded-full font-bold">
+            <div className="flex items-center gap-2 truncate">
+              <Layers className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <span className="truncate">Triage & Suivi Commercial</span>
+            </div>
+            <span className="bg-indigo-50 text-indigo-700 text-[10.5px] font-mono px-2 py-0.5 rounded-full font-bold shrink-0">
               {totalTriageCount}
             </span>
           </button>
@@ -527,14 +529,16 @@ export default function OrdersPage() {
           <button
             type="button"
             onClick={() => setViewMode("logistics")}
-            className={`flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-2 ${viewMode === "logistics"
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-between sm:justify-center gap-2 ${viewMode === "logistics"
                 ? "bg-white text-slate-950 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
               }`}
           >
-            <Truck className="w-3.5 h-3.5 text-slate-500" />
-            <span>Flux Logistique Global (Toutes les commandes)</span>
-            <span className="bg-slate-200 text-slate-700 text-[10.5px] font-mono px-2 py-0.2 rounded-full font-bold">
+            <div className="flex items-center gap-2 truncate">
+              <Truck className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+              <span className="truncate">Flux Logistique Global</span>
+            </div>
+            <span className="bg-slate-200 text-slate-700 text-[10.5px] font-mono px-2 py-0.5 rounded-full font-bold shrink-0">
               {orders.length}
             </span>
           </button>
@@ -544,7 +548,7 @@ export default function OrdersPage() {
         <button
           type="button"
           onClick={() => exportToCSV(viewMode === "triage" ? [...confirmedOrders, ...reservedOrders, ...postponedOrders] : filteredOrders)}
-          className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+          className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all shrink-0"
         >
           <Download className="w-3.5 h-3.5 text-slate-500" />
           <span>Exporter CSV</span>
@@ -567,18 +571,18 @@ export default function OrdersPage() {
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-blue-500 hover:shadow-md ${triageFilter === "pending" ? "ring-2 ring-blue-500/40 bg-blue-50/20" : ""
                 } ${pendingOrders.length > 0 ? "ring-1 ring-blue-400/30" : ""}`}
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
-                    {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />}
-                    <Package className="w-3.5 h-3.5" />
-                    <span>Nouvelles Reçues</span>
+              <div className="flex justify-between items-start gap-2">
+                <div className="min-w-0">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5 truncate">
+                    {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping shrink-0" />}
+                    <Package className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">Nouvelles Reçues</span>
                   </div>
                   <div className="text-2xl font-bold font-mono text-slate-900 mt-1">
                     {pendingOrders.length}
                   </div>
                 </div>
-                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg ${pendingOrders.length > 0 ? "bg-blue-600 text-white shadow-xs" : "bg-blue-100 text-blue-800"
+                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg shrink-0 ${pendingOrders.length > 0 ? "bg-blue-600 text-white shadow-xs" : "bg-blue-100 text-blue-800"
                   }`}>
                   {fmt(totalPendingAmount)} F
                 </span>
@@ -594,17 +598,17 @@ export default function OrdersPage() {
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-emerald-500 hover:shadow-md ${triageFilter === "confirmed" ? "ring-2 ring-emerald-500/40 bg-emerald-50/20" : ""
                 }`}
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Commandes Validées</span>
+              <div className="flex justify-between items-start gap-2">
+                <div className="min-w-0">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5 truncate">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">Commandes Validées</span>
                   </div>
                   <div className="text-2xl font-bold font-mono text-slate-900 mt-1">
                     {confirmedOrders.length}
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800">
+                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800 shrink-0">
                   {fmt(totalConfirmedAmount)} F
                 </span>
               </div>
@@ -619,17 +623,17 @@ export default function OrdersPage() {
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-amber-500 hover:shadow-md ${triageFilter === "reserved" ? "ring-2 ring-amber-500/40 bg-amber-50/20" : ""
                 }`}
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-amber-700 flex items-center gap-1.5">
-                    <Bookmark className="w-3.5 h-3.5" />
-                    <span>Réservations en cours</span>
+              <div className="flex justify-between items-start gap-2">
+                <div className="min-w-0">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-amber-700 flex items-center gap-1.5 truncate">
+                    <Bookmark className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">Réservations en cours</span>
                   </div>
                   <div className="text-2xl font-bold font-mono text-slate-900 mt-1">
                     {reservedOrders.length}
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-amber-100 text-amber-800">
+                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-amber-100 text-amber-800 shrink-0">
                   {fmt(totalReservedAmount)} F
                 </span>
               </div>
@@ -644,17 +648,17 @@ export default function OrdersPage() {
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-purple-500 hover:shadow-md ${triageFilter === "postponed" ? "ring-2 ring-purple-500/40 bg-purple-50/20" : ""
                 }`}
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-purple-700 flex items-center gap-1.5">
-                    <CalendarClock className="w-3.5 h-3.5" />
-                    <span>Mises à plus tard / Reportées</span>
+              <div className="flex justify-between items-start gap-2">
+                <div className="min-w-0">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-purple-700 flex items-center gap-1.5 truncate">
+                    <CalendarClock className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">Mises à plus tard</span>
                   </div>
                   <div className="text-2xl font-bold font-mono text-slate-900 mt-1">
                     {postponedOrders.length}
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-purple-100 text-purple-800">
+                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-purple-100 text-purple-800 shrink-0">
                   {fmt(totalPostponedAmount)} F
                 </span>
               </div>
@@ -666,17 +670,17 @@ export default function OrdersPage() {
           </div>
 
           {/* SÉLECTEUR D'AFFICHAGE RAPIDE DES SECTIONS DU TABLEAU À PART */}
-          <div className="card-figma p-3 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <div className="card-figma p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 hidden sm:flex items-center gap-1.5 shrink-0">
                 <Filter className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Affichage des sections :</span>
+                <span>Affichage :</span>
               </span>
-              <div className="flex p-0.5 bg-slate-200/70 rounded-xl">
+              <div className="flex p-0.5 bg-slate-200/70 rounded-xl overflow-x-auto scrollbar-none max-w-full">
                 <button
                   type="button"
                   onClick={() => setTriageFilter("all")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
                     }`}
                 >
                   Toutes ({totalTriageCount})
@@ -684,7 +688,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("pending")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "pending" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-blue-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "pending" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-blue-700"
                     }`}
                 >
                   🚨 Nouvelles ({pendingOrders.length})
@@ -692,7 +696,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("confirmed")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "confirmed" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-emerald-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "confirmed" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-emerald-700"
                     }`}
                 >
                   1. Validées ({confirmedOrders.length})
@@ -700,7 +704,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("reserved")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "reserved" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-amber-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "reserved" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-amber-700"
                     }`}
                 >
                   2. Réservations ({reservedOrders.length})
@@ -708,7 +712,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("postponed")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${triageFilter === "postponed" ? "bg-purple-600 text-white shadow-xs" : "text-slate-600 hover:text-purple-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "postponed" ? "bg-purple-600 text-white shadow-xs" : "text-slate-600 hover:text-purple-700"
                     }`}
                 >
                   3. Plus tard ({postponedOrders.length})

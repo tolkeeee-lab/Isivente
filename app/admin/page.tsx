@@ -269,10 +269,10 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* ── LES 4 CARTES KPI MAÎTRESSES (FIGMA-GRADE) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         
         {/* KPI 1 : CA Confirmé */}
-        <div className="card-figma p-5 flex flex-col justify-between border-l-4 border-l-emerald-500">
+        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-emerald-500">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
               CA Confirmé & Livré
@@ -282,7 +282,7 @@ export default function AdminOverviewPage() {
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
               {loading ? "…" : fmt(metrics.confirmedRevenue)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
             </div>
             <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
@@ -293,7 +293,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* KPI 2 : Nouvelles Commandes À Confirmer */}
-        <div className="card-figma p-5 flex flex-col justify-between border-l-4 border-l-blue-500">
+        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-blue-500">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5">
               {metrics.pendingOrdersCount > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />}
@@ -304,7 +304,7 @@ export default function AdminOverviewPage() {
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
               {loading ? "…" : metrics.pendingOrdersCount} <span className="text-xs font-normal text-slate-500 font-sans">commandes</span>
             </div>
             <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
@@ -315,7 +315,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* KPI 3 : Paniers Abandonnés (CA Récupérable) */}
-        <div className="card-figma p-5 flex flex-col justify-between border-l-4 border-l-rose-500">
+        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-rose-500">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700">
               Paniers Abandonnés
@@ -325,7 +325,7 @@ export default function AdminOverviewPage() {
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
               {loading ? "…" : fmt(metrics.recoverableRevenue)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
             </div>
             <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
@@ -336,7 +336,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* KPI 4 : Trafic Ads & Visiteurs */}
-        <div className="card-figma p-5 flex flex-col justify-between border-l-4 border-l-purple-500">
+        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-purple-500">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
               Trafic & Attention Ads
@@ -346,7 +346,7 @@ export default function AdminOverviewPage() {
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
               {loading ? "…" : analytics.totalViews} <span className="text-xs font-normal text-slate-500 font-sans">visites</span>
             </div>
             <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
@@ -359,7 +359,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* ── BARRE DE RACCOURCIS RAPIDES ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         <Link
           href="/admin/orders"
           className="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-xs transition-all flex items-center gap-3 group"
