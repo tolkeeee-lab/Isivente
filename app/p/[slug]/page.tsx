@@ -14,6 +14,7 @@ import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
 import MatelasLanding from "@/components/features/MatelasLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
+import ExitIntentModal from "@/components/features/ExitIntentModal";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export function generateStaticParams() {
@@ -111,6 +112,7 @@ export default async function ProductPage({ params }: PageProps) {
     <>
       {renderContent()}
       <ShoppingAgentWidget slug={normalizedSlug} />
+      <ExitIntentModal slug={normalizedSlug} />
     </>
   );
 }

@@ -138,66 +138,63 @@ export default function ShoppingAgentWidget({ slug }: ShoppingAgentWidgetProps) 
     handleSendMessage(inputValue);
   };
 
+  // Observer pour masquer automatiquement le bouton AI dès qu'on arrive au niveau du formulaire de commande
+  const [isNearOrderForm, setIsNearOrderForm] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const orderEl = document.getElementById("commander");
+      if (!orderEl) return;
+      const rect = orderEl.getBoundingClientRect();
+      // Si le formulaire est visible ou à moins de 300px du viewport, on masque l'agent
+      if (rect.top <= window.innerHeight + 100 && rect.bottom >= -100) {
+        setIsNearOrderForm(true);
+      } else {
+        setIsNearOrderForm(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const whatsappMessage = `Bonjour Isivente, je suis sur la page de ${productTitle} et j'ai une question avant de commander.`;
   const whatsappUrl = `https://wa.me/2290192901817?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
-    <div className="fixed bottom-20 sm:bottom-6 right-3 sm:right-6 z-40 select-none font-sans">
+    <div className="select-none font-sans">
       
-      {/* ── BULLE D'ACCROCHE INITIALE (PROMPT PROSPECT) ── */}
-      {!isOpen && hasTriggeredBubble && !bubbleDismissed && (
-        <div className="mb-2.5 max-w-[270px] bg-white p-3 rounded-2xl border border-slate-200/90 shadow-lg shadow-slate-900/10 animate-in fade-in slide-in-from-bottom-2 duration-300 relative">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setBubbleDismissed(true);
-            }}
-            className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 flex items-center justify-center text-[10px] cursor-pointer"
-            title="Fermer"
-          >
-            ✕
-          </button>
-          <div 
-            onClick={() => setIsOpen(true)}
-            className="cursor-pointer space-y-1"
-          >
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-[11px] font-bold text-slate-900">Awa de chez Isivente</p>
-            </div>
-            <p className="text-xs text-slate-600 leading-tight">
-              Une question sur la livraison ou le paiement pour <strong>{productTitle}</strong> ?
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* ── BOUTON FLOTTANT D'OUVERTURE DU CHAT ── */}
+      {/* ── ONGLETT DISCRET DOCKÉ SUR LE CÔTÉ DROIT DE L'ÉCRAN ── */}
       {!isOpen && (
-        <button
-          onClick={() => {
-            setIsOpen(true);
-            setBubbleDismissed(true);
-          }}
-          className="group relative flex items-center gap-2.5 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl shadow-xl shadow-slate-900/20 active:scale-95 transition-all cursor-pointer border border-slate-700/50"
+        <div 
+          className={`fixed right-0 top-[60%] -translate-y-1/2 z-30 transition-all duration-300 ${
+            isNearOrderForm ? "translate-x-full opacity-0 pointer-events-none" : "translate-x-0 opacity-100"
+          }`}
         >
-          <div className="relative">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-xs">
-              AI
+          <button
+            onClick={() => setIsOpen(true)}
+            className="group flex items-center gap-2 pl-3 pr-2 py-2 bg-slate-900/95 hover:bg-slate-900 text-white rounded-l-2xl shadow-xl shadow-slate-900/20 active:scale-95 transition-all cursor-pointer border-l border-y border-slate-700/60 backdrop-blur-sm"
+            aria-label="Poser une question à la conseillère"
+          >
+            <div className="relative">
+              <div className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-[11px]">
+                AI
+              </div>
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full" />
             </div>
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full animate-ping" />
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-900 rounded-full" />
-          </div>
-          <div className="text-left hidden sm:block">
-            <p className="text-xs font-bold leading-tight">Conseiller Isivente</p>
-            <p className="text-[10px] text-emerald-400 font-medium">En ligne • Réponse immédiate</p>
-          </div>
-        </button>
+            <div className="text-left pr-1">
+              <p className="text-[11px] font-bold leading-tight text-white">Conseillère</p>
+              <p className="text-[9px] text-emerald-400 font-medium">Posez une question</p>
+            </div>
+          </button>
+        </div>
       )}
 
       {/* ── FENÊTRE DE CHAT DÉPLIÉE ── */}
       {isOpen && (
-        <div className="w-[330px] sm:w-[370px] h-[490px] sm:h-[530px] bg-white rounded-3xl border border-slate-200/90 shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed bottom-4 right-3 sm:right-6 z-50 w-[330px] sm:w-[370px] h-[490px] sm:h-[530px] bg-white rounded-3xl border border-slate-200/90 shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           
           {/* Header du Chat */}
           <div className="px-4 py-3.5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
