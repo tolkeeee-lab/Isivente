@@ -366,16 +366,16 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
         <div 
           onMouseEnter={() => setIsHeroHovered(true)}
           onMouseLeave={() => setIsHeroHovered(false)}
-          className="max-w-xl mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-4 space-y-3"
+          className="max-w-[480px] mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-4 space-y-3"
         >
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/60 shadow-inner">
+          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-200/60 shadow-inner flex items-center justify-center">
             <img 
               src={CAROUSEL_IMAGES[activeImgIndex]?.src || "/images/microscope-real-desk.jpg"} 
               alt={CAROUSEL_IMAGES[activeImgIndex]?.alt || "Microscope Numérique Portable HD 1000X"}
               loading="eager"
               decoding="async"
               fetchPriority="high"
-              className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]"
+              className="w-full h-full object-contain transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.01]"
             />
             
             {/* Badge Indicateur d'image (ex: 1/6) */}
@@ -389,7 +389,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                 <button
                   type="button"
                   onClick={() => setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-md hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-md hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
                   aria-label="Image précédente"
                 >
                   <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
@@ -397,17 +397,13 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                 <button
                   type="button"
                   onClick={() => setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-md hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 flex items-center justify-center text-slate-700 shadow-md hover:bg-white active:scale-95 transition-all cursor-pointer z-10"
                   aria-label="Image suivante"
                 >
                   <ChevronRight className="w-4 h-4 stroke-[2.5]" />
                 </button>
               </>
             )}
-
-            <div className="absolute bottom-3 inset-x-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-2 sm:p-2.5 text-xs text-slate-700 text-center font-medium shadow-md">
-              {CAROUSEL_IMAGES[activeImgIndex]?.caption}
-            </div>
           </div>
 
           {/* Miniatures interactives synchronisées (6 photos) */}
