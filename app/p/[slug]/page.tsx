@@ -13,6 +13,7 @@ import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
 import MatelasLanding from "@/components/features/MatelasLanding";
 import ProductLanding from "@/components/features/ProductLanding";
+import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export function generateStaticParams() {
@@ -57,45 +58,54 @@ export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
   const normalizedSlug = slug.toLowerCase();
 
-  switch (normalizedSlug) {
-    case "umei":
-      return <UmeiLanding slug="umei" />;
-    case "peeler":
-    case "mandoline":
-    case "coupe-legumes":
-      return <PeelerLanding slug="peeler" />;
-    case "masseur-oculaire":
-    case "eye-massager":
-      return <EyeMassagerLanding slug="masseur-oculaire" />;
-    case "microscope":
-      return <MicroscopeLanding slug="microscope" />;
-    case "camera":
-      return <CameraLanding slug="camera" />;
-    case "trozk":
-      return <TrozkLanding slug="trozk" />;
-    case "stabilisateur":
-    case "stabilizer":
-      return <StabilisateurLanding slug="stabilisateur" />;
-    case "eraclean":
-      return <EraCleanLanding slug="eraclean" />;
-    case "turbofan":
-      return <TurboFanLanding slug="turbofan" />;
-    case "veilleuse":
-      return <VeilleuseLanding slug="veilleuse" />;
-    case "mini-lave-linge":
-    case "lave-linge":
-    case "washer":
-      return <MiniLaveLingeLanding slug="mini-lave-linge" />;
-    case "matelas":
-    case "matelas-gonflable":
-    case "camping":
-      return <MatelasLanding slug="matelas" />;
-    default:
-      // If the slug exists in our catalog or database, render universal ProductLanding
-      if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
-        return <ProductLanding slug={normalizedSlug} />;
-      }
-      return notFound();
-  }
+  const renderContent = () => {
+    switch (normalizedSlug) {
+      case "umei":
+        return <UmeiLanding slug="umei" />;
+      case "peeler":
+      case "mandoline":
+      case "coupe-legumes":
+        return <PeelerLanding slug="peeler" />;
+      case "masseur-oculaire":
+      case "eye-massager":
+        return <EyeMassagerLanding slug="masseur-oculaire" />;
+      case "microscope":
+        return <MicroscopeLanding slug="microscope" />;
+      case "camera":
+        return <CameraLanding slug="camera" />;
+      case "trozk":
+        return <TrozkLanding slug="trozk" />;
+      case "stabilisateur":
+      case "stabilizer":
+        return <StabilisateurLanding slug="stabilisateur" />;
+      case "eraclean":
+        return <EraCleanLanding slug="eraclean" />;
+      case "turbofan":
+        return <TurboFanLanding slug="turbofan" />;
+      case "veilleuse":
+        return <VeilleuseLanding slug="veilleuse" />;
+      case "mini-lave-linge":
+      case "lave-linge":
+      case "washer":
+        return <MiniLaveLingeLanding slug="mini-lave-linge" />;
+      case "matelas":
+      case "matelas-gonflable":
+      case "camping":
+        return <MatelasLanding slug="matelas" />;
+      default:
+        // If the slug exists in our catalog or database, render universal ProductLanding
+        if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
+          return <ProductLanding slug={normalizedSlug} />;
+        }
+        return notFound();
+    }
+  };
+
+  return (
+    <>
+      {renderContent()}
+      <ShoppingAgentWidget slug={normalizedSlug} />
+    </>
+  );
 }
 
