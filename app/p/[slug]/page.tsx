@@ -37,6 +37,9 @@ export function generateStaticParams() {
     { slug: "matelas" },
     { slug: "matelas-gonflable" },
     { slug: "camping" },
+    { slug: "brosse" },
+    { slug: "brosse-spray" },
+    { slug: "yufan" },
   ];
 }
 
@@ -61,6 +64,9 @@ export default async function ProductPage({ params }: PageProps) {
   const renderContent = () => {
     switch (normalizedSlug) {
       case "umei":
+      case "brosse":
+      case "brosse-spray":
+      case "yufan":
         return <UmeiLanding slug="umei" />;
       case "peeler":
       case "mandoline":

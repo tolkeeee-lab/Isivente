@@ -43,14 +43,14 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
   },
   {
     id: "umei-default",
-    title: "Brosse Démêlante Vapeur Uméi 3-en-1",
-    shortTitle: "Brosse Démêlante Uméi 3-en-1",
+    title: "Brosse Multifonction Spray & Massage du Cuir Chevelu YUFAN™",
+    shortTitle: "Brosse Spray & Massage YUFAN",
     slug: "umei",
     price: 14900,
-    image_url: "/images/umei-hero-real.jpg",
-    image: "/images/umei-hero-real.jpg",
+    image_url: "/images/brosse-spray-hero.jpg",
+    image: "/images/brosse-spray-hero.jpg",
     bundles: [
-      { name: "Brosse Démêlante Vapeur Uméi 3-en-1", price: 14900 }
+      { name: "Brosse Multifonction Spray & Massage YUFAN™", price: 14900 }
     ]
   },
   {

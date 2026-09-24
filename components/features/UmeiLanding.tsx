@@ -2,608 +2,662 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { 
+  ShieldCheck, 
+  Truck, 
+  Star, 
+  ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2, 
+  XCircle, 
+  Sparkles, 
+  Droplets, 
+  Heart, 
+  Zap, 
+  PackageCheck,
+  Award,
+  RefreshCw,
+  Gift
+} from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
-import { markLeadConverted } from "@/lib/leadsStorage";
-import { getProductUpsellConfig } from "@/lib/upsellConfig";
-import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
+import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
+import { useUTM } from "@/lib/utm";
+import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import QuickOrderDrawer from "@/components/features/QuickOrderDrawer";
-import { 
-  Check, 
-  ArrowRight, 
-  ChevronDown, 
-  Sparkles,
-  Droplets,
-  HeartHandshake,
-  MessageCircle
-} from "lucide-react";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 
-interface ProductBundle {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-  original_price: number;
-  badge: string | null;
-  description: string;
-  popular?: boolean;
-}
-
-const BUNDLES: ProductBundle[] = [
+const BUNDLES: BundleOption[] = [
   {
     id: "solo",
-    name: "Brosse Démêlante Vapeur Uméi™ 3-en-1",
-    quantity: 1,
+    name: "Brosse Multifonction Spray & Massage du Cuir Chevelu YUFAN™",
+    subtitle: "Coffret officiel avec réservoir brumisateur, câble de recharge USB et garantie Isivente",
     price: 14900,
-    original_price: 24900,
-    badge: null,
-    description: "Coffret complet avec réservoir, flacon et buses",
-    popular: true
+    originalPrice: 25000,
+    savings: 10100,
+    quantity: 1,
+    popular: true,
   },
 ];
 
-export default function UmeiLanding({ slug }: { slug: string }) {
+const CAROUSEL_IMAGES = [
+  { 
+    src: "/images/brosse-spray-infographie.jpg", 
+    alt: "Brosse Multifonction YUFAN - Des cheveux plus beaux au quotidien : Massage, Spray, Démêlage et Soin",
+    caption: "Brosse Multifonction YUFAN™ : Spray brume hydratant + Picots massants stimulants pour tous types de cheveux"
+  },
+  { 
+    src: "/images/brosse-spray-hero.jpg", 
+    alt: "Brosse YUFAN en action avec fine brume hydratante pour cheveux bouclés, crépus et lisses",
+    caption: "Diffusion de micro-brume instantanée en une pression : hydrate la fibre et démêle sans douleur"
+  }
+];
+
+interface CustomerReview {
+  name: string;
+  location: string;
+  rating: number;
+  date: string;
+  title: string;
+  comment: string;
+  verified: boolean;
+}
+
+const CUSTOMER_REVIEWS: CustomerReview[] = [
+  {
+    name: "Tatiana M.",
+    location: "Cotonou (Cadjehoun)",
+    rating: 5,
+    date: "Achat vérifié",
+    title: "Le démêlage du matin est devenu un plaisir",
+    comment: "Mes cheveux crépus 4C étaient toujours secs et douloureux à démêler le matin. Je mets de l'eau avec un peu d'huile d'avocat dans le réservoir : la brume diffuse tout doux et la brosse glisse toute seule sans casser les pointes !",
+    verified: true,
+  },
+  {
+    name: "Esther A.",
+    location: "Calavi (Tankpè)",
+    rating: 5,
+    date: "Achat vérifié",
+    title: "Magique pour les tresses et cheveux des enfants",
+    comment: "Fini les pleurs le matin avec ma fille de 7 ans ! Dès que j'active le spray, la brume humidifie la chevelure uniformément sans tremper comme un vaporisateur classique. Les picots ronds massent la tête et elle adore.",
+    verified: true,
+  },
+  {
+    name: "Aïcha S.",
+    location: "Porto-Novo",
+    rating: 5,
+    date: "Achat vérifié",
+    title: "Très bonne qualité et livraison rapide",
+    comment: "Livré en 24h chrono. J'ai pu ouvrir le paquet et vérifier la brosse avant de payer en espèces au livreur. La batterie tient très longtemps en rechargeant par USB.",
+    verified: true,
+  },
+];
+
+const FAQS_DATA = [
+  {
+    q: "Que peut-on mettre dans le réservoir de la brosse ?",
+    a: "Vous pouvez y mettre de l'eau minérale propre, de l'eau de rose, un hydrolat capillaire (comme l'eau de romarin pour stimuler la pousse) ou votre lotion capillaire liquide habituelle. La buse ultrasonique transforme le liquide en une micro-brume ultrafine qui pénètre la fibre sans laisser de gouttes lourdes."
+  },
+  {
+    q: "Est-elle adaptée aux cheveux crépus, frisés ou défrisés ?",
+    a: "Oui, à 100% ! Les picots sont montés sur un coussinet souple avec des extrémités sphériques polies. La brume assouplit instantanément la kératine du cheveu, ce qui permet de détendre les nœuds les plus serrés sans tirer sur le cuir chevelu."
+  },
+  {
+    q: "Comment fonctionne la recharge ?",
+    a: "La brosse est rechargeable par câble USB fourni. Une charge complète offre plusieurs jours d'utilisation quotidienne. Aucun besoin d'acheter des piles jetables."
+  },
+  {
+    q: "Les picots massants font-ils mal ?",
+    a: "Pas du tout. Les picots sont spécialement arrondis pour offrir un massage stimulant et relaxant qui favorise la micro-circulation sanguine autour des follicules pileux, ce qui accélère la pousse naturelle du cheveu."
+  },
+  {
+    q: "Comment se déroulent la livraison et le paiement au Bénin ?",
+    a: "La livraison s'effectue en 24h chrono à Cotonou, Calavi et partout au Bénin. Vous payez en espèces (14 900 FCFA) uniquement après avoir reçu et inspecté votre brosse auprès du livreur."
+  }
+];
+
+export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
   const router = useRouter();
-  const [selectedBundle, setSelectedBundle] = useState<ProductBundle>(BUNDLES[0]);
+  const { recordInteraction } = usePagePresence(slug);
+  const utm = useUTM();
+
+  const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [orderSuccess, setOrderSuccess] = useState(false);
-  const [orderNumber, setOrderNumber] = useState("");
-  const isSubmittingRef = useRef(false);
+  const [orderError, setOrderError] = useState("");
+  const orderSectionRef = useRef<HTMLDivElement>(null);
 
-  const { recordInteraction } = usePagePresence(slug || "umei");
+  // Défilement automatique du carrousel
+  useEffect(() => {
+    if (isHeroHovered || CAROUSEL_IMAGES.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
+    }, 3800);
+    return () => clearInterval(timer);
+  }, [isHeroHovered]);
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
+  // Capture silencieuse du prospect dès 8 chiffres
+  useEffect(() => {
+    const cleanPhone = customerPhone.replace(/\D/g, "");
+    if (cleanPhone.length >= 8) {
+      saveOrUpdateLead({
+        customer_name: customerName,
+        customer_phone: cleanPhone,
+        customer_phone2: customerPhone2,
+        city: city,
+        address: address,
+        product_slug: "umei",
+        product_title: "Brosse Multifonction Spray & Massage YUFAN",
+        bundle_name: selectedBundle.name,
+        total_amount: selectedBundle.price,
+      }).catch(() => {});
+    }
+  }, [customerPhone, customerName, customerPhone2, city, address, selectedBundle]);
+
+  useEffect(() => {
+    trackViewContent({
+      content_name: "Brosse Multifonction Spray & Massage YUFAN",
+      content_ids: ["umei", "brosse"],
+      value: 14900,
+      currency: "XOF",
+    });
+  }, []);
+
+  const scrollToOrder = () => {
+    recordInteraction();
+    trackInitiateCheckout({
+      content_name: "Brosse Multifonction Spray & Massage YUFAN",
+      content_ids: ["umei"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: 1,
+    });
+    const el = document.getElementById("commander");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
-      if (id === "commander") {
-        setTimeout(() => {
-          const input = (document.getElementById("customer-name-input") ||
-            el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
-          if (input) input.focus({ preventScroll: true });
-        }, 400);
-      }
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmittingRef.current || isSubmitting) return;
-
-    if (!customerPhone.trim() || customerPhone.trim().length < 8) {
-      alert("Veuillez saisir un numéro de téléphone valide pour la confirmation de livraison.");
+    if (!customerPhone.trim()) {
+      setOrderError("Veuillez renseigner votre numéro de téléphone pour la livraison.");
       return;
     }
 
-    isSubmittingRef.current = true;
     setIsSubmitting(true);
+    setOrderError("");
+
     try {
-      const finalTotal = selectedBundle.price;
-      const finalBundleName = selectedBundle.name;
+      const order = await saveNewOrder({
+        product_title: "Brosse Multifonction Spray & Massage du Cuir Chevelu YUFAN™",
+        product_slug: "umei",
+        customer_name: customerName.trim() || "Cliente Isivente",
+        customer_phone: customerPhone.trim(),
+        customer_phone2: customerPhone2.trim() || undefined,
+        city: city.trim() || "Cotonou",
+        address: address.trim() || "Cotonou",
+        bundle_name: selectedBundle.name,
+        total_amount: selectedBundle.price,
+        utm_source: utm?.utm_source || undefined,
+        utm_medium: utm?.utm_medium || undefined,
+        utm_campaign: utm?.utm_campaign || undefined,
+      });
 
-      const orderData = {
-        product_slug: slug || "umei",
-        product_title: "Brosse Démêlante Vapeur Uméi 3-en-1",
-        bundle_id: selectedBundle.id,
-        bundle_name: finalBundleName,
-        quantity: selectedBundle.quantity || 1,
-        total_amount: finalTotal,
-        customer_name: customerName,
-        customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
-        shipping_city: city,
-        city: city,
-        shipping_address: address,
-        address: address,
-        status: 'pending' as const
-      };
+      markLeadConverted(customerPhone.trim(), "umei");
 
-      const res = await saveNewOrder(orderData);
-      recordInteraction();
-      await markLeadConverted(customerPhone, slug || "umei");
-      const orderNum = res?.order_number || ("ISV-" + Math.floor(100000 + Math.random() * 900000));
-      setOrderNumber(orderNum);
-      setOrderSuccess(true);
-      setIsSubmitting(false);
+      trackPurchase({
+        content_name: "Brosse Multifonction Spray & Massage YUFAN",
+        content_ids: ["umei"],
+        value: selectedBundle.price,
+        currency: "XOF",
+        num_items: 1,
+      });
 
-      // Meta Pixel Track Purchase
-      try {
-        if (typeof window !== "undefined" && (window as any).fbq) {
-          (window as any).fbq("track", "Purchase", {
-            content_name: orderData.product_title,
-            content_type: "product",
-            value: finalTotal,
-            currency: "XOF",
-          });
-        }
-      } catch (e) {}
-
-      // Direction directe vers la page success pour validation WhatsApp immédiate
-      router.push(`/p/${slug || "umei"}/success?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${encodeURIComponent(String(finalTotal))}`);
-    } catch (err) {
+      const successUrl = `/p/umei/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
+      router.push(successUrl);
+    } catch (err: any) {
       console.error("Order error:", err);
-      alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
+      setOrderError(err?.message || "Une erreur est survenue lors de l'enregistrement de votre commande.");
       setIsSubmitting(false);
-      isSubmittingRef.current = false;
     }
   };
 
   return (
-    <div className="bg-[#F5F0FC] min-h-screen text-[#241B36] font-sans antialiased overflow-x-hidden w-full max-w-full relative selection:bg-purple-200 selection:text-purple-900 pb-24 md:pb-0">
+    <div className="min-h-screen bg-[#faf8fc] text-slate-800 font-sans selection:bg-purple-100 selection:text-purple-900">
       
-      {/* 🌟 HEADER */}
-      <header className="sticky top-0 z-50 bg-[#F5F0FC]/95 backdrop-blur-md border-b border-[#8B6FE0]/15 w-full">
-        <nav className="flex items-center justify-between py-3.5 px-4 md:px-8 max-w-[1180px] mx-auto w-full">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-[#FF5C93] rounded-full inline-block animate-pulse"></span>
-            <span className="font-bold tracking-tight text-slate-900 text-base sm:text-lg">ISIVENTE</span>
-            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">• Boutique Officielle</span>
+      {/* ── BANDEAU TOP BAR CLAIR ÉPURÉ ── */}
+      <div className="bg-slate-900 text-white text-[11px] font-medium py-2 px-4 text-center tracking-wide">
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse" />
+          <span>Livraison express sous 24h à Cotonou, Calavi & tout le Bénin • Paiement en espèces à la livraison</span>
+        </div>
+      </div>
+
+      {/* ── HEADER NAVIGATION FOND CLAIR ── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600">
+              <Sparkles className="w-4 h-4 stroke-[1.75]" />
+            </div>
+            <span className="font-bold text-sm tracking-tight text-slate-900">ISIVENTE</span>
           </div>
-          
-          <ul className="hidden md:flex gap-8 text-[15px] font-semibold">
-            <li>
-              <button onClick={() => scrollToSection("demo-video")} className="hover:text-[#FF5C93] transition-colors opacity-75 hover:opacity-100">
-                Démonstration
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection("comment")} className="hover:text-[#FF5C93] transition-colors opacity-75 hover:opacity-100">
-                Comment ça marche
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection("avis")} className="hover:text-[#FF5C93] transition-colors opacity-75 hover:opacity-100">
-                Avis
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection("faq")} className="hover:text-[#FF5C93] transition-colors opacity-75 hover:opacity-100">
-                Questions
-              </button>
-            </li>
-          </ul>
 
           <button
-            onClick={() => scrollToSection("commander")}
-            className="bg-[#FF5C93] hover:bg-[#E13D74] text-white px-5 py-2 rounded-full text-sm font-bold shadow-[0_8px_20px_-8px_rgba(255,92,147,0.6)] hover:-translate-y-0.5 transition-all cursor-pointer"
+            onClick={scrollToOrder}
+            className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-pink-600 hover:bg-pink-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(219,39,119,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
-            Commander
+            <span>Commander</span>
+            <span className="font-mono tabular-nums text-pink-100 text-[11px]">(14 900 F)</span>
           </button>
-        </nav>
+        </div>
       </header>
 
-      {/* 🚀 HERO SECTION */}
-      <section className="pt-6 md:pt-14 pb-0 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
+      {/* ── CONTENEUR PRINCIPAL ── */}
+      <main className="max-w-4xl mx-auto px-4 pt-8 pb-16 space-y-10">
+        
+        {/* En-tête Titre & Accroche */}
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center gap-1.5 bg-purple-50 border border-purple-100 text-purple-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-pink-500" />
+            <span>Soin capillaire quotidien 4-en-1</span>
+          </div>
           
-          {/* 1. PHOTO DU PRODUIT */}
-          <div className="md:col-span-5 flex justify-center items-center pt-2 md:pt-0 order-1">
-            <div className="relative w-full max-w-[310px] sm:max-w-[360px] md:max-w-[400px] mx-auto px-2 select-none">
-              
-              <div className="inline-flex md:hidden items-center gap-2 bg-white/90 border border-[#8B6FE0]/20 px-3 py-1 rounded-full shadow-xs mb-3">
-                <div className="flex text-amber-400 text-xs">★★★★★</div>
-                <span className="text-xs font-bold text-[#241B36]">4.9/5 (+1420 femmes comblées)</span>
-              </div>
-
-              <div className="relative">
-                <div className="absolute -top-2 left-0 sm:-left-4 w-[90px] h-[90px] sm:w-[105px] sm:h-[105px] bg-[#A8E6C9] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] -rotate-12 z-20 pointer-events-none">
-                  3-en-1 vapeur + huile + clic
-                </div>
-
-                <img 
-                  src="/images/umei-hero-real.jpg" 
-                  alt="Brosse vapeur uméi en action" 
-                  className="rounded-[28px] sm:rounded-[32px] w-full shadow-[0_25px_50px_-20px_rgba(139,111,224,0.4)] object-cover"
-                />
-
-                <div className="absolute -bottom-2 right-0 sm:-right-4 w-[80px] h-[80px] sm:w-[88px] sm:h-[88px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-display font-bold text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.18)] rotate-12 z-20 pointer-events-none">
-                  Sans chaleur agressive
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* 2. TEXTES & CTA */}
-          <div className="md:col-span-7 space-y-5 text-center md:text-left flex flex-col items-center md:items-start order-2">
-            
-            <div className="hidden md:inline-flex items-center gap-2 bg-white/80 border border-[#8B6FE0]/20 px-3.5 py-1 rounded-full shadow-sm">
-              <div className="flex text-amber-400 text-xs">
-                ★★★★★
-              </div>
-              <span className="text-xs font-bold text-[#241B36]">
-                4.9/5 (+1420 femmes comblées)
-              </span>
-            </div>
-
-            <h1 className="font-display font-bold text-2xl sm:text-4xl md:text-5xl lg:text-[56px] leading-[1.12] text-[#241B36] tracking-tight max-w-xl text-center md:text-left">
-              Démêler tes <span className="text-[#8B6FE0]">boucles</span> ne devrait pas <span className="text-[#FF5C93]">faire mal.</span>
-            </h1>
-
-            <p className="text-[#6B5F87] text-sm sm:text-base md:text-lg font-medium max-w-lg leading-relaxed text-center md:text-left">
-              Vapeur, huile essentielle et clic libérateur — dans une seule brosse. Fini le peigne qui accroche et le fer qui abîme.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 w-full pt-1">
-              <button
-                onClick={() => scrollToSection("commander")}
-                className="w-full sm:w-auto bg-[#FF5C93] hover:bg-[#E13D74] text-white px-7 py-3.5 rounded-full font-bold text-base shadow-[0_12px_28px_-10px_rgba(255,92,147,0.55)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 text-center"
-              >
-                <span>Je commande — 14 900 FCFA</span>
-                <ArrowRight className="w-5 h-5 shrink-0" />
-              </button>
-
-              <button
-                onClick={() => scrollToSection("demo-video")}
-                className="w-full sm:w-auto bg-white text-[#241B36] hover:bg-[#EEE6FA] border border-[#8B6FE0]/20 px-6 py-3.5 rounded-full font-bold text-sm shadow-[0_6px_18px_-8px_rgba(139,111,224,0.35)] hover:-translate-y-0.5 transition-all text-center"
-              >
-                Voir comment ça marche
-              </button>
-            </div>
-
-            <div className="flex flex-wrap justify-center md:justify-start gap-2 pt-1 w-full">
-              <span className="bg-white text-[#6B5F87] text-xs font-bold py-1.5 px-3.5 rounded-full shadow-[0_4px_14px_-6px_rgba(139,111,224,0.3)] border border-[#8B6FE0]/15">
-                💵 Paiement à la livraison
-              </span>
-              <span className="bg-white text-[#6B5F87] text-xs font-bold py-1.5 px-3.5 rounded-full shadow-[0_4px_14px_-6px_rgba(139,111,224,0.3)] border border-[#8B6FE0]/15">
-                🚚 Livraison 24h–48h
-              </span>
-              <span className="bg-white text-[#6B5F87] text-xs font-bold py-1.5 px-3.5 rounded-full shadow-[0_4px_14px_-6px_rgba(139,111,224,0.3)] border border-[#8B6FE0]/15">
-                🔍 Inspection du colis à l&apos;arrivée
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* MARQUEE */}
-        <div className="bg-[#8B6FE0] text-white py-3 overflow-hidden mt-8 md:mt-12 rounded-lg w-full max-w-full">
-          <div className="flex whitespace-nowrap animate-marquee font-display font-semibold text-xs sm:text-sm md:text-base">
-            <span className="px-4 flex items-center gap-3">VAPEUR <em className="not-italic text-[#F8D9B4]">✺</em> BRUME + HUILE <em className="not-italic text-[#F8D9B4]">✺</em> CLIC LIBÉRATEUR <em className="not-italic text-[#F8D9B4]">✺</em> SANS CHALEUR AGRESSIVE <em className="not-italic text-[#F8D9B4]">✺</em> POUR TOUTES LES TEXTURES <em className="not-italic text-[#F8D9B4]">✺</em></span>
-            <span className="px-4 flex items-center gap-3">VAPEUR <em className="not-italic text-[#F8D9B4]">✺</em> BRUME + HUILE <em className="not-italic text-[#F8D9B4]">✺</em> CLIC LIBÉRATEUR <em className="not-italic text-[#F8D9B4]">✺</em> SANS CHALEUR AGRESSIVE <em className="not-italic text-[#F8D9B4]">✺</em> POUR TOUTES LES TEXTURES <em className="not-italic text-[#F8D9B4]">✺</em></span>
-          </div>
-        </div>
-      </section>
-
-      {/* 🎬 DÉMONSTRATION VIDÉO */}
-      <section id="demo-video" className="py-12 md:py-20 bg-[#EEE6FA]/60 border-y border-[#8B6FE0]/15 mt-8 px-4 md:px-8 w-full overflow-hidden">
-        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-[1.2]">
+            Des cheveux plus doux, hydratés et sans casse : Brosse Multifonction Spray & Massage YUFAN™
+          </h1>
           
-          <div className="mb-6">
-            <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[#241B36]">
-              Voyez la brosse uméi en action
-            </h2>
-            <p className="text-[#6B5F87] text-xs sm:text-base mt-2 max-w-lg mx-auto font-medium">
-              Regardez comment la micro-brume détend les boucles pour un brossage fluide et sans douleur.
-            </p>
-          </div>
-
-          <div className="bg-white p-2.5 sm:p-4 rounded-[24px] sm:rounded-[28px] shadow-[0_20px_50px_-15px_rgba(139,111,224,0.35)] border border-[#8B6FE0]/20 max-w-xs sm:max-w-sm mx-auto">
-            <div className="relative rounded-2xl overflow-hidden bg-[#241B36] aspect-[9/16] flex items-center justify-center">
-              
-              <div className="absolute top-2.5 left-2.5 bg-[#241B36]/85 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 z-10">
-                <span className="w-2 h-2 rounded-full bg-[#FF5C93] animate-ping"></span>
-                <span>Démonstration en direct</span>
-              </div>
-
-              <video 
-                src="/videos/demo-umei.mp4"
-                poster="/images/demo-umei-poster.jpg"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-                preload="metadata"
-                className="w-full h-full object-cover"
-              >
-                Votre navigateur ne supporte pas la lecture de vidéos.
-              </video>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 📝 FORMULAIRE DE COMMANDE DIRECT ÉPURÉ */}
-      <UmeiStyleOrderSection
-        productSlug={slug || "umei"}
-        productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
-        bundles={BUNDLES}
-        selectedBundle={selectedBundle}
-        onSelectBundle={(b) => setSelectedBundle(b as ProductBundle)}
-        customerName={customerName}
-        setCustomerName={setCustomerName}
-        customerPhone={customerPhone}
-        setCustomerPhone={setCustomerPhone}
-        customerPhone2={customerPhone2}
-        setCustomerPhone2={setCustomerPhone2}
-        city={city}
-        setCity={setCity}
-        address={address}
-        setAddress={setAddress}
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-        accentColor="#E11D48"
-        whatsappNumber="2290192901817"
-        orderSuccess={orderSuccess}
-        orderNumber={orderNumber}
-        onResetOrder={() => {
-          setOrderSuccess(false);
-          setOrderNumber("");
-        }}
-      />
-
-      {/* 🌿 SECTION 3 AVANTAGES */}
-      <section id="comment" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[#241B36] mb-2">
-            Ce qu'il y a dedans, en vrai.
-          </h2>
-          <p className="text-[#6B5F87] text-xs sm:text-base font-medium">
-            Pas de magie — juste trois mécanismes qui font le travail à ta place.
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Démêlez en douceur grâce à la micro-brume hydratante intégrée et stimulez la pousse naturelle de vos cheveux avec les picots massants doux.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-          <div className="bg-white rounded-[22px] sm:rounded-[26px] p-6 sm:p-8 shadow-[0_16px_40px_-20px_rgba(139,111,224,0.35)] border border-[#8B6FE0]/10 text-center sm:text-left">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#B9A6F0] flex items-center justify-center mb-4 mx-auto sm:mx-0">
-              <Droplets className="w-6 h-6 sm:w-7 sm:h-7 text-[#241B36]" />
-            </div>
-            <h3 className="font-display font-bold text-lg sm:text-xl text-[#241B36] mb-2">Vapeur</h3>
-            <p className="text-[#6B5F87] text-xs sm:text-[15px] font-medium leading-relaxed">
-              Assouplit la fibre avant même que la brosse touche tes cheveux. Le démêlage devient presque agréable.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-[22px] sm:rounded-[26px] p-6 sm:p-8 shadow-[0_16px_40px_-20px_rgba(139,111,224,0.35)] border border-[#8B6FE0]/10 text-center sm:text-left">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#B7DEF0] flex items-center justify-center mb-4 mx-auto sm:mx-0">
-              <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-[#241B36]" />
-            </div>
-            <h3 className="font-display font-bold text-lg sm:text-xl text-[#241B36] mb-2">Brume + huile</h3>
-            <p className="text-[#6B5F87] text-xs sm:text-[15px] font-medium leading-relaxed">
-              Brumisation 360° qui diffuse ton huile essentielle préférée en même temps que l'eau. Hydratation intégrée.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-[22px] sm:rounded-[26px] p-6 sm:p-8 shadow-[0_16px_40px_-20px_rgba(139,111,224,0.35)] border border-[#8B6FE0]/10 text-center sm:text-left">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#A8E6C9] flex items-center justify-center mb-4 mx-auto sm:mx-0">
-              <HeartHandshake className="w-6 h-6 sm:w-7 sm:h-7 text-[#241B36]" />
-            </div>
-            <h3 className="font-display font-bold text-lg sm:text-xl text-[#241B36] mb-2">Clic libérateur</h3>
-            <p className="text-[#6B5F87] text-xs sm:text-[15px] font-medium leading-relaxed">
-              Un clic et tes cheveux se détachent de la brosse. Plus besoin de les décoincer un par un, à la main.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 💜 STATEMENT */}
-      <section className="px-4 md:px-8 max-w-[1180px] mx-auto py-4 w-full overflow-hidden">
-        <div className="bg-gradient-to-r from-[#B9A6F0] to-[#B7DEF0] rounded-[28px] sm:rounded-[36px] py-10 sm:py-14 px-6 text-center">
-          <h2 className="font-display font-bold text-xl sm:text-3xl md:text-[44px] text-[#241B36] max-w-xl mx-auto leading-tight">
-            Tes cheveux méritent <span className="text-white">mieux</span> qu'un peigne qui tire.
-          </h2>
-        </div>
-      </section>
-
-      {/* 📸 PHOTO FEATURE */}
-      <section className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-          <div className="md:col-span-5 flex justify-center">
-            <img 
-              src="/images/umei-clic-real.jpg" 
-              alt="Gros plan sur les picots et le clic de la brosse uméi" 
-              className="rounded-[24px] sm:rounded-[28px] shadow-[0_20px_50px_-20px_rgba(139,111,224,0.4)] w-full max-w-xs sm:max-w-sm object-cover"
+        {/* ── GALERIE HERO PRINCIPALE AUTO-DÉFILANTE ── */}
+        <div 
+          className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-5 transition-all"
+          onMouseEnter={() => setIsHeroHovered(true)}
+          onMouseLeave={() => setIsHeroHovered(false)}
+        >
+          <div className="relative aspect-square sm:aspect-[4/3] w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
+            <Image
+              src={CAROUSEL_IMAGES[activeImgIndex].src}
+              alt={CAROUSEL_IMAGES[activeImgIndex].alt}
+              fill
+              className="object-contain p-2 sm:p-4 transition-transform duration-500 ease-out"
+              priority
+              sizes="(max-width: 768px) 100vw, 896px"
             />
-          </div>
-          
-          <div className="md:col-span-7 space-y-4 text-center md:text-left">
-            <span className="bg-[#F8D9B4] text-[#241B36] text-xs font-bold py-1.5 px-4 rounded-full inline-block">
-              Le détail qui change tout
-            </span>
-            <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[#241B36]">
-              Un clic, et c'est réglé.
-            </h2>
-            <p className="text-[#6B5F87] text-xs sm:text-base font-medium leading-relaxed max-w-lg mx-auto md:mx-0">
-              Sur une brosse classique, retirer les cheveux coincés prend souvent plus de temps que le coiffage lui-même. Le mécanisme à dégagement automatique d'uméi règle ça en une seconde.
-            </p>
-            
-            <ul className="space-y-2.5 pt-2 text-xs sm:text-base font-semibold text-[#241B36] text-left max-w-md mx-auto md:mx-0">
-              <li className="flex items-center gap-3">
-                <span className="w-5 h-5 rounded-full bg-[#FF5C93]/15 flex items-center justify-center text-[#FF5C93] shrink-0">✓</span>
-                <span>Aucun cheveu coincé dans les poils</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="w-5 h-5 rounded-full bg-[#FF5C93]/15 flex items-center justify-center text-[#FF5C93] shrink-0">✓</span>
-                <span>Nettoyage en quelques secondes</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="w-5 h-5 rounded-full bg-[#FF5C93]/15 flex items-center justify-center text-[#FF5C93] shrink-0">✓</span>
-                <span>Poils doux, sans casse ni tiraillement</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
 
-      {/* 💬 AVIS */}
-      <section id="avis" className="py-12 md:py-20 px-4 md:px-8 max-w-[1180px] mx-auto w-full overflow-hidden">
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[#241B36] mb-2">
-            On te laisse pas juste sur parole.
-          </h2>
-          <p className="text-[#6B5F87] text-xs sm:text-base font-medium">
-            Ce que disent celles qui ont déjà changé de rituel.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-          <div className="bg-[#B9A6F0] rounded-[22px] sm:rounded-[24px] p-6 shadow-[0_14px_34px_-18px_rgba(139,111,224,0.4)] border border-[#8B6FE0]/15 text-left">
-            <p className="text-[#241B36] text-sm sm:text-[15.5px] font-semibold leading-relaxed mb-3">
-              "Je ne savais même pas qu'un démêlage pouvait ne pas faire mal. Vie changée, sans exagérer."
-            </p>
-            <div className="font-display font-bold text-xs text-[#241B36] opacity-75">
-              Amina G. — Cotonou
+            {/* Badges Flottants Produit */}
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
+              <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-md text-purple-900 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-xs">
+                <Droplets className="w-3.5 h-3.5 text-pink-500" />
+                Spray Brume Hydratante
+              </span>
+              <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-md text-slate-800 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-xs">
+                <Heart className="w-3.5 h-3.5 text-pink-500" />
+                Massage Cuir Chevelu
+              </span>
             </div>
-          </div>
 
-          <div className="bg-[#A8E6C9] rounded-[22px] sm:rounded-[24px] p-6 shadow-[0_14px_34px_-18px_rgba(139,111,224,0.4)] border border-[#8B6FE0]/15 text-left">
-            <p className="text-[#241B36] text-sm sm:text-[15.5px] font-semibold leading-relaxed mb-3">
-              "Mon fer à lisser prend la poussière depuis que j'ai reçu la brosse. Mes pointes me remercient."
-            </p>
-            <div className="font-display font-bold text-xs text-[#241B36] opacity-75">
-              Christelle T. — Abomey-Calavi
+            <div className="absolute top-3 right-3 pointer-events-none">
+              <span className="inline-flex items-center gap-1 bg-pink-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
+                14 900 FCFA
+              </span>
             </div>
-          </div>
 
-          <div className="bg-[#F8D9B4] rounded-[22px] sm:rounded-[24px] p-6 shadow-[0_14px_34px_-18px_rgba(139,111,224,0.4)] border border-[#8B6FE0]/15 text-left">
-            <p className="text-[#241B36] text-sm sm:text-[15.5px] font-semibold leading-relaxed mb-3">
-              "Le clic pour libérer les cheveux, c'est le détail auquel personne ne pense — et qui change tout."
-            </p>
-            <div className="font-display font-bold text-xs text-[#241B36] opacity-75">
-              Mireille D. — Porto-Novo
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ❓ FAQ */}
-      <section id="faq" className="py-12 px-4 md:px-8 max-w-[760px] mx-auto w-full overflow-hidden">
-        <div className="text-center mb-8">
-          <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-[#241B36]">
-            Les questions qu'on nous pose
-          </h2>
-        </div>
-
-        <div className="space-y-2.5">
-          {[
-            {
-              q: "Convient-elle aux cheveux crépus et très bouclés ?",
-              a: "Oui. La vapeur assouplit la fibre avant le passage de la brosse, ce qui la rend particulièrement adaptée aux textures bouclées, frisées et crépues."
-            },
-            {
-              q: "Faut-il ajouter de l'eau à chaque utilisation ?",
-              a: "Le réservoir se remplit en quelques secondes et suffit pour plusieurs séances. Tu peux y ajouter l'huile essentielle de ton choix."
-            },
-            {
-              q: "La vapeur abîme-t-elle les cheveux comme un fer à lisser ?",
-              a: "Non. Contrairement à un fer chauffant, la vapeur hydrate la fibre au lieu de l'assécher — c'est ce qui permet de démêler sans fragiliser tes cheveux."
-            },
-            {
-              q: "Livrez-vous dans mon pays ?",
-              a: "Nous livrons sous 24 à 48 heures dans les zones desservies (Cotonou, Calavi, Porto-Novo et environs), avec paiement à la livraison. Contacte-nous pour confirmer la disponibilité dans ta ville."
-            }
-          ].map((faq, idx) => (
-            <div key={idx} className="bg-white rounded-xl border border-[#8B6FE0]/15 overflow-hidden shadow-sm">
-              <button
-                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                className="w-full p-4 text-left font-display font-bold text-xs sm:text-base text-[#241B36] flex justify-between items-center gap-3 hover:bg-gray-50 transition-colors"
-              >
-                <span>{faq.q}</span>
-                <ChevronDown className={`w-4 h-4 text-[#FF5C93] shrink-0 transition-transform duration-300 ${openFaq === idx ? "rotate-180" : ""}`} />
-              </button>
-              {openFaq === idx && (
-                <div className="p-4 pt-0 text-xs sm:text-sm text-[#6B5F87] font-medium leading-relaxed border-t border-[#8B6FE0]/10 bg-[#F5F0FC]/30">
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 📦 COFFRET */}
-      <section className="py-10 px-4 md:px-8 max-w-[900px] mx-auto w-full overflow-hidden">
-        <div className="bg-[#241B36] text-white rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          <div className="space-y-4">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#FF5C93] font-bold bg-[#FF5C93]/20 px-3 py-1 rounded-full border border-[#FF5C93]/30">
-              Coffret Prestige Soin
-            </span>
-            <h3 className="text-xl font-bold text-white font-display">Dans votre colis Uméi™</h3>
-            <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Brosse Démêlante Vapeur Uméi</strong> avec mécanisme de clic libérateur</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Flacon pipette compte-gouttes</strong> pour remplir l'eau & huiles essentielles</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Câble de recharge rapide</strong> USB universel</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Guide des rituels capillaires</strong> pour cheveux crépus, frisés et ondulés</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 text-center space-y-3">
-            <div className="text-xs uppercase tracking-wider text-[#F8D9B4] font-bold">Paiement 100% à la Livraison</div>
-            <div className="text-lg font-bold text-white">Livraison 24h & Contrôle Colis</div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Ouvrez le paquet avec le livreur à domicile avant de régler en espèces ou Mobile Money.
-            </p>
+            {/* Boutons de navigation manuelle */}
             <button
-              type="button"
-              onClick={() => setIsDrawerOpen(true)}
-              className="w-full bg-[#FF5C93] hover:bg-[#E13D74] text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-[#FF5C93]/30 cursor-pointer"
+              onClick={() => setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-slate-700 hover:bg-white flex items-center justify-center shadow-md transition-all cursor-pointer"
+              title="Précédent"
             >
-              Commander ma brosse (14 900 F)
+              <ChevronLeft className="w-5 h-5" />
             </button>
+            <button
+              onClick={() => setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-slate-700 hover:bg-white flex items-center justify-center shadow-md transition-all cursor-pointer"
+              title="Suivant"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            {/* Légende Bas de Carte */}
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent p-4 text-white text-xs sm:text-sm font-medium">
+              <p className="line-clamp-1">{CAROUSEL_IMAGES[activeImgIndex].caption}</p>
+            </div>
+          </div>
+
+          {/* Miniatures interactives */}
+          <div className="grid grid-cols-2 gap-2 pt-3">
+            {CAROUSEL_IMAGES.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveImgIndex(idx)}
+                className={`relative h-16 sm:h-20 rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-slate-50 ${
+                  activeImgIndex === idx 
+                    ? "border-pink-600 shadow-xs ring-2 ring-pink-500/20" 
+                    : "border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100"
+                }`}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  className="object-contain p-1"
+                />
+              </button>
+            ))}
           </div>
         </div>
-      </section>
 
-      {/* 🚀 FINAL CTA */}
-      <section className="py-10 px-4 md:px-8 max-w-[1180px] mx-auto text-center w-full overflow-hidden">
-        <div className="bg-[#241B36] text-white rounded-[28px] sm:rounded-[36px] py-10 sm:py-14 px-5">
-          <h2 className="font-display font-bold text-xl sm:text-3xl md:text-4xl max-w-md mx-auto mb-5">
-            Prête à changer ton rituel capillaire ?
-          </h2>
+        {/* ── 3 BADGES DE RÉASSURANCE ISIVENTE (PILIER 2) ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0">
+              <Truck className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Livraison Express 24h</p>
+              <p className="text-[11px] text-slate-500">Cotonou, Calavi & Départements</p>
+            </div>
+          </div>
+
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-pink-50 border border-pink-100 flex items-center justify-center text-pink-600 shrink-0">
+              <PackageCheck className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Paiement à la Réception</p>
+              <p className="text-[11px] text-slate-500">Réglez 14 900 F après contrôle</p>
+            </div>
+          </div>
+
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0">
+              <ShieldCheck className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Garantie & Test 100%</p>
+              <p className="text-[11px] text-slate-500">Échange immédiat en cas d'anomalie</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── PILIER 2 : FORMULAIRE DE COMMANDE PLACÉ IMMÉDIATEMENT SOUS LE HERO ── */}
+        <div ref={orderSectionRef} id="commander" className="scroll-mt-20">
+          <UmeiStyleOrderSection
+            productSlug="umei"
+            productTitle="Brosse Multifonction Spray & Massage du Cuir Chevelu YUFAN™"
+            productImage="/images/brosse-spray-hero.jpg"
+            bundles={BUNDLES}
+            selectedBundle={selectedBundle}
+            onSelectBundle={(b) => {
+              setSelectedBundle(b);
+              trackAddToCart({
+                content_name: `Brosse YUFAN - ${b.name}`,
+                content_ids: ["umei", b.id || "solo"],
+                value: b.price,
+                currency: "XOF",
+                num_items: b.quantity || 1,
+              });
+            }}
+            customerName={customerName}
+            setCustomerName={setCustomerName}
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            customerPhone2={customerPhone2}
+            setCustomerPhone2={setCustomerPhone2}
+            city={city}
+            setCity={setCity}
+            address={address}
+            setAddress={setAddress}
+            accentColor="#db2777"
+            onSubmit={handleOrderSubmit}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+
+        {/* ── 4 FONCTIONS MAJEURES DE LA BROSSE YUFAN ── */}
+        <section className="space-y-6">
+          <div className="text-center space-y-2">
+            <span className="text-[11px] font-bold text-pink-600 uppercase tracking-wider">Soins & Bien-être</span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">4 actions indispensables réunies dans une seule brosse</h2>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+              Le secret d'un cheveu brillant, fort et démêlé sans douleur au quotidien.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            
+            {/* Action 1 */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-pink-50 border border-pink-100 flex items-center justify-center text-pink-600">
+                <Droplets className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <h3 className="font-bold text-slate-900 text-sm">Spray fin brume intégré</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Hydrate vos cheveux en une seule pression. Remplissez avec de l'eau, un hydrolat ou une lotion capillaire pour rafraîchir la fibre.
+              </p>
+            </div>
+
+            {/* Action 2 */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600">
+                <Heart className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <h3 className="font-bold text-slate-900 text-sm">Massage du cuir chevelu</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Picots arrondis massants qui stimulent la micro-circulation sanguine, détendent les tensions et favorisent une repousse plus dense.
+              </p>
+            </div>
+
+            {/* Action 3 */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-pink-50 border border-pink-100 flex items-center justify-center text-pink-600">
+                <Sparkles className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <h3 className="font-bold text-slate-900 text-sm">Démêlage anti-casse</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                L'humidité de la brume assouplit les nœuds avant le passage des picots. Réduit drastiquement la casse et la perte de cheveux.
+              </p>
+            </div>
+
+            {/* Action 4 */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2.5">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600">
+                <Award className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <h3 className="font-bold text-slate-900 text-sm">Tous types de cheveux</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Parfaitement adaptée aux cheveux crépus (4A, 4B, 4C), bouclés, frisés, ondulés et lisses. Idéal pour adultes et enfants.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── BÉNÉFICES COMPARATIFS ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-5">
+          <div className="text-center space-y-1.5">
+            <h3 className="font-bold text-slate-900 text-base sm:text-lg">Comparatif : Fini le calvaire du démêlage à sec</h3>
+            <p className="text-xs sm:text-sm text-slate-500">Pourquoi cette brosse révolutionne la routine de toute la famille</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Brosse Classique */}
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-3">
+              <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wide">
+                <XCircle className="w-4 h-4" />
+                <span>Brossage ou peigne ordinaire</span>
+              </div>
+              <ul className="space-y-2 text-xs text-slate-600">
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold">✕</span>
+                  <span>Tire violemment sur les racines et arrache les cheveux emmêlés.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold">✕</span>
+                  <span>Cheveux secs et cassants qui se remplissent de frisottis et d'électricité statique.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold">✕</span>
+                  <span>Oblige à utiliser un spray encombrant qui trempe les vêtements et le sol.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Brosse YUFAN */}
+            <div className="bg-pink-50/50 rounded-2xl p-4 border border-pink-200/80 space-y-3">
+              <div className="flex items-center gap-2 text-pink-700 font-bold text-xs uppercase tracking-wide">
+                <CheckCircle2 className="w-4 h-4 text-pink-600" />
+                <span>Brosse YUFAN Spray & Massage</span>
+              </div>
+              <ul className="space-y-2 text-xs text-slate-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-pink-600 font-bold">✓</span>
+                  <span><strong>Micro-brume ciblée</strong> : humidifie directement la mèche pour un glissement sans accroc.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-pink-600 font-bold">✓</span>
+                  <span><strong>Picots massants souples</strong> : stimulation agréable du cuir chevelu sans aucune douleur.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-pink-600 font-bold">✓</span>
+                  <span><strong>Rechargeable & nomade</strong> : compacte dans son sac pour une retouche fraîcheur à tout moment.</span>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── BANNIÈRE PROMOTIONNELLE & RAPPEL PRIX ── */}
+        <div className="bg-gradient-to-r from-pink-600 via-rose-600 to-purple-700 rounded-3xl p-6 text-white text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-5 shadow-lg shadow-pink-950/10">
+          <div className="space-y-1.5">
+            <span className="bg-white/20 backdrop-blur-md text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              Offre Spéciale Isivente
+            </span>
+            <h4 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Commandez votre Brosse Multifonction YUFAN™
+            </h4>
+            <p className="text-pink-100 text-xs sm:text-sm">
+              Seulement <strong className="text-white font-mono text-base">14 900 FCFA</strong> au lieu de <span className="line-through opacity-75">25 000 FCFA</span>.
+            </p>
+          </div>
           <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="w-full sm:w-auto bg-[#FF5C93] hover:bg-[#E13D74] text-white px-7 py-3.5 rounded-full font-bold text-sm sm:text-base shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
+            onClick={scrollToOrder}
+            className="w-full sm:w-auto px-6 py-3.5 bg-white text-pink-900 font-bold text-sm rounded-xl hover:bg-pink-50 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
           >
-            Commander ma brosse — 14 900 FCFA
+            Commander maintenant (14 900 F)
           </button>
         </div>
-      </section>
 
-      {/* 🦶 FOOTER */}
-      <footer className="py-6 px-4 border-t border-[#8B6FE0]/15 max-w-[1180px] mx-auto w-full overflow-hidden">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs font-semibold text-[#6B5F87] text-center">
-          <div>© {new Date().getFullYear()} Isivente. Tous droits réservés.</div>
-          <ul className="flex gap-4">
-            <li><button onClick={() => scrollToSection("demo-video")}>Vidéo</button></li>
-            <li><button onClick={() => setIsDrawerOpen(true)}>Commander</button></li>
-            <li><button onClick={() => scrollToSection("faq")}>Questions</button></li>
-          </ul>
-        </div>
-      </footer>
+        {/* ── SECTION AVIS CLIENTS VÉRIFIÉS ── */}
+        <section className="space-y-6">
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center gap-1 text-amber-400">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-amber-400" />
+              ))}
+              <span className="text-slate-800 font-bold text-sm ml-1.5">4.9/5</span>
+              <span className="text-slate-500 text-xs">(Avis clientes certifiées au Bénin)</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Ce que disent nos clientes</h2>
+          </div>
 
-      {/* 🚀 QUICK-ORDER DRAWER EXPRESS 1-CLIC */}
-      <QuickOrderDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        productSlug={slug || "umei"}
-        productTitle="Brosse Démêlante Vapeur Uméi 3-en-1"
-        productImage="/images/umei-hero-real.jpg"
-        bundles={BUNDLES}
-        accentColor="#FF5C93"
-        whatsappNumber="2290192901817"
-        initialBundle={selectedBundle}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {CUSTOMER_REVIEWS.map((rev, idx) => (
+              <div 
+                key={idx} 
+                className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3 flex flex-col justify-between"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex text-amber-400">
+                      {[...Array(rev.rating)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full font-semibold border border-pink-100">
+                      {rev.date}
+                    </span>
+                  </div>
+                  <h4 className="font-bold text-xs text-slate-900">{rev.title}</h4>
+                  <p className="text-xs text-slate-600 leading-relaxed italic">"{rev.comment}"</p>
+                </div>
+                
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span className="font-bold text-slate-900">{rev.name}</span>
+                  <span className="text-slate-400">{rev.location}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── SECTION FAQ INTERACTIVE ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-4">
+          <div className="text-center space-y-1">
+            <h3 className="font-bold text-slate-900 text-base sm:text-lg">Questions Fréquentes</h3>
+            <p className="text-xs text-slate-500">Tout ce que vous devez savoir avant de commander</p>
+          </div>
+
+          <div className="divide-y divide-slate-100">
+            {FAQS_DATA.map((faq, index) => {
+              const isOpen = activeFaq === index;
+              return (
+                <div key={index} className="py-3">
+                  <button
+                    onClick={() => setActiveFaq(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between text-left gap-4 group cursor-pointer"
+                  >
+                    <span className="font-semibold text-xs sm:text-sm text-slate-800 group-hover:text-pink-700 transition-colors">
+                      {faq.q}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
+                        isOpen ? "rotate-180 text-pink-600" : ""
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="pt-2.5 pr-6 text-xs text-slate-600 leading-relaxed animate-in fade-in duration-200">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── FOOTER OFFICIEL ISIVENTE ── */}
+        <footer className="text-center text-xs text-slate-400 space-y-2 pt-6 border-t border-slate-200">
+          <p>© {new Date().getFullYear()} ISIVENTE Bénin - Tous droits réservés.</p>
+          <p className="text-[11px]">Boutique officielle de distribution en ligne. Service client disponible 7j/7.</p>
+        </footer>
+
+      </main>
+
+      {/* ── BARRE MOBILE STICKY CTA (PILIER 1 & 2) ── */}
+      <StickyMobileCtaBar
+        price={14900}
+        targetSectionId="commander"
+        accentColor="#db2777"
+        buttonText="Commander (14 900 F)"
+        whatsappMessage="Bonjour Isivente, je souhaite commander la Brosse Multifonction Spray & Massage YUFAN à 14 900 FCFA."
       />
 
     </div>

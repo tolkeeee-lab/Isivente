@@ -42,6 +42,11 @@ const nextConfig = {
         destination: '/p/matelas',
         permanent: true,
       },
+      {
+        source: '/brosse',
+        destination: '/p/umei',
+        permanent: true,
+      },
     ];
   },
 };
