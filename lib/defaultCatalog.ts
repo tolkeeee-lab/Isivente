@@ -79,14 +79,14 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
   },
   {
     id: "peeler-default",
-    title: "Éplucheur Automatique ChefPeel™ Pro",
-    shortTitle: "Éplucheur Automatique ChefPeel™",
+    title: "Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir",
+    shortTitle: "Mandoline Coupe-Légumes 6-en-1",
     slug: "peeler",
     price: 14900,
     image_url: "/images/peeler-hero.jpg",
     image: "/images/peeler-hero.jpg",
     bundles: [
-      { name: "Éplucheur Automatique ChefPeel™ Pro", price: 14900 }
+      { name: "Mandoline & Coupe-Légumes Multifonction 6-en-1", price: 14900 }
     ]
   },
   {

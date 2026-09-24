@@ -1,604 +1,499 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { 
+  ShieldCheck, 
+  Truck, 
+  Star, 
+  ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
+  UtensilsCrossed, 
+  Sparkles, 
+  CheckCircle2, 
+  XCircle, 
+  Waves, 
+  Zap, 
+  Heart,
+  Timer,
+  Salad,
+  Egg
+} from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { markLeadConverted } from "@/lib/leadsStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
+import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
+import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import HorizontalCarousel from "@/components/ui/HorizontalCarousel";
-import { usePagePresence } from "@/hooks/usePagePresence";
-import { getProductUpsellConfig } from "@/lib/upsellConfig";
-import {
-  Check,
-  ArrowRight,
-  ChevronDown,
-  Sparkles,
-  Zap,
-  BatteryCharging,
-  Clock,
-  ShieldCheck,
-  PackageCheck,
-  Truck,
-  UtensilsCrossed,
-  CheckCircle2,
-  ThumbsUp,
-  RotateCw,
-  Sparkle,
-  BadgeCheck,
-} from "lucide-react";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 
-/* ─────────────────────────────────────────── PACKS & DONNÉES DE L'OFFRE */
 const BUNDLES: BundleOption[] = [
   {
     id: "solo",
-    name: "Pack Découverte (1 Éplucheur)",
-    quantity: 1,
+    name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+    subtitle: "Ensemble complet : bac transparent, panier égouttoir, poussoir protège-doigts, grille de découpe, râpe et séparateur d'œuf",
     price: 14900,
-    original_price: 19900,
+    originalPrice: 25000,
+    savings: 10100,
+    quantity: 1,
     popular: true,
   },
-  {
-    id: "duo",
-    name: "Pack Sérénité Duo (2 Éplucheurs)",
-    quantity: 2,
-    price: 24900,
-    original_price: 39800,
-    badge: "Offre Spéciale Cadeau (-5 000 F)",
-    popular: false,
-  },
 ];
 
-const CAROUSEL_SLIDES = [
-  {
-    src: "/images/peeler-hero.jpg",
-    alt: "ChefPeel™ Pro — Éplucheur Automatique d'Ail, Fruits et Légumes",
-    label: "Épluchage Automatique en 1 Seul Clic",
-  },
+const CAROUSEL_IMAGES = [
+  { 
+    src: "/images/peeler-hero.jpg", 
+    alt: "Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir et Séparateur d'Œuf",
+    caption: "Mandoline 6-en-1 : découpe rapide, bac transparent récepteur, panier égouttoir et poussoir protecteur"
+  }
 ];
 
-const REVIEWS = [
+interface CustomerReview {
+  name: string;
+  location: string;
+  rating: number;
+  date: string;
+  title: string;
+  comment: string;
+  verified: boolean;
+}
+
+const CUSTOMER_REVIEWS: CustomerReview[] = [
   {
     name: "Bernadette D.",
-    city: "Cotonou (Cadjehoun)",
-    stars: 5,
-    text: "Éplucher l'ail pour mes marinades et assaisonnements était une véritable corvée avec les odeurs qui restaient sur les doigts. Avec cet éplucheur, en 10 secondes tout un bol d'ail est prêt, propre et intact !",
+    location: "Cotonou (Cadjehoun)",
+    rating: 5,
+    date: "Achat vérifié",
+    title: "Mes salades et assaisonnements en 5 minutes !",
+    comment: "Découper les carottes et concombres pour les salades me prenait un temps fou. Avec cette mandoline et son poussoir, tout tombe proprement dans le bac sans salir ma table. Les rondelles sont parfaites et régulières.",
+    verified: true,
   },
   {
     name: "Marcelle T.",
-    city: "Abomey-Calavi",
-    stars: 5,
-    text: "Je gagne un temps précieux chaque week-end pour la préparation des repas de famille. Même les pommes de terre et les petits légumes se préparent sans fatigue. C'est un appareil indispensable en cuisine.",
+    location: "Calavi (Arconville)",
+    rating: 5,
+    date: "Achat vérifié",
+    title: "Le séparateur d'œuf et la râpe à ail sont géniaux",
+    comment: "C'est vraiment un outil tout-en-un. Je râpe l'ail et le gingembre directement sur le couvercle et je rince les légumes directement dans le panier égouttoir sans sortir de passoire. Très facile à nettoyer.",
+    verified: true,
   },
   {
     name: "Sébastien A.",
-    city: "Porto-Novo",
-    stars: 5,
-    text: "J'ai commandé le pack duo pour offrir à ma femme et à ma mère. Elles en sont ravies au quotidien. La batterie tient très bien et la recharge par USB est ultra pratique.",
+    location: "Porto-Novo",
+    rating: 5,
+    date: "Achat vérifié",
+    title: "Plus aucune coupure aux doigts",
+    comment: "Je l'ai acheté pour ma femme qui avait souvent des coupures avec les couteaux de cuisine. Le capuchon protecteur avec picots maintient fermement les pommes de terre. Reçu en 24h avec le livreur.",
+    verified: true,
   },
 ];
 
-const FAQS = [
+const FAQS_DATA = [
   {
-    q: "Quels sont les aliments adaptés à cet éplucheur ?",
-    a: "L'appareil est optimisé en priorité pour les gousses d'ail (son efficacité par friction est remarquable). Il convient également pour les petites pommes de terre, les pommes, les échalotes et divers petits fruits et légumes fermes.",
+    q: "Quels légumes et aliments peut-on préparer avec cet appareil ?",
+    a: "Il est idéal pour découper en rondelles ou lamelles régulières concombres, carottes, pommes de terre (chips/frites), oignons, courgettes, choux et fruits fermes. Il intègre aussi une zone pour râper ail/gingembre et un séparateur de jaune d'œuf."
   },
   {
-    q: "Est-ce que le système abîme ou écrase les gousses d'ail ?",
-    a: "Non, absolument pas. Le mécanisme rotatif centrifuge retire délicatement la fine pellicule par frottement contrôlé sans écraser la chair. Vous obtenez des gousses entières, prêtes à être mixées, écrasées ou cuisinées.",
+    q: "Est-ce sécurisé pour éviter de se couper les doigts ?",
+    a: "Oui, à 100%. L'appareil est livré avec un poussoir ergonomique muni de picots qui agrippent le légume. Vos doigts restent toujours au-dessus du capuchon de protection et ne s'approchent jamais de la lame."
   },
   {
-    q: "Quelle est l'autonomie de la batterie et comment la recharger ?",
-    a: "L'éplucheur intègre une batterie lithium haute performance de 1300 mAh rechargeable via un câble USB standard (inclus). Une seule charge complète permet d'assurer plusieurs dizaines de sessions d'épluchage (2 à 3 semaines d'utilisation quotidienne standard).",
+    q: "Comment fonctionne le bac égouttoir intégré ?",
+    a: "Le bol intérieur fait office de passoire. Dès que vos légumes sont découpés, vous pouvez verser de l'eau pour les rincer directement dans le bac, puis vider l'eau d'un seul geste par l'orifice de vidange sans transvaser les aliments."
   },
   {
-    q: "Le nettoyage est-il facile au quotidien ?",
-    a: "Très facile. Le bol transparent et le plateau intérieur se retirent d'un simple geste et se rincent directement à l'eau claire en moins de 20 secondes.",
-  },
-  {
-    q: "Quels sont les délais de livraison et les modalités de paiement au Bénin ?",
-    a: "La livraison est effectuée en 24h à 48h à Cotonou, Abomey-Calavi, Porto-Novo et les communes environnantes. Le paiement s'effectue à 100% à la réception (en espèces ou par Mobile Money MTN / Moov) après vérification de votre colis.",
-  },
+    q: "Quelles sont les conditions de livraison et de règlement au Bénin ?",
+    a: "Livraison rapide sous 24h à Cotonou, Calavi et environs. Vous contrôlez votre colis avec le livreur avant de payer le montant en espèces."
+  }
 ];
 
-/* ─────────────────────────────────────────── COMPOSANT PRINCIPAL */
 export default function PeelerLanding({ slug }: { slug: string }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<BundleOption>(BUNDLES[0]);
-  const [includeBump, setIncludeBump] = useState(false);
-  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
-  const upsellConfig = getProductUpsellConfig("peeler");
-  const secondUnitOffer = upsellConfig?.secondUnit;
-  const bumpOffer = upsellConfig?.bump;
+  const { recordInteraction } = usePagePresence(slug || "peeler");
+  const utm = useUTM();
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [phone2, setPhone2] = useState("");
+  const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerPhone2, setCustomerPhone2] = useState("");
   const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [orderInfo, setOrderInfo] = useState<any>(null);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderError, setOrderError] = useState("");
+  const orderSectionRef = useRef<HTMLDivElement>(null);
 
-  const submittingRef = useRef(false);
-  const { recordInteraction } = usePagePresence(slug);
+  // Défilement automatique du carrousel si plusieurs visuels
+  useEffect(() => {
+    if (isHeroHovered || CAROUSEL_IMAGES.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
+    }, 3800);
+    return () => clearInterval(timer);
+  }, [isHeroHovered]);
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
+  // Capture silencieuse du prospect (Ghost lead) dès qu'il saisit 8 chiffres
+  useEffect(() => {
+    const cleanPhone = customerPhone.replace(/\D/g, "");
+    if (cleanPhone.length >= 8) {
+      saveOrUpdateLead({
+        customer_name: customerName,
+        customer_phone: cleanPhone,
+        customer_phone2: customerPhone2,
+        city: city,
+        address: address,
+        product_slug: "peeler",
+        product_title: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+        bundle_name: selectedBundle.name,
+        total_amount: selectedBundle.price,
+      }).catch(() => {});
+    }
+  }, [customerPhone, customerName, city, address, selectedBundle]);
+
+  useEffect(() => {
+    trackViewContent({
+      content_name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+      content_ids: ["peeler", "mandoline"],
+      value: 14900,
+      currency: "XOF",
+    });
+  }, []);
+
+  const scrollToOrder = () => {
+    recordInteraction();
+    trackInitiateCheckout({
+      content_name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+      content_ids: ["peeler", "mandoline"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: 1,
+    });
+    const el = document.getElementById("commander");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
-      if (id === "commander") {
-        setTimeout(() => {
-          const input = (document.getElementById("customer-name-input") ||
-            el.querySelector("input[type='text'], input[type='tel']")) as HTMLInputElement | null;
-          if (input) input.focus({ preventScroll: true });
-        }, 400);
-      }
     }
   };
 
-  const handleCtaClick = useCallback(() => {
-    recordInteraction();
-    scrollToSection("commander");
-  }, [recordInteraction]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (submittingRef.current || submitting) return;
-
-    if (!name.trim() || !phone.trim() || !address.trim()) {
-      alert("Veuillez renseigner votre nom, votre numéro de téléphone et votre adresse de livraison.");
+    if (!customerPhone.trim()) {
+      setOrderError("Veuillez renseigner votre numéro de téléphone pour la livraison.");
       return;
     }
-    submittingRef.current = true;
-    setSubmitting(true);
+
+    setIsSubmitting(true);
+    setOrderError("");
 
     try {
-      const secondUnitPrice = includeSecondUnit && secondUnitOffer ? secondUnitOffer.price : 0;
-      const bumpPrice = includeBump && bumpOffer ? bumpOffer.price : 0;
-      const finalTotal = selected.price + secondUnitPrice + bumpPrice;
-      const finalBundleName = selected.name 
-        + (includeSecondUnit && secondUnitOffer ? ` + 2ème Éplucheur (${secondUnitOffer.title})` : "")
-        + (includeBump && bumpOffer ? ` + ${bumpOffer.title}` : "");
-
       const order = await saveNewOrder({
-        product_slug: slug,
-        product_title: "ChefPeel™ Pro — Éplucheur Automatique Multifonction",
-        bundle_id: selected.id,
-        bundle_name: finalBundleName,
-        quantity: (selected.quantity || 1) + (includeSecondUnit ? 1 : 0),
-        total_amount: finalTotal,
-        customer_name: name.trim(),
-        customer_phone: phone.trim() + (phone2.trim() ? ` / ${phone2.trim()}` : ""),
-        city,
-        shipping_city: city,
-        address: address.trim(),
-        shipping_address: address.trim(),
-        status: "pending",
+        product_title: "Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir",
+        product_slug: "peeler",
+        customer_name: customerName.trim() || "Client Isivente",
+        customer_phone: customerPhone.trim(),
+        customer_phone2: customerPhone2.trim() || undefined,
+        city: city.trim() || "Cotonou",
+        address: address.trim() || "Cotonou",
+        bundle_name: selectedBundle.name,
+        total_amount: selectedBundle.price,
+        utm_source: utm?.utm_source || undefined,
+        utm_medium: utm?.utm_medium || undefined,
+        utm_campaign: utm?.utm_campaign || undefined,
       });
 
-      recordInteraction();
-      markLeadConverted(phone, slug);
+      markLeadConverted(customerPhone.trim(), "peeler");
 
-      const orderNum = order?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
-      setOrderInfo({ order_number: orderNum });
-      setSubmitted(true);
-      setSubmitting(false);
+      trackPurchase({
+        content_name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+        content_ids: ["peeler", "mandoline"],
+        value: selectedBundle.price,
+        currency: "XOF",
+        num_items: 1,
+      });
 
-      // Redirection directe vers la page success pour confirmation WhatsApp automatique
-      router.push(`/p/${slug}/success?order=${encodeURIComponent(orderNum)}&phone=${encodeURIComponent(phone.trim())}&name=${encodeURIComponent(name.trim())}&total=${encodeURIComponent(String(finalTotal))}`);
-    } catch {
-      alert("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
-      setSubmitting(false);
-      submittingRef.current = false;
+      const successUrl = `/p/peeler/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
+      router.push(successUrl);
+    } catch (err: any) {
+      console.error("Order error:", err);
+      setOrderError(err?.message || "Une erreur est survenue lors de l'enregistrement de votre commande.");
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-slate-900 selection:bg-blue-600/20 selection:text-blue-900 font-sans antialiased pb-28 md:pb-0">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans selection:bg-emerald-50 selection:text-emerald-900">
       
-      {/* ── 1. BANDEAU D'ANNONCE SUPÉRIEUR ── */}
-      <div className="bg-[#0A1931] text-white text-[11px] sm:text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 tracking-wide border-b border-white/10">
-        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-        <span>LIVRAISON EXPRESS 24H–48H AU BÉNIN • PAIEMENT 100% À LA RÉCEPTION DU COLIS</span>
+      {/* ── BANDEAU TOP BAR CLAIR ÉPURÉ ── */}
+      <div className="bg-slate-900 text-white text-[11px] font-medium py-2 px-4 text-center tracking-wide">
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span>Livraison express sous 24h à Cotonou & Calavi • Paiement en espèces après vérification du colis</span>
+        </div>
       </div>
 
-      {/* ── 2. HEADER DE MARQUE ÉPURÉ (FIGMA-GRADE) ── */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 md:px-8 py-3.5 shadow-2xs">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+      {/* ── HEADER NAVIGATION FOND CLAIR ── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)]">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#0047AB] text-white flex items-center justify-center font-bold text-sm shadow-sm">
-              <UtensilsCrossed className="w-4 h-4 text-amber-300 stroke-[2]" />
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+              <UtensilsCrossed className="w-4 h-4 stroke-[1.75]" />
             </div>
-            <div>
-              <span className="font-display font-extrabold text-base tracking-tight text-slate-900 block leading-none">
-                ISIVENTE
-              </span>
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">• Boutique Officielle</span>
-            </div>
+            <span className="font-bold text-sm tracking-tight text-slate-900">ISIVENTE</span>
+            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">• Boutique Officielle</span>
           </div>
 
           <button
-            type="button"
-            onClick={handleCtaClick}
-            className="bg-[#0047AB] hover:bg-[#003580] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all duration-150 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            onClick={scrollToOrder}
+            className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(5,150,105,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
             <span>Commander</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span className="font-mono tabular-nums text-emerald-100 text-[11px]">(14 900 F)</span>
           </button>
         </div>
       </header>
 
-      {/* ── 3. SECTION HERO : CARROUSEL 5 SLIDES + ACCROCHE ── */}
-      <section className="pt-6 md:pt-10 pb-10 px-4 md:px-8 max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-          
-          {/* CARROUSEL D'IMAGES HD */}
-          <div className="md:col-span-6 flex flex-col items-center">
-            <HorizontalCarousel
-              slides={CAROUSEL_SLIDES}
-              accentColor="#0047AB"
-              autoplayInterval={4500}
-            />
-          </div>
-
-          {/* ACCROCHE ET PROPOSITION DE VALEUR */}
-          <div className="md:col-span-6 space-y-5 text-center md:text-left flex flex-col items-center md:items-start">
-            
-            <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200/80 px-3.5 py-1 rounded-full text-xs font-bold text-amber-900 shadow-2xs">
-              <div className="flex text-amber-500 text-xs">★★★★★</div>
-              <span>4.9/5 (+1 150 cuisinières satisfaites au Bénin)</span>
-            </div>
-
-            <h1 className="font-display font-extrabold text-2xl sm:text-4xl lg:text-5xl leading-[1.12] text-slate-900 tracking-tight">
-              L&apos;épluchage de l&apos;ail, <span className="text-[#0047AB]">plus rapide</span> et <span className="text-amber-600">sans effort.</span>
-            </h1>
-
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
-              Fini la corvée d&apos;éplucher les gousses à la main et les odeurs tenaces sur les doigts pendant des jours. En <strong>1 seul clic</strong>, obtenez un ail parfaitement propre, ainsi que vos pommes de terre et petits légumes.
-            </p>
-
-            {/* Bouton d'action principal */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full pt-1">
-              <button
-                type="button"
-                onClick={handleCtaClick}
-                className="w-full sm:w-auto bg-[#0047AB] hover:bg-[#003580] text-white px-8 py-4 rounded-2xl font-bold text-base shadow-lg shadow-blue-900/25 hover:-translate-y-0.5 transition-all duration-150 active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
-              >
-                <span>Commander — 14 900 FCFA</span>
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Badges de Réassurance */}
-            <div className="grid grid-cols-3 gap-2 w-full pt-2">
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center shadow-2xs">
-                <div className="text-[10px] font-bold uppercase text-slate-400">Paiement</div>
-                <div className="text-xs font-bold text-slate-800">À la livraison</div>
-              </div>
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center shadow-2xs">
-                <div className="text-[10px] font-bold uppercase text-slate-400">Délai</div>
-                <div className="text-xs font-bold text-[#0047AB] font-mono">24h–48h</div>
-              </div>
-              <div className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center shadow-2xs">
-                <div className="text-[10px] font-bold uppercase text-slate-400">Colis</div>
-                <div className="text-xs font-bold text-slate-800">Vérifié & Testé</div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ── 4. FORMULAIRE DE COMMANDE DIRECT (PLACEMENT PRIORITAIRE FIGMA-GRADE) ── */}
-      <UmeiStyleOrderSection
-        productSlug={slug}
-        productTitle="ChefPeel™ Pro — Éplucheur Automatique Multifonction"
-        bundles={BUNDLES}
-        selectedBundle={selected}
-        onSelectBundle={(b) => setSelected(b as BundleOption)}
-        customerName={name}
-        setCustomerName={setName}
-        customerPhone={phone}
-        setCustomerPhone={setPhone}
-        customerPhone2={phone2}
-        setCustomerPhone2={setPhone2}
-        city={city}
-        setCity={setCity}
-        address={address}
-        setAddress={setAddress}
-        includeBump={includeBump}
-        setIncludeBump={setIncludeBump}
-        bumpOffer={bumpOffer}
-        includeSecondUnit={includeSecondUnit}
-        setIncludeSecondUnit={setIncludeSecondUnit}
-        secondUnitOffer={secondUnitOffer}
-        isSubmitting={submitting}
-        onSubmit={handleSubmit}
-        accentColor="#0047AB"
-        whatsappNumber="2290192901817"
-        orderSuccess={submitted}
-        orderNumber={orderInfo?.order_number}
-        onResetOrder={() => {
-          setSubmitted(false);
-          setOrderInfo(null);
-        }}
-      />
-
-      {/* ── 5. BANDEAU DE POINTS FORTS (MARQUEE ÉLÉGANT) ── */}
-      <div className="bg-[#0A1931] text-white py-3.5 overflow-hidden border-y border-white/10">
-        <div className="flex whitespace-nowrap font-mono text-xs sm:text-sm font-semibold tracking-wider">
-          <span className="px-4 flex items-center gap-3">
-            <span>FINI LES DOIGTS QUI SENTENT L&apos;AIL</span>
-            <span className="text-amber-400">✦</span>
-            <span>BATTERIE RECHARGEABLE USB 1300 mAh</span>
-            <span className="text-amber-400">✦</span>
-            <span>AIL, POMMES DE TERRE, LÉGUMES</span>
-            <span className="text-amber-400">✦</span>
-            <span>LANCEMENT EN 1 SEUL CLIC</span>
-            <span className="text-amber-400">✦</span>
-            <span>NETTOYAGE EXPRESS EN 20 SECONDES</span>
-            <span className="text-amber-400">✦</span>
-          </span>
-          <span className="px-4 flex items-center gap-3">
-            <span>FINI LES DOIGTS QUI SENTENT L&apos;AIL</span>
-            <span className="text-amber-400">✦</span>
-            <span>BATTERIE RECHARGEABLE USB 1300 mAh</span>
-            <span className="text-amber-400">✦</span>
-            <span>AIL, POMMES DE TERRE, LÉGUMES</span>
-            <span className="text-amber-400">✦</span>
-            <span>LANCEMENT EN 1 SEUL CLIC</span>
-            <span className="text-amber-400">✦</span>
-            <span>NETTOYAGE EXPRESS EN 20 SECONDES</span>
-            <span className="text-amber-400">✦</span>
-          </span>
-        </div>
-      </div>
-
-      {/* ── 6. COMPARATIF AVANT / APRÈS : TRANSFORMATION EN CUISINE ── */}
-      <section className="py-14 px-4 md:px-8 max-w-5xl mx-auto space-y-10">
+      {/* ── CONTENEUR PRINCIPAL ── */}
+      <main className="max-w-4xl mx-auto px-4 pt-8 pb-16 space-y-10">
         
-        <div className="text-center max-w-xl mx-auto">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
-            Comparatif Réel
-          </span>
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
-            La fin des corvées interminables en cuisine
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Découvrez la différence entre l&apos;épluchage manuel et la technologie ChefPeel™ Pro.
+        {/* En-tête Titre & Accroche */}
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-600 stroke-[1.75]" />
+            <span>Cuisine Facile & Rapide</span>
+          </div>
+          
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-[-0.03em] text-slate-900 leading-tight">
+            Mandoline & Coupe-Légumes Multifonction 6-en-1
+          </h1>
+          
+          <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+            Tranchez, râpez, lavez et égouttez vos légumes dans un seul récipient. Équipé d&apos;un poussoir de sécurité protège-doigts, d&apos;une râpe à ail et d&apos;un séparateur d&apos;œufs.
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          
-          {/* Image Avant/Après */}
-          <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+        {/* ── GALERIE PHOTOS FOND BLANC AVEC RATIO PROPRE ── */}
+        <div 
+          onMouseEnter={() => setIsHeroHovered(true)}
+          onMouseLeave={() => setIsHeroHovered(false)}
+          className="max-w-[480px] mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-4 space-y-3"
+        >
+          {/* Cadre de l'image */}
+          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
             <img
-              src="/images/peeler-hero.jpg"
-              alt="Épluchage Automatique ChefPeel Pro"
-              className="w-full h-auto object-cover"
+              src={CAROUSEL_IMAGES[activeImgIndex].src}
+              alt={CAROUSEL_IMAGES[activeImgIndex].alt}
+              className="w-full h-full object-contain p-1"
             />
+
+            {/* Badge promotionnel élégant */}
+            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md border border-slate-200/80 px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1 text-[11px] font-bold text-emerald-700">
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span>Promo Spéciale : 14 900 FCFA</span>
+            </div>
           </div>
-
-          {/* Comparatif textuel détaillé */}
-          <div className="space-y-4">
-            
-            <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-1">
-              <div className="font-bold text-xs uppercase tracking-wider text-rose-700 flex items-center gap-1.5">
-                <span>✕ Avant (Épluchage manuel au couteau)</span>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Peaux fines collées partout, ongles abîmés, odeur tenace qui persiste pendant plusieurs jours sur les mains et 20 à 30 minutes perdues pour chaque préparation de repas.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-blue-50/80 border-2 border-[#0047AB] space-y-1">
-              <div className="font-bold text-xs uppercase tracking-wider text-[#0047AB] flex items-center gap-1.5">
-                <span>✓ Avec ChefPeel™ Pro</span>
-                <span className="text-[10px] bg-[#0047AB] text-white px-2 py-0.2 rounded-full">Automatique</span>
-              </div>
-              <p className="text-xs text-slate-700 leading-relaxed font-medium">
-                Gousses d&apos;ail impeccables et intactes en moins de 10 secondes, doigts 100% propres sans odeur, zéro gaspillage et plan de travail net.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 pt-2">
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                <div className="text-[10px] uppercase font-bold text-slate-400">Gain de temps</div>
-                <div className="font-bold text-xs text-slate-800">10x plus rapide</div>
-              </div>
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                <div className="text-[10px] uppercase font-bold text-slate-400">Hygiène</div>
-                <div className="font-bold text-xs text-[#0047AB]">Mains 100% propres</div>
-              </div>
-            </div>
-
-          </div>
-
         </div>
 
-      </section>
-
-      {/* ── 7. COMMENT ÇA MARCHE EN 3 ÉTAPES SIMPLES ── */}
-      <section className="py-12 px-4 md:px-8 max-w-5xl mx-auto space-y-8">
-        
-        <div className="text-center max-w-lg mx-auto">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
-            Simplicité Absolue
-          </span>
-          <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mt-2">
-            Comment ça marche ?
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Seulement 3 étapes simples pour un résultat rapide et parfait à chaque utilisation.
-          </p>
+        {/* ── 3 BADGES DE RÉASSURANCE PRIORITAIRES ── */}
+        <div className="grid grid-cols-3 gap-2.5 max-w-xl mx-auto">
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
+            <Truck className="w-5 h-5 text-emerald-600 mx-auto stroke-[1.75]" />
+            <div className="text-xs font-bold text-slate-900">Livraison 24h</div>
+            <div className="text-[10px] text-slate-500 font-mono">Cotonou & Calavi</div>
+          </div>
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 mx-auto stroke-[1.75]" />
+            <div className="text-xs font-bold text-slate-900">Test à Réception</div>
+            <div className="text-[10px] text-slate-500 font-mono">Paiement après vérification</div>
+          </div>
+          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
+            <Sparkles className="w-5 h-5 text-amber-600 mx-auto stroke-[1.75]" />
+            <div className="text-xs font-bold text-slate-900">100% Anti-Coupure</div>
+            <div className="text-[10px] text-slate-500 font-mono">Poussoir protecteur inclus</div>
+          </div>
         </div>
 
-        <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-md bg-white">
-          <img
-            src="/images/peeler-hero.jpg"
-            alt="Comment utiliser l'éplucheur ChefPeel Pro en 3 étapes"
-            className="w-full h-auto object-cover max-h-[400px]"
+        {/* ── FORMULAIRE DE COMMANDE ENCADRÉ (DIRECTEMENT SOUS LES BADGES) ── */}
+        <div ref={orderSectionRef} id="commander">
+          {orderError && (
+            <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
+              <XCircle className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
+              <span>{orderError}</span>
+            </div>
+          )}
+
+          <UmeiStyleOrderSection
+            productSlug="peeler"
+            productTitle="Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir"
+            productImage="/images/peeler-hero.jpg"
+            bundles={BUNDLES}
+            selectedBundle={selectedBundle}
+            onSelectBundle={(b) => {
+              setSelectedBundle(b);
+              trackAddToCart({
+                content_name: `Mandoline 6-en-1 - ${b.name}`,
+                content_ids: ["peeler", b.id || "solo"],
+                value: b.price,
+                currency: "XOF",
+                num_items: b.quantity || 1,
+              });
+            }}
+            customerName={customerName}
+            setCustomerName={setCustomerName}
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            customerPhone2={customerPhone2}
+            setCustomerPhone2={setCustomerPhone2}
+            city={city}
+            setCity={setCity}
+            address={address}
+            setAddress={setAddress}
+            accentColor="#059669"
+            onSubmit={handleOrderSubmit}
+            isSubmitting={isSubmitting}
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1.5">
-            <span className="w-7 h-7 rounded-full bg-[#0047AB] text-white font-bold text-xs inline-flex items-center justify-center">1</span>
-            <div className="font-bold text-sm text-slate-900">Déposez vos gousses</div>
-            <p className="text-xs text-slate-500">Séparez les gousses d&apos;ail et placez-les directement dans le bol transparent.</p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1.5">
-            <span className="w-7 h-7 rounded-full bg-[#0047AB] text-white font-bold text-xs inline-flex items-center justify-center">2</span>
-            <div className="font-bold text-sm text-slate-900">Appuyez sur le bouton</div>
-            <p className="text-xs text-slate-500">Le moteur centrifuge retire délicatement la peau par frottement en quelques secondes.</p>
-          </div>
-
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1.5">
-            <span className="w-7 h-7 rounded-full bg-[#0047AB] text-white font-bold text-xs inline-flex items-center justify-center">3</span>
-            <div className="font-bold text-sm text-slate-900">Récupérez vos aliments prêts</div>
-            <p className="text-xs text-slate-500">Ouvrez le réceptacle : vos gousses sont impeccablement épluchées et prêtes à être cuisinées.</p>
-          </div>
-        </div>
-
-      </section>
-
-      {/* ── 8. INFOGRAPHIE USAGES MULTIPLES ── */}
-      <section className="py-10 px-4 md:px-8 max-w-5xl mx-auto space-y-6">
-        <div className="rounded-3xl overflow-hidden border border-slate-200/80 shadow-lg bg-white">
-          <img
-            src="/images/peeler-hero.jpg"
-            alt="Une machine polyvalente pour tous les petits aliments de cuisine"
-            className="w-full h-auto object-cover max-h-[400px]"
-          />
-        </div>
-      </section>
-
-      {/* ── 9. CONTENU DU COFFRET DÉBALLÉ (UNBOXING) ── */}
-      <section className="py-10 px-4 md:px-8 max-w-4xl mx-auto">
-        <div className="bg-[#0A1931] text-white rounded-3xl p-6 sm:p-8 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          <div className="space-y-4">
-            <span className="text-xs font-mono uppercase tracking-widest text-sky-400 font-bold bg-sky-950/80 px-3 py-1 rounded-full border border-sky-500/30">
-              Pack Cuisine Complet
-            </span>
-            <h3 className="text-xl font-bold text-white font-display">Dans votre colis ChefPeel™ Pro</h3>
-            <ul className="space-y-3 text-xs sm:text-sm text-slate-200">
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Éplucheur Automatique ChefPeel™ Pro</strong> avec batterie lithium 1300 mAh</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Bol rotatif transparent</strong> en silicone alimentaire lavable en 20s</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Plateau centrifuge intérieur</strong> résistant et anti-adhérent</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/40">✓</span>
-                <span><strong>1x Câble de recharge rapide USB</strong> compatible tous chargeurs</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-slate-800/90 border border-white/10 rounded-2xl p-5 text-center space-y-3">
-            <div className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Paiement 100% à la Livraison</div>
-            <div className="text-lg font-bold text-white">Livraison 24h & Inspection du Colis</div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Vérifiez l&apos;appareil et ses accessoires avec le livreur à domicile avant tout règlement.
+        {/* ── BÉNÉFICES CLÉS & ARGUMENTS EMOTIONNELS ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-6 sm:p-8 space-y-6">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+              6 outils essentiels réunis dans un seul récipient
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Fini l&apos;encombrement des tiroirs avec 10 accessoires différents. Cette mandoline tout-en-un révolutionne votre temps en cuisine.
             </p>
-            <button
-              type="button"
-              onClick={() => scrollToSection("commander")}
-              className="w-full bg-[#0047AB] hover:bg-blue-600 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-blue-500/20 cursor-pointer"
-            >
-              Commander ChefPeel™ (14 900 FCFA)
-            </button>
           </div>
-        </div>
-      </section>
 
-      {/* ── 10. AVIS CLIENTS VÉRIFIÉS DU BÉNIN ── */}
-      <section className="py-12 px-4 md:px-8 max-w-4xl mx-auto space-y-6">
-        <div className="text-center">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
-            Témoignages Vérifiés
-          </span>
-          <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900 mt-2">
-            Ce que disent les cuisinières au Bénin
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {REVIEWS.map((r) => (
-            <div key={r.name} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2.5">
-              <div className="flex text-amber-500 text-xs">★★★★★</div>
-              <p className="text-xs text-slate-600 italic leading-relaxed">&ldquo;{r.text}&rdquo;</p>
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-800">
-                <span>{r.name}</span>
-                <span className="text-slate-400 font-normal">{r.city}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <Salad className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <div className="space-y-1">
+                <div className="text-sm font-bold text-slate-900">Découpe Tranches & Julienne</div>
+                <div className="text-xs text-slate-600 leading-relaxed">
+                  Rondelles régulières de concombres et carottes râpées en quelques secondes sans aucun effort.
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ── 11. FOIRE AUX QUESTIONS (ACCORDÉON FLUIDE) ── */}
-      <section className="py-12 px-4 md:px-8 max-w-3xl mx-auto space-y-4">
-        <div className="text-center mb-6">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#0047AB] bg-blue-50 px-3 py-1 rounded-full border border-blue-200/60">
-            Foire Aux Questions
-          </span>
-          <h3 className="font-display font-bold text-xl sm:text-2xl text-slate-900 mt-2">
-            Questions Fréquentes
-          </h3>
-        </div>
-
-        <div className="space-y-2.5">
-          {FAQS.map((f, i) => (
-            <div key={f.q} className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full p-4 text-left font-bold text-xs sm:text-sm text-slate-900 flex items-center justify-between gap-3 cursor-pointer"
-              >
-                <span>{f.q}</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${openFaq === i ? "rotate-180 text-[#0047AB]" : ""}`} />
-              </button>
-              {openFaq === i && (
-                <div className="px-4 pb-4 text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                  {f.a}
+            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <div className="space-y-1">
+                <div className="text-sm font-bold text-slate-900">Poussoir de Sécurité Ergonomique</div>
+                <div className="text-xs text-slate-600 leading-relaxed">
+                  Les picots agrippent solidement le légume. Vos mains restent totalement protégées des lames tranchantes.
                 </div>
-              )}
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ── 12. FOOTER OFFICIEL ── */}
-      <footer className="bg-[#0A1931] text-white py-10 px-4 text-center border-t border-white/10 space-y-3 pb-24 md:pb-10">
-        <div className="font-display font-bold text-base">ChefPeel™ Pro Bénin</div>
-        <p className="text-xs text-slate-300 max-w-sm mx-auto">
-          Distribué officiellement par Isivente • Service client WhatsApp : +229 01 92 90 18 17
-        </p>
-        <div className="text-[11px] text-slate-400 font-mono">
-          © {new Date().getFullYear()} Isivente. Tous droits réservés.
-        </div>
-      </footer>
+            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <Waves className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <div className="space-y-1">
+                <div className="text-sm font-bold text-slate-900">Bac Égouttoir & Rançage Direct</div>
+                <div className="text-xs text-slate-600 leading-relaxed">
+                  Lavez vos légumes à grande eau dans le panier intérieur et videz l&apos;eau par l&apos;orifice de vidange sans passoire.
+                </div>
+              </div>
+            </div>
 
-      {/* ── 13. STICKY MOBILE CTA BAR FIXE ── */}
+            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                <Egg className="w-5 h-5 stroke-[1.75]" />
+              </div>
+              <div className="space-y-1">
+                <div className="text-sm font-bold text-slate-900">Séparateur d&apos;Œuf & Râpe à Ail</div>
+                <div className="text-xs text-slate-600 leading-relaxed">
+                  Séparez le blanc du jaune d&apos;œuf en 1 seconde et râpez ail, gingembre et muscade directement sur le couvercle.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION AVIS CLIENTS VÉRIFIÉS ── */}
+        <section className="space-y-6">
+          <div className="text-center space-y-1">
+            <div className="flex items-center justify-center gap-1 text-amber-400 text-sm">
+              {"★".repeat(5)}
+            </div>
+            <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-slate-900">
+              Retour d&apos;expérience de nos clientes au Bénin
+            </h2>
+            <p className="text-xs text-slate-500">
+              Note moyenne 4.9/5 basée sur plus de 120 commandes livrées
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {CUSTOMER_REVIEWS.map((rev, idx) => (
+              <div 
+                key={idx}
+                className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-3 flex flex-col justify-between"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">{rev.name}</div>
+                      <div className="text-[10px] text-slate-500">{rev.location}</div>
+                    </div>
+                    <div className="flex text-amber-400 text-xs">
+                      {"★".repeat(rev.rating)}
+                    </div>
+                  </div>
+                  <div className="text-xs font-bold text-slate-900 leading-snug">« {rev.title} »</div>
+                  <p className="text-xs text-slate-600 leading-relaxed">{rev.comment}</p>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-semibold pt-2 border-t border-slate-100">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[1.75]" />
+                  <span>Achat vérifié Isivente</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── FOIRE AUX QUESTIONS ── */}
+        <section className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-3">
+          <div className="text-xs font-bold text-slate-900">Questions fréquentes</div>
+
+          <div className="divide-y divide-slate-100">
+            {FAQS_DATA.map((faq, idx) => (
+              <div key={idx} className="py-3">
+                <button
+                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                  className="w-full flex items-center justify-between text-left text-xs sm:text-sm font-semibold text-slate-800 hover:text-emerald-600 transition-colors duration-100 cursor-pointer"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${activeFaq === idx ? "rotate-180 text-emerald-600" : ""}`} />
+                </button>
+                {activeFaq === idx && (
+                  <p className="text-xs text-slate-600 mt-2 leading-relaxed pt-1">
+                    {faq.a}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </main>
+
+      {/* ── BARRE MOBILE FLOTTANTE POUR COMMANDER & BOUTON WHATSAPP ── */}
       <StickyMobileCtaBar
-        price={selected.price}
+        price={14900}
+        accentColor="#059669"
+        buttonText="Commander"
         targetSectionId="commander"
-        accentColor="#0047AB"
         whatsappNumber="2290192901817"
-        whatsappMessage="Bonjour ! J'ai une question concernant l'éplucheur automatique ChefPeel Pro."
+        whatsappMessage="Bonjour Isivente, je souhaite commander la Mandoline & Coupe-Légumes Multifonction 6-en-1 à 14 900 FCFA avec livraison à domicile."
       />
 
     </div>

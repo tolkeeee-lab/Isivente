@@ -22,6 +22,16 @@ const nextConfig = {
         destination: '/p/mini-lave-linge',
         permanent: true,
       },
+      {
+        source: '/mandoline',
+        destination: '/p/peeler',
+        permanent: true,
+      },
+      {
+        source: '/c',
+        destination: '/p/peeler',
+        permanent: true,
+      },
     ];
   },
 };

@@ -30,6 +30,8 @@ export function generateStaticParams() {
     { slug: "veilleuse" },
     { slug: "mini-lave-linge" },
     { slug: "lave-linge" },
+    { slug: "mandoline" },
+    { slug: "coupe-legumes" },
   ];
 }
 
@@ -55,6 +57,8 @@ export default async function ProductPage({ params }: PageProps) {
     case "umei":
       return <UmeiLanding slug="umei" />;
     case "peeler":
+    case "mandoline":
+    case "coupe-legumes":
       return <PeelerLanding slug="peeler" />;
     case "masseur-oculaire":
     case "eye-massager":
