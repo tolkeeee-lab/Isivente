@@ -11,6 +11,7 @@ import {
   Target,
   ExternalLink,
   Store,
+  Wand2,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -25,6 +26,11 @@ export default function AdminLayout({
       href: "/admin",
       label: "Vue d'ensemble",
       icon: LayoutDashboard,
+    },
+    {
+      href: "/admin/studio",
+      label: "Studio AI",
+      icon: Wand2,
     },
     {
       href: "/admin/landings",
