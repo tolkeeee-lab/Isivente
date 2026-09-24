@@ -43,18 +43,7 @@ const BUNDLES: BundleOption[] = [
   },
 ];
 
-const CAROUSEL_IMAGES = [
-  { 
-    src: "/images/brosse-spray-infographie.jpg", 
-    alt: "Brosse Multifonction YUFAN - Des cheveux plus beaux au quotidien : Massage, Spray, Démêlage et Soin",
-    caption: "Brosse Multifonction YUFAN™ : Spray brume hydratant + Picots massants stimulants pour tous types de cheveux"
-  },
-  { 
-    src: "/images/brosse-spray-hero.jpg", 
-    alt: "Brosse YUFAN en action avec fine brume hydratante pour cheveux bouclés, crépus et lisses",
-    caption: "Diffusion de micro-brume instantanée en une pression : hydrate la fibre et démêle sans douleur"
-  }
-];
+
 
 interface CustomerReview {
   name: string;
@@ -124,8 +113,6 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
   const { recordInteraction } = usePagePresence(slug);
   const utm = useUTM();
 
-  const [activeImgIndex, setActiveImgIndex] = useState(0);
-  const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
@@ -136,15 +123,6 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
   const orderSectionRef = useRef<HTMLDivElement>(null);
-
-  // Défilement automatique du carrousel
-  useEffect(() => {
-    if (isHeroHovered || CAROUSEL_IMAGES.length <= 1) return;
-    const timer = setInterval(() => {
-      setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
-    }, 3800);
-    return () => clearInterval(timer);
-  }, [isHeroHovered]);
 
   // Capture silencieuse du prospect dès 8 chiffres
   useEffect(() => {
@@ -271,32 +249,28 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-1.5 bg-purple-50 border border-purple-100 text-purple-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-pink-500" />
-            <span>Soin capillaire quotidien 4-en-1</span>
+            <span>Soin capillaire quotidien</span>
           </div>
           
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-[1.2]">
-            Des cheveux plus doux, hydratés et sans casse : Brosse Multifonction Spray & Massage YUFAN™
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15] max-w-2xl mx-auto">
+            Démêler tes <span className="text-purple-600">boucles</span> ne devrait pas <span className="text-pink-600">faire mal.</span>
           </h1>
           
-          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Démêlez en douceur grâce à la micro-brume hydratante intégrée et stimulez la pousse naturelle de vos cheveux avec les picots massants doux.
+          <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
+            Micro-brume hydratante et picots massants doux dans une seule brosse. Fini le peigne qui accroche et tire sur les racines.
           </p>
         </div>
 
-        {/* ── GALERIE HERO PRINCIPALE AUTO-DÉFILANTE ── */}
-        <div 
-          className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-5 transition-all"
-          onMouseEnter={() => setIsHeroHovered(true)}
-          onMouseLeave={() => setIsHeroHovered(false)}
-        >
-          <div className="relative aspect-square sm:aspect-[4/3] w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
+        {/* ── IMAGE HERO UNIQUE (SANS TEXTE, SANS CARROUSEL) ── */}
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-5">
+          <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
             <Image
-              src={CAROUSEL_IMAGES[activeImgIndex].src}
-              alt={CAROUSEL_IMAGES[activeImgIndex].alt}
+              src="/images/brosse-spray-hero.jpg"
+              alt="Brosse Multifonction Spray & Massage YUFAN en action"
               fill
-              className="object-contain p-2 sm:p-4 transition-transform duration-500 ease-out"
+              className="object-contain p-2 sm:p-4"
               priority
-              sizes="(max-width: 768px) 100vw, 896px"
+              sizes="(max-width: 768px) 100vw, 768px"
             />
 
             {/* Badges Flottants Produit */}
@@ -317,48 +291,9 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
               </span>
             </div>
 
-            {/* Boutons de navigation manuelle */}
-            <button
-              onClick={() => setActiveImgIndex((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-slate-700 hover:bg-white flex items-center justify-center shadow-md transition-all cursor-pointer"
-              title="Précédent"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 text-slate-700 hover:bg-white flex items-center justify-center shadow-md transition-all cursor-pointer"
-              title="Suivant"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-
-            {/* Légende Bas de Carte */}
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent p-4 text-white text-xs sm:text-sm font-medium">
-              <p className="line-clamp-1">{CAROUSEL_IMAGES[activeImgIndex].caption}</p>
+              <p className="line-clamp-1">Diffusion de micro-brume instantanée en une pression : hydrate la fibre et démêle sans douleur</p>
             </div>
-          </div>
-
-          {/* Miniatures interactives */}
-          <div className="grid grid-cols-2 gap-2 pt-3">
-            {CAROUSEL_IMAGES.map((img, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveImgIndex(idx)}
-                className={`relative h-16 sm:h-20 rounded-xl overflow-hidden border-2 transition-all cursor-pointer bg-slate-50 ${
-                  activeImgIndex === idx 
-                    ? "border-pink-600 shadow-xs ring-2 ring-pink-500/20" 
-                    : "border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100"
-                }`}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  className="object-contain p-1"
-                />
-              </button>
-            ))}
           </div>
         </div>
 
@@ -578,6 +513,29 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
               </ul>
             </div>
 
+          </div>
+        </section>
+
+        {/* ── SECTION INFOGRAPHIE & GUIDE VISUEL COMPLET (IMAGE DU BAS) ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-6 space-y-4">
+          <div className="text-center space-y-1">
+            <span className="text-[11px] font-bold text-pink-600 uppercase tracking-wider">Fiche Complète & Guide</span>
+            <h3 className="font-bold text-slate-900 text-base sm:text-xl">
+              Tout ce que fait votre brosse en un coup d&apos;œil
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Massage, brumisation, démêlage et soin du cuir chevelu pour toute la famille.
+            </p>
+          </div>
+
+          <div className="relative aspect-square w-full max-w-xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100">
+            <Image
+              src="/images/brosse-spray-infographie.jpg"
+              alt="Brosse Multifonction YUFAN - Guide officiel 14900F"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 576px"
+            />
           </div>
         </section>
 
