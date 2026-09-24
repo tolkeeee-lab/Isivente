@@ -27,6 +27,11 @@ export default function AdminLayout({
       icon: LayoutDashboard,
     },
     {
+      href: "/admin/landings",
+      label: "Landing Pages",
+      icon: Store,
+    },
+    {
       href: "/admin/orders",
       label: "Commandes & Dispatch",
       icon: Package,

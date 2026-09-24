@@ -400,7 +400,22 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* ── BARRE DE RACCOURCIS RAPIDES ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+        <Link
+          href="/admin/landings"
+          className="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xs transition-all flex items-center gap-3 group"
+        >
+          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <Store className="w-4 h-4" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+              Landing Pages
+            </div>
+            <div className="text-[11px] text-slate-400 truncate">{productsList.length} pages actives</div>
+          </div>
+        </Link>
+
         <Link
           href="/admin/orders"
           className="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-xs transition-all flex items-center gap-3 group"
@@ -435,11 +450,11 @@ export default function AdminOverviewPage() {
           href="/admin/clicks"
           className="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-xs transition-all flex items-center gap-3 group"
         >
-          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
             <MousePointerClick className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <div className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+            <div className="text-xs font-bold text-slate-900 group-hover:text-purple-600 transition-colors truncate">
               Entonnoir & Clics Ads
             </div>
             <div className="text-[11px] text-slate-400 truncate">{analytics.formattedAvgTime} d&apos;attention moyenne</div>
@@ -471,12 +486,16 @@ export default function AdminOverviewPage() {
               <h2 className="font-display font-bold text-base sm:text-lg text-slate-900">
                 Vos Landing Pages Produits en Ligne
               </h2>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                {productsList.length} pages actives
-              </span>
+              <Link
+                href="/admin/landings"
+                className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition-colors inline-flex items-center gap-1"
+              >
+                <span>{productsList.length} pages actives</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </Link>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Glissez horizontalement pour parcourir vos pages. Visitez ou copiez le lien en 1 clic pour vos publicités (Facebook Ads, TikTok, WhatsApp).
+              Glissez horizontalement pour parcourir vos pages, ou cliquez sur l&apos;onglet dédié pour tout voir en grille.
             </p>
           </div>
 
