@@ -32,6 +32,16 @@ const nextConfig = {
         destination: '/p/peeler',
         permanent: true,
       },
+      {
+        source: '/matelas',
+        destination: '/p/matelas',
+        permanent: true,
+      },
+      {
+        source: '/camping',
+        destination: '/p/matelas',
+        permanent: true,
+      },
     ];
   },
 };

@@ -11,6 +11,7 @@ import EraCleanLanding from "@/components/features/EraCleanLanding";
 import TurboFanLanding from "@/components/features/TurboFanLanding";
 import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
+import MatelasLanding from "@/components/features/MatelasLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
@@ -32,6 +33,9 @@ export function generateStaticParams() {
     { slug: "lave-linge" },
     { slug: "mandoline" },
     { slug: "coupe-legumes" },
+    { slug: "matelas" },
+    { slug: "matelas-gonflable" },
+    { slug: "camping" },
   ];
 }
 
@@ -82,6 +86,10 @@ export default async function ProductPage({ params }: PageProps) {
     case "lave-linge":
     case "washer":
       return <MiniLaveLingeLanding slug="mini-lave-linge" />;
+    case "matelas":
+    case "matelas-gonflable":
+    case "camping":
+      return <MatelasLanding slug="matelas" />;
     default:
       // If the slug exists in our catalog or database, render universal ProductLanding
       if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

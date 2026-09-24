@@ -148,6 +148,18 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Mini Lave-Linge Stérilisateur Portable & Antibactérien", price: 17900 }
     ]
+  },
+  {
+    id: "matelas-default",
+    title: "Matelas Gonflable Ergonomique Autogonflant avec Pompe & Oreiller Intégrés",
+    shortTitle: "Matelas Autogonflant Ergonomique",
+    slug: "matelas",
+    price: 24900,
+    image_url: "/images/matelas-hero.png",
+    image: "/images/matelas-hero.png",
+    bundles: [
+      { name: "Matelas Gonflable Ergonomique Autogonflant + Pompe & Oreiller", price: 24900 }
+    ]
   }
 ];
 
