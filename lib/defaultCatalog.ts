@@ -136,6 +136,18 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Batterie Modulaire 3-en-1 Trozk T3 (15 000 mAh)", price: 29900 }
     ]
+  },
+  {
+    id: "mini-lave-linge-default",
+    title: "Mini Lave-Linge Stérilisateur Portable & Antibactérien",
+    shortTitle: "Mini Lave-Linge Stérilisateur",
+    slug: "mini-lave-linge",
+    price: 17900,
+    image_url: "/images/mini-lave-linge-hero.jpg",
+    image: "/images/mini-lave-linge-hero.jpg",
+    bundles: [
+      { name: "Mini Lave-Linge Stérilisateur Portable & Antibactérien", price: 17900 }
+    ]
   }
 ];
 
