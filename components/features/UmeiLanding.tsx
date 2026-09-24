@@ -19,7 +19,8 @@ import {
   PackageCheck,
   Award,
   RefreshCw,
-  Gift
+  Gift,
+  ArrowRight
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
@@ -484,6 +485,43 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
               </p>
             </div>
 
+          </div>
+        </section>
+
+        {/* ── SECTION DÉMONSTRATION VIDÉO TIKTOK (PILIER 4 AUTOPLAY) ── */}
+        <section id="demo-video" className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-5">
+          <div className="text-center space-y-1.5">
+            <span className="text-[11px] font-bold text-pink-600 uppercase tracking-wider">Vidéo en Action Réelle</span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Découvrez la brosse en utilisation réelle
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto">
+              Regardez la micro-brume instantanée assouplir les cheveux pour un brossage soyeux, sans douleur et sans casse.
+            </p>
+          </div>
+
+          <div className="relative max-w-sm sm:max-w-md mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
+            <video
+              src="/videos/brosse-demo.mp4"
+              poster="/images/brosse-video-cover.jpg"
+              autoPlay
+              muted
+              playsInline
+              loop
+              controls
+              preload="auto"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="text-center pt-2">
+            <button
+              onClick={scrollToOrder}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
+            >
+              <span>Commander maintenant (14 900 FCFA)</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </section>
 
