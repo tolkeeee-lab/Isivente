@@ -260,9 +260,9 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
               <Camera className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
-              <span className="font-extrabold text-lg tracking-tight text-slate-900">A9 PRO™</span>
+              <span className="font-extrabold text-lg tracking-tight text-slate-900">ISIVENTE</span>
               <span className="hidden sm:inline-block ml-2 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                Surveillance HD
+                Boutique Officielle
               </span>
             </div>
           </div>

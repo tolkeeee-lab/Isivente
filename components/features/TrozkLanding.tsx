@@ -260,9 +260,9 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
               <Zap className="w-4 h-4 fill-white" />
             </div>
             <div>
-              <span className="font-extrabold text-lg tracking-tight text-slate-900">TROZK T3™</span>
+              <span className="font-extrabold text-lg tracking-tight text-slate-900">ISIVENTE</span>
               <span className="hidden sm:inline-block ml-2 text-[11px] font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
-                15 000 mAh Modulaire
+                Boutique Officielle
               </span>
             </div>
           </div>

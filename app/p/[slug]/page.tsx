@@ -37,6 +37,16 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const product = DEFAULT_CATALOG_MAP[slug.toLowerCase()];
+  const title = product?.shortTitle || product?.title || "Boutique Officielle";
+  return {
+    title: `${title} | Isivente Bénin`,
+    description: `Commandez ${title} sur Isivente. Livraison express sous 24h au Bénin et paiement en espèces à la réception.`,
+  };
+}
+
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
   const normalizedSlug = slug.toLowerCase();

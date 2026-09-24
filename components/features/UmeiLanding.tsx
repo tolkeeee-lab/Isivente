@@ -141,9 +141,10 @@ export default function UmeiLanding({ slug }: { slug: string }) {
       {/* 🌟 HEADER */}
       <header className="sticky top-0 z-50 bg-[#F5F0FC]/95 backdrop-blur-md border-b border-[#8B6FE0]/15 w-full">
         <nav className="flex items-center justify-between py-3.5 px-4 md:px-8 max-w-[1180px] mx-auto w-full">
-          <div className="font-display text-2xl font-extrabold flex items-center gap-2 tracking-tight">
-            <span className="w-2.5 h-2.5 bg-[#FF5C93] rounded-full inline-block"></span>
-            <span>uméi</span>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 bg-[#FF5C93] rounded-full inline-block animate-pulse"></span>
+            <span className="font-bold tracking-tight text-slate-900 text-base sm:text-lg">ISIVENTE</span>
+            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">• Boutique Officielle</span>
           </div>
           
           <ul className="hidden md:flex gap-8 text-[15px] font-semibold">
@@ -583,7 +584,7 @@ export default function UmeiLanding({ slug }: { slug: string }) {
       {/* 🦶 FOOTER */}
       <footer className="py-6 px-4 border-t border-[#8B6FE0]/15 max-w-[1180px] mx-auto w-full overflow-hidden">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs font-semibold text-[#6B5F87] text-center">
-          <div>© 2026 uméi. Tous droits réservés.</div>
+          <div>© {new Date().getFullYear()} Isivente. Tous droits réservés.</div>
           <ul className="flex gap-4">
             <li><button onClick={() => scrollToSection("demo-video")}>Vidéo</button></li>
             <li><button onClick={() => setIsDrawerOpen(true)}>Commander</button></li>

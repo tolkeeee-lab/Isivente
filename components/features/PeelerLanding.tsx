@@ -214,9 +214,9 @@ export default function PeelerLanding({ slug }: { slug: string }) {
             </div>
             <div>
               <span className="font-display font-extrabold text-base tracking-tight text-slate-900 block leading-none">
-                ChefPeel<span className="text-[#0047AB]">™ Pro</span>
+                ISIVENTE
               </span>
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Épluchage Automatique 1-Clic</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">• Boutique Officielle</span>
             </div>
           </div>
 
