@@ -263,36 +263,40 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
 
         {/* ── IMAGE HERO UNIQUE (SANS TEXTE, SANS CARROUSEL) ── */}
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-5">
-          <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
-            <Image
-              src="/images/brosse-spray-hero.jpg"
-              alt="Brosse Multifonction Spray & Massage YUFAN en action"
-              fill
-              className="object-contain p-2 sm:p-4"
-              priority
-              sizes="(max-width: 768px) 100vw, 768px"
-            />
-
-            {/* Badges Flottants Produit */}
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
-              <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-md text-purple-900 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-xs">
-                <Droplets className="w-3.5 h-3.5 text-pink-500" />
-                Spray Brume Hydratante
-              </span>
-              <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-md text-slate-800 text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-xs">
-                <Heart className="w-3.5 h-3.5 text-pink-500" />
-                Massage Cuir Chevelu
-              </span>
+          <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+            
+            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : 3-en-1 (HAUT GAUCHE) */}
+            <div className="absolute -top-3 -left-2 sm:-left-4 w-[92px] h-[92px] sm:w-[106px] sm:h-[106px] bg-[#A8E6C9] text-[#241B36] rounded-full flex items-center justify-center text-center font-black text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] -rotate-12 z-20 pointer-events-none border-2 border-white select-none">
+              3-en-1 vapeur + huile + clic
             </div>
 
-            <div className="absolute top-3 right-3 pointer-events-none">
-              <span className="inline-flex items-center gap-1 bg-pink-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
-                14 900 FCFA
-              </span>
+            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : Sans chaleur agressive (BAS DROITE) */}
+            <div className="absolute -bottom-3 -right-2 sm:-right-4 w-[84px] h-[84px] sm:w-[94px] sm:h-[94px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-black text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] rotate-12 z-20 pointer-events-none border-2 border-white select-none">
+              Sans chaleur agressive
             </div>
 
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent p-4 text-white text-xs sm:text-sm font-medium">
-              <p className="line-clamp-1">Diffusion de micro-brume instantanée en une pression : hydrate la fibre et démêle sans douleur</p>
+            {/* Cadre image produit interne avec coins arrondis */}
+            <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center">
+              <Image
+                src="/images/brosse-spray-hero.jpg"
+                alt="Brosse Multifonction Spray & Massage YUFAN en action"
+                fill
+                className="object-contain p-2 sm:p-4"
+                priority
+                sizes="(max-width: 768px) 100vw, 768px"
+              />
+
+              {/* Pastille Prix Officiel */}
+              <div className="absolute top-3 right-3 z-10 pointer-events-none">
+                <span className="inline-flex items-center gap-1 bg-pink-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
+                  14 900 FCFA
+                </span>
+              </div>
+
+              {/* Sous-titre rassurant en bas */}
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent p-4 text-white text-xs sm:text-sm font-medium z-10">
+                <p className="line-clamp-1">Diffusion de micro-brume instantanée en une pression : hydrate la fibre et démêle sans douleur</p>
+              </div>
             </div>
           </div>
         </div>
