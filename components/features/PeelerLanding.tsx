@@ -19,7 +19,8 @@ import {
   Egg,
   ArrowRight,
   PackageCheck,
-  Gift
+  Gift,
+  Download
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
@@ -434,14 +435,25 @@ export default function PeelerLanding({ slug }: { slug: string }) {
             />
           </div>
 
-          <div className="text-center pt-1">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
             <button
               onClick={scrollToOrder}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
             >
               <span>Profiter de l&apos;Offre Duo Complète (17 900 F)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
+
+            <a
+              href="/videos/duo-cuisine-malin-demo.mp4"
+              download="Duo-Cuisine-Malin-Demo-Publicite.mp4"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 transition-all cursor-pointer"
+            >
+              <Download className="w-4 h-4 text-emerald-600" />
+              <span>Télécharger la Vidéo (MP4 HD)</span>
+            </a>
           </div>
         </section>
 
