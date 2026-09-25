@@ -468,6 +468,45 @@ export default function PeelerLanding({ slug }: { slug: string }) {
           </div>
         </section>
 
+        {/* ── 🎬 DÉMONSTRATION VIDÉO RÉELLE DE LA MANDOLINE EN ACTION ── */}
+        <section id="demo-mandoline" className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-7 space-y-4">
+          <div className="text-center space-y-1">
+            <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Démonstration Réelle Mandoline</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Essorage express & découpes parfaites sous vos yeux
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Regardez comment cette mandoline tout-en-un transforme 20 minutes de corvée de découpe et d&apos;égouttage en un jeu d&apos;enfant de 60 secondes.
+            </p>
+          </div>
+
+          <div className="relative aspect-[9/16] max-w-[340px] mx-auto rounded-3xl overflow-hidden bg-slate-950 border border-slate-200 shadow-xl">
+            <video
+              src="/videos/mandoline-demo-1.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls
+              preload="auto"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="text-center pt-1">
+            <button
+              onClick={scrollToOrder}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
+            >
+              <span>Je veux mon Pack Duo Malin (17 900 F)</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </section>
+
         {/* ── SECTION INFOGRAPHIE 3 : CHOISISSEZ VOTRE DÉCOUPE (12 LAMES ET ACCESSOIRES) ── */}
         <section className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-6 space-y-4">
           <div className="text-center space-y-1">
