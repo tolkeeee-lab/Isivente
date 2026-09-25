@@ -384,6 +384,40 @@ export const UPSELL_CONFIG: Record<string, ProductUpsellConfig> = {
       ],
     },
   },
+  "voiture-camera": {
+    secondUnit: {
+      id: "voiture-camera-second-unit",
+      title: "Ajoutez un 2ème Bolide de Course FPV pour des courses en duo !",
+      subtitle: "Offrez un 2ème bolide avec sa manette écran pour défier un frère, enfant ou ami",
+      description: "Profitez de 10 000 FCFA de réduction immédiate sur la 2ème voiture complète pour faire des duels sur votre propre circuit.",
+      price: 19900,
+      originalPrice: 29900,
+      savings: 10000,
+      image: "/images/voiture-camera-action.jpg",
+      badge: "🏎️ PACK DUO COURSE (-33%)",
+      benefits: [
+        "2ème coffret complet (Voiture + Télécommande écran LCD + Batterie)",
+        "Courses et duels en temps réel sans interférence de fréquences",
+        "Livraison groupée gratuite et paiement après vérification",
+      ],
+    },
+    upsell: {
+      id: "voiture-camera-pack-duo",
+      title: "Ajoutez un 2ème Bolide de Course FPV pour des courses en duo !",
+      subtitle: "Offrez un 2ème bolide avec sa manette écran pour défier un frère, enfant ou ami",
+      description: "Profitez de 10 000 FCFA de réduction immédiate sur la 2ème voiture complète pour faire des duels sur votre propre circuit.",
+      price: 19900,
+      originalPrice: 29900,
+      savings: 10000,
+      image: "/images/voiture-camera-action.jpg",
+      badge: "🏎️ PACK DUO COURSE (-33%)",
+      benefits: [
+        "2ème coffret complet (Voiture + Télécommande écran LCD + Batterie)",
+        "Courses et duels en temps réel sans interférence de fréquences",
+        "Livraison groupée gratuite et paiement après vérification",
+      ],
+    },
+  },
 };
 
 /**

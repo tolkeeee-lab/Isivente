@@ -161,6 +161,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Matelas Gonflable Ergonomique Autogonflant + Pompe & Oreiller", price: 24900 }
     ]
+  },
+  {
+    id: "voiture-camera-default",
+    title: "Voiture Télécommandée de Course avec Caméra HD & Manette Écran FPV",
+    shortTitle: "Voiture Télécommandée Caméra HD",
+    slug: "voiture-camera",
+    price: 29900,
+    image_url: "/images/voiture-camera-banner.jpg",
+    image: "/images/voiture-camera-banner.jpg",
+    headline: "Conduis, filme et vis l'action en direct sur écran couleur intégré !",
+    bundles: [
+      { name: "Voiture Télécommandée avec Caméra HD & Écran", price: 29900 }
+    ]
   }
 ];
 
