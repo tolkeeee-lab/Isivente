@@ -22,8 +22,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     shortTitle: "Voiture Télécommandée Caméra HD",
     slug: "voiture-camera",
     price: 29900,
-    image_url: "/images/voiture-camera-banner.jpg",
-    image: "/images/voiture-camera-banner.jpg",
+    image_url: "/images/voiture-slide-salon.jpg",
+    image: "/images/voiture-slide-salon.jpg",
     headline: "Conduis, filme et vis l'action en temps réel sur écran couleur intégré !",
     bundles: [
       { name: "Voiture Télécommandée avec Caméra HD & Écran", price: 29900 }

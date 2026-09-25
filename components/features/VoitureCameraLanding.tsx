@@ -48,29 +48,29 @@ const BUNDLES: BundleOption[] = [
 
 const CAROUSEL_IMAGES = [
   { 
-    src: "/images/voiture-camera-banner.jpg", 
+    src: "/images/voiture-slide-salon.jpg", 
     alt: "Voiture Télécommandée avec Caméra HD - Conduis, filme, vis l'action en temps réel !",
-    caption: "Pack officiel : Bolide de course GT, manette ergonomique avec écran couleur LCD et caméra HD sur le toit"
+    caption: "Bolide de course avec caméra HD grand angle et manette ergonomique avec écran couleur LCD"
+  },
+  { 
+    src: "/images/voiture-slide-exploration.jpg", 
+    alt: "Explore les endroits inaccessibles en temps réel sous le canapé et les meubles",
+    caption: "Caméra embarquée furtive : explorez sous le lit, sous le canapé et dans les coins avec la vidéo en direct"
+  },
+  { 
+    src: "/images/voiture-slide-drift.jpg", 
+    alt: "Drift et sensations fortes - Lumières LED, effets sonores et haute vitesse",
+    caption: "Sensations de course réelles : drift 360°, feux avant LED réalistes et effets sonores sportifs"
+  },
+  { 
+    src: "/images/voiture-slide-cadeau.jpg", 
+    alt: "Le cadeau parfait pour les enfants et passionnés - Coffret complet",
+    caption: "Le cadeau idéal : pack complet avec boîte officielle, manette écran, câble de charge USB et notice"
   },
   { 
     src: "/images/voiture-camera-action.jpg", 
-    alt: "Pilotez en vue subjective comme si vous étiez à bord du bolide",
-    caption: "Immersion FPV totale : retransmission vidéo en temps réel sur la manette pendant que la voiture file sur la piste"
-  },
-  { 
-    src: "/images/voiture-camera-manette.jpg", 
-    alt: "Télécommande ergonomique avec écran LCD couleur 2.4 pouces intégré",
-    caption: "Écran couleur sur la manette : allumez et pilotez directement sans dépendre d'un smartphone"
-  },
-  { 
-    src: "/images/voiture-camera-zoom-bolide.jpg", 
-    alt: "Design miniature aérodynamique avec phares LED et caméra HD",
-    caption: "Lumières LED réalistes, châssis sport ultra-réactif et caméra grand angle haute définition"
-  },
-  { 
-    src: "/images/voiture-camera-course.jpg", 
-    alt: "Double modèle noir et blanc pour des courses et duels endiablés",
-    caption: "Parfait pour la maison, le bureau ou l'extérieur : sensations fortes garanties pour enfants et adultes"
+    alt: "Pilotez en vue subjective comme si vous étiez à bord du bolide sur circuit",
+    caption: "Immersion FPV totale : retransmission vidéo en temps réel sur la manette pendant que la voiture file"
   },
 ];
 
@@ -410,7 +410,7 @@ export default function VoitureCameraLanding({ slug }: { slug: string }) {
           <UmeiStyleOrderSection
             productSlug="voiture-camera"
             productTitle="Voiture Télécommandée avec Caméra HD & Écran"
-            productImage="/images/voiture-camera-banner.jpg"
+            productImage="/images/voiture-slide-salon.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => {
@@ -513,6 +513,149 @@ export default function VoitureCameraLanding({ slug }: { slug: string }) {
               <p className="text-xs text-slate-600 leading-relaxed">
                 L'effet de surprise est garanti pour un anniversaire, une fête ou pour faire plaisir à un passionné de vitesse et de gadgets.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION VISUELLE 1 : EXPLORATION ENDROITS INACCESSIBLES ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div className="md:col-span-6 lg:col-span-7 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+              <img
+                src="/images/voiture-slide-exploration.jpg"
+                alt="Explore les endroits inaccessibles en direct"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+            <div className="md:col-span-6 lg:col-span-5 space-y-4">
+              <div className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-100 text-rose-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
+                <Camera className="w-3.5 h-3.5 text-rose-600 stroke-[1.75]" />
+                <span>Exploration Furtive</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 leading-snug">
+                Passez là où aucun autre jouet ne peut aller
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Grâce à son châssis profilé et sa caméra grand angle, explorez en toute autonomie :
+              </p>
+              <ul className="space-y-2 text-xs text-slate-700">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span><strong>Sous le canapé :</strong> Observez l'envers du décor sans vous pencher.</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span><strong>Sous le lit & meubles :</strong> Retrouvez les objets égarés avec l'éclairage LED.</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span><strong>Dans les recoins :</strong> Slalomez avec précision grâce au double joystick.</span>
+                </li>
+              </ul>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={scrollToOrder}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+                >
+                  <span>Commander maintenant (29 900 F)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION VISUELLE 2 : DRIFT & SENSATIONS 360° ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div className="md:col-span-6 lg:col-span-5 space-y-4 order-2 md:order-1">
+              <div className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-100 text-rose-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
+                <Flame className="w-3.5 h-3.5 text-rose-600 stroke-[1.75]" />
+                <span>Drift & Vitesse Pure</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 leading-snug">
+                Sensations fortes, dérapages contrôlés et feux réalistes
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Équipée d'un moteur ultra-nerveux et de pneus adaptés au drift, la voiture réagit au millimètre à chaque coup de volant :
+              </p>
+              <ul className="space-y-2 text-xs text-slate-700">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span><strong>Drift 360° :</strong> Réalisez des figures spectaculaires sur carrelage ou parquet.</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span><strong>Effets sonores réalistes :</strong> Bruits d'accélération et de moteur de course.</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span><strong>Lumières LED stylées :</strong> Phares avant étincelants et feux arrière sport.</span>
+                </li>
+              </ul>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={scrollToOrder}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+                >
+                  <span>Je commande à 29 900 FCFA</span>
+                </button>
+              </div>
+            </div>
+            <div className="md:col-span-6 lg:col-span-7 rounded-2xl overflow-hidden border border-slate-200 shadow-sm order-1 md:order-2">
+              <img
+                src="/images/voiture-slide-drift.jpg"
+                alt="Drift et sensations fortes lumières son et vitesse"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION VISUELLE 3 : LE CADEAU PARFAIT & UNBOXING ── */}
+        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div className="md:col-span-6 lg:col-span-7 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+              <img
+                src="/images/voiture-slide-cadeau.jpg"
+                alt="Le cadeau parfait pour les enfants et les passionnés"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+            <div className="md:col-span-6 lg:col-span-5 space-y-4">
+              <div className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-100 text-rose-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
+                <Gift className="w-3.5 h-3.5 text-rose-600 stroke-[1.75]" />
+                <span>Le Cadeau Idéal</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 leading-snug">
+                Un coffret qui émerveille à coup sûr
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Offrez un moment magique ! Vos enfants s'éloignent enfin des écrans passifs pour s'amuser avec un vrai bolide interactif.
+              </p>
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-600 space-y-1.5">
+                <div className="font-bold text-slate-900">Livré complet dans sa boîte de présentation :</div>
+                <div>📦 Boîte officielle C6 Mini RC</div>
+                <div>🎮 Télécommande manette avec écran couleur 2.4"</div>
+                <div>🔋 Batterie rechargeable & Câble USB</div>
+                <div>📖 Manuel d'utilisation détaillé</div>
+              </div>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={scrollToOrder}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer active:scale-95"
+                >
+                  <span>Profiter de l'offre (29 900 FCFA)</span>
+                </button>
+              </div>
             </div>
           </div>
         </section>
