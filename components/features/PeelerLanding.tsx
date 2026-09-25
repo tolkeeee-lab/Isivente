@@ -405,25 +405,25 @@ export default function PeelerLanding({ slug }: { slug: string }) {
           </div>
         </section>
 
-        {/* ── 🎬 DÉMONSTRATION VIDÉO RÉELLE DU PLATEAU EN ACTION ── */}
-        <section id="demo-plateau" className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-7 space-y-4">
+        {/* ── 🎬 DÉMONSTRATION VIDÉO OFFICIELLE COMPLÈTE DU DUO CUISINE MALIN ── */}
+        <section id="demo-duo" className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-7 space-y-4">
           <div className="text-center space-y-1">
-            <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>Démonstration Vidéo en Direct</span>
+            <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Démonstration Officielle du Duo (30s)</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-              Voyez l&apos;élasticité magique du plateau en action
+              Préparez vos légumes & conservez vos restes en direct
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
-              Le film en silicone ultra-extensible épouse la forme des légumes, chasse l&apos;air et garantit un frigo propre et zéro gaspillage.
+              Voyez comment la mandoline essoreuse prépare votre repas en 60 secondes et comment le plateau hermétique élastique conserve la fraîcheur sans film plastique.
             </p>
           </div>
 
           <div className="relative aspect-[9/16] max-w-[340px] mx-auto rounded-3xl overflow-hidden bg-slate-950 border border-slate-200 shadow-xl">
             <video
-              src="/videos/plateau-demo-1.mp4"
-              poster="/images/plateau-demo-1-cover.jpg"
+              src="/videos/duo-cuisine-malin-demo.mp4"
+              poster="/images/duo-cuisine-malin-demo-cover.jpg"
               autoPlay
               loop
               muted
@@ -439,7 +439,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
               onClick={scrollToOrder}
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
             >
-              <span>Commander le Pack Duo Malin (17 900 F)</span>
+              <span>Profiter de l&apos;Offre Duo Complète (17 900 F)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
