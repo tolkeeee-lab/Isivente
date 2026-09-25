@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  redirect("/p/microscope");
+  redirect("/p/voiture-camera");
 }

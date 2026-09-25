@@ -106,7 +106,7 @@ export default function AdminLayout({
             {/* Lien boutique */}
             <div className="flex items-center gap-2 shrink-0">
               <Link
-                href="/p/microscope"
+                href="/p/voiture-camera"
                 target="_blank"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all"
               >
