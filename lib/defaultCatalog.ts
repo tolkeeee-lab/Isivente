@@ -17,6 +17,19 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "voiture-camera-default",
+    title: "Voiture Télécommandée de Course avec Caméra HD & Manette Écran FPV",
+    shortTitle: "Voiture Télécommandée Caméra HD",
+    slug: "voiture-camera",
+    price: 29900,
+    image_url: "/images/voiture-camera-banner.jpg",
+    image: "/images/voiture-camera-banner.jpg",
+    headline: "Conduis, filme et vis l'action en temps réel sur écran couleur intégré !",
+    bundles: [
+      { name: "Voiture Télécommandée avec Caméra HD & Écran", price: 29900 }
+    ]
+  },
+  {
     id: "masseur-oculaire-default",
     title: "Masque de Massage Oculaire Thérapeutique 4D Chauffant & Bluetooth",
     shortTitle: "Masque Oculaire Thérapeutique 4D",
@@ -160,19 +173,6 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     image: "/images/matelas-hero.png",
     bundles: [
       { name: "Matelas Gonflable Ergonomique Autogonflant + Pompe & Oreiller", price: 24900 }
-    ]
-  },
-  {
-    id: "voiture-camera-default",
-    title: "Voiture Télécommandée de Course avec Caméra HD & Manette Écran FPV",
-    shortTitle: "Voiture Télécommandée Caméra HD",
-    slug: "voiture-camera",
-    price: 29900,
-    image_url: "/images/voiture-camera-banner.jpg",
-    image: "/images/voiture-camera-banner.jpg",
-    headline: "Conduis, filme et vis l'action en direct sur écran couleur intégré !",
-    bundles: [
-      { name: "Voiture Télécommandée avec Caméra HD & Écran", price: 29900 }
     ]
   }
 ];
