@@ -2,23 +2,24 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   ShieldCheck, 
   Truck, 
   Star, 
   ChevronDown, 
-  ChevronLeft,
-  ChevronRight,
   UtensilsCrossed, 
   Sparkles, 
   CheckCircle2, 
   XCircle, 
   Waves, 
   Zap, 
-  Heart,
-  Timer,
-  Salad,
-  Egg
+  Timer, 
+  Salad, 
+  Egg,
+  ArrowRight,
+  PackageCheck,
+  Gift
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
@@ -30,23 +31,33 @@ import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase 
 
 const BUNDLES: BundleOption[] = [
   {
+    id: "duo-malin",
+    name: "Pack Duo Cuisine Malin (Mandoline 12-en-1 + Plateau de Conservation Élastique)",
+    subtitle: "L'ensemble complet : Mandoline Essoreuse Multifonction + 1 Plateau Hermétique Zéro Gaspillage offert",
+    price: 17900,
+    originalPrice: 32000,
+    savings: 14100,
+    quantity: 1,
+    popular: true,
+  },
+  {
     id: "solo",
-    name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
-    subtitle: "Ensemble complet : bac transparent, panier égouttoir, poussoir protège-doigts, grille de découpe, râpe et séparateur d'œuf",
+    name: "Mandoline Essoreuse 12-en-1 Seule",
+    subtitle: "Bac égouttoir, manivelle essoreuse, poussoir protège-doigts et grille de découpe",
     price: 14900,
     originalPrice: 25000,
     savings: 10100,
     quantity: 1,
-    popular: true,
   },
-];
-
-const CAROUSEL_IMAGES = [
-  { 
-    src: "/images/peeler-hero.jpg", 
-    alt: "Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir et Séparateur d'Œuf",
-    caption: "Mandoline 6-en-1 : découpe rapide, bac transparent récepteur, panier égouttoir et poussoir protecteur"
-  }
+  {
+    id: "pack-famille",
+    name: "Pack Famille (2 Mandolines + 2 Plateaux de Conservation)",
+    subtitle: "Idéal pour équiper deux cuisines ou faire un cadeau utile à un proche",
+    price: 29900,
+    originalPrice: 60000,
+    savings: 30100,
+    quantity: 2,
+  },
 ];
 
 interface CustomerReview {
@@ -65,8 +76,8 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
     location: "Cotonou (Cadjehoun)",
     rating: 5,
     date: "Achat vérifié",
-    title: "Mes salades et assaisonnements en 5 minutes !",
-    comment: "Découper les carottes et concombres pour les salades me prenait un temps fou. Avec cette mandoline et son poussoir, tout tombe proprement dans le bac sans salir ma table. Les rondelles sont parfaites et régulières.",
+    title: "Mes salades et assaisonnements prêts en 3 minutes !",
+    comment: "Découper les carottes, oignons et concombres me prenait un temps fou. Avec cette mandoline, tout tombe directement dans le bol sans salir ma table. Et le plateau élastique conserve le reste au frigo sans odeur !",
     verified: true,
   },
   {
@@ -74,8 +85,8 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
     location: "Calavi (Arconville)",
     rating: 5,
     date: "Achat vérifié",
-    title: "Le séparateur d'œuf et la râpe à ail sont géniaux",
-    comment: "C'est vraiment un outil tout-en-un. Je râpe l'ail et le gingembre directement sur le couvercle et je rince les légumes directement dans le panier égouttoir sans sortir de passoire. Très facile à nettoyer.",
+    title: "L'essoreuse et le panier égouttoir sont géniaux",
+    comment: "Je lave mes légumes directement dans le panier égouttoir, je tourne la manivelle pour essorer la salade en 5 secondes, et je change de lame d'un clic. C'est le meilleur ustensile de ma cuisine.",
     verified: true,
   },
   {
@@ -83,28 +94,28 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
     location: "Porto-Novo",
     rating: 5,
     date: "Achat vérifié",
-    title: "Plus aucune coupure aux doigts",
-    comment: "Je l'ai acheté pour ma femme qui avait souvent des coupures avec les couteaux de cuisine. Le capuchon protecteur avec picots maintient fermement les pommes de terre. Reçu en 24h avec le livreur.",
+    title: "Plus aucune coupure aux doigts pour ma femme",
+    comment: "Le poussoir protège-doigts est solide et maintient fermement les pommes de terre. Fini les petites blessures au couteau. Livraison reçue en 24h et payée au livreur après contrôle.",
     verified: true,
   },
 ];
 
 const FAQS_DATA = [
   {
-    q: "Quels légumes et aliments peut-on préparer avec cet appareil ?",
-    a: "Il est idéal pour découper en rondelles ou lamelles régulières concombres, carottes, pommes de terre (chips/frites), oignons, courgettes, choux et fruits fermes. Il intègre aussi une zone pour râper ail/gingembre et un séparateur de jaune d'œuf."
+    q: "Qu'est-ce qui est inclus dans le Pack Duo Cuisine Malin ?",
+    a: "Le pack comprend la grande mandoline essoreuse 12-en-1 (bol transparent, panier passoire égouttoir, couvercle essoreuse à manivelle, grille de découpe interchangeable avec toutes les lames, poussoir de sécurité, presse-agrumes et séparateur d'œuf) + 1 Plateau de conservation hermétique à membrane élastique réutilisable."
   },
   {
     q: "Est-ce sécurisé pour éviter de se couper les doigts ?",
-    a: "Oui, à 100%. L'appareil est livré avec un poussoir ergonomique muni de picots qui agrippent le légume. Vos doigts restent toujours au-dessus du capuchon de protection et ne s'approchent jamais de la lame."
+    a: "Oui, à 100%. L'appareil est livré avec un poussoir ergonomique muni de picots qui agrippent le légume. Vos doigts restent toujours au-dessus du capuchon de protection et ne s'approchent jamais des lames tranchantes."
   },
   {
-    q: "Comment fonctionne le bac égouttoir intégré ?",
-    a: "Le bol intérieur fait office de passoire. Dès que vos légumes sont découpés, vous pouvez verser de l'eau pour les rincer directement dans le bac, puis vider l'eau d'un seul geste par l'orifice de vidange sans transvaser les aliments."
+    q: "Comment fonctionne le plateau de conservation élastique ?",
+    a: "Dès que vous avez terminé de découper, placez les morceaux non utilisés (demi-oignon, tranches de tomate, poivron, etc.) sur le plateau et clipsez le couvercle. La membrane étirable s'adapte à la hauteur des aliments, chasse l'air et garde vos légumes frais pendant 7 jours sans plastique jetable."
   },
   {
-    q: "Quelles sont les conditions de livraison et de règlement au Bénin ?",
-    a: "Livraison rapide sous 24h à Cotonou, Calavi et environs. Vous contrôlez votre colis avec le livreur avant de payer le montant en espèces."
+    q: "Quels sont les délais et conditions de livraison au Bénin ?",
+    a: "Livraison rapide sous 24h à Cotonou, Calavi et partout au Bénin. Vous avez la garantie d'ouvrir et de contrôler votre colis avec le livreur avant de régler les 17 900 FCFA en espèces."
   }
 ];
 
@@ -113,8 +124,6 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   const { recordInteraction } = usePagePresence(slug || "peeler");
   const utm = useUTM();
 
-  const [activeImgIndex, setActiveImgIndex] = useState(0);
-  const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
   const [customerName, setCustomerName] = useState("");
@@ -126,16 +135,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   const [orderError, setOrderError] = useState("");
   const orderSectionRef = useRef<HTMLDivElement>(null);
 
-  // Défilement automatique du carrousel si plusieurs visuels
-  useEffect(() => {
-    if (isHeroHovered || CAROUSEL_IMAGES.length <= 1) return;
-    const timer = setInterval(() => {
-      setActiveImgIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
-    }, 3800);
-    return () => clearInterval(timer);
-  }, [isHeroHovered]);
-
-  // Capture silencieuse du prospect (Ghost lead) dès qu'il saisit 8 chiffres
+  // Capture silencieuse du prospect dès 8 chiffres
   useEffect(() => {
     const cleanPhone = customerPhone.replace(/\D/g, "");
     if (cleanPhone.length >= 8) {
@@ -146,18 +146,18 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         city: city,
         address: address,
         product_slug: "peeler",
-        product_title: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+        product_title: selectedBundle.name,
         bundle_name: selectedBundle.name,
         total_amount: selectedBundle.price,
       }).catch(() => {});
     }
-  }, [customerPhone, customerName, city, address, selectedBundle]);
+  }, [customerPhone, customerName, customerPhone2, city, address, selectedBundle]);
 
   useEffect(() => {
     trackViewContent({
-      content_name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+      content_name: "Duo Cuisine Malin - Mandoline & Plateau Fraîcheur",
       content_ids: ["peeler", "mandoline"],
-      value: 14900,
+      value: 17900,
       currency: "XOF",
     });
   }, []);
@@ -165,7 +165,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
   const scrollToOrder = () => {
     recordInteraction();
     trackInitiateCheckout({
-      content_name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+      content_name: selectedBundle.name,
       content_ids: ["peeler", "mandoline"],
       value: selectedBundle.price,
       currency: "XOF",
@@ -189,7 +189,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
     try {
       const order = await saveNewOrder({
-        product_title: "Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir",
+        product_title: selectedBundle.name,
         product_slug: "peeler",
         customer_name: customerName.trim() || "Client Isivente",
         customer_phone: customerPhone.trim(),
@@ -206,7 +206,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
       markLeadConverted(customerPhone.trim(), "peeler");
 
       trackPurchase({
-        content_name: "Mandoline & Coupe-Légumes Multifonction 6-en-1",
+        content_name: selectedBundle.name,
         content_ids: ["peeler", "mandoline"],
         value: selectedBundle.price,
         currency: "XOF",
@@ -228,8 +228,8 @@ export default function PeelerLanding({ slug }: { slug: string }) {
       {/* ── BANDEAU TOP BAR CLAIR ÉPURÉ ── */}
       <div className="bg-slate-900 text-white text-[11px] font-medium py-2 px-4 text-center tracking-wide">
         <div className="max-w-4xl mx-auto flex items-center justify-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span>Livraison express sous 24h à Cotonou & Calavi • Paiement en espèces après vérification du colis</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>Livraison express sous 24h à Cotonou, Calavi & tout le Bénin • Paiement en espèces à la livraison</span>
         </div>
       </div>
 
@@ -241,15 +241,15 @@ export default function PeelerLanding({ slug }: { slug: string }) {
               <UtensilsCrossed className="w-4 h-4 stroke-[1.75]" />
             </div>
             <span className="font-bold text-sm tracking-tight text-slate-900">ISIVENTE</span>
-            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">• Boutique Officielle</span>
+            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">• Cuisine & Maison</span>
           </div>
 
           <button
             onClick={scrollToOrder}
-            className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(5,150,105,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
+            className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(5,150,105,0.4)] transition-all cursor-pointer"
           >
             <span>Commander</span>
-            <span className="font-mono tabular-nums text-emerald-100 text-[11px]">(14 900 F)</span>
+            <span className="font-mono tabular-nums text-emerald-100 text-[11px]">({selectedBundle.price.toLocaleString("fr-FR")} F)</span>
           </button>
         </div>
       </header>
@@ -259,63 +259,90 @@ export default function PeelerLanding({ slug }: { slug: string }) {
         
         {/* En-tête Titre & Accroche */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full shadow-2xs">
+          <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-800 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600 stroke-[1.75]" />
-            <span>Cuisine Facile & Rapide</span>
+            <span>Le Duo Cuisine Malin • Zéro Gaspillage</span>
           </div>
           
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-[-0.03em] text-slate-900 leading-tight">
-            Mandoline & Coupe-Légumes Multifonction 6-en-1
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15] max-w-2xl mx-auto">
+            Gagnez du temps : <span className="text-emerald-600">Préparez, Essorez</span> & <span className="text-amber-600">Conservez.</span>
           </h1>
           
-          <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
-            Tranchez, râpez, lavez et égouttez vos légumes dans un seul récipient. Équipé d&apos;un poussoir de sécurité protège-doigts, d&apos;une râpe à ail et d&apos;un séparateur d&apos;œufs.
+          <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
+            Lavez, essorez, râpez et tranchez tous vos légumes en 2 minutes chrono. Et conservez vos restes frais 7 jours grâce au plateau hermétique réutilisable.
           </p>
         </div>
 
-        {/* ── GALERIE PHOTOS FOND BLANC AVEC RATIO PROPRE ── */}
-        <div 
-          onMouseEnter={() => setIsHeroHovered(true)}
-          onMouseLeave={() => setIsHeroHovered(false)}
-          className="max-w-[480px] mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-4 space-y-3"
-        >
-          {/* Cadre de l'image */}
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center">
-            <img
-              src={CAROUSEL_IMAGES[activeImgIndex].src}
-              alt={CAROUSEL_IMAGES[activeImgIndex].alt}
-              className="w-full h-full object-contain p-1"
-            />
+        {/* ── IMAGE HERO UNIQUE AVEC BADGES FLOTTANTS ── */}
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-5">
+          <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+            
+            {/* 🏷️ BADGE CIRCULAIRE HAUT GAUCHE */}
+            <div className="absolute -top-3 -left-2 sm:-left-4 w-[96px] h-[96px] sm:w-[110px] sm:h-[110px] bg-[#A8E6C9] text-[#1b3d2f] rounded-full flex items-center justify-center text-center font-black text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] -rotate-12 z-20 pointer-events-none border-2 border-white select-none">
+              12-en-1 Découpe + Essoreuse
+            </div>
 
-            {/* Badge promotionnel élégant */}
-            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md border border-slate-200/80 px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1 text-[11px] font-bold text-emerald-700">
-              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span>Promo Spéciale : 14 900 FCFA</span>
+            {/* 🏷️ BADGE CIRCULAIRE BAS DROITE */}
+            <div className="absolute -bottom-3 -right-2 sm:-right-4 w-[88px] h-[88px] sm:w-[98px] sm:h-[98px] bg-[#F8D9B4] text-[#4a2e18] rounded-full flex items-center justify-center text-center font-black text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] rotate-12 z-20 pointer-events-none border-2 border-white select-none">
+              100% Anti-Coupure
+            </div>
+
+            {/* Cadre image interne */}
+            <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center">
+              <Image
+                src="/images/mandoline-hero-avant-apres.jpg"
+                alt="Gagnez du temps en cuisine : Avant Long et fatigant / Après Rapide et facile"
+                fill
+                className="object-contain"
+                priority
+                sizes="(max-width: 768px) 100vw, 768px"
+              />
+
+              {/* Pastille Prix Officiel */}
+              <div className="absolute top-3 right-3 z-10 pointer-events-none">
+                <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
+                  17 900 FCFA
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ── 3 BADGES DE RÉASSURANCE PRIORITAIRES ── */}
-        <div className="grid grid-cols-3 gap-2.5 max-w-xl mx-auto">
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
-            <Truck className="w-5 h-5 text-emerald-600 mx-auto stroke-[1.75]" />
-            <div className="text-xs font-bold text-slate-900">Livraison 24h</div>
-            <div className="text-[10px] text-slate-500 font-mono">Cotonou & Calavi</div>
+        {/* ── 3 BADGES DE RÉASSURANCE ISIVENTE ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+              <Truck className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Livraison Express 24h</p>
+              <p className="text-[11px] text-slate-500">Cotonou, Calavi & Départements</p>
+            </div>
           </div>
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 mx-auto stroke-[1.75]" />
-            <div className="text-xs font-bold text-slate-900">Test à Réception</div>
-            <div className="text-[10px] text-slate-500 font-mono">Paiement après vérification</div>
+
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+              <PackageCheck className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Paiement à la Réception</p>
+              <p className="text-[11px] text-slate-500">Réglez après vérification du colis</p>
+            </div>
           </div>
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] text-center space-y-1">
-            <Sparkles className="w-5 h-5 text-amber-600 mx-auto stroke-[1.75]" />
-            <div className="text-xs font-bold text-slate-900">100% Anti-Coupure</div>
-            <div className="text-[10px] text-slate-500 font-mono">Poussoir protecteur inclus</div>
+
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+              <ShieldCheck className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Sécurité Totale Protège-Doigts</p>
+              <p className="text-[11px] text-slate-500">Poussoir ergonomique anti-blessure</p>
+            </div>
           </div>
         </div>
 
-        {/* ── FORMULAIRE DE COMMANDE ENCADRÉ (DIRECTEMENT SOUS LES BADGES) ── */}
-        <div ref={orderSectionRef} id="commander">
+        {/* ── PILIER 2 : FORMULAIRE DE COMMANDE IMMÉDIATEMENT ACCESSIBLE ── */}
+        <div ref={orderSectionRef} id="commander" className="scroll-mt-20">
           {orderError && (
             <div className="mb-4 p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
               <XCircle className="w-4 h-4 text-rose-600 shrink-0 stroke-[1.75]" />
@@ -325,15 +352,15 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
           <UmeiStyleOrderSection
             productSlug="peeler"
-            productTitle="Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir"
-            productImage="/images/peeler-hero.jpg"
+            productTitle="Duo Cuisine Malin : Mandoline Essoreuse 12-en-1 & Plateau Fraîcheur"
+            productImage="/images/mandoline-hero-avant-apres.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => {
               setSelectedBundle(b);
               trackAddToCart({
-                content_name: `Mandoline 6-en-1 - ${b.name}`,
-                content_ids: ["peeler", b.id || "solo"],
+                content_name: `Mandoline - ${b.name}`,
+                content_ids: ["peeler", b.id || "duo-malin"],
                 value: b.price,
                 currency: "XOF",
                 num_items: b.quantity || 1,
@@ -355,145 +382,213 @@ export default function PeelerLanding({ slug }: { slug: string }) {
           />
         </div>
 
-        {/* ── BÉNÉFICES CLÉS & ARGUMENTS EMOTIONNELS ── */}
-        <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-6 sm:p-8 space-y-6">
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-              6 outils essentiels réunis dans un seul récipient
+        {/* ── SECTION INFOGRAPHIE 1 : LE DUO CUISINE MALIN (COMBO PARFAIT) ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-6 space-y-4">
+          <div className="text-center space-y-1">
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Le Combo Zéro Gaspillage</span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Préparez aujourd&apos;hui • Savourez • Conservez pour demain
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Fini l&apos;encombrement des tiroirs avec 10 accessoires différents. Cette mandoline tout-en-un révolutionne votre temps en cuisine.
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Ne jetez plus jamais la moitié d&apos;un oignon ou des tranches de légumes. Le plateau hermétique élastique garde vos aliments frais sans film plastique.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                <Salad className="w-5 h-5 stroke-[1.75]" />
-              </div>
-              <div className="space-y-1">
-                <div className="text-sm font-bold text-slate-900">Découpe Tranches & Julienne</div>
-                <div className="text-xs text-slate-600 leading-relaxed">
-                  Rondelles régulières de concombres et carottes râpées en quelques secondes sans aucun effort.
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5 stroke-[1.75]" />
-              </div>
-              <div className="space-y-1">
-                <div className="text-sm font-bold text-slate-900">Poussoir de Sécurité Ergonomique</div>
-                <div className="text-xs text-slate-600 leading-relaxed">
-                  Les picots agrippent solidement le légume. Vos mains restent totalement protégées des lames tranchantes.
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                <Waves className="w-5 h-5 stroke-[1.75]" />
-              </div>
-              <div className="space-y-1">
-                <div className="text-sm font-bold text-slate-900">Bac Égouttoir & Rançage Direct</div>
-                <div className="text-xs text-slate-600 leading-relaxed">
-                  Lavez vos légumes à grande eau dans le panier intérieur et videz l&apos;eau par l&apos;orifice de vidange sans passoire.
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                <Egg className="w-5 h-5 stroke-[1.75]" />
-              </div>
-              <div className="space-y-1">
-                <div className="text-sm font-bold text-slate-900">Séparateur d&apos;Œuf & Râpe à Ail</div>
-                <div className="text-xs text-slate-600 leading-relaxed">
-                  Séparez le blanc du jaune d&apos;œuf en 1 seconde et râpez ail, gingembre et muscade directement sur le couvercle.
-                </div>
-              </div>
-            </div>
+          <div className="relative aspect-video sm:aspect-[16/10] w-full max-w-2xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm">
+            <Image
+              src="/images/mandoline-duo-cuisine-malin.jpg"
+              alt="Le Duo Cuisine Malin : Mandoline Essoreuse et Plateau de Conservation Hermétique"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 768px"
+            />
           </div>
         </section>
 
+        {/* ── SECTION INFOGRAPHIE 2 : LAVER, ESSORER, PRÉPARER EN 1 SEUL USTENSILE ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-6 space-y-4">
+          <div className="text-center space-y-1">
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Tout-En-Un Révolutionnaire</span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Laver, essorer, préparer tout dans un seul ustensile !
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Fini de sortir 4 bols différents. Rincez, essorez votre salade en un tour de manivelle et tranchez directement dans le récipient.
+            </p>
+          </div>
+
+          <div className="relative aspect-square w-full max-w-xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm">
+            <Image
+              src="/images/mandoline-guide-laver-essorer.jpg"
+              alt="Guide complet : Laver, essorer, couper en tranches, râper, émincer"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 576px"
+            />
+          </div>
+        </section>
+
+        {/* ── SECTION INFOGRAPHIE 3 : CHOISISSEZ VOTRE DÉCOUPE (12 LAMES ET ACCESSOIRES) ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-6 space-y-4">
+          <div className="text-center space-y-1">
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Polyvalence Totale</span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Toutes les découpes de chef à votre portée
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Râper gros, râper fin, rondelles ondulées, bâtonnets, dés, presse-agrumes et séparateur d&apos;œufs inclus.
+            </p>
+          </div>
+
+          <div className="relative aspect-square w-full max-w-xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm">
+            <Image
+              src="/images/mandoline-guide-lames.jpg"
+              alt="Toutes les lames de la mandoline : trancher, râper, dés, bâtonnets, presse-agrumes"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 576px"
+            />
+          </div>
+        </section>
+
+        {/* ── SECTION INFOGRAPHIE 4 : DE LA PRÉPARATION À LA SALADE ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-4 sm:p-6 space-y-4">
+          <div className="text-center space-y-1">
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Rapidité & Fraîcheur</span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              De la préparation à l&apos;assiette en 5 minutes
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Vos légumes restent croquants, bien égouttés et parfaitement taillés pour régaler toute la famille.
+            </p>
+          </div>
+
+          <div className="relative aspect-square w-full max-w-xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm">
+            <Image
+              src="/images/mandoline-guide-salade.jpg"
+              alt="De la préparation à la salade fraîche servie et dégustée"
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 576px"
+            />
+          </div>
+        </section>
+
+        {/* ── BANNIÈRE PROMOTIONNELLE RAPPEL PRIX ── */}
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-slate-900 rounded-3xl p-6 text-white text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-5 shadow-lg shadow-emerald-950/10">
+          <div className="space-y-1.5">
+            <span className="bg-white/20 backdrop-blur-md text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              Offre Spéciale Isivente
+            </span>
+            <h4 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+              Commandez votre Pack Duo Cuisine Malin
+            </h4>
+            <p className="text-emerald-100 text-xs sm:text-sm">
+              Seulement <strong className="text-white font-mono text-base">17 900 FCFA</strong> au lieu de <span className="line-through opacity-75">32 000 FCFA</span>.
+            </p>
+          </div>
+          <button
+            onClick={scrollToOrder}
+            className="w-full sm:w-auto px-6 py-3.5 bg-white text-emerald-900 font-bold text-sm rounded-xl hover:bg-emerald-50 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
+          >
+            Commander mon Pack (17 900 F)
+          </button>
+        </div>
+
         {/* ── SECTION AVIS CLIENTS VÉRIFIÉS ── */}
         <section className="space-y-6">
-          <div className="text-center space-y-1">
-            <div className="flex items-center justify-center gap-1 text-amber-400 text-sm">
-              {"★".repeat(5)}
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center gap-1 text-amber-400">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-amber-400" />
+              ))}
+              <span className="text-slate-800 font-bold text-sm ml-1.5">4.9/5</span>
+              <span className="text-slate-500 text-xs">(Avis clientes certifiées au Bénin)</span>
             </div>
-            <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-slate-900">
-              Retour d&apos;expérience de nos clientes au Bénin
-            </h2>
-            <p className="text-xs text-slate-500">
-              Note moyenne 4.9/5 basée sur plus de 120 commandes livrées
-            </p>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Ce que disent nos clientes</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {CUSTOMER_REVIEWS.map((rev, idx) => (
               <div 
-                key={idx}
-                className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-3 flex flex-col justify-between"
+                key={idx} 
+                className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3 flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">{rev.name}</div>
-                      <div className="text-[10px] text-slate-500">{rev.location}</div>
+                    <div className="flex text-amber-400">
+                      {[...Array(rev.rating)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                      ))}
                     </div>
-                    <div className="flex text-amber-400 text-xs">
-                      {"★".repeat(rev.rating)}
-                    </div>
+                    <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-semibold border border-emerald-100">
+                      {rev.date}
+                    </span>
                   </div>
-                  <div className="text-xs font-bold text-slate-900 leading-snug">« {rev.title} »</div>
-                  <p className="text-xs text-slate-600 leading-relaxed">{rev.comment}</p>
+                  <h4 className="font-bold text-xs text-slate-900">{rev.title}</h4>
+                  <p className="text-xs text-slate-600 leading-relaxed italic">"{rev.comment}"</p>
                 </div>
-
-                <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 font-semibold pt-2 border-t border-slate-100">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 stroke-[1.75]" />
-                  <span>Achat vérifié Isivente</span>
+                
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span className="font-bold text-slate-900">{rev.name}</span>
+                  <span className="text-slate-400">{rev.location}</span>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ── FOIRE AUX QUESTIONS ── */}
-        <section className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] space-y-3">
-          <div className="text-xs font-bold text-slate-900">Questions fréquentes</div>
+        {/* ── SECTION FAQ INTERACTIVE ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-4">
+          <div className="text-center space-y-1">
+            <h3 className="font-bold text-slate-900 text-base sm:text-lg">Questions Fréquentes</h3>
+            <p className="text-xs text-slate-500">Tout ce que vous devez savoir avant de commander</p>
+          </div>
 
           <div className="divide-y divide-slate-100">
-            {FAQS_DATA.map((faq, idx) => (
-              <div key={idx} className="py-3">
-                <button
-                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                  className="w-full flex items-center justify-between text-left text-xs sm:text-sm font-semibold text-slate-800 hover:text-emerald-600 transition-colors duration-100 cursor-pointer"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${activeFaq === idx ? "rotate-180 text-emerald-600" : ""}`} />
-                </button>
-                {activeFaq === idx && (
-                  <p className="text-xs text-slate-600 mt-2 leading-relaxed pt-1">
-                    {faq.a}
-                  </p>
-                )}
-              </div>
-            ))}
+            {FAQS_DATA.map((faq, index) => {
+              const isOpen = activeFaq === index;
+              return (
+                <div key={index} className="py-3">
+                  <button
+                    onClick={() => setActiveFaq(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between text-left gap-4 group cursor-pointer"
+                  >
+                    <span className="font-semibold text-xs sm:text-sm text-slate-800 group-hover:text-emerald-700 transition-colors">
+                      {faq.q}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
+                        isOpen ? "rotate-180 text-emerald-600" : ""
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="pt-2.5 pr-6 text-xs text-slate-600 leading-relaxed animate-in fade-in duration-200">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
+
+        {/* ── FOOTER OFFICIEL ISIVENTE ── */}
+        <footer className="text-center text-xs text-slate-400 space-y-2 pt-6 border-t border-slate-200">
+          <p>© {new Date().getFullYear()} ISIVENTE Bénin - Tous droits réservés.</p>
+          <p className="text-[11px]">Boutique officielle de distribution en ligne. Service client disponible 7j/7.</p>
+        </footer>
 
       </main>
 
-      {/* ── BARRE MOBILE FLOTTANTE POUR COMMANDER & BOUTON WHATSAPP ── */}
+      {/* ── BARRE MOBILE STICKY CTA ── */}
       <StickyMobileCtaBar
-        price={14900}
-        accentColor="#059669"
-        buttonText="Commander"
+        price={selectedBundle.price}
         targetSectionId="commander"
-        whatsappNumber="2290192901817"
-        whatsappMessage="Bonjour Isivente, je souhaite commander la Mandoline & Coupe-Légumes Multifonction 6-en-1 à 14 900 FCFA avec livraison à domicile."
+        accentColor="#059669"
+        buttonText={`Commander (${selectedBundle.price.toLocaleString("fr-FR")} F)`}
+        whatsappMessage={`Bonjour Isivente, je souhaite commander le ${selectedBundle.name} à ${selectedBundle.price.toLocaleString("fr-FR")} FCFA.`}
       />
 
     </div>

@@ -79,14 +79,15 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
   },
   {
     id: "peeler-default",
-    title: "Mandoline & Coupe-Légumes Multifonction 6-en-1 avec Bac Égouttoir",
-    shortTitle: "Mandoline Coupe-Légumes 6-en-1",
+    title: "Mandoline & Essoreuse Coupe-Légumes Multifonction (Duo Cuisine Malin)",
+    shortTitle: "Mandoline & Duo Cuisine Malin",
     slug: "peeler",
-    price: 14900,
-    image_url: "/images/peeler-hero.jpg",
-    image: "/images/peeler-hero.jpg",
+    price: 17900,
+    image_url: "/images/mandoline-hero-avant-apres.jpg",
+    image: "/images/mandoline-hero-avant-apres.jpg",
     bundles: [
-      { name: "Mandoline & Coupe-Légumes Multifonction 6-en-1", price: 14900 }
+      { name: "Pack Duo Cuisine Malin (Mandoline + Plateau Conservation)", price: 17900 },
+      { name: "Mandoline Essoreuse Seule", price: 14900 }
     ]
   },
   {
