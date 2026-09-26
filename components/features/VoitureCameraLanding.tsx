@@ -619,7 +619,7 @@ export default function VoitureCameraLanding({ slug }: { slug: string }) {
           </div>
         </section>
 
-        {/* ── SECTION VIDÉO : REEL INSTAGRAM EN ACTION ── */}
+        {/* ── SECTION VIDÉO : DÉMO EN CONDITIONS RÉELLES ── */}
         <section className="rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-5 sm:p-7 space-y-5 overflow-hidden">
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-100 text-rose-700 text-[11px] font-semibold uppercase tracking-[0.06em] px-3 py-1 rounded-full">
@@ -634,21 +634,22 @@ export default function VoitureCameraLanding({ slug }: { slug: string }) {
             </p>
           </div>
 
-          {/* Instagram Reel Embed */}
+          {/* Vidéo MP4 native — autoplay muet en boucle */}
           <div className="flex justify-center">
             <div
               className="relative w-full max-w-[380px] rounded-2xl overflow-hidden border border-slate-200 shadow-md bg-slate-900"
               style={{ aspectRatio: "9/16", maxHeight: "680px" }}
             >
-              <iframe
-                src="https://www.instagram.com/reel/DXeQ96bjBhy/embed/captioned/"
-                className="absolute inset-0 w-full h-full border-none"
-                loading="lazy"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                title="Voiture Télécommandée avec Caméra HD - Démo en temps réel"
-                scrolling="no"
-                frameBorder="0"
+              <video
+                src="/videos/voiture-camera-demo.mp4"
+                poster="/images/voiture-slide-salon.jpg"
+                autoPlay
+                muted
+                playsInline
+                loop
+                controls
+                preload="auto"
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
           </div>
