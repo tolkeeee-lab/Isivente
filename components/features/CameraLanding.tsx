@@ -39,7 +39,6 @@ import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import { getProductUpsellConfig } from "@/lib/upsellConfig";
 
 const BUNDLES: BundleOption[] = [
   {
