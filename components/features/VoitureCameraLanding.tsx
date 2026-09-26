@@ -239,14 +239,16 @@ export default function VoitureCameraLanding({ slug }: { slug: string }) {
       });
 
       if (typeof window !== "undefined") {
-        sessionStorage.setItem("last_order", JSON.stringify({
+        const metaPayload = JSON.stringify({
           order_number: order.order_number,
           customer_name: customerName.trim(),
           customer_phone: customerPhone.trim(),
           title: "Voiture Télécommandée avec Caméra HD & Écran",
           price: selectedBundle.price,
           quantity: selectedBundle.quantity || 1,
-        }));
+        });
+        sessionStorage.setItem("last_order", metaPayload);
+        sessionStorage.setItem("isivente_last_purchase_meta", metaPayload);
       }
 
       const successUrl = `/p/voiture-camera/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
