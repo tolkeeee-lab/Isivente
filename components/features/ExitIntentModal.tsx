@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { X, Sparkles, ShieldCheck, Truck, MessageCircle, ArrowRight, Gift } from "lucide-react";
+import { X, Sparkles, ShieldCheck, Truck, MessageCircle, ArrowRight } from "lucide-react";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import { trackVisitorArrival, getVisitorVisitCount } from "@/lib/visitorTracker";
 
@@ -42,14 +42,9 @@ export default function ExitIntentModal({
   const discountAmount = customDiscountAmount || 1500;
   const discountPrice = customDiscountPrice || Math.max(0, originalPrice - discountAmount);
 
-  // Cadeau adapté selon le produit
-  const defaultGift = slug.includes("brosse") || slug.includes("umei") || slug.includes("yufan")
-    ? "1 Flacon de soin offert + Livraison Express prioritaire"
-    : slug.includes("matelas")
-    ? "1 Sac de transport étanche renforcé + Livraison Express offerte"
-    : "1 Cadeau surprise offert dans votre colis + Livraison 24h prioritaire";
-
-  const giftText = customGiftText || defaultGift;
+  // Avantage honnête : réduction directe et traitement prioritaire (aucun faux cadeau promis)
+  const defaultPerk = "Remise immédiate déduite + Expédition 24h prioritaire";
+  const perkText = customGiftText || defaultPerk;
 
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
@@ -111,9 +106,9 @@ export default function ExitIntentModal({
     setIsOpen(false);
     if (typeof window !== "undefined") {
       sessionStorage.setItem("isivente_exit_perk_active", "true");
-      // Émission d'un événement global pour que la page active le cadeau ou la réduction
+      // Émission d'un événement global pour que la page active la réduction
       window.dispatchEvent(new CustomEvent("isivente:perk_claimed", { 
-        detail: { discountAmount, giftText, discountPrice } 
+        detail: { discountAmount, perkText, discountPrice } 
       }));
     }
 
@@ -157,15 +152,15 @@ export default function ExitIntentModal({
         <div className="space-y-3 pt-1">
           <div className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
             <Sparkles className="w-3.5 h-3.5 text-rose-600" />
-            <span>Cadeau spécial avant de partir 🎁</span>
+            <span>Remise exclusive avant de partir ⚡</span>
           </div>
 
           <div className="space-y-1">
             <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              Attendez ! Ne partez pas les mains vides.
+              Attendez ! Ne partez pas sans votre réduction.
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Pour vous remercier de votre visite {visitCount > 1 ? `(votre ${visitCount}e visite !)` : ""}, nous vous offrons une remise immédiate de <strong className="text-rose-600 font-bold">{fmt(discountAmount)} FCFA</strong> et un avantage exclusif si vous commandez aujourd'hui.
+              Pour vous remercier de votre visite {visitCount > 1 ? `(votre ${visitCount}e visite !)` : ""}, nous déduisons immédiatement <strong className="text-rose-600 font-bold">{fmt(discountAmount)} FCFA</strong> sur votre commande aujourd'hui.
             </p>
           </div>
 
@@ -190,14 +185,14 @@ export default function ExitIntentModal({
             </div>
           </div>
 
-          {/* Cadeau offert dans le colis */}
+          {/* Avantage réel appliqué */}
           <div className="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex items-center gap-2.5 text-amber-900">
             <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-amber-600">
-              <Gift className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" />
             </div>
             <div className="text-xs">
-              <p className="font-bold">Inclus gratuitement dans votre colis :</p>
-              <p className="text-[11px] text-amber-800">{giftText}</p>
+              <p className="font-bold">Privilège appliqué immédiatement :</p>
+              <p className="text-[11px] text-amber-800">{perkText}</p>
             </div>
           </div>
 
