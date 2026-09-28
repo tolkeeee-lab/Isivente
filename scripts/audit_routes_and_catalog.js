@@ -3,11 +3,9 @@ const path = require('path');
 
 const defaultCatalogPath = path.join(__dirname, '..', 'lib', 'defaultCatalog.ts');
 const pageSlugPath = path.join(__dirname, '..', 'app', 'p', '[slug]', 'page.tsx');
-const upsellConfigPath = path.join(__dirname, '..', 'lib', 'upsellConfig.ts');
 
 const defaultCatalog = fs.readFileSync(defaultCatalogPath, 'utf8');
 const pageSlug = fs.readFileSync(pageSlugPath, 'utf8');
-const upsellConfig = fs.readFileSync(upsellConfigPath, 'utf8');
 
 console.log('=== AUDIT DU CATALOGUE VS ROUTEUR ===');
 
@@ -24,13 +22,3 @@ console.log('Slugs dans generateStaticParams:', staticParamsMatches);
 
 const unhandled = catalogSlugMatches.filter(s => !handledCases.includes(s));
 console.log('\n❌ Slugs du catalogue NON GÉRÉS par le routeur (Erreur 404 automatique) :', unhandled);
-
-// Check Upsell Config
-console.log('\n=== AUDIT DES UPSELLS ===');
-catalogSlugMatches.forEach(slug => {
-  if (!upsellConfig.includes(`"${slug}"`) && !upsellConfig.includes(`'${slug}'`)) {
-    console.log(`  ⚠️ Produit "${slug}" absent de upsellConfig.ts`);
-  } else {
-    console.log(`  ✓ Produit "${slug}" présent dans upsellConfig.ts`);
-  }
-});

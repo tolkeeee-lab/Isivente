@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
 import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
-import { getProductUpsellConfig } from "@/lib/upsellConfig";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
@@ -65,8 +64,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [customerPhone2, setCustomerPhone2] = useState("");
   const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
-  const [includeBump, setIncludeBump] = useState(false);
-  const [includeSecondUnit, setIncludeSecondUnit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -223,10 +220,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
   const selectedBundle = product?.bundles?.[selectedBundleIdx] || null;
-  const upsellConfig = getProductUpsellConfig(slug, product?.title, product?.price);
-  const secondUnitPrice = includeSecondUnit && upsellConfig.secondUnit ? upsellConfig.secondUnit.price : 0;
-  const bumpPrice = includeBump && upsellConfig.bump ? upsellConfig.bump.price : 0;
-  const totalWithBump = (selectedBundle ? selectedBundle.price : (product?.price || 0)) + secondUnitPrice + bumpPrice;
+  const totalWithBump = (selectedBundle ? selectedBundle.price : (product?.price || 0));
 
   /* ─── Order submission ─── */
   const handleSubmit = async (e: React.FormEvent) => {
@@ -241,15 +235,13 @@ export default function ProductLanding({ slug }: { slug: string }) {
     isSubmittingRef.current = true;
     setIsSubmitting(true);
     try {
-      const finalBundleName = selectedBundle.name 
-        + (includeSecondUnit && upsellConfig.secondUnit ? ` + 2ème Exemplaire (${upsellConfig.secondUnit.title})` : "")
-        + (includeBump && upsellConfig.bump ? ` + [BUMP] ${upsellConfig.bump.title}` : "");
+      const finalBundleName = selectedBundle.name;
 
       const createdOrder = await saveNewOrder({
         product_slug: slug,
         product_title: product.title,
         bundle_name: finalBundleName,
-        quantity: (selectedBundle.quantity || 1) + (includeSecondUnit ? 1 : 0),
+        quantity: (selectedBundle.quantity || 1),
         total_amount: totalWithBump,
         customer_name: customerName || "Client",
         customer_phone: customerPhone + (customerPhone2 ? ` / ${customerPhone2}` : ""),
@@ -462,12 +454,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
             setCity={setCity}
             address={address}
             setAddress={setAddress}
-            includeBump={includeBump}
-            setIncludeBump={setIncludeBump}
-            bumpOffer={upsellConfig.bump}
-            includeSecondUnit={includeSecondUnit}
-            setIncludeSecondUnit={setIncludeSecondUnit}
-            secondUnitOffer={upsellConfig.secondUnit}
             isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
             accentColor="#2563EB"

@@ -18,7 +18,6 @@ import {
   ArrowRight,
   ExternalLink,
 } from "lucide-react";
-import { OfferItem, getProductUpsellConfig } from "@/lib/upsellConfig";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import { playOrderSound } from "@/lib/soundEffects";
@@ -72,8 +71,6 @@ export default function QuickOrderDrawer({
   const [selectedBundle, setSelectedBundle] = useState<BundleOption | null>(
     initialBundle || bundles[0] || null
   );
-  const [isSecondUnitActive, setIsSecondUnitActive] = useState(false);
-  const [includeBump, setIncludeBump] = useState(false);
 
   // Informations Client
   const [customerName, setCustomerName] = useState("");
@@ -90,21 +87,9 @@ export default function QuickOrderDrawer({
 
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  // Configuration dynamique d'upsell
-  const upsellConfig = getProductUpsellConfig(
-    productSlug,
-    productTitle,
-    selectedBundle?.price || 14900
-  );
-  const resolvedSecondUnit = upsellConfig.secondUnit;
-  const resolvedBump = upsellConfig.bump;
-
   // Calcul du prix de base et des options
   const basePrice = selectedBundle ? selectedBundle.price : 14900;
-  const secondUnitPrice =
-    isSecondUnitActive && resolvedSecondUnit ? resolvedSecondUnit.price : 0;
-  const bumpPrice = includeBump && resolvedBump ? resolvedBump.price : 0;
-  const totalPrice = basePrice + secondUnitPrice + bumpPrice;
+  const totalPrice = basePrice;
 
   // Délais de livraison
   const selectedCityObj = BENIN_CITIES.find(
@@ -175,16 +160,10 @@ export default function QuickOrderDrawer({
       const itemsPurchased: string[] = [
         selectedBundle ? selectedBundle.name : productTitle,
       ];
-      if (isSecondUnitActive && resolvedSecondUnit) {
-        itemsPurchased.push(`2ème pièce (${resolvedSecondUnit.title})`);
-      }
-      if (includeBump && resolvedBump) {
-        itemsPurchased.push(resolvedBump.title);
-      }
 
       const finalBundleName = itemsPurchased.join(" + ");
       const totalQuantity =
-        (selectedBundle?.quantity || 1) + (isSecondUnitActive ? 1 : 0);
+        (selectedBundle?.quantity || 1);
 
       const res = await saveNewOrder({
         product_slug: productSlug,
@@ -376,61 +355,6 @@ export default function QuickOrderDrawer({
                 </div>
               </div>
 
-              {/* 2. OFFRE 2ÈME PIÈCE EN 1 CLIC (SI DISPONIBLE) */}
-              {resolvedSecondUnit && (
-                <div
-                  onClick={() => setIsSecondUnitActive(!isSecondUnitActive)}
-                  className="p-3.5 rounded-2xl border-2 transition-all cursor-pointer select-none text-left relative overflow-hidden"
-                  style={{
-                    borderColor: isSecondUnitActive ? accentColor : "#CBD5E1",
-                    backgroundColor: isSecondUnitActive ? `${accentColor}0D` : "#F8FAFC",
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="pt-0.5">
-                      <div
-                        className="w-5 h-5 rounded-md flex items-center justify-center transition-all border-2"
-                        style={{
-                          backgroundColor: isSecondUnitActive ? accentColor : "#FFFFFF",
-                          borderColor: isSecondUnitActive ? accentColor : "#94A3B8",
-                          color: "#FFFFFF",
-                        }}
-                      >
-                        {isSecondUnitActive && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                      </div>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span
-                          className="text-[9px] font-extrabold uppercase text-white px-1.5 py-0.5 rounded shadow-2xs flex items-center gap-1"
-                          style={{ backgroundColor: accentColor }}
-                        >
-                          <Gift className="w-2.5 h-2.5" />
-                          {resolvedSecondUnit.badge || "OFFRE 2ÈME UNITÉ"}
-                        </span>
-                        {resolvedSecondUnit.savings && (
-                          <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded">
-                            Éco. {fmt(resolvedSecondUnit.savings)} F
-                          </span>
-                        )}
-                      </div>
-                      <div className="font-bold text-xs text-slate-900 mt-1 leading-snug">
-                        {resolvedSecondUnit.title}
-                      </div>
-                      <div className="mt-1 flex items-center gap-2 font-mono text-xs">
-                        <span className="font-black" style={{ color: accentColor }}>
-                          +{fmt(resolvedSecondUnit.price)} FCFA
-                        </span>
-                        <span className="text-[10px] text-slate-500 font-sans">
-                          (Dans le même colis)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* 3. COORDONNÉES CLIENT */}
               <div className="space-y-3 pt-1">
                 <label className="text-xs font-bold text-slate-800 block">
@@ -525,44 +449,6 @@ export default function QuickOrderDrawer({
                   </div>
                 </div>
               </div>
-
-              {/* 4. ORDER BUMP OPTIONNEL */}
-              {resolvedBump && (
-                <div
-                  onClick={() => setIncludeBump(!includeBump)}
-                  className="p-3 rounded-xl border transition-all cursor-pointer select-none text-left"
-                  style={{
-                    borderColor: includeBump ? accentColor : "#E2E8F0",
-                    backgroundColor: includeBump ? `${accentColor}0D` : "#F8FAFC",
-                  }}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <input
-                      type="checkbox"
-                      checked={includeBump}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        setIncludeBump(e.target.checked);
-                      }}
-                      className="mt-0.5 w-4 h-4 rounded cursor-pointer"
-                      style={{ accentColor }}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[9.5px] font-extrabold uppercase bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded">
-                          OFFRE COMPLÉMENTAIRE
-                        </span>
-                      </div>
-                      <div className="font-bold text-xs text-slate-900 mt-0.5">
-                        {resolvedBump.title}
-                      </div>
-                      <div className="font-mono text-xs font-bold mt-0.5" style={{ color: accentColor }}>
-                        +{fmt(resolvedBump.price)} FCFA
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* ─── BOUTON DE VALIDATION COD ─── */}
               <div className="pt-2 sticky bottom-0 bg-white pb-1">

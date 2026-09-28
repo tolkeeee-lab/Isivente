@@ -201,35 +201,3 @@ export async function deleteOrder(orderId?: string, orderNumber?: string, orderO
   }
 }
 
-export async function upgradeOrderWithUpsell(orderRef: string, upsellPrice: number, upsellTitle: string) {
-  if (!orderRef) return;
-
-  // Mise à jour locale
-  const local = getLocalOrders();
-  const updated = local.map(o => {
-    if (o.order_number === orderRef || o.id === orderRef) {
-      return {
-        ...o,
-        total_amount: (Number(o.total_amount) || 0) + upsellPrice,
-        bundle_name: `${o.bundle_name || ''} + [OFFRE VIP] ${upsellTitle}`,
-      };
-    }
-    return o;
-  });
-  saveLocalOrders(updated);
-
-  try {
-    await fetch('/api/orders', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'upgrade_upsell',
-        orderRef,
-        additionalAmount: upsellPrice,
-        addedItemTitle: upsellTitle,
-      }),
-    });
-  } catch (err) {
-    console.error('Error upgrading order with upsell:', err);
-  }
-}
