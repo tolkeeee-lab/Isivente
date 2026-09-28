@@ -21,7 +21,10 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const recipientEmail = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || "tolkeeee@gmail.com";
   const formattedAmount = new Intl.NumberFormat("fr-FR").format(order.total_amount || 0) + " FCFA";
   const cleanPhone = (order.customer_phone || "").replace(/[^0-9]/g, "");
-  const whatsappLink = cleanPhone ? `https://wa.me/229${cleanPhone}` : "";
+  const whatsappIntroMsg = encodeURIComponent(
+    `Bonjour ${order.customer_name || ""}, c'est le service client Isivente. Nous avons bien reçu votre commande pour le produit ${order.product_title || ""} (${formattedAmount}).\n\nNous vous contactons pour valider l'adresse de livraison et votre disponibilité.`
+  );
+  const whatsappLink = cleanPhone ? `https://wa.me/229${cleanPhone}?text=${whatsappIntroMsg}` : "";
   const dateFormatted = new Date().toLocaleString("fr-FR", { timeZone: "Africa/Porto-Novo" });
   const city = order.shipping_city || order.city || "Cotonou";
   const address = order.shipping_address || order.address || "Non précisé";

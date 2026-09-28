@@ -1487,6 +1487,10 @@ export default function OrdersPage() {
                 `Bonjour ${order.customer_name || ""}, c'est Isivente. Votre commande ${order.order_number || ""} (${order.product_title || ""}) est validée et prête pour livraison à ${order.shipping_city || order.city || "Cotonou"}. Le livreur peut-il passer aujourd'hui ?`
               );
 
+              const whatsappRuptureMsg = encodeURIComponent(
+                `Bonjour ${order.customer_name || ""}, c'est Isivente. Suite à votre commande ${order.order_number || ""} (${order.product_title || ""}), nous sommes malheureusement en rupture de stock temporaire. Nous vous recontacterons dès le réapprovisionnement.\n\nMerci pour votre compréhension.`
+              );
+
               return (
                 <tr
                   key={order.id || `ord_${idx}`}
@@ -1503,19 +1507,51 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="font-mono text-[11px] text-slate-500 font-medium">{order.customer_phone || "-"}</span>
                       {phoneDigits && (
-                        <a
-                          href={`https://wa.me/229${phoneDigits}?text=${order.status === "reserved" ? whatsappReservationMsg :
-                              order.status === "postponed" ? whatsappRelanceMsg :
-                                whatsappDeliveryMsg
-                            }`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-200/60 inline-flex items-center gap-0.5"
-                          title="Ouvrir la conversation WhatsApp avec message pré-rempli"
-                        >
-                          <MessageSquare className="w-2.5 h-2.5 text-emerald-600" />
-                          <span>WhatsApp</span>
-                        </a>
+                        <div className="relative group/wa inline-block">
+                          <button
+                            type="button"
+                            className="text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-200/60 inline-flex items-center gap-0.5"
+                            title="Ouvrir la conversation WhatsApp"
+                          >
+                            <MessageSquare className="w-2.5 h-2.5 text-emerald-600" />
+                            <span>WhatsApp ▾</span>
+                          </button>
+
+                          <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-slate-200 py-1.5 z-50 opacity-0 invisible group-hover/wa:opacity-100 group-hover/wa:visible transition-all">
+                            <a
+                              href={`https://wa.me/229${phoneDigits}?text=${whatsappDeliveryMsg}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600"
+                            >
+                              📦 Livraison
+                            </a>
+                            <a
+                              href={`https://wa.me/229${phoneDigits}?text=${whatsappRuptureMsg}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-rose-600"
+                            >
+                              ⚠️ Rupture de stock
+                            </a>
+                            <a
+                              href={`https://wa.me/229${phoneDigits}?text=${whatsappReservationMsg}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-amber-600"
+                            >
+                              📅 Réservation
+                            </a>
+                            <a
+                              href={`https://wa.me/229${phoneDigits}?text=${whatsappRelanceMsg}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block px-3 py-1.5 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-purple-600"
+                            >
+                              ⏳ Relance
+                            </a>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </td>
