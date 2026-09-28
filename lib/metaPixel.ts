@@ -1,3 +1,5 @@
+import { getUserDataFromStorage } from "./userTracking";
+
 export const PIXEL_CONFIG = {
   pixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686",
   currency: "XOF",
@@ -44,6 +46,9 @@ function getFbq(): ((...args: any[]) => void) | null {
  */
 async function sendServerBridge(eventName: string, customData: Record<string, any> = {}) {
   if (typeof window === "undefined") return;
+
+  const userData = getUserDataFromStorage();
+
   try {
     fetch("/api/pixel/event", {
       method: "POST",
@@ -51,6 +56,7 @@ async function sendServerBridge(eventName: string, customData: Record<string, an
       body: JSON.stringify({
         event_name: eventName,
         custom_data: customData,
+        user_data: userData,
         event_source_url: window.location.href,
       }),
       keepalive: true,
