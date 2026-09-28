@@ -47,11 +47,11 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Microscope Numérique Portable HD 1000X",
     shortTitle: "Microscope Numérique HD 1000X",
     slug: "microscope",
-    price: 29900,
+    price: 24900,
     image_url: "/images/microscope-video-cover.webp",
     image: "/images/microscope-video-cover.webp",
     bundles: [
-      { name: "Microscope Numérique Portable HD 1000X", price: 29900 }
+      { name: "Microscope Numérique Portable HD 1000X", price: 24900 }
     ]
   },
   {
@@ -72,8 +72,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     shortTitle: "Purificateur EraClean™",
     slug: "eraclean",
     price: 19900,
-    image_url: "/images/defroisseur-vapeur-hero.jpg",
-    image: "/images/defroisseur-vapeur-hero.jpg",
+    image_url: "/images/eraclean-studio.jpg",
+    image: "/images/eraclean-studio.jpg",
     bundles: [
       { name: "Purificateur d'Air & Anti-Odeurs EraClean™", price: 19900 }
     ]
@@ -84,8 +84,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     shortTitle: "Ventilateur TurboFan™ Max",
     slug: "turbofan",
     price: 16900,
-    image_url: "/images/defroisseur-vapeur-hero.jpg",
-    image: "/images/defroisseur-vapeur-hero.jpg",
+    image_url: "/images/turbofan-studio.jpg",
+    image: "/images/turbofan-studio.jpg",
     bundles: [
       { name: "Ventilateur TurboFan™ Max 8000mAh", price: 16900 }
     ]
@@ -121,8 +121,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     shortTitle: "Veilleuse Projecteur FRIOSZ",
     slug: "veilleuse",
     price: 14900,
-    image_url: "/images/defroisseur-vapeur-hero.jpg",
-    image: "/images/defroisseur-vapeur-hero.jpg",
+    image_url: "/images/projecteur-hero.jpg",
+    image: "/images/projecteur-hero.jpg",
     bundles: [
       { name: "Veilleuse Projecteur LED 3D Tactile FRIOSZ", price: 14900 }
     ]
