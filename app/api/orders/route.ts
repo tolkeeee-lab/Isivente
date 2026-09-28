@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// 3. UPDATE ORDER STATUS OU UPGRADE UPSELL
+// 3. UPDATE ORDER STATUS
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
@@ -217,73 +217,7 @@ export async function PATCH(req: NextRequest) {
 
     const supabase = getSupabaseClient();
 
-    // Cas A : Upgrade d'une commande avec une offre Upsell / Downsell
-    if (body.action === "upgrade_upsell" || (body.orderRef && body.additionalAmount)) {
-      const rawRef = String(body.orderRef || body.id || "").trim();
-      const additionalAmount = Number(body.additionalAmount) || 0;
-      const rawTitle = String(body.addedItemTitle || "Offre Complémentaire").trim();
-      const addedItemTitle = rawTitle.slice(0, 100).replace(/[<>]/g, "");
-
-      if (!rawRef || !/^[a-zA-Z0-9_\-]+$/.test(rawRef) || additionalAmount <= 0 || additionalAmount > 2000000) {
-        return NextResponse.json({ success: false, error: "Paramètres d'upsell invalides" }, { status: 400 });
-      }
-
-      const isUuid = rawRef.includes("-") && rawRef.length > 30;
-      let query = supabase.from("orders").select("*");
-      if (isUuid) {
-        query = query.eq("id", rawRef);
-      } else {
-        query = query.eq("order_number", rawRef);
-      }
-
-      const { data: existingList, error: findErr } = await query;
-      const existing = existingList?.[0];
-
-      if (findErr || !existing) {
-        console.warn("Upsell order not found in Supabase:", rawRef);
-        return NextResponse.json({ success: false, error: "Commande non trouvée pour l'upsell" }, { status: 404 });
-      }
-
-      const newTotal = (Number(existing.total_amount) || 0) + additionalAmount;
-      const currentBundle = existing.bundle_name || "Offre standard";
-      const newBundle = currentBundle.includes("[OFFRE VIP]")
-        ? `${currentBundle} + ${addedItemTitle}`
-        : `${currentBundle} + [OFFRE VIP] ${addedItemTitle}`;
-
-      const { data: updatedData, error: updateErr } = await supabase
-        .from("orders")
-        .update({
-          total_amount: newTotal,
-          bundle_name: newBundle.slice(0, 250),
-        })
-        .eq("id", existing.id)
-        .select();
-
-      if (updateErr) {
-        console.error("Upsell update Supabase error:", updateErr?.message);
-        return NextResponse.json({ success: false, error: "Erreur lors de la mise à jour de l'upsell" }, { status: 500 });
-      }
-
-      const updatedOrder = updatedData?.[0] || { ...existing, total_amount: newTotal, bundle_name: newBundle };
-
-      // Alerte notification upsell
-      try {
-        await sendOrderNotification({
-          ...updatedOrder,
-          is_upsell: true,
-        });
-      } catch (notifyErr: any) {
-        console.error("Upsell notification error:", notifyErr?.message);
-      }
-
-      return NextResponse.json({
-        success: true,
-        order: updatedOrder,
-        message: "Commande enrichie avec l'upsell et notification envoyée",
-      });
-    }
-
-    // Cas B : Mise à jour de statut standard
+    // Mise à jour de statut standard
     const rawId = String(body.id || "").trim();
     const rawStatus = String(body.status || "").trim();
 

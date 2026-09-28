@@ -52,12 +52,6 @@ interface UmeiStyleOrderSectionProps {
   setAddress: (val: string) => void;
   reservationDate?: string;
   setReservationDate?: (val: string) => void;
-  includeBump?: boolean;
-  setIncludeBump?: (val: boolean) => void;
-  bumpOffer?: any;
-  includeSecondUnit?: boolean;
-  setIncludeSecondUnit?: (val: boolean) => void;
-  secondUnitOffer?: any;
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   accentColor?: string;

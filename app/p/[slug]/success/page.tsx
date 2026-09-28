@@ -24,8 +24,6 @@ function SuccessContent() {
   const orderRef = searchParams.get("order") || "";
   const name = searchParams.get("name") || "";
   const total = Number(searchParams.get("total") || 0);
-  const hasUpsell = searchParams.get("upsell") === "1";
-  const hasDownsell = searchParams.get("downsell") === "1";
 
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   const [countdown, setCountdown] = useState(2);
@@ -36,8 +34,6 @@ function SuccessContent() {
     `👤 *Nom :* ${name || "Client"}\n` +
     `📱 *Téléphone :* ${phone || "Non renseigné"}\n` +
     (total > 0 ? `💰 *Total à régler à la livraison :* ${fmt(total)} FCFA\n` : "") +
-    (hasUpsell ? `🎁 *Offre VIP incluse :* Oui (+1 article ajouté)\n` : "") +
-    (hasDownsell ? `🎁 *Pack spécial inclus :* Oui\n` : "") +
     `\nMerci de me contacter pour la livraison de mon colis.`;
 
   const whatsappUrl = `https://wa.me/2290192901817?text=${encodeURIComponent(whatsappMsgText)}`;
@@ -157,16 +153,6 @@ function SuccessContent() {
             <div className="flex justify-between items-center text-slate-600">
               <span>Téléphone :</span>
               <span className="font-mono font-medium text-slate-900">{phone}</span>
-            </div>
-          )}
-
-          {(hasUpsell || hasDownsell) && (
-            <div className="flex justify-between items-center text-emerald-700 font-semibold pt-1">
-              <span>Offre ajoutée :</span>
-              <span className="inline-flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                {hasUpsell ? "Offre VIP 1-Clic" : "Pack Spécial"}
-              </span>
             </div>
           )}
 
