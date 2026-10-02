@@ -57,6 +57,10 @@ function SuccessContent() {
         currency: "XOF",
         num_items: parsed?.quantity || 1,
         order_id: orderRef || undefined,
+        user_data: {
+          phone: phone || undefined,
+          name: name || undefined,
+        },
       });
     } catch {}
 

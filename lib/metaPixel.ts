@@ -44,10 +44,13 @@ function getFbq(): ((...args: any[]) => void) | null {
  * Envoie un événement de secours côté serveur (Meta CAPI Bridge)
  * pour contourner les bloqueurs de publicité et les restrictions iOS/Android.
  */
-async function sendServerBridge(eventName: string, customData: Record<string, any> = {}) {
+async function sendServerBridge(eventName: string, customData: Record<string, any> = {}, userDataOverride?: any) {
   if (typeof window === "undefined") return;
 
-  const userData = getUserDataFromStorage();
+  let userData = getUserDataFromStorage();
+  if (userDataOverride) {
+    userData = { ...userData, ...userDataOverride };
+  }
 
   try {
     fetch("/api/pixel/event", {
@@ -174,6 +177,10 @@ export function trackPurchase(params: {
   value: number;
   currency?: string;
   num_items?: number;
+  user_data?: {
+    phone?: string;
+    name?: string;
+  };
 }) {
   const data = {
     content_name: params.content_name,
@@ -189,5 +196,18 @@ export function trackPurchase(params: {
   if (fbq) {
     fbq("track", "Purchase", data);
   }
-  sendServerBridge("Purchase", data);
+
+  let userDataOverride: any = undefined;
+  if (params.user_data) {
+    const nameParts = (params.user_data.name || "").trim().split(/\s+/);
+    userDataOverride = {
+      phone: params.user_data.phone || undefined,
+      first_name: nameParts[0] || undefined,
+      last_name: nameParts.slice(1).join(" ") || undefined,
+    };
+    // Nettoyer les clés indéfinies
+    Object.keys(userDataOverride).forEach(k => userDataOverride[k] === undefined && delete userDataOverride[k]);
+  }
+
+  sendServerBridge("Purchase", data, userDataOverride);
 }
