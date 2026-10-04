@@ -30,9 +30,9 @@ const BUNDLES: BundleOption[] = [
     id: "solo",
     name: "Appareil de Thérapie Laser Anti-Rhinite",
     subtitle: "Appareil complet avec sondes nasales et boîtier de contrôle",
-    price: 19900,
+    price: 15900,
     originalPrice: 35000,
-    savings: 15100,
+    savings: 19100,
     quantity: 1,
     popular: true,
   },
@@ -252,7 +252,7 @@ export default function RhiniteLanding() {
                 </p>
 
                 <div className="flex items-end gap-3 mb-8">
-                  <span className="text-4xl font-black text-gray-900 tracking-tight">19 900</span>
+                  <span className="text-4xl font-black text-gray-900 tracking-tight">15 900</span>
                   <span className="text-xl font-bold text-gray-900 mb-1">FCFA</span>
                   <span className="text-lg text-gray-400 line-through mb-1.5 ml-2">35 000 FCFA</span>
                 </div>

@@ -180,11 +180,11 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Appareil de Thérapie Laser Anti-Rhinite & Allergies",
     shortTitle: "Thérapie Laser Anti-Rhinite",
     slug: "laser-rhinite",
-    price: 19900,
+    price: 15900,
     image_url: "/images/rhinite/presentation.png",
     image: "/images/rhinite/presentation.png",
     bundles: [
-      { name: "Appareil de Thérapie Laser Anti-Rhinite", price: 19900 }
+      { name: "Appareil de Thérapie Laser Anti-Rhinite", price: 15900 }
     ]
   }
 ];
