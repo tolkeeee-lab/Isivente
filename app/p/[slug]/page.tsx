@@ -13,6 +13,7 @@ import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
 import MatelasLanding from "@/components/features/MatelasLanding";
 import VoitureCameraLanding from "@/components/features/VoitureCameraLanding";
+import RhiniteLanding from "@/components/features/RhiniteLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -69,6 +70,9 @@ export default async function ProductPage({ params }: PageProps) {
 
   const renderContent = () => {
     switch (normalizedSlug) {
+      case "laser-rhinite":
+      case "rhinite":
+        return <RhiniteLanding />;
       case "voiture-camera":
       case "voiture-telecommandee":
       case "voiture-rc":

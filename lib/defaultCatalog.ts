@@ -174,6 +174,18 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Matelas Gonflable Ergonomique Autogonflant + Pompe & Oreiller", price: 24900 }
     ]
+  },
+  {
+    id: "laser-rhinite-default",
+    title: "Appareil de Thérapie Laser Anti-Rhinite & Allergies",
+    shortTitle: "Thérapie Laser Anti-Rhinite",
+    slug: "laser-rhinite",
+    price: 19900,
+    image_url: "/images/rhinite/presentation.png",
+    image: "/images/rhinite/presentation.png",
+    bundles: [
+      { name: "Appareil de Thérapie Laser Anti-Rhinite", price: 19900 }
+    ]
   }
 ];
 
