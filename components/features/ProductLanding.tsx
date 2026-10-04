@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
-import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackMultiViewContent as trackViewContent, trackMultiInitiateCheckout as trackInitiateCheckout, trackMultiPurchase as trackPurchase } from "@/lib/trackingBridge";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";

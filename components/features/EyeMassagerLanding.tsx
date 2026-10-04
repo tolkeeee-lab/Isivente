@@ -34,7 +34,7 @@ import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
+import { trackMultiViewContent as trackViewContent, trackMultiAddToCart as trackAddToCart, trackMultiInitiateCheckout as trackInitiateCheckout } from "@/lib/trackingBridge";
 
 /* ─── PILIER 1 : OFFRE UNIQUE (24 900 FCFA) SANS MULTI-PACKS ─── */
 const BUNDLES: BundleOption[] = [

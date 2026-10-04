@@ -19,7 +19,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackMultiInitiateCheckout as trackInitiateCheckout, trackMultiPurchase as trackPurchase } from "@/lib/trackingBridge";
 import { playOrderSound } from "@/lib/soundEffects";
 
 export interface BundleOption {

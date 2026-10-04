@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { trackPurchase } from "@/lib/metaPixel";
+import { trackMultiPurchase as trackPurchase } from "@/lib/trackingBridge";
 
 function SuccessContent() {
   const params = useParams();

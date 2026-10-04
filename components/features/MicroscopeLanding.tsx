@@ -154,7 +154,7 @@ const FAQS_DATA = [
   }
 ];
 
-import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackMultiViewContent as trackViewContent, trackMultiAddToCart as trackAddToCart, trackMultiInitiateCheckout as trackInitiateCheckout, trackMultiPurchase as trackPurchase } from "@/lib/trackingBridge";
 
 export default function MicroscopeLanding({ slug }: { slug: string }) {
   const router = useRouter();

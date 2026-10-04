@@ -16,7 +16,7 @@ import {
   Bookmark,
 } from "lucide-react";
 import { playOrderSound } from "@/lib/soundEffects";
-import { trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
+import { trackMultiAddToCart as trackAddToCart, trackMultiInitiateCheckout as trackInitiateCheckout } from "@/lib/trackingBridge";
 import { saveOrUpdateLead, markLeadConverted } from "@/lib/leadsStorage";
 
 export interface BundleOption {
