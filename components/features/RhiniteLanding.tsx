@@ -169,6 +169,14 @@ export default function RhiniteLanding() {
   const nextSlide = () => setCurrentSlide((p) => (p + 1) % CAROUSEL_IMAGES.length);
   const prevSlide = () => setCurrentSlide((p) => (p - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length);
 
+  // Autoplay du carrousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((p) => (p + 1) % CAROUSEL_IMAGES.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -232,7 +240,7 @@ export default function RhiniteLanding() {
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center text-white shadow-sm">
               <Wind className="w-4 h-4" />
             </div>
-            <span className="font-bold text-gray-900 tracking-tight text-lg">Boutique Santé</span>
+            <span className="font-bold text-gray-900 tracking-tight text-lg">Isivente</span>
           </div>
           <button
             onClick={scrollToOrder}
