@@ -28,6 +28,11 @@ export default function AdminLayout({
       icon: LayoutDashboard,
     },
     {
+      href: "/admin/prospects",
+      label: "Paniers Abandonnés",
+      icon: Users,
+    },
+    {
       href: "/admin/studio",
       label: "Studio AI",
       icon: Wand2,
@@ -46,11 +51,6 @@ export default function AdminLayout({
       href: "/admin/clicks",
       label: "Clics & Entonnoir Ads",
       icon: MousePointerClick,
-    },
-    {
-      href: "/admin/prospects",
-      label: "Paniers Abandonnés",
-      icon: Users,
     },
     {
       href: "/admin/tracker",
