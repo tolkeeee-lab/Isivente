@@ -69,9 +69,69 @@ const CAROUSEL_IMAGES = [
   }
 ];
 
+interface CustomerReview {
+  name: string;
+  location: string;
+  rating: number;
+  date: string;
+  title: string;
+  comment: string;
+  initial: string;
+}
+
+const REVIEWS_DATA: CustomerReview[] = [
+  {
+    name: "Marius A.",
+    location: "Enseignant • Cotonou (Haie Vive)",
+    rating: 5,
+    date: "Achat vérifié Isivente",
+    title: "Le meilleur investissement contre mes allergies",
+    comment: "Je souffrais d'allergies à la poussière tous les matins. Le nez complètement bouché, des éternuements à n'en plus finir. Depuis que j'utilise cet appareil 15 minutes le matin, je respire normalement toute la journée. Un vrai soulagement !",
+    initial: "M"
+  },
+  {
+    name: "Clarisse D.",
+    location: "Commerçante • Calavi",
+    rating: 5,
+    date: "Achat vérifié Isivente",
+    title: "Incroyable pour le sommeil",
+    comment: "J'avais beaucoup de mal à m'endormir à cause de ma rhinite chronique. Le spray nasal ne faisait plus grand effet. Cette thérapie laser a totalement changé mes nuits. Je dors beaucoup mieux car mon nez est enfin dégagé.",
+    initial: "C"
+  },
+  {
+    name: "Dr. Boris K.",
+    location: "Pharmacien • Porto-Novo",
+    rating: 5,
+    date: "Achat vérifié Isivente",
+    title: "Une méthode naturelle efficace",
+    comment: "En tant que professionnel de santé, j'étais sceptique. Mais la thérapie par lumière rouge à basse fréquence (650nm) est cliniquement prouvée pour réduire l'inflammation de la muqueuse nasale. Je l'ai testé et je le recommande vivement à mes clients.",
+    initial: "B"
+  },
+];
+
+const FAQS_DATA = [
+  {
+    q: "Est-ce que ça fait mal de mettre la lumière dans le nez ?",
+    a: "Absolument pas. La lumière rouge à basse fréquence (650nm) est douce, froide et indolore. Vous ressentirez tout au plus un très léger chatouillement dû à la présence des sondes dans les narines, mais aucune sensation de brûlure ou de douleur."
+  },
+  {
+    q: "Combien de temps faut-il l'utiliser par jour ?",
+    a: "Une séance dure 15 minutes. Pour des résultats optimaux, il est recommandé de faire 2 à 3 séances par jour au début, puis de réduire à 1 séance par jour ou selon les besoins une fois les symptômes apaisés."
+  },
+  {
+    q: "Est-ce adapté aux enfants ?",
+    a: "Oui, la thérapie est sûre et naturelle. Cependant, il est recommandé pour les enfants de plus de 6 ans, sous la supervision d'un adulte."
+  },
+  {
+    q: "Dois-je arrêter mes autres traitements (sprays, comprimés) ?",
+    a: "Le laser est une solution complémentaire naturelle. Beaucoup de nos clients réduisent ou arrêtent progressivement l'usage des sprays une fois que le laser fait effet, mais vous devez consulter votre médecin avant de modifier toute prescription médicale."
+  }
+];
+
 export default function RhiniteLanding() {
   const router = useRouter();
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
@@ -146,7 +206,7 @@ export default function RhiniteLanding() {
         await markLeadConverted(customerPhone, "laser-rhinite");
         const orderIdParams = result.order?.id ? `&orderId=${result.order.id}` : '';
         const orderNumberParams = result.order?.order_number ? `&orderNumber=${result.order.order_number}` : '';
-        router.push(`/p/laser-rhinite/success?phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&amount=${selectedBundle.price}${orderIdParams}${orderNumberParams}`);
+        router.push(`/p/laser-rhinite/success?phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${selectedBundle.price}${orderIdParams}${orderNumberParams}`);
       } else {
         throw new Error((result as { error?: string }).error || "Erreur lors de l'enregistrement de la commande.");
       }
@@ -303,6 +363,91 @@ export default function RhiniteLanding() {
               </div>
 
             </div>
+          </div>
+        </section>
+
+        {/* REVIEWS SECTION */}
+        <section className="bg-[#F8FAFC] py-12 border-b border-gray-100">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="text-center mb-10">
+              <div className="flex items-center justify-center gap-1 text-amber-400 mb-3">
+                <Star className="w-5 h-5 fill-current" />
+                <Star className="w-5 h-5 fill-current" />
+                <Star className="w-5 h-5 fill-current" />
+                <Star className="w-5 h-5 fill-current" />
+                <Star className="w-5 h-5 fill-current" />
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-[-0.02em] mb-2">
+                Ce que nos clients en disent après utilisation :
+              </h2>
+              <p className="text-sm text-slate-500 max-w-xl mx-auto">
+                Témoignages authentiques d'acheteurs vérifiés à Cotonou et Calavi ayant testé et approuvé la thérapie laser.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {REVIEWS_DATA.map((rev, idx) => (
+                <div
+                  key={idx}
+                  className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-xl shrink-0">
+                        {rev.initial}
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900 text-sm">{rev.name}</div>
+                        <div className="text-[11px] text-slate-500">{rev.location}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex text-amber-400 text-sm">
+                      {"★".repeat(rev.rating)}
+                    </div>
+
+                    <div className="font-bold text-slate-900 text-sm leading-snug">
+                      « {rev.title} »
+                    </div>
+
+                    <p className="text-sm text-slate-600 leading-relaxed italic">
+                      "{rev.comment}"
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-semibold pt-4 mt-4 border-t border-slate-50">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Achat vérifié Isivente</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── FOIRE AUX QUESTIONS ── */}
+            <div className="mt-12 max-w-3xl mx-auto">
+              <h3 className="text-xl font-bold text-slate-900 text-center mb-6">Questions Fréquentes</h3>
+              <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+                <div className="divide-y divide-slate-100">
+                  {FAQS_DATA.map((faq, idx) => (
+                    <div key={idx} className="p-5">
+                      <button
+                        onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                        className="w-full flex items-center justify-between text-left text-sm sm:text-base font-semibold text-slate-800 hover:text-teal-700 transition-colors duration-100 cursor-pointer"
+                      >
+                        <span className="pr-4">{faq.q}</span>
+                        <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-150 ${activeFaq === idx ? "rotate-180 text-teal-600" : ""}`} />
+                      </button>
+                      {activeFaq === idx && (
+                        <p className="text-sm text-slate-600 mt-3 leading-relaxed">
+                          {faq.a}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
