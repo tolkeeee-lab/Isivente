@@ -61,12 +61,12 @@ export async function GET(req: NextRequest) {
       message: `Email de test envoyé avec succès à ${recipientEmail} !`,
       messageId: info.messageId,
     });
-  } catch (err: any) {
-    console.error("Test email error:", err?.message);
+  } catch (err: unknown) {
+    console.error("Test email error:", (err as Error)?.message);
     return NextResponse.json({
       success: false,
       error: "Erreur lors de la connexion au serveur Gmail SMTP.",
-      details: isDev ? err?.message : undefined,
+      details: isDev ? (err as Error)?.message : undefined,
     }, { status: 500 });
   }
 }

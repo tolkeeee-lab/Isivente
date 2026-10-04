@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
       } else {
         results.errors.push({ source: "pixel", error: pixelData });
       }
-    } catch (e: any) {
-      results.errors.push({ source: "pixel_catch", error: e.message });
+    } catch (e: unknown) {
+      results.errors.push({ source: "pixel_catch", error: (e as Error).message });
     }
 
     // 2. Tenter de récupérer les statistiques publicitaires (Ad Accounts & Insights / Clics)
@@ -51,8 +51,8 @@ export async function GET(req: NextRequest) {
       } else {
         results.errors.push({ source: "adaccounts", error: meData });
       }
-    } catch (e: any) {
-      results.errors.push({ source: "adaccounts_catch", error: e.message });
+    } catch (e: unknown) {
+      results.errors.push({ source: "adaccounts_catch", error: (e as Error).message });
     }
 
     // 3. Tenter via /v19.0/{pixel_id}/stats
@@ -64,16 +64,16 @@ export async function GET(req: NextRequest) {
       if (statsRes.ok) {
         results.eventStats = statsData;
       }
-    } catch (e: any) {}
+    } catch (e: unknown) {}
 
     return NextResponse.json({
       success: true,
       data: results,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json({
       success: false,
-      error: err.message,
+      error: (err as Error).message,
     }, { status: 500 });
   }
 }

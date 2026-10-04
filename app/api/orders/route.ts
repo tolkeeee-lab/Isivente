@@ -40,7 +40,7 @@ export async function GET() {
       .limit(1000);
 
     if (error) {
-      console.error("Supabase GET error:", error?.message);
+      console.error("Supabase GET error:", (error as Error)?.message);
       return NextResponse.json({ success: false, error: "Impossible de récupérer les commandes", orders: [] }, { status: 500 });
     }
 
@@ -49,8 +49,8 @@ export async function GET() {
       orders: data || [],
       count: data ? data.length : 0,
     });
-  } catch (err: any) {
-    console.error("Orders GET route error:", err?.message);
+  } catch (err: unknown) {
+    console.error("Orders GET route error:", (err as Error)?.message);
     return NextResponse.json({ success: false, error: "Erreur serveur lors de la récupération des commandes", orders: [] }, { status: 500 });
   }
 }
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
-      console.error("Supabase POST error:", error?.message);
+      console.error("Supabase POST error:", (error as Error)?.message);
       return NextResponse.json({ success: false, error: "Erreur lors de l'enregistrement de la commande" }, { status: 500 });
     }
 
@@ -145,8 +145,8 @@ export async function POST(req: NextRequest) {
     // Déclencher l'alerte email & mobile immédiatement de manière attendue (AWAITED)
     try {
       await sendOrderNotification(savedOrder);
-    } catch (e: any) {
-      console.error("Server notify error:", e?.message);
+    } catch (e: unknown) {
+      console.error("Server notify error:", (e as Error)?.message);
     }
 
     // Déclencher l'événement d'achat serveur Meta Conversions API (CAPI)
@@ -188,9 +188,9 @@ export async function POST(req: NextRequest) {
           order_id: orderNumberStr,
           num_items: quantity,
         },
-      }).catch(e => console.error("Meta CAPI Purchase error:", e?.message));
-    } catch (e: any) {
-      console.error("Meta CAPI trigger error:", e?.message);
+      }).catch(e => console.error("Meta CAPI Purchase error:", (e as Error)?.message));
+    } catch (e: unknown) {
+      console.error("Meta CAPI trigger error:", (e as Error)?.message);
     }
 
     return NextResponse.json({
@@ -198,8 +198,8 @@ export async function POST(req: NextRequest) {
       order: savedOrder,
       message: "Commande enregistrée avec succès",
     });
-  } catch (error: any) {
-    console.error("Orders POST error:", error?.message);
+  } catch (error: unknown) {
+    console.error("Orders POST error:", (error as Error)?.message);
     return NextResponse.json(
       { success: false, error: "Erreur de traitement de la commande" },
       { status: 400 }
@@ -235,13 +235,13 @@ export async function PATCH(req: NextRequest) {
 
     const { error } = await query;
     if (error) {
-      console.error("Supabase PATCH error:", error?.message);
+      console.error("Supabase PATCH error:", (error as Error)?.message);
       return NextResponse.json({ success: false, error: "Erreur lors de la mise à jour du statut" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, id: rawId, status: rawStatus });
-  } catch (error: any) {
-    console.error("Orders PATCH error:", error?.message);
+  } catch (error: unknown) {
+    console.error("Orders PATCH error:", (error as Error)?.message);
     return NextResponse.json({ success: false, error: "Erreur interne" }, { status: 500 });
   }
 }
@@ -281,8 +281,8 @@ export async function DELETE(req: NextRequest) {
     }
 
     return NextResponse.json({ success: false, error: "ID valide ou autorisation requise" }, { status: 400 });
-  } catch (error: any) {
-    console.error("Orders DELETE error:", error?.message);
+  } catch (error: unknown) {
+    console.error("Orders DELETE error:", (error as Error)?.message);
     return NextResponse.json({ success: false, error: "Erreur lors de la suppression" }, { status: 500 });
   }
 }

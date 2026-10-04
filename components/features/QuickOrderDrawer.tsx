@@ -197,7 +197,7 @@ export default function QuickOrderDrawer({
 
       playOrderSound();
       setOrderSuccess(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erreur commande express:", err);
       setErrorMsg("Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
     } finally {

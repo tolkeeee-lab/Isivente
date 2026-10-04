@@ -71,8 +71,8 @@ export async function POST(req: NextRequest) {
       path: `/images/${baseName}`,
       size: buffer.length,
     });
-  } catch (error: any) {
-    console.error("Erreur save-carrousel:", error?.message);
+  } catch (error: unknown) {
+    console.error("Erreur save-carrousel:", (error as Error)?.message);
     return NextResponse.json({ error: "Erreur lors de l'enregistrement de l'image" }, { status: 500 });
   }
 }

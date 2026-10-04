@@ -30,10 +30,10 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ success: false, error: "Action non supportée" }, { status: 400 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Higgsfield GET error:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Erreur lors de l'appel Higgsfield" },
+      { success: false, error: (err as Error).message || "Erreur lors de l'appel Higgsfield" },
       { status: 500 }
     );
   }
@@ -69,10 +69,10 @@ export async function POST(req: NextRequest) {
 
     // 4. Sinon renvoyer l'état en attente pour polling client
     return NextResponse.json({ success: true, ...initialStatus });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Higgsfield POST error:", err);
     return NextResponse.json(
-      { success: false, error: err.message || "Erreur lors de la génération de l'image" },
+      { success: false, error: (err as Error).message || "Erreur lors de la génération de l'image" },
       { status: 500 }
     );
   }

@@ -29,13 +29,13 @@ export async function GET() {
       .limit(1000);
 
     if (error) {
-      console.error("Leads GET error:", error?.message);
+      console.error("Leads GET error:", (error as Error)?.message);
       return NextResponse.json({ success: true, leads: [] });
     }
 
     return NextResponse.json({ success: true, leads: data || [] });
-  } catch (err: any) {
-    console.error("Leads GET catch:", err?.message);
+  } catch (err: unknown) {
+    console.error("Leads GET catch:", (err as Error)?.message);
     return NextResponse.json({ success: true, leads: [] });
   }
 }
@@ -123,19 +123,19 @@ export async function POST(req: Request) {
       .select();
 
     if (error) {
-      console.warn("Supabase lead upsert warning:", error?.message);
+      console.warn("Supabase lead upsert warning:", (error as Error)?.message);
     }
 
     // Si c'est un nouveau prospect détecté, envoyer l'alerte email immédiatement
     if (!existing && currentStatus === "abandoned") {
       sendAbandonedLeadNotification(payload).catch((err) =>
-        console.error("Lead notification error:", err?.message)
+        console.error("Lead notification error:", (err as Error)?.message)
       );
     }
 
     return NextResponse.json({ success: true, lead: data?.[0] || payload });
-  } catch (err: any) {
-    console.error("Leads POST catch:", err?.message);
+  } catch (err: unknown) {
+    console.error("Leads POST catch:", (err as Error)?.message);
     return NextResponse.json({ success: false, error: "Erreur serveur lors de la capture" }, { status: 500 });
   }
 }
@@ -163,13 +163,13 @@ export async function PATCH(req: Request) {
       .eq("id", safeId);
 
     if (error) {
-      console.error("Leads PATCH error:", error?.message);
+      console.error("Leads PATCH error:", (error as Error)?.message);
       return NextResponse.json({ error: "Erreur lors de la mise à jour" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    console.error("Leads PATCH catch:", err?.message);
+  } catch (err: unknown) {
+    console.error("Leads PATCH catch:", (err as Error)?.message);
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
   }
 }
@@ -187,8 +187,8 @@ export async function DELETE(req: Request) {
     const supabase = getSupabase();
     await supabase.from("leads").delete().eq("id", id);
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    console.error("Leads DELETE catch:", err?.message);
+  } catch (err: unknown) {
+    console.error("Leads DELETE catch:", (err as Error)?.message);
     return NextResponse.json({ error: "Erreur lors de la suppression" }, { status: 500 });
   }
 }

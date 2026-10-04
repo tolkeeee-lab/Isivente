@@ -98,8 +98,8 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
       saveLocalOrders([saved, ...current.filter(o => o.order_number !== saved.order_number)]);
       return saved;
     }
-  } catch (err: any) {
-    console.warn('API orders non disponible ou timeout, bascule sur Supabase direct:', err?.message);
+  } catch (err: unknown) {
+    console.warn('API orders non disponible ou timeout, bascule sur Supabase direct:', (err as Error)?.message);
   }
 
   // 2. Fallback direct Supabase
@@ -115,8 +115,8 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
       saveLocalOrders([data, ...current.filter(o => o.order_number !== data.order_number)]);
       return data;
     }
-  } catch (supErr: any) {
-    console.warn('Supabase direct fallback indisponible:', supErr?.message);
+  } catch (supErr: unknown) {
+    console.warn('Supabase direct fallback indisponible:', (supErr as Error)?.message);
   }
 
   // 3. Fallback ultime local (zéro perte de commande)

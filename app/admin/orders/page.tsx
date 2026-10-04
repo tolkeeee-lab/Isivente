@@ -216,8 +216,8 @@ export default function OrdersPage() {
         notes: "",
       });
       fetchOrders();
-    } catch (err: any) {
-      alert("Erreur lors de l'enregistrement : " + err.message);
+    } catch (err: unknown) {
+      alert("Erreur lors de l'enregistrement : " + (err as Error).message);
     } finally {
       setManualLoading(false);
     }

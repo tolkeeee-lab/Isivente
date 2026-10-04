@@ -67,10 +67,10 @@ export async function POST(req: NextRequest) {
         meta_response: result,
       }, { status: 400 });
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json({
       success: false,
-      error: err.message,
+      error: (err as Error).message,
     }, { status: 500 });
   }
 }

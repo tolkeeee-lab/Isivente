@@ -204,9 +204,9 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
 
       const successUrl = `/p/umei/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Order error:", err);
-      setOrderError(err?.message || "Une erreur est survenue lors de l'enregistrement de votre commande.");
+      setOrderError((err as Error)?.message || "Une erreur est survenue lors de l'enregistrement de votre commande.");
       setIsSubmitting(false);
     }
   };

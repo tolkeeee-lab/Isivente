@@ -21,8 +21,8 @@ export async function POST(req: NextRequest) {
 
     const results = await sendOrderNotification(order);
     return NextResponse.json({ success: true, results });
-  } catch (err: any) {
-    console.error("Notification webhook error:", err?.message);
+  } catch (err: unknown) {
+    console.error("Notification webhook error:", (err as Error)?.message);
     return NextResponse.json({ success: false, error: "Erreur lors de l'envoi de la notification" }, { status: 500 });
   }
 }

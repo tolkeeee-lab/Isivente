@@ -41,10 +41,10 @@ export async function POST(req: NextRequest) {
       success: true,
       reply: agentReply,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("API agent/chat error:", error);
     return NextResponse.json(
-      { error: error?.message || "Erreur interne de l'agent" },
+      { error: (error as Error)?.message || "Erreur interne de l'agent" },
       { status: 500 }
     );
   }

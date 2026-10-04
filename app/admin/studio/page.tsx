@@ -210,9 +210,9 @@ export default function MarketingStudioPage() {
       } else {
         throw new Error("Aucune image retournée par l'API.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erreur génération:", err);
-      setGenerationError(err.message || "Une erreur est survenue lors de la génération.");
+      setGenerationError((err as Error).message || "Une erreur est survenue lors de la génération.");
     } finally {
       setIsGenerating(false);
     }

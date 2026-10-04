@@ -111,8 +111,8 @@ export default function ProspectsPage() {
         prev.map((l) => (l.id === lead.id ? { ...l, status: "converted" } : l))
       );
       alert("Commande créée avec succès ! Elle est désormais visible dans la liste des Commandes.");
-    } catch (err: any) {
-      alert("Erreur lors de la création de la commande : " + err.message);
+    } catch (err: unknown) {
+      alert("Erreur lors de la création de la commande : " + (err as Error).message);
     }
     setActionLoadingId(null);
   };
