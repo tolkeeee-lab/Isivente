@@ -154,6 +154,14 @@ export default function SerumEclatLanding() {
   const handleNextImage = () => setCurrentHeroImage((p) => (p + 1) % heroImages.length);
   const handlePrevImage = () => setCurrentHeroImage((p) => (p - 1 + heroImages.length) % heroImages.length);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
+
+
   // Tracking
   useEffect(() => {
     trackViewContent({
@@ -371,6 +379,37 @@ export default function SerumEclatLanding() {
           </div>
         </section>
 
+
+        {/* COMMENT CA MARCHE */}
+        <section className="px-5 py-10 bg-orange-50 border-y border-orange-100">
+          <div className="text-center mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+              Une routine simple pour un éclat absolu
+            </h2>
+          </div>
+
+          <div className="max-w-sm mx-auto space-y-4">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-orange-100 flex gap-4 items-center">
+              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
+                1
+              </div>
+              <p className="text-sm text-slate-700 font-medium">Nettoyez votre visage et séchez-le délicatement.</p>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-orange-100 flex gap-4 items-center">
+              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
+                2
+              </div>
+              <p className="text-sm text-slate-700 font-medium">Appliquez 3 à 5 gouttes de sérum au creux de votre main.</p>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-orange-100 flex gap-4 items-center">
+              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
+                3
+              </div>
+              <p className="text-sm text-slate-700 font-medium">Massez doucement sur votre visage jusqu'à absorption complète.</p>
+            </div>
+          </div>
+        </section>
+
         {/* ── BANNIÈRE PROMOTIONNELLE & RAPPEL PRIX ── */}
         <div className="mx-4 my-6 bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 rounded-3xl p-6 text-white text-center flex flex-col sm:flex-row items-center justify-between gap-5 shadow-lg shadow-orange-900/10">
           <div className="space-y-1.5 w-full">
@@ -406,44 +445,18 @@ export default function SerumEclatLanding() {
             </h2>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-8 max-w-sm mx-auto">
             {CUSTOMER_REVIEWS.map((rev, idx) => (
-              <div
-                key={idx}
-                className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm"
-              >
+              <div key={idx} className="relative w-full shadow-lg rounded-2xl overflow-hidden border border-slate-100">
                 {rev.image && (
-                   <div className="mb-4 rounded-xl overflow-hidden shadow-sm relative aspect-square max-w-sm mx-auto">
-                     <Image
-                       src={rev.image}
-                       alt={`Résultat ${rev.name}`}
-                       fill
-                       className="object-cover"
-                     />
-                   </div>
+                  <Image
+                    src={rev.image}
+                    alt={`Résultat ${rev.name}`}
+                    width={500}
+                    height={500}
+                    className="w-full h-auto object-cover block"
+                  />
                 )}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex text-amber-400">
-                      {[...Array(rev.rating)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
-                      ))}
-                    </div>
-                    <span className="text-[10px] text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full font-semibold border border-orange-100">
-                      {rev.date}
-                    </span>
-                  </div>
-                  <h4 className="font-bold text-sm text-slate-900">{rev.title}</h4>
-                  <p className="text-sm text-slate-600 leading-relaxed italic">"{rev.comment}"</p>
-                </div>
-
-                <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-slate-900">{rev.name}</span>
-                  <div className="flex items-center gap-1 text-emerald-600 font-medium">
-                     <CheckCircle2 className="w-3 h-3" />
-                     <span>Acheteur vérifié - {rev.location}</span>
-                  </div>
-                </div>
               </div>
             ))}
           </div>
