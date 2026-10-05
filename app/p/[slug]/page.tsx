@@ -14,6 +14,7 @@ import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
 import MatelasLanding from "@/components/features/MatelasLanding";
 import VoitureCameraLanding from "@/components/features/VoitureCameraLanding";
 import RhiniteLanding from "@/components/features/RhiniteLanding";
+import SerumEclatLanding from "@/components/features/SerumEclatLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -47,6 +48,8 @@ export function generateStaticParams() {
     { slug: "brosse" },
     { slug: "brosse-spray" },
     { slug: "yufan" },
+    { slug: "serum-eclat" },
+    { slug: "serum-curcuma" },
   ];
 }
 
@@ -70,6 +73,9 @@ export default async function ProductPage({ params }: PageProps) {
 
   const renderContent = () => {
     switch (normalizedSlug) {
+      case "serum-eclat":
+      case "serum-curcuma":
+        return <SerumEclatLanding />;
       case "laser-rhinite":
       case "rhinite":
         return <RhiniteLanding />;

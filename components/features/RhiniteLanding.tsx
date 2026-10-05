@@ -213,7 +213,7 @@ export default function RhiniteLanding() {
       if (result && result.success) {
         await markLeadConverted(customerPhone, "laser-rhinite");
         const orderIdParams = result.order?.id ? `&orderId=${result.order.id}` : '';
-        const orderNumberParams = result.order?.order_number ? `&orderNumber=${result.order.order_number}` : '';
+        const orderNumberParams = result.order?.order_number ? `&order=${result.order.order_number}` : '';
         router.push(`/p/laser-rhinite/success?phone=${encodeURIComponent(customerPhone)}&name=${encodeURIComponent(customerName)}&total=${selectedBundle.price}${orderIdParams}${orderNumberParams}`);
       } else {
         throw new Error((result as { error?: string }).error || "Erreur lors de l'enregistrement de la commande.");
