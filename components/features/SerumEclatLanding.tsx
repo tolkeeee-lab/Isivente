@@ -62,40 +62,20 @@ const BUNDLES: BundleOption[] = [
 
 interface CustomerReview {
   name: string;
-  location: string;
-  rating: number;
-  comment: string;
-  date: string;
-  title: string;
   image?: string;
 }
 
 const CUSTOMER_REVIEWS: CustomerReview[] = [
   {
     name: "Aïcha M.",
-    location: "Cotonou",
-    rating: 5,
-    title: "Le glow est incroyable",
-    comment: "Mes taches d'acné ont presque disparu en 3 semaines. L'effet glowy est immédiat après l'application. Je recommande à 100%.",
-    date: "Il y a 2 jours",
     image: "/images/serum-eclat/avis-1.png"
   },
   {
     name: "Sarah T.",
-    location: "Abomey-Calavi",
-    rating: 5,
-    title: "Vraiment efficace",
-    comment: "Le meilleur sérum pour l'hyperpigmentation. L'acide kojique fait vraiment la différence sans irriter ma peau.",
-    date: "Il y a 1 semaine",
     image: "/images/serum-eclat/avis-2.png"
   },
   {
     name: "Paméla D.",
-    location: "Porto-Novo",
-    rating: 5,
-    title: "Teint unifié",
-    comment: "Mon teint est beaucoup plus lumineux et unifié. J'ai pris la cure complète (2 flacons) et je ne regrette pas.",
-    date: "Il y a 2 semaines",
     image: "/images/serum-eclat/avis-3.png"
   }
 ];
@@ -160,7 +140,6 @@ export default function SerumEclatLanding() {
     }, 3500);
     return () => clearInterval(timer);
   }, []);
-
 
   // Tracking
   useEffect(() => {
@@ -328,15 +307,67 @@ export default function SerumEclatLanding() {
           </div>
         </section>
 
-        {/* ORDER FORM SECTION */}
-        <div id="commander" className="py-6 px-4 scroll-mt-4">
+        {/* ORDER FORM SECTION (MOVED UP) */}
+        <div id="commander" className="py-8 px-4 scroll-mt-4 bg-orange-50/50 border-y border-orange-100/50 mb-6">
           <div className="text-center mb-6">
              <h2 className="text-2xl font-black text-slate-900">Finaliser ma commande</h2>
              <p className="text-sm text-slate-500 mt-1">Paiement à la livraison, 100% sécurisé.</p>
           </div>
+          <UmeiStyleOrderSection
+            productSlug={PRODUCT_SLUG}
+            productTitle="Sérum Éclat au Curcuma & Acide Kojique"
+            productImage={heroImages[0]}
+            bundles={BUNDLES}
+            selectedBundle={selectedBundle}
+            onSelectBundle={setSelectedBundle}
+            customerName={customerName}
+            setCustomerName={setCustomerName}
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            address={address}
+            setAddress={setAddress}
+            city={city}
+            setCity={setCity}
+            reservationDate={reservationDate}
+            setReservationDate={setReservationDate}
+            isSubmitting={isSubmitting}
+            onSubmit={handleOrderSubmit}
+            accentColor={PRIMARY_COLOR}
+          />
+        </div>
+
+        {/* COMMENT CA MARCHE */}
+        <section className="px-5 py-10 bg-white">
+          <div className="text-center mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+              Une routine simple pour un éclat absolu
+            </h2>
+          </div>
+
+          <div className="max-w-sm mx-auto space-y-4">
+            <div className="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center">
+              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
+                1
+              </div>
+              <p className="text-sm text-slate-700 font-medium">Nettoyez votre visage et séchez-le délicatement.</p>
+            </div>
+            <div className="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center">
+              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
+                2
+              </div>
+              <p className="text-sm text-slate-700 font-medium">Appliquez 3 à 5 gouttes de sérum au creux de votre main.</p>
+            </div>
+            <div className="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-center">
+              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
+                3
+              </div>
+              <p className="text-sm text-slate-700 font-medium">Massez doucement sur votre visage jusqu'à absorption complète.</p>
+            </div>
+          </div>
+        </section>
 
         {/* POURQUOI CHOISIR CE SÉRUM */}
-        <section className="px-5 py-10 bg-white">
+        <section className="px-5 py-10 bg-white border-t border-slate-100">
           <div className="text-center mb-8">
             <span className="text-[11px] font-bold text-orange-600 uppercase tracking-wider bg-orange-50 px-3 py-1 rounded-full">Secret de beauté</span>
             <h2 className="text-xl sm:text-2xl font-bold mt-3 text-slate-900 leading-tight">
@@ -386,58 +417,6 @@ export default function SerumEclatLanding() {
           </div>
         </section>
 
-
-        {/* COMMENT CA MARCHE */}
-        <section className="px-5 py-10 bg-orange-50 border-y border-orange-100">
-          <div className="text-center mb-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
-              Une routine simple pour un éclat absolu
-            </h2>
-          </div>
-
-          <div className="max-w-sm mx-auto space-y-4">
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-orange-100 flex gap-4 items-center">
-              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
-                1
-              </div>
-              <p className="text-sm text-slate-700 font-medium">Nettoyez votre visage et séchez-le délicatement.</p>
-            </div>
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-orange-100 flex gap-4 items-center">
-              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
-                2
-              </div>
-              <p className="text-sm text-slate-700 font-medium">Appliquez 3 à 5 gouttes de sérum au creux de votre main.</p>
-            </div>
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-orange-100 flex gap-4 items-center">
-              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center shrink-0">
-                3
-              </div>
-              <p className="text-sm text-slate-700 font-medium">Massez doucement sur votre visage jusqu'à absorption complète.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── BANNIÈRE PROMOTIONNELLE & RAPPEL PRIX ── */}
-        <div className="mx-4 my-6 bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 rounded-3xl p-6 text-white text-center flex flex-col sm:flex-row items-center justify-between gap-5 shadow-lg shadow-orange-900/10">
-          <div className="space-y-1.5 w-full">
-            <span className="bg-white/20 backdrop-blur-md text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-              Offre Spéciale Isivente
-            </span>
-            <h4 className="text-xl sm:text-2xl font-extrabold tracking-tight mt-1">
-              Testez le Sérum Éclat
-            </h4>
-            <p className="text-orange-100 text-xs sm:text-sm mt-1">
-              Seulement <strong className="text-white font-mono text-base">9 900 FCFA</strong> (Cure initiale).
-            </p>
-            <button
-              onClick={scrollToOrder}
-              className="mt-4 w-full px-6 py-3.5 bg-white text-orange-700 font-bold text-sm rounded-xl hover:bg-orange-50 active:scale-95 transition-all shadow-md cursor-pointer"
-            >
-              Voir toutes les offres promotionnelles
-            </button>
-          </div>
-        </div>
-
         {/* SECTION AVIS CLIENTS */}
         <section className="bg-slate-50 px-5 py-10 border-y border-slate-100">
           <div className="text-center mb-8">
@@ -454,7 +433,7 @@ export default function SerumEclatLanding() {
 
           <div className="space-y-8 max-w-sm mx-auto">
             {CUSTOMER_REVIEWS.map((rev, idx) => (
-              <div key={idx} className="relative w-full shadow-lg rounded-2xl overflow-hidden border border-slate-100">
+              <div key={idx} className="relative w-full shadow-lg rounded-2xl overflow-hidden border border-slate-100 bg-white">
                 {rev.image && (
                   <Image
                     src={rev.image}
@@ -468,30 +447,6 @@ export default function SerumEclatLanding() {
             ))}
           </div>
         </section>
-
-
-          <UmeiStyleOrderSection
-            productSlug={PRODUCT_SLUG}
-            productTitle="Sérum Éclat au Curcuma & Acide Kojique"
-            productImage={heroImages[0]}
-            bundles={BUNDLES}
-            selectedBundle={selectedBundle}
-            onSelectBundle={setSelectedBundle}
-            customerName={customerName}
-            setCustomerName={setCustomerName}
-            customerPhone={customerPhone}
-            setCustomerPhone={setCustomerPhone}
-            address={address}
-            setAddress={setAddress}
-            city={city}
-            setCity={setCity}
-            reservationDate={reservationDate}
-            setReservationDate={setReservationDate}
-            isSubmitting={isSubmitting}
-            onSubmit={handleOrderSubmit}
-            accentColor={PRIMARY_COLOR}
-          />
-        </div>
 
         {/* FAQ SECTION */}
         <section className="px-5 py-10 bg-white">
