@@ -45,6 +45,14 @@ export interface FAQ {
   a: string;
 }
 
+
+export interface ProductDescriptionBlock {
+  title: string;
+  text: string;
+  image?: string;
+  imagePosition?: "left" | "right" | "top";
+}
+
 export interface LandingTemplateProps {
   productSlug: string;
   productTitle: string;
@@ -56,7 +64,9 @@ export interface LandingTemplateProps {
   heroImages: string[];
   bundles: BundleOption[];
 
+
   benefits: Benefit[];
+  productDescriptions?: ProductDescriptionBlock[];
   howItWorksSteps?: Step[];
   testimonials: TestimonialImage[];
   faqs: FAQ[];
@@ -77,7 +87,9 @@ export default function UniversalLandingTemplate({
   colorTheme,
   heroImages,
   bundles,
+
   benefits,
+  productDescriptions,
   howItWorksSteps,
   testimonials,
   faqs,
@@ -429,6 +441,37 @@ export default function UniversalLandingTemplate({
                   </div>
                 );
               })}
+            </div>
+          </section>
+        )}
+
+
+        {/* PRODUCT DESCRIPTIONS SECTION */}
+        {productDescriptions && productDescriptions.length > 0 && (
+          <section className="px-5 py-10 bg-white">
+            <div className="max-w-xl mx-auto space-y-12">
+              {productDescriptions.map((desc, idx) => (
+                <div key={idx} className={`flex flex-col ${desc.imagePosition === 'left' ? 'sm:flex-row-reverse' : 'sm:flex-row'} gap-6 items-center`}>
+                  <div className="flex-1 space-y-3">
+                    <h3 className="text-xl font-bold text-slate-900 leading-tight">
+                      {desc.title}
+                    </h3>
+                    <div className="text-sm text-slate-600 leading-relaxed space-y-2 whitespace-pre-line">
+                      {desc.text}
+                    </div>
+                  </div>
+                  {desc.image && (
+                    <div className="w-full sm:w-1/2 relative aspect-square rounded-2xl overflow-hidden shadow-lg border border-slate-100 flex-shrink-0">
+                      <Image
+                        src={desc.image}
+                        alt={desc.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </section>
         )}

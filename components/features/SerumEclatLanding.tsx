@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import UniversalLandingTemplate, { Benefit, FAQ, Step, TestimonialImage } from "@/components/templates/UniversalLandingTemplate";
+import UniversalLandingTemplate, { Benefit, FAQ, Step, TestimonialImage, ProductDescriptionBlock } from "@/components/templates/UniversalLandingTemplate";
 import { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 
 const BUNDLES: BundleOption[] = [
@@ -93,6 +93,28 @@ const HOW_IT_WORKS: Step[] = [
   { number: 3, text: "Massez doucement sur votre visage jusqu'à absorption complète." }
 ];
 
+
+const DESCRIPTIONS: ProductDescriptionBlock[] = [
+  {
+    title: "Le secret coréen pour une peau zéro défaut",
+    text: "La K-Beauty (beauté coréenne) est réputée mondialement pour ses formules douces mais redoutablement efficaces. Notre Sérum Éclat s'inspire directement de cette philosophie : pas de produits chimiques agressifs, uniquement des extraits naturels qui respectent la barrière cutanée tout en offrant des résultats visibles.\n\nFini les crèmes éclaircissantes toxiques qui abîment la peau. Place à un teint naturellement lumineux et unifié, sans danger.",
+    image: "/images/serum-eclat/eclat-naturel.png",
+    imagePosition: "right"
+  },
+  {
+    title: "Curcuma & Acide Kojique : Le duo anti-taches ultime",
+    text: "L'hyperpigmentation et les taches brunes sont souvent causées par le soleil, l'acné ou les hormones. Pour les combattre, nous avons réuni deux actifs surpuissants :\n\n✨ L'Acide Kojique (issu de la fermentation du riz au Japon) bloque la production excessive de mélanine.\n🌿 L'extrait de Curcuma purifie, apaise les inflammations et donne ce fameux 'Glow' doré immédiat.",
+    image: "/images/serum-eclat/serum-kbeauty.png",
+    imagePosition: "left"
+  },
+  {
+    title: "Une texture luxueuse, légère et non-grasse",
+    text: "La plupart des sérums traitants sont lourds, collants et bouchent les pores. Notre Sérum Éclat possède une texture aqueuse ultra-légère qui pénètre instantanément au cœur de l'épiderme.\n\nIl ne laisse aucun fini gras, ce qui le rend parfait pour être utilisé sous votre maquillage ou votre crème solaire en journée, et idéal pour la routine du soir.",
+    image: "/images/serum-eclat/texture.png",
+    imagePosition: "right"
+  }
+];
+
 const HERO_IMAGES = [
   "/images/serum-eclat/serum-main.png",
   "/images/serum-eclat/serum-luxe-dore.png",
@@ -111,7 +133,8 @@ export default function SerumEclatLanding() {
       colorTheme="orange"
       heroImages={HERO_IMAGES}
       bundles={BUNDLES}
-      benefits={BENEFITS}
+            benefits={BENEFITS}
+      productDescriptions={DESCRIPTIONS}
       howItWorksSteps={HOW_IT_WORKS}
       testimonials={TESTIMONIALS}
       faqs={FAQS}
