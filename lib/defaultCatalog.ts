@@ -47,11 +47,11 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Microscope Numérique Portable HD 1000X",
     shortTitle: "Microscope Numérique HD 1000X",
     slug: "microscope",
-    price: 29900,
+    price: 24900,
     image_url: "/images/microscope-video-cover.webp",
     image: "/images/microscope-video-cover.webp",
     bundles: [
-      { name: "Microscope Numérique Portable HD 1000X", price: 29900 }
+      { name: "Microscope Numérique Portable HD 1000X", price: 24900 }
     ]
   },
   {
@@ -173,6 +173,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     image: "/images/matelas-hero.png",
     bundles: [
       { name: "Matelas Gonflable Ergonomique Autogonflant + Pompe & Oreiller", price: 24900 }
+    ]
+  },
+  {
+    id: "savon-repousse-default",
+    title: "Savon Shampoing Solide Purifiant & Anti-Chute aux Feuilles de Biota & Usma",
+    shortTitle: "Savon Purifiant Feuilles de Biota",
+    slug: "savon-repousse",
+    price: 10750,
+    image_url: "/images/savon-repousse/savon-slide-1.jpg",
+    image: "/images/savon-repousse/savon-slide-1.jpg",
+    headline: "De beaux cheveux commencent par un cuir chevelu sain. 100% Naturel.",
+    bundles: [
+      { name: "Savon Shampoing Solide Feuilles de Biota & Usma", price: 10750 }
     ]
   }
 ];

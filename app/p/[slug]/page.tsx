@@ -13,6 +13,7 @@ import VeilleuseLanding from "@/components/features/VeilleuseLanding";
 import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
 import MatelasLanding from "@/components/features/MatelasLanding";
 import VoitureCameraLanding from "@/components/features/VoitureCameraLanding";
+import SavonRepousseLanding from "@/components/features/SavonRepousseLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -20,6 +21,11 @@ import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export function generateStaticParams() {
   return [
+    { slug: "savon-repousse" },
+    { slug: "savon" },
+    { slug: "savon-usma" },
+    { slug: "savon-nature" },
+    { slug: "biota" },
     { slug: "voiture-camera" },
     { slug: "voiture-telecommandee" },
     { slug: "voiture-rc" },
@@ -69,6 +75,12 @@ export default async function ProductPage({ params }: PageProps) {
 
   const renderContent = () => {
     switch (normalizedSlug) {
+      case "savon-repousse":
+      case "savon":
+      case "savon-usma":
+      case "savon-nature":
+      case "biota":
+        return <SavonRepousseLanding slug="savon-repousse" />;
       case "voiture-camera":
       case "voiture-telecommandee":
       case "voiture-rc":
