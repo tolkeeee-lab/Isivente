@@ -192,13 +192,11 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Sérum Éclat au Curcuma & Acide Kojique",
     shortTitle: "Sérum Éclat Curcuma",
     slug: "serum-eclat",
-    price: 9900,
+    price: 12900,
     image_url: "/images/serum-eclat/serum-main.png",
     image: "/images/serum-eclat/serum-main.png",
     bundles: [
-      { name: "1x Sérum Éclat au Curcuma & Acide Kojique (Cure Simple)", price: 9900 },
-      { name: "2x Sérum Éclat au Curcuma & Acide Kojique (Cure Complète)", price: 17900 },
-      { name: "3x Sérum Éclat au Curcuma & Acide Kojique (Cure Intensive VIP)", price: 24900 }
+      { name: "1x Sérum Éclat au Curcuma & Acide Kojique", price: 12900 }
     ]
   }
 ];

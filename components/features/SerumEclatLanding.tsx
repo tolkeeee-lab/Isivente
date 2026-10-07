@@ -6,35 +6,15 @@ import { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 
 const BUNDLES: BundleOption[] = [
   {
-    id: "1x",
-    name: "1x Sérum Éclat (Cure Initiale)",
-    subtitle: "Idéal pour tester l'efficacité. Durée: ~1 mois.",
+    id: "solo",
+    name: "1x Sérum Éclat au Curcuma & Acide Kojique",
+    subtitle: "Soin Skincare K-Beauty authentique",
     price: 12900,
-    originalPrice: 15000,
-    savings: 2100,
+    originalPrice: 25000,
+    savings: 12100,
     quantity: 1,
-    popular: false,
-  },
-  {
-    id: "2x",
-    name: "2x Sérum Éclat (Cure Complète)",
-    subtitle: "Résultats optimaux sur les taches tenaces.",
-    price: 18000,
-    originalPrice: 30000,
-    savings: 12000,
-    quantity: 2,
     popular: true,
-  },
-  {
-    id: "3x",
-    name: "3x Sérum Éclat (Pack Anti-Taches Pro)",
-    subtitle: "Teint parfait & durable. La meilleure offre.",
-    price: 25000,
-    originalPrice: 45000,
-    savings: 20000,
-    quantity: 3,
-    popular: false,
-  },
+  }
 ];
 
 const TESTIMONIALS: TestimonialImage[] = [
