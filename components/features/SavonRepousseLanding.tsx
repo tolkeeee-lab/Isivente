@@ -46,32 +46,22 @@ const BUNDLES: BundleOption[] = [
 const CAROUSEL_IMAGES = [
   { 
     src: "/images/savon-repousse/savon-slide-1.jpg", 
-    alt: "Savon Shampoing Solide Feuilles de Biota - De beaux cheveux commencent par un cuir chevelu sain",
+    alt: "De beaux cheveux commencent par un cuir chevelu sain - Savon Shampoing Solide Isivente",
     caption: "Formule purifiante 100% naturelle : apaise les irritations, élimine les pellicules et fortifie les racines"
   },
   { 
-    src: "/images/savon-repousse/savon-slide-2.jpg", 
-    alt: "Mode d'emploi simple : faites glisser la barre directement sur le cuir chevelu humide",
-    caption: "Application facile : frottez directement sur vos cheveux mouillés par sections pour créer une mousse dense"
-  },
-  { 
-    src: "/images/savon-repousse/savon-slide-3.jpg", 
-    alt: "Observez la transformation : cuir chevelu assaini, cheveux légers et débarrassés de sébum",
-    caption: "Résultat visible : un cuir chevelu qui respire enfin, sans pellicules et des racines revitalisées"
-  },
-  { 
     src: "/images/savon-repousse/savon-slide-4.jpg", 
-    alt: "Pourquoi cette forme triangulaire ? Prise en main facile sous l'eau et mousse ultra-riche",
-    caption: "Design ergonomique triangulaire : ne glisse pas des mains et produit une émulsion moussante onctueuse"
+    alt: "Pourquoi ce savon a-t-il cette forme triangulaire ? Prise en main facile sous l'eau et mousse ultra-riche",
+    caption: "Forme triangulaire brevetée : prise en main antidérapante, mousse riche et soin ciblé"
   },
   { 
     src: "/images/savon-repousse/savon-slide-5.jpg", 
-    alt: "Soin ciblé et précis 100% naturel aux feuilles de Biota et Usma",
+    alt: "Soin ciblé et précis 100% naturel - Feuilles de Biota et Usma",
     caption: "Sans sulfates ni silicones agressifs : respecte la barrière lipidique naturelle du cuir chevelu"
   },
   { 
     src: "/images/savon-repousse/savon-pack.jpg", 
-    alt: "Savon artisanal présenté dans son étui protecteur triangulaire Nature",
+    alt: "Savon artisanal présenté dans son étui protecteur triangulaire Nature - Isivente",
     caption: "Coffret individuel hermétique avec notice de rituel de soin"
   },
 ];
@@ -261,15 +251,15 @@ export default function SavonRepousseLanding({ slug = "savon-repousse" }: { slug
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs">
         <div className="max-w-4xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-black text-sm shadow-2xs">
-              🌿
-            </div>
+            <span className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm shadow-2xs">
+              IS
+            </span>
             <div>
               <span className="font-extrabold text-slate-900 text-base sm:text-lg tracking-tight block leading-tight">
-                Biota Herbal™
+                Isivente
               </span>
               <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest block">
-                Soin Capillaire Ancestral
+                Boutique Officielle Bénin
               </span>
             </div>
           </div>
@@ -540,46 +530,94 @@ export default function SavonRepousseLanding({ slug = "savon-repousse" }: { slug
           </div>
         </section>
 
-        {/* ── MODE D'EMPLOI EN 3 ÉTAPES ── */}
-        <section className="bg-emerald-900 text-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm">
-          <div className="text-center space-y-2 mb-6 sm:mb-8">
-            <span className="text-xs font-bold text-emerald-300 uppercase tracking-widest block">
-              Rituel Quotidien
+        {/* ── MODE D'EMPLOI EN 3 ÉTAPES (IMAGES OFFICIELLES 1 À 3) ── */}
+        <section className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 p-5 sm:p-8 shadow-xs space-y-6">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
+            <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block">
+              Rituel Quotidien Facile
             </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-white">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
               Comment l'utiliser pour un résultat optimal
             </h2>
+            <p className="text-xs sm:text-sm text-slate-600">
+              3 étapes simples sous la douche pour purifier le cuir chevelu et réveiller la vitalité de vos cheveux.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            <div className="bg-white/10 backdrop-blur-xs p-4 rounded-xl border border-white/15 space-y-2">
-              <div className="w-9 h-9 rounded-full bg-emerald-400 text-emerald-950 font-black text-sm flex items-center justify-center mx-auto">
-                1
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Étape 1 */}
+            <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 flex flex-col justify-between shadow-2xs hover:shadow-xs transition-all">
+              <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+                <Image
+                  src="/images/savon-repousse/etape-1-glisser.jpg"
+                  alt="Étape 1 : Faites glisser la barre sur votre cuir chevelu"
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <h3 className="font-extrabold text-white text-sm sm:text-base">Humidifier & Glisser</h3>
-              <p className="text-xs text-emerald-100/90 leading-relaxed">
-                Mouillez abondamment vos cheveux. Passez la barre triangulaire directement sur le cuir chevelu, par sections.
-              </p>
+              <div className="p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                    1
+                  </span>
+                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                    Glisser sur cuir chevelu humide
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Passez le savon directement sur le cuir chevelu mouillé, par sections, pour déposer les actifs naturels.
+                </p>
+              </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-xs p-4 rounded-xl border border-white/15 space-y-2">
-              <div className="w-9 h-9 rounded-full bg-emerald-400 text-emerald-950 font-black text-sm flex items-center justify-center mx-auto">
-                2
+            {/* Étape 2 */}
+            <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 flex flex-col justify-between shadow-2xs hover:shadow-xs transition-all">
+              <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+                <Image
+                  src="/images/savon-repousse/etape-2-masser.jpg"
+                  alt="Étape 2 : Massez pendant 60 secondes"
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <h3 className="font-extrabold text-white text-sm sm:text-base">Masser 2 Minutes</h3>
-              <p className="text-xs text-emerald-100/90 leading-relaxed">
-                Massez délicatement vos racines avec la pulpe des doigts. Laissez agir la mousse riche pour imprégner les follicules.
-              </p>
+              <div className="p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                    2
+                  </span>
+                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                    Masser pendant 60 secondes
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Laissez les actifs naturels agir en massant doucement. La mousse riche nourrit les racines et déloge le sébum.
+                </p>
+              </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-xs p-4 rounded-xl border border-white/15 space-y-2">
-              <div className="w-9 h-9 rounded-full bg-emerald-400 text-emerald-950 font-black text-sm flex items-center justify-center mx-auto">
-                3
+            {/* Étape 3 */}
+            <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 flex flex-col justify-between shadow-2xs hover:shadow-xs transition-all">
+              <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+                <Image
+                  src="/images/savon-repousse/etape-3-transformation.jpg"
+                  alt="Étape 3 : Observez la transformation"
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <h3 className="font-extrabold text-white text-sm sm:text-base">Rincer & Savourer</h3>
-              <p className="text-xs text-emerald-100/90 leading-relaxed">
-                Rincez à l'eau tiède ou fraîche. Vos cheveux sont instantanément plus légers, soyeux et votre crâne respire la santé.
-              </p>
+              <div className="p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                    3
+                  </span>
+                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                    Observez la transformation
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Rincez à l'eau claire. Cuir chevelu apaisé, cheveux légers, racines fortes et sensation de fraîcheur durable.
+                </p>
+              </div>
             </div>
           </div>
         </section>
