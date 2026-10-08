@@ -72,8 +72,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     shortTitle: "Purificateur EraClean™",
     slug: "eraclean",
     price: 19900,
-    image_url: "/images/eraclean-studio.jpg",
-    image: "/images/eraclean-studio.jpg",
+    image_url: "/images/trozk-glow.jpg",
+    image: "/images/trozk-glow.jpg",
     bundles: [
       { name: "Purificateur d'Air & Anti-Odeurs EraClean™", price: 19900 }
     ]
@@ -84,8 +84,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     shortTitle: "Ventilateur TurboFan™ Max",
     slug: "turbofan",
     price: 16900,
-    image_url: "/images/turbofan-studio.jpg",
-    image: "/images/turbofan-studio.jpg",
+    image_url: "/images/brosse-spray-infographie.jpg",
+    image: "/images/brosse-spray-infographie.jpg",
     bundles: [
       { name: "Ventilateur TurboFan™ Max 8000mAh", price: 16900 }
     ]
@@ -121,8 +121,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     shortTitle: "Veilleuse Projecteur FRIOSZ",
     slug: "veilleuse",
     price: 14900,
-    image_url: "/images/projecteur-hero.jpg",
-    image: "/images/projecteur-hero.jpg",
+    image_url: "/images/tiktok-slide-5.webp",
+    image: "/images/tiktok-slide-5.webp",
     bundles: [
       { name: "Veilleuse Projecteur LED 3D Tactile FRIOSZ", price: 14900 }
     ]
