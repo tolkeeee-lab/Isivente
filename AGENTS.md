@@ -28,7 +28,7 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
 2. **Header Navigation Fond Clair** : Logo ISIVENTE et bouton "Commander" avec ancre vers le formulaire et affichage du prix (ex: `(14 900 F)`).
 3. **Conteneur Principal** : `main` avec un max-width.
 4. **En-tête Titre & Accroche** : Badge introductif, grand titre accrocheur, et sous-titre explicatif.
-5. **Image Hero Unique** : Une seule image mise en avant avec badges circulaires superposés. Pas de texte inutile, pas de carrousel ici (sauf exception demandée).
+5. **Image Hero ou Carrousel** : Une image mise en avant ou un carrousel d'images avec défilement automatique (qui s'arrête au survol). Dans tous les cas, conserver les badges circulaires superposés et éviter le texte inutile en dessous des images.
 6. **3 Badges de Réassurance** : "Livraison Express 24h", "Paiement à la Réception", "Garantie & Test 100%". Placés côte à côte (Pilier 2).
 7. **Formulaire de Commande (COD) - IMMÉDIATEMENT APRÈS** : Utilisation du composant `<UmeiStyleOrderSection />`. C'est **absolument obligatoire** de le placer ici, juste sous le hero et les badges.
 8. **Grille des Bénéfices / Fonctions Majeures** : Section décrivant les 4 avantages principaux avec icônes.
