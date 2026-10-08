@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vidéo Créative - Bain de Bouche & Blanchiment Dents</title>
+  <style>
+    :root {
+      --primary: #ec4899;
+      --primary-gradient: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 32px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(236, 72, 153, 0.15);
+      color: #f472b6;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      border: 1px solid rgba(236, 72, 153, 0.3);
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    .main-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .video-card {
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      background: #000;
+      aspect-ratio: 9/16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-body {
+      padding: 20px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+    }
+    .btn-primary:hover {
+      opacity: 0.95;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(236, 72, 153, 0.35);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .details-panel {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #f472b6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .timeline-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid #ec4899;
+      padding: 10px 14px;
+      border-radius: 0 10px 10px 0;
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+    .timeline-item.part2 {
+      border-left-color: #8b5cf6;
+    }
+    .timestamp {
+      font-weight: 700;
+      color: #f472b6;
+      margin-bottom: 3px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .timeline-item.part2 .timestamp {
+      color: #a78bfa;
+    }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .spec-card {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+    }
+    .spec-label {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .spec-val {
+      font-weight: 700;
+      color: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">✨ Vidéo Créative Haute Conversion</div>
+    <h1>Bain de Bouche & Correcteur Éclat Blancheur</h1>
+    <p class="subtitle">Montage complet avec la voix off française Vivienne Neural & audio original en fond</p>
+  </header>
+
+  <div class="main-container">
+    
+    <!-- Colonne Vidéo -->
+    <div class="video-card">
+      <div class="video-wrapper">
+        <video id="mainVid" controls preload="metadata" playsinline>
+          <source src="/videos/hismile_voixoff_fr.mp4" type="video/mp4">
+          Votre navigateur ne prend pas en charge la balise vidéo.
+        </video>
+      </div>
+      <div class="card-body">
+        <div class="card-title">
+          <span>hismile_voixoff_fr.mp4</span>
+        </div>
+        <div class="card-desc">
+          Vidéo 1 entière (30s) + Vidéo 2 avant/après (10s) = 40 secondes percutantes pour TikTok & Meta Ads.
+        </div>
+        <div class="actions">
+          <a href="/videos/hismile_voixoff_fr.mp4" download class="btn btn-primary">
+            ⬇️ Télécharger MP4
+          </a>
+          <button class="btn btn-secondary" onclick="document.getElementById('mainVid').currentTime = 0; document.getElementById('mainVid').play();">
+            🔄 Rejouer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonne Détails & Script -->
+    <div class="details-panel">
+      <div class="section-title">🎙️ Script & Découpage Visuel Synchronisé</div>
+      
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timestamp">⏱️ 0:00 - 0:03.5 • Hook choc (Flacons)</div>
+          « Attendez... pourquoi personne ne m'a parlé de ce truc avant ?! »
+        </div>
+        <div class="timeline-item">
+          <div class="timestamp">⏱️ 0:03.9 - 0:09.4 • Démonstration (Versement)</div>
+          « C'est le fameux bain de bouche anti-taches qui explose sur TikTok ! Regardez, on en verse un peu dans un verre... »
+        </div>
+        <div class="timeline-item">
+          <div class="timestamp">⏱️ 0:09.8 - 0:13.7 • Formule active (Tartre & Plaque)</div>
+          « Sa formule unique va cibler et dissoudre le tartre et la plaque cachés entre les dents. »
+        </div>
+        <div class="timeline-item">
+          <div class="timestamp">⏱️ 0:14.1 - 0:17.7 • Action (Bain de bouche)</div>
+          « Vous faites juste un bain de bouche pendant quelques secondes... et préparez-vous au choc ! »
+        </div>
+        <div class="timeline-item">
+          <div class="timestamp">⏱️ 0:18.2 - 0:24.0 • Preuve & Dégoût (Résidus sortis)</div>
+          « Regardez ce qui ressort dans le gobelet ! C'est dingue ! Tout ça, c'est ce que votre brosse à dents ne retire jamais. »
+        </div>
+        <div class="timeline-item">
+          <div class="timestamp">⏱️ 0:24.4 - 0:28.1 • Fraîcheur & Transition</div>
+          « La bouche est ultra fraîche, et combiné avec le soin correcteur violet... »
+        </div>
+        <div class="timeline-item part2">
+          <div class="timestamp">⏱️ 0:28.5 - 0:32.2 • Vidéo 2 : Soin Correcteur Violet</div>
+          « La formule violette neutralise immédiatement tous les reflets jaunes en direct ! »
+        </div>
+        <div class="timeline-item part2">
+          <div class="timestamp">⏱️ 0:32.6 - 0:38.0 • Vidéo 2 : Avant/Après & CTA (Fin sans coupure)</div>
+          « Regardez ce avant-après : des dents blanches et éclatantes ! Cliquez vite sur le lien pour commander votre kit ! »
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 24px;">⚙️ Caractéristiques Techniques</div>
+      <div class="specs-grid">
+        <div class="spec-card">
+          <div class="spec-label">Format & Résolution</div>
+          <div class="spec-val">1080 × 1920 (9:16 vertical)</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Durée totale</div>
+          <div class="spec-val">39.98 secondes</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Voix Off</div>
+          <div class="spec-val">Vivienne Multilingual Neural (125% clarté)</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Voix Originale</div>
+          <div class="spec-val" style="color: #ef4444;">Désactivée (100% OFF)</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Audio Actif</div>
+          <div class="spec-val" style="color: #10b981;">Uniquement Voix Off FR Vivienne</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

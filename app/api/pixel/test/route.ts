@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
           },
           custom_data: {
             currency: "XOF",
-            value: 29900,
+            value: 24900,
             content_name: "Microscope Numérique Portable HD 1000X",
             content_type: "product",
           },

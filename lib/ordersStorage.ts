@@ -126,6 +126,23 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
 }
 
 export async function getOrders(): Promise<Order[]> {
+  // 1. Tenter via /api/orders (contourne les bloqueurs de pub et problèmes CORS/WebSocket client)
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch('/api/orders', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.orders)) {
+          saveLocalOrders(json.orders);
+          return json.orders;
+        }
+      }
+    } catch (apiErr) {
+      console.warn('API /api/orders non disponible, bascule sur Supabase direct:', apiErr);
+    }
+  }
+
+  // 2. Fallback direct Supabase
   try {
     const { data, error } = await supabase
       .from('orders')

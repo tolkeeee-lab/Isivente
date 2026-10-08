@@ -200,31 +200,47 @@ export async function markLeadConverted(phone: string, productSlug?: string) {
 export async function getAllLeads(): Promise<LeadRecord[]> {
   let dbLeads: LeadRecord[] = [];
 
-  try {
-    const { data, error } = await supabase
-      .from("leads")
-      .select("*")
-      .order("updated_at", { ascending: false })
-      .limit(1000);
+  // 1. Tenter via l'API serveur /api/leads
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/api/leads", { cache: "no-store" });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.leads)) {
+          dbLeads = json.leads;
+        }
+      }
+    } catch {}
+  }
 
-    if (!error && data && data.length > 0) {
-      dbLeads = data.map((d: any) => ({
-        id: d.id,
-        customer_name: d.customer_name || "Client",
-        customer_phone: d.customer_phone,
-        customer_phone2: d.customer_phone2 || "",
-        city: d.city || "Cotonou",
-        address: d.address || "",
-        product_slug: d.product_slug || "produit",
-        product_title: d.product_title || "Produit Isivente",
-        bundle_name: d.bundle_name || "Offre standard",
-        total_amount: Number(d.total_amount) || 0,
-        status: d.status || "abandoned",
-        created_at: d.created_at || new Date().toISOString(),
-        updated_at: d.updated_at || new Date().toISOString(),
-      }));
-    }
-  } catch {}
+  // 2. Fallback Supabase direct si l'API n'a rien renvoyé
+  if (dbLeads.length === 0) {
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*")
+        .order("updated_at", { ascending: false })
+        .limit(1000);
+
+      if (!error && data && data.length > 0) {
+        dbLeads = data.map((d: any) => ({
+          id: d.id,
+          customer_name: d.customer_name || "Client",
+          customer_phone: d.customer_phone,
+          customer_phone2: d.customer_phone2 || "",
+          city: d.city || "Cotonou",
+          address: d.address || "",
+          product_slug: d.product_slug || "produit",
+          product_title: d.product_title || "Produit Isivente",
+          bundle_name: d.bundle_name || "Offre standard",
+          total_amount: Number(d.total_amount) || 0,
+          status: d.status || "abandoned",
+          created_at: d.created_at || new Date().toISOString(),
+          updated_at: d.updated_at || new Date().toISOString(),
+        }));
+      }
+    } catch {}
+  }
 
   const localLeads = getLocalLeads();
   const map = new Map<string, LeadRecord>();
