@@ -180,11 +180,11 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Routine Sourire Éclatant (Spray + Dentifrice V34)",
     shortTitle: "Routine Sourire Éclatant",
     slug: "sourire-eclatant",
-    price: 11000,
+    price: 14900,
     image_url: "/images/sourire-eclatant/offre-duo.png",
     image: "/images/sourire-eclatant/offre-duo.png",
     bundles: [
-      { name: "Routine Sourire Éclatant (Spray + Dentifrice)", price: 11000 }
+      { name: "Routine Sourire Éclatant (Spray + Dentifrice)", price: 14900 }
     ]
   }
 ];

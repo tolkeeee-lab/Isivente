@@ -32,7 +32,7 @@ const BUNDLES: BundleOption[] = [
     id: "solo",
     name: "Routine Sourire Éclatant (Spray + Dentifrice)",
     subtitle: "Spray buccal Haleine Fraîche + Dentifrice Violet Correcteur Raisin & Menthe",
-    price: 11000,
+    price: 14900,
     originalPrice: 20000,
     savings: 9000,
     quantity: 1,
@@ -99,7 +99,7 @@ const FAQS_DATA = [
   },
   {
     q: "Comment se déroulent la livraison et le paiement au Bénin ?",
-    a: "La livraison s'effectue en 24h chrono à Cotonou, Calavi et partout au Bénin. Vous payez en espèces (11 000 FCFA) uniquement après avoir reçu votre colis auprès du livreur."
+    a: "La livraison s'effectue en 24h chrono à Cotonou, Calavi et partout au Bénin. Vous payez en espèces (14 900 FCFA) uniquement après avoir reçu votre colis auprès du livreur."
   }
 ];
 
@@ -141,7 +141,7 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
     trackViewContent({
       content_name: "Routine Sourire Éclatant",
       content_ids: ["sourire-eclatant", "soin-dentaire"],
-      value: 11000,
+      value: 14900,
       currency: "XOF",
     });
   }, []);
@@ -232,7 +232,7 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
             className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(147,51,234,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
             <span>Commander</span>
-            <span className="font-mono tabular-nums text-purple-100 text-[11px]">(11 000 F)</span>
+            <span className="font-mono tabular-nums text-purple-100 text-[11px]">(14 900 F)</span>
           </button>
         </div>
       </header>
@@ -284,7 +284,7 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
               {/* Pastille Prix Officiel */}
               <div className="absolute top-3 right-3 z-10 pointer-events-none">
                 <span className="inline-flex items-center gap-1 bg-purple-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
-                  11 000 FCFA
+                  14 900 FCFA
                 </span>
               </div>
 
@@ -314,7 +314,7 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
             </div>
             <div>
               <p className="text-xs font-bold text-slate-900">Paiement à la Réception</p>
-              <p className="text-[11px] text-slate-500">Réglez 11 000 F après réception</p>
+              <p className="text-[11px] text-slate-500">Réglez 14 900 F après réception</p>
             </div>
           </div>
 
@@ -449,7 +449,7 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
               onClick={scrollToOrder}
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
             >
-              <span>Commander le duo (11 000 FCFA)</span>
+              <span>Commander le duo (14 900 FCFA)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -555,14 +555,14 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
               Commandez votre Routine Sourire Éclatant
             </h4>
             <p className="text-purple-100 text-xs sm:text-sm">
-              Seulement <strong className="text-white font-mono text-base">11 000 FCFA</strong> au lieu de <span className="line-through opacity-75">20 000 FCFA</span>.
+              Seulement <strong className="text-white font-mono text-base">14 900 FCFA</strong> au lieu de <span className="line-through opacity-75">20 000 FCFA</span>.
             </p>
           </div>
           <button
             onClick={scrollToOrder}
             className="w-full sm:w-auto px-6 py-3.5 bg-white text-purple-900 font-bold text-sm rounded-xl hover:bg-purple-50 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
           >
-            Commander maintenant (11 000 F)
+            Commander maintenant (14 900 F)
           </button>
         </div>
 
@@ -655,11 +655,11 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
 
       {/* ── BARRE MOBILE STICKY CTA (PILIER 1 & 2) ── */}
       <StickyMobileCtaBar
-        price={11000}
+        price={14900}
         targetSectionId="commander"
         accentColor="#9333ea"
-        buttonText="Commander (11 000 F)"
-        whatsappMessage="Bonjour Isivente, je souhaite commander la Routine Sourire Éclatant à 11 000 FCFA."
+        buttonText="Commander (14 900 F)"
+        whatsappMessage="Bonjour Isivente, je souhaite commander la Routine Sourire Éclatant à 14 900 FCFA."
       />
 
     </div>
