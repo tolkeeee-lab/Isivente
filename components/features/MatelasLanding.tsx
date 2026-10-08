@@ -30,7 +30,7 @@ import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -213,13 +213,7 @@ export default function MatelasLanding({ slug = "matelas" }: { slug?: string }) 
 
       markLeadConverted(customerPhone.trim(), "matelas");
 
-      trackPurchase({
-        content_name: "Matelas Gonflable Ergonomique Autogonflant",
-        content_ids: ["matelas"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+
 
       const successUrl = `/p/matelas/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

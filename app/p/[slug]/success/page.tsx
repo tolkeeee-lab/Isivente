@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { trackPurchase } from "@/lib/metaPixel";
 
 function SuccessContent() {
   const params = useParams();
@@ -39,25 +38,12 @@ function SuccessContent() {
   const whatsappUrl = `https://wa.me/2290192901817?text=${encodeURIComponent(whatsappMsgText)}`;
 
   useEffect(() => {
-    // 1. Meta Pixel: Track Purchase garanti
+    // 1. (DEPRECATED) Meta Pixel: Track Purchase garanti
+    // REMOVED TO PREVENT DUPLICATES!
+    // L'événement Purchase est désormais géré à 100% côté SERVEUR (Meta CAPI) dans app/api/orders/route.ts
+    // pour éviter la duplication des événements Facebook.
     try {
-      let parsed: any = null;
-      try {
-        const pendingMeta = sessionStorage.getItem("isivente_last_purchase_meta");
-        if (pendingMeta) {
-          parsed = JSON.parse(pendingMeta);
-          sessionStorage.removeItem("isivente_last_purchase_meta");
-        }
-      } catch {}
-
-      trackPurchase({
-        content_name: parsed?.title || `Produit ${slug.toUpperCase()}`,
-        content_ids: [slug],
-        value: total || parsed?.price || 14900,
-        currency: "XOF",
-        num_items: parsed?.quantity || 1,
-        order_id: orderRef || undefined,
-      });
+      sessionStorage.removeItem("isivente_last_purchase_meta");
     } catch {}
 
     // 2. Redirection automatique vers WhatsApp après 1.5 seconde (laisse le temps au pixel de tirer)

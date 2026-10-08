@@ -28,7 +28,7 @@ import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -206,13 +206,7 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
       markLeadConverted(customerPhone.trim(), "peeler");
 
-      trackPurchase({
-        content_name: selectedBundle.name,
-        content_ids: ["peeler", "mandoline"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+
 
       const successUrl = `/p/peeler/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

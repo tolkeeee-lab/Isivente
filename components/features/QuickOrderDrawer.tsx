@@ -19,7 +19,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackInitiateCheckout } from "@/lib/metaPixel";
 import { playOrderSound } from "@/lib/soundEffects";
 
 export interface BundleOption {
@@ -187,13 +187,7 @@ export default function QuickOrderDrawer({
       setOrderNumber(finalNum);
 
       // Meta Pixel Purchase Event
-      trackPurchase({
-        content_name: productTitle,
-        content_ids: [productSlug],
-        value: totalPrice,
-        currency: "XOF",
-        num_items: totalQuantity,
-      });
+
 
       playOrderSound();
       setOrderSuccess(true);

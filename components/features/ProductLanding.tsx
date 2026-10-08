@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackUserSession } from "@/lib/analyticsStorage";
-import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackViewContent, trackInitiateCheckout } from "@/lib/metaPixel";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
@@ -253,13 +253,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
       });
 
       // Meta Pixel: Purchase
-      trackPurchase({
-        content_name: product.title,
-        content_ids: [slug],
-        value: totalWithBump,
-        currency: "XOF",
-        num_items: selectedBundle.quantity || 1,
-      });
+
 
       try {
         sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({

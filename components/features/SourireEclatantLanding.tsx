@@ -25,7 +25,7 @@ import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -189,13 +189,7 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
 
       markLeadConverted(customerPhone.trim(), "sourire-eclatant");
 
-      trackPurchase({
-        content_name: "Routine Sourire Éclatant",
-        content_ids: ["sourire-eclatant"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+
 
       const successUrl = `/p/sourire-eclatant/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

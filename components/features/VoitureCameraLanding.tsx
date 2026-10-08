@@ -31,7 +31,7 @@ import { markLeadConverted } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
-import { trackViewContent, trackAddToCart, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -230,13 +230,7 @@ export default function VoitureCameraLanding({ slug }: { slug: string }) {
 
       markLeadConverted(customerPhone.trim());
 
-      trackPurchase({
-        content_name: "Voiture Télécommandée avec Caméra HD & Écran",
-        content_ids: ["voiture-camera"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: selectedBundle.quantity || 1,
-      });
+
 
       if (typeof window !== "undefined") {
         const metaPayload = JSON.stringify({
