@@ -187,6 +187,18 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Savon Shampoing Solide Feuilles de Biota & Usma", price: 10750 }
     ]
+  },
+  {
+    id: "sourire-eclatant-default",
+    title: "Routine Sourire Éclatant (Spray + Dentifrice V34)",
+    shortTitle: "Routine Sourire Éclatant",
+    slug: "sourire-eclatant",
+    price: 11000,
+    image_url: "/images/sourire-eclatant/offre-duo.png",
+    image: "/images/sourire-eclatant/offre-duo.png",
+    bundles: [
+      { name: "Routine Sourire Éclatant (Spray + Dentifrice)", price: 11000 }
+    ]
   }
 ];
 

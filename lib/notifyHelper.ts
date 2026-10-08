@@ -15,7 +15,6 @@ export interface NotificationOrderData {
   quantity?: number;
   status?: string;
   created_at?: string;
-  is_upsell?: boolean;
 }
 
 export async function sendOrderNotification(order: NotificationOrderData) {
@@ -27,7 +26,6 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const city = order.shipping_city || order.city || "Cotonou";
   const address = order.shipping_address || order.address || "Non précisé";
   const orderRef = String(order.order_number || "CMD-" + Date.now().toString().slice(-6));
-  const isUpsell = order.is_upsell || (order.bundle_name || "").includes("[OFFRE VIP]");
 
   const results: {
     gmailSmtp?: boolean;
@@ -36,21 +34,13 @@ export async function sendOrderNotification(order: NotificationOrderData) {
     formsubmit?: boolean;
   } = {};
 
-  const emailSubject = isUpsell
-    ? `🚀 UPSELL ACCEPTÉ #${orderRef} (${order.customer_name || "Client"}) - Nouveau Total : ${formattedAmount}`
-    : `🚨 NOUVELLE COMMANDE #${orderRef} (${order.customer_name || "Client"}) - ${formattedAmount}`;
+  const emailSubject = `🚨 NOUVELLE COMMANDE #${orderRef} (${order.customer_name || "Client"}) - ${formattedAmount}`;
 
-  const headerBg = isUpsell
-    ? "background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"
-    : "background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);";
+  const headerBg = "background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);";
 
-  const headerTitle = isUpsell
-    ? "🚀 UPSELL VIP AJOUTÉ AU COLIS !"
-    : "🎉 Nouvelle Commande Isivente !";
+  const headerTitle = "🎉 Nouvelle Commande Isivente !";
 
-  const headerSubtitle = isUpsell
-    ? "Le client a accepté l'offre supplémentaire. Le montant total et le colis ont été mis à jour."
-    : "Livraison Paiement à la réception (COD)";
+  const headerSubtitle = "Livraison Paiement à la réception (COD)";
 
   const emailHtml = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
@@ -60,7 +50,7 @@ export async function sendOrderNotification(order: NotificationOrderData) {
       </div>
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;">
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📦 Produit principal :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #0f172a;">${order.product_title || "Non spécifié"}</td></tr>
-        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🏷️ Contenu du Colis :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: ${isUpsell ? '#6d28d9' : '#334155'};">${order.bundle_name || "Offre standard"}</td></tr>
+        <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">🏷️ Contenu du Colis :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #334155;">${order.bundle_name || "Offre standard"}</td></tr>
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">💰 Total à Encaisser :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #16a34a; font-size: 17px;">${formattedAmount}</td></tr>
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">👤 Client :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #0f172a;">${order.customer_name || "Client"}</td></tr>
         <tr><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-weight: 600;">📞 Téléphone :</td><td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: bold; color: #2563eb;"><a href="tel:${order.customer_phone}" style="color: #2563eb; text-decoration: none;">${order.customer_phone}</a></td></tr>
@@ -114,7 +104,7 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (botToken && chatId) {
     try {
-      const tgTitle = isUpsell ? "🚀 *UPSELL VIP ACCEPTÉ (PANIER BOOTSTÉ) !*" : "🎉 *NOUVELLE COMMANDE ISIVENTE !*";
+      const tgTitle = "🎉 *NOUVELLE COMMANDE ISIVENTE !*";
       const message = `${tgTitle}\n\n` +
         `📦 *Produit :* ${order.product_title || "Produit"}\n` +
         `🏷️ *Pack / Colis :* ${order.bundle_name || "Offre standard"}\n` +

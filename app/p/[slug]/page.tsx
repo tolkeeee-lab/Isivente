@@ -14,6 +14,7 @@ import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
 import MatelasLanding from "@/components/features/MatelasLanding";
 import VoitureCameraLanding from "@/components/features/VoitureCameraLanding";
 import SavonRepousseLanding from "@/components/features/SavonRepousseLanding";
+import SourireEclatantLanding from "@/components/features/SourireEclatantLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -52,6 +53,9 @@ export function generateStaticParams() {
     { slug: "brosse" },
     { slug: "brosse-spray" },
     { slug: "yufan" },
+    { slug: "sourire-eclatant" },
+    { slug: "routine-sourire" },
+    { slug: "dentifrice-violet" },
   ];
 }
 
@@ -121,6 +125,10 @@ export default async function ProductPage({ params }: PageProps) {
       case "matelas-gonflable":
       case "camping":
         return <MatelasLanding slug="matelas" />;
+      case "sourire-eclatant":
+      case "routine-sourire":
+      case "dentifrice-violet":
+        return <SourireEclatantLanding slug="sourire-eclatant" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
