@@ -142,12 +142,8 @@ export async function POST(req: NextRequest) {
 
     const savedOrder = data?.[0] || payload;
 
-    // Déclencher l'alerte email & mobile immédiatement de manière attendue (AWAITED)
-    try {
-      await sendOrderNotification(savedOrder);
-    } catch (e: any) {
-      console.error("Server notify error:", e?.message);
-    }
+    // Déclencher l'alerte email & mobile en arrière-plan pour éviter les timeouts Vercel
+    sendOrderNotification(savedOrder).catch(e => console.error("Server notify error:", e?.message));
 
     // Déclencher l'événement d'achat serveur Meta Conversions API (CAPI)
     try {
