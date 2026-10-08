@@ -104,11 +104,34 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
 
   // 2. Fallback direct Supabase
   try {
-    const { data, error } = await supabase
+    const rawCleanPhone = String(fallbackOrder.customer_phone || '').replace(/\D/g, '');
+    const cleanDbPayload: Record<string, any> = {
+      order_number: fallbackOrder.order_number,
+      customer_name: fallbackOrder.customer_name || 'Client',
+      customer_phone: rawCleanPhone,
+      city: fallbackOrder.city || fallbackOrder.shipping_city || 'Cotonou',
+      address: fallbackOrder.address || fallbackOrder.shipping_address || (fallbackOrder as any).delivery_address || '',
+      product_slug: fallbackOrder.product_slug || 'umei',
+      product_title: fallbackOrder.product_title || 'Produit Isivente',
+      bundle_name: fallbackOrder.bundle_name || 'Standard',
+      quantity: Number(fallbackOrder.quantity) || 1,
+      total_amount: Number(fallbackOrder.total_amount ?? (fallbackOrder as any).total_price ?? (fallbackOrder as any).price) || 14900,
+      status: fallbackOrder.status || 'pending',
+      created_at: fallbackOrder.created_at || new Date().toISOString(),
+    };
+
+    let { data, error } = await supabase
       .from('orders')
-      .insert([fallbackOrder])
+      .insert([cleanDbPayload])
       .select()
       .single();
+
+    if (error && (error.message?.includes('orders_product_slug_fkey') || error.code === '23503')) {
+      cleanDbPayload.product_slug = 'umei';
+      const retry = await supabase.from('orders').insert([cleanDbPayload]).select().single();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (!error && data) {
       const current = getLocalOrders();

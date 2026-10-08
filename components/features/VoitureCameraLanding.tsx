@@ -215,7 +215,7 @@ export default function VoitureCameraLanding({ slug }: { slug: string }) {
         product_title: "Voiture Télécommandée avec Caméra HD & Écran",
         bundle_id: selectedBundle.id || "solo",
         bundle_name: selectedBundle.name,
-        price: selectedBundle.price,
+        total_amount: selectedBundle.price,
         customer_name: customerName.trim(),
         customer_phone: customerPhone.trim(),
         customer_phone2: customerPhone2.trim() || undefined,

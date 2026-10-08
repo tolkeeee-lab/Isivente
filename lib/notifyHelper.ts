@@ -76,6 +76,9 @@ export async function sendOrderNotification(order: NotificationOrderData) {
   const gmailAppPass = rawPass.replace(/\s+/g, "").trim();
 
   if (gmailUser && gmailAppPass) {
+    if (gmailAppPass.length !== 16) {
+      console.warn(`[Gmail SMTP Warning] Le mot de passe d'application Gmail fait ${gmailAppPass.length} caractères (16 requis par Google).`);
+    }
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -85,6 +88,9 @@ export async function sendOrderNotification(order: NotificationOrderData) {
           user: gmailUser,
           pass: gmailAppPass,
         },
+        connectionTimeout: 4000,
+        greetingTimeout: 4000,
+        socketTimeout: 4000,
       });
 
       await transporter.sendMail({
@@ -94,8 +100,8 @@ export async function sendOrderNotification(order: NotificationOrderData) {
         html: emailHtml,
       });
       results.gmailSmtp = true;
-    } catch (smtpErr) {
-      console.error("Nodemailer Gmail SMTP error:", smtpErr);
+    } catch (smtpErr: any) {
+      console.error("Nodemailer Gmail SMTP error:", smtpErr?.message);
     }
   }
 
@@ -159,6 +165,7 @@ export async function sendOrderNotification(order: NotificationOrderData) {
     try {
       const fsRes = await fetch(`https://formsubmit.co/ajax/${recipientEmail}`, {
         method: "POST",
+        signal: AbortSignal.timeout(5000),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

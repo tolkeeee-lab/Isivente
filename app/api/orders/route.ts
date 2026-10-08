@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     const rawCity = String(body.city || body.shipping_city || "Cotonou").trim();
     const city = (rawCity.slice(0, 100) || "Cotonou").replace(/[<>]/g, "");
 
-    const rawAddress = String(body.address || body.shipping_address || "").trim();
+    const rawAddress = String(body.address || body.shipping_address || body.delivery_address || "").trim();
     const address = rawAddress.slice(0, 250).replace(/[<>]/g, "");
 
     // Validation du slug produit
@@ -95,8 +95,8 @@ export async function POST(req: NextRequest) {
     const rawBundle = String(body.bundle_name || "Offre standard").trim();
     const bundleName = rawBundle.slice(0, 150).replace(/[<>]/g, "");
 
-    // Validation des montants et quantités
-    const rawAmount = Number(body.total_amount);
+    // Validation des montants et quantités (accepte total_amount, total_price ou price)
+    const rawAmount = Number(body.total_amount ?? body.total_price ?? body.price);
     const totalAmount = !isNaN(rawAmount) && rawAmount >= 0 && rawAmount <= 10000000 ? Math.round(rawAmount) : 14900;
 
     const rawQuantity = Number(body.quantity);
@@ -130,10 +130,19 @@ export async function POST(req: NextRequest) {
       created_at: createdAt,
     };
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("orders")
       .insert([payload])
       .select();
+
+    // Protection anti-rejet : si le slug produit viole la contrainte de clé étrangère
+    if (error && (error.message?.includes("orders_product_slug_fkey") || error.code === "23503")) {
+      console.warn("Slug produit non trouvé dans la table products, repli de sécurité sur 'umei':", productSlug);
+      payload.product_slug = "umei";
+      const retry = await supabase.from("orders").insert([payload]).select();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.error("Supabase POST error:", error?.message);
