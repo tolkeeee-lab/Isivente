@@ -199,6 +199,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Routine Sourire Éclatant (Spray + Dentifrice)", price: 11000 }
     ]
+  },
+  {
+    id: "projecteur-noel-default",
+    title: "Lampe Projecteur de Noël Féerique USB Orientable 360° (6+ Motifs Magiques)",
+    shortTitle: "Projecteur de Noël USB 360°",
+    slug: "projecteur-noel",
+    price: 16900,
+    image_url: "/images/projecteur-noel/hero-famille.jpg",
+    image: "/images/projecteur-noel/hero-famille.jpg",
+    headline: "Transformez votre chambre et salon en un conte de fées féerique de Noël en un clin d'œil !",
+    bundles: [
+      { name: "Lampe Projecteur de Noël Féerique USB 360° (Coffret Complet)", price: 16900 }
+    ]
   }
 ];
 

@@ -205,6 +205,36 @@ const THEME_PALETTES: Record<
     badgeBg: "#FFEDD5",
     badgeText: "#C2410C",
   },
+  "projecteur-noel": {
+    primary: "#DC2626",
+    primaryHover: "#B91C1C",
+    primaryLight: "#FEF2F2",
+    border: "#FECACA",
+    textPrimary: "#991B1B",
+    ringColor: "rgba(220, 38, 38, 0.25)",
+    badgeBg: "#FEE2E2",
+    badgeText: "#991B1B",
+  },
+  "lampe-noel": {
+    primary: "#DC2626",
+    primaryHover: "#B91C1C",
+    primaryLight: "#FEF2F2",
+    border: "#FECACA",
+    textPrimary: "#991B1B",
+    ringColor: "rgba(220, 38, 38, 0.25)",
+    badgeBg: "#FEE2E2",
+    badgeText: "#991B1B",
+  },
+  noel: {
+    primary: "#DC2626",
+    primaryHover: "#B91C1C",
+    primaryLight: "#FEF2F2",
+    border: "#FECACA",
+    textPrimary: "#991B1B",
+    ringColor: "rgba(220, 38, 38, 0.25)",
+    badgeBg: "#FEE2E2",
+    badgeText: "#991B1B",
+  },
 };
 
 /* Villes majeures du Bénin */

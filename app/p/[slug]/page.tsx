@@ -15,6 +15,7 @@ import MatelasLanding from "@/components/features/MatelasLanding";
 import VoitureCameraLanding from "@/components/features/VoitureCameraLanding";
 import SavonRepousseLanding from "@/components/features/SavonRepousseLanding";
 import SourireEclatantLanding from "@/components/features/SourireEclatantLanding";
+import ProjecteurNoelLanding from "@/components/features/ProjecteurNoelLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -56,6 +57,11 @@ export function generateStaticParams() {
     { slug: "sourire-eclatant" },
     { slug: "routine-sourire" },
     { slug: "dentifrice-violet" },
+    { slug: "projecteur-noel" },
+    { slug: "lampe-noel" },
+    { slug: "noel" },
+    { slug: "projecteur-usb" },
+    { slug: "magie-noel" },
   ];
 }
 
@@ -129,6 +135,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "routine-sourire":
       case "dentifrice-violet":
         return <SourireEclatantLanding slug="sourire-eclatant" />;
+      case "projecteur-noel":
+      case "lampe-noel":
+      case "noel":
+      case "projecteur-usb":
+      case "magie-noel":
+        return <ProjecteurNoelLanding slug="projecteur-noel" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
