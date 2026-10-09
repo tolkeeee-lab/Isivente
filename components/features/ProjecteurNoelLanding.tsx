@@ -323,16 +323,6 @@ export default function ProjecteurNoelLanding({ slug = "projecteur-noel" }: { sl
         >
           <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl bg-slate-950 border border-slate-200 overflow-hidden flex items-center justify-center group">
             
-            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : 6+ Motifs Magiques (HAUT GAUCHE) */}
-            <div className="absolute top-2 left-2 sm:top-4 sm:left-4 w-[90px] h-[90px] sm:w-[104px] sm:h-[104px] bg-[#FEF08A] text-[#713F12] rounded-full flex items-center justify-center text-center font-black text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] -rotate-12 z-20 pointer-events-none border-2 border-white select-none">
-              6+ Motifs Magiques de Noël
-            </div>
-
-            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : 360° USB Flexible (BAS DROITE) */}
-            <div className="absolute bottom-12 right-2 sm:bottom-14 sm:right-4 w-[84px] h-[84px] sm:w-[96px] sm:h-[96px] bg-[#BBF7D0] text-[#14532D] rounded-full flex items-center justify-center text-center font-black text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] rotate-12 z-20 pointer-events-none border-2 border-white select-none">
-              360° USB Plug & Play
-            </div>
-
             {/* Image Slide */}
             <div className="relative w-full h-full">
               <Image
@@ -343,13 +333,6 @@ export default function ProjecteurNoelLanding({ slug = "projecteur-noel" }: { sl
                 priority
                 sizes="(max-width: 768px) 100vw, 768px"
               />
-            </div>
-
-            {/* Pastille Prix Officiel */}
-            <div className="absolute top-3 right-3 z-20 pointer-events-none">
-              <span className="inline-flex items-center gap-1 bg-red-600 text-white text-[11px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-md border border-white/20">
-                16 900 FCFA
-              </span>
             </div>
 
             {/* Flèches de navigation manuelles */}
