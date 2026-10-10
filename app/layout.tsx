@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,7 +52,10 @@ export default function RootLayout({
           />
         </noscript>
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
