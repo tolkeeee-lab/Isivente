@@ -19,6 +19,7 @@ import ProjecteurNoelLanding from "@/components/features/ProjecteurNoelLanding";
 import ProbioticGummiesLanding from "@/components/features/ProbioticGummiesLanding";
 import BraceletMainLanding from "@/components/features/BraceletMainLanding";
 import Stylo3DLanding from "@/components/features/Stylo3DLanding";
+import CarteDuMondeLanding from "@/components/features/CarteDuMondeLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -79,6 +80,11 @@ export function generateStaticParams() {
     { slug: "stylo-3d-enfant" },
     { slug: "3dpen" },
     { slug: "stylo-3d-creatif" },
+    { slug: "carte-du-monde" },
+    { slug: "carte-monde" },
+    { slug: "scratch-map" },
+    { slug: "carte-a-gratter" },
+    { slug: "explore-the-world" },
   ];
 }
 
@@ -175,6 +181,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "3dpen":
       case "stylo-3d-creatif":
         return <Stylo3DLanding slug="stylo-3d" />;
+      case "carte-du-monde":
+      case "carte-monde":
+      case "scratch-map":
+      case "carte-a-gratter":
+      case "explore-the-world":
+        return <CarteDuMondeLanding slug="carte-du-monde" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

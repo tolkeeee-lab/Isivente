@@ -250,6 +250,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Kit Complet Stylo 3D 3DPEN-2 + 12 Recharges Filaments (36m)", price: 14900 }
     ]
+  },
+  {
+    id: "carte-du-monde-default",
+    title: "Carte du Monde à Gratter Deluxe Grand Format (82 x 59 cm) + Tube Cadeau & Accessoires",
+    shortTitle: "Carte du Monde à Gratter Deluxe",
+    slug: "carte-du-monde",
+    price: 14900,
+    image_url: "/images/carte-du-monde/carte-monde-deco.jpg",
+    image: "/images/carte-du-monde/carte-monde-deco.jpg",
+    headline: "Grattez où vous êtes allé et donnez vie à vos souvenirs de voyage sur une carte géante de luxe !",
+    bundles: [
+      { name: "Coffret Carte du Monde à Gratter Deluxe (82x59cm) + Tube & Accessoires", price: 14900 }
+    ]
   }
 ];
 
