@@ -296,38 +296,16 @@ export default function ProbioticGummiesLanding({ slug = "equilibre-feminin" }: 
         >
           <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl bg-rose-50/40 border border-rose-100 flex items-center justify-center overflow-hidden">
             
-            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : Formule 3-en-1 (HAUT GAUCHE) */}
-            <div className="absolute -top-3 -left-2 sm:-left-4 w-[92px] h-[92px] sm:w-[106px] sm:h-[106px] bg-[#A8E6C9] text-[#134E3F] rounded-full flex items-center justify-center text-center font-black text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] -rotate-12 z-20 pointer-events-none border-2 border-white select-none">
-              3-en-1 Probiotiques + Cranberry
-            </div>
-
-            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : Sans Sucre & Vegan (BAS DROITE) */}
-            <div className="absolute -bottom-3 -right-2 sm:-right-4 w-[84px] h-[84px] sm:w-[96px] sm:h-[96px] bg-[#FFE4E6] text-[#9F1239] rounded-full flex items-center justify-center text-center font-black text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] rotate-12 z-20 pointer-events-none border-2 border-white select-none">
-              Sans Sucre 100% Naturel
-            </div>
-
             {/* Image courante du carrousel */}
             <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center">
               <Image
                 src={CAROUSEL_IMAGES[activeImgIndex].src}
                 alt={CAROUSEL_IMAGES[activeImgIndex].alt}
                 fill
-                className="object-contain p-2 sm:p-4 transition-all duration-300"
+                className="object-contain p-1 sm:p-2 transition-all duration-300"
                 priority
                 sizes="(max-width: 768px) 100vw, 768px"
               />
-
-              {/* Pastille Prix Officiel */}
-              <div className="absolute top-3 right-3 z-10 pointer-events-none">
-                <span className="inline-flex items-center gap-1 bg-rose-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
-                  14 900 FCFA
-                </span>
-              </div>
-
-              {/* Légende discrète sous l'image */}
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/85 via-slate-900/40 to-transparent p-4 text-white text-xs sm:text-sm font-medium z-10">
-                <p className="line-clamp-1">{CAROUSEL_IMAGES[activeImgIndex].caption}</p>
-              </div>
             </div>
 
             {/* Flèches de navigation */}
