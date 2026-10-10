@@ -77,6 +77,7 @@ export default function AdminClicksPage() {
 
 ALTER TABLE public.analytics ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow public all on analytics" ON public.analytics;
 CREATE POLICY "Allow public all on analytics" ON public.analytics
     FOR ALL TO anon, authenticated
     USING (true)
