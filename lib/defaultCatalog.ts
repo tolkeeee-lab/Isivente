@@ -237,6 +237,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Bracelet-Bague de Main Éclat Doré & Cristaux Scintillants", price: 12750 }
     ]
+  },
+  {
+    id: "stylo-3d-default",
+    title: "Kit Complet Stylo 3D Professionnel 3DPEN-2 (12 Couleurs PLA 36m)",
+    shortTitle: "Kit Stylo 3D Créatif 3DPEN-2",
+    slug: "stylo-3d",
+    price: 14900,
+    image_url: "/images/stylo-3d/stylo-3d-kit.jpg",
+    image: "/images/stylo-3d/stylo-3d-kit.jpg",
+    headline: "Dessinez dans les airs et donnez vie à vos idées en 3D ! Kit complet éducatif et sécurisé.",
+    bundles: [
+      { name: "Kit Complet Stylo 3D 3DPEN-2 + 12 Recharges Filaments (36m)", price: 14900 }
+    ]
   }
 ];
 

@@ -18,6 +18,7 @@ import SourireEclatantLanding from "@/components/features/SourireEclatantLanding
 import ProjecteurNoelLanding from "@/components/features/ProjecteurNoelLanding";
 import ProbioticGummiesLanding from "@/components/features/ProbioticGummiesLanding";
 import BraceletMainLanding from "@/components/features/BraceletMainLanding";
+import Stylo3DLanding from "@/components/features/Stylo3DLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -73,6 +74,11 @@ export function generateStaticParams() {
     { slug: "bracelet-bague" },
     { slug: "bracelet-eclat" },
     { slug: "bijou-main" },
+    { slug: "stylo-3d" },
+    { slug: "stylo" },
+    { slug: "stylo-3d-enfant" },
+    { slug: "3dpen" },
+    { slug: "stylo-3d-creatif" },
   ];
 }
 
@@ -163,6 +169,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "bracelet-eclat":
       case "bijou-main":
         return <BraceletMainLanding slug="bracelet-main" />;
+      case "stylo-3d":
+      case "stylo":
+      case "stylo-3d-enfant":
+      case "3dpen":
+      case "stylo-3d-creatif":
+        return <Stylo3DLanding slug="stylo-3d" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
