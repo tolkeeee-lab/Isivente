@@ -9,7 +9,9 @@ export interface UserSession {
 
 export interface AnalyticsStats {
   totalViews: number;
+  todayViews: number;
   totalClicks: number;
+  todayClicks: number;
   ctr: number;
   avgTimeSpentSeconds: number;
   formattedAvgTime: string;
@@ -18,7 +20,9 @@ export interface AnalyticsStats {
 export interface ProductAnalyticsStats {
   slug: string;
   totalViews: number;
+  todayViews: number;
   totalClicks: number;
+  todayClicks: number;
   ctr: number;
   avgTimeSpentSeconds: number;
   formattedAvgTime: string;
@@ -30,6 +34,12 @@ function formatDuration(seconds: number): string {
   const s = Math.round(seconds % 60);
   if (m === 0) return `${s}s`;
   return `${m}m ${s}s`;
+}
+
+function getStartOfTodayIso(): string {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return now.toISOString();
 }
 
 export function trackUserSession(
@@ -57,7 +67,12 @@ export function trackUserSession(
 
 export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> {
   try {
-    let query = supabase.from('analytics').select('duration_seconds, clicked');
+    let query = supabase
+      .from('analytics')
+      .select('duration_seconds, clicked, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10000);
+
     if (slug) {
       query = query.eq('product_slug', slug);
     }
@@ -65,22 +80,30 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
     if (error || !data || data.length === 0) {
       return {
         totalViews: 0,
+        todayViews: 0,
         totalClicks: 0,
+        todayClicks: 0,
         ctr: 0,
         avgTimeSpentSeconds: 0,
         formattedAvgTime: "—",
       };
     }
 
+    const startOfToday = getStartOfTodayIso();
     const totalViews = data.length;
+    const todayRows = data.filter((d: any) => d.created_at && d.created_at >= startOfToday);
+    const todayViews = todayRows.length;
     const totalClicks = data.filter((d: any) => d.clicked).length;
+    const todayClicks = todayRows.filter((d: any) => d.clicked).length;
     const totalDuration = data.reduce((acc: number, d: any) => acc + (d.duration_seconds || 0), 0);
     const avgTimeSpentSeconds = totalViews > 0 ? Math.round(totalDuration / totalViews) : 0;
     const ctr = totalViews > 0 ? Math.round((totalClicks / totalViews) * 1000) / 10 : 0;
 
     return {
       totalViews,
+      todayViews,
       totalClicks,
+      todayClicks,
       ctr,
       avgTimeSpentSeconds,
       formattedAvgTime: formatDuration(avgTimeSpentSeconds),
@@ -89,7 +112,9 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
     console.error('Error fetching analytics stats:', err);
     return {
       totalViews: 0,
+      todayViews: 0,
       totalClicks: 0,
+      todayClicks: 0,
       ctr: 0,
       avgTimeSpentSeconds: 0,
       formattedAvgTime: "—",
@@ -99,19 +124,31 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
 
 export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]> {
   try {
-    const { data, error } = await supabase.from('analytics').select('product_slug, duration_seconds, clicked');
+    const { data, error } = await supabase
+      .from('analytics')
+      .select('product_slug, duration_seconds, clicked, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10000);
+
     if (error || !data || data.length === 0) {
       return [];
     }
 
-    const bySlug: Record<string, { views: number; clicks: number; duration: number }> = {};
+    const startOfToday = getStartOfTodayIso();
+    const bySlug: Record<string, { views: number; todayViews: number; clicks: number; todayClicks: number; duration: number }> = {};
+    
     data.forEach((d: any) => {
       const slug = d.product_slug || 'autre';
       if (!bySlug[slug]) {
-        bySlug[slug] = { views: 0, clicks: 0, duration: 0 };
+        bySlug[slug] = { views: 0, todayViews: 0, clicks: 0, todayClicks: 0, duration: 0 };
       }
       bySlug[slug].views += 1;
-      if (d.clicked) bySlug[slug].clicks += 1;
+      const isToday = d.created_at && d.created_at >= startOfToday;
+      if (isToday) bySlug[slug].todayViews += 1;
+      if (d.clicked) {
+        bySlug[slug].clicks += 1;
+        if (isToday) bySlug[slug].todayClicks += 1;
+      }
       bySlug[slug].duration += d.duration_seconds || 0;
     });
 
@@ -121,7 +158,9 @@ export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]
       return {
         slug,
         totalViews: stat.views,
+        todayViews: stat.todayViews,
         totalClicks: stat.clicks,
+        todayClicks: stat.todayClicks,
         ctr,
         avgTimeSpentSeconds: avg,
         formattedAvgTime: formatDuration(avg),

@@ -34,7 +34,9 @@ import { getAdminDashboardProducts, DEFAULT_CATALOG_MAP } from "@/lib/defaultCat
 export default function AdminClicksPage() {
   const [analytics, setAnalytics] = useState<AnalyticsStats>({
     totalViews: 0,
+    todayViews: 0,
     totalClicks: 0,
+    todayClicks: 0,
     ctr: 0,
     avgTimeSpentSeconds: 0,
     formattedAvgTime: "—",

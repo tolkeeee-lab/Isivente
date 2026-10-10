@@ -15,7 +15,9 @@ import {
 } from "@/lib/leadsStorage";
 import {
   getAnalyticsStats,
-  AnalyticsStats
+  getAllProductsAnalytics,
+  AnalyticsStats,
+  ProductAnalyticsStats
 } from "@/lib/analyticsStorage";
 import { supabase } from "@/lib/supabase";
 import {
@@ -40,7 +42,10 @@ import {
   Store,
   ExternalLink,
   Copy,
-  Check
+  Check,
+  Eye,
+  Activity,
+  BarChart3
 } from "lucide-react";
 import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
 
@@ -49,11 +54,14 @@ export default function AdminOverviewPage() {
   const [leads, setLeads] = useState<LeadRecord[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsStats>({
     totalViews: 0,
+    todayViews: 0,
     totalClicks: 0,
+    todayClicks: 0,
     ctr: 0,
     avgTimeSpentSeconds: 0,
     formattedAvgTime: "—",
   });
+  const [productAnalytics, setProductAnalytics] = useState<ProductAnalyticsStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
@@ -87,14 +95,16 @@ export default function AdminOverviewPage() {
   const loadAllData = async (silent = false) => {
     if (!silent && orders.length === 0) setLoading(true);
     try {
-      const [ordersData, leadsData, analyticsData] = await Promise.all([
+      const [ordersData, leadsData, analyticsData, prodsAnalyticsData] = await Promise.all([
         getAllOrders(),
         getAllLeads(),
-        getAnalyticsStats()
+        getAnalyticsStats(),
+        getAllProductsAnalytics()
       ]);
       setOrders(ordersData);
       setLeads(leadsData);
       setAnalytics(analyticsData);
+      setProductAnalytics(prodsAnalyticsData);
       setLastUpdated(new Date());
     } catch (err) {
       console.error("Erreur lors du chargement de la vue d'ensemble :", err);
@@ -232,6 +242,23 @@ export default function AdminOverviewPage() {
         return <span className="px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-rose-100 text-rose-800">📦 À confirmer</span>;
     }
   };
+
+  const analyticsBySlug = useMemo(() => {
+    const map: Record<string, ProductAnalyticsStats> = {};
+    productAnalytics.forEach(p => {
+      map[p.slug] = p;
+    });
+    return map;
+  }, [productAnalytics]);
+
+  const ordersCountBySlug = useMemo(() => {
+    const map: Record<string, number> = {};
+    orders.forEach(o => {
+      const slug = o.product_slug || "microscope";
+      map[slug] = (map[slug] || 0) + 1;
+    });
+    return map;
+  }, [orders]);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-[staggerFadeUp_240ms_cubic-bezier(0.16,1,0.3,1)_both]">
@@ -378,19 +405,27 @@ export default function AdminOverviewPage() {
           {/* KPI 4 : Trafic Ads & Visiteurs */}
           <div className="min-w-[260px] sm:min-w-[280px] lg:min-w-[290px] flex-1 shrink-0 snap-start card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-purple-500">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Trafic & Attention Ads
+              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                <span>Trafic & Visiteurs Live</span>
               </span>
               <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
                 <MousePointerClick className="w-4 h-4 stroke-[2]" />
               </div>
             </div>
             <div>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
-                {loading ? "…" : analytics.totalViews} <span className="text-xs font-normal text-slate-500 font-sans">visites</span>
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tabular-nums tracking-tight text-slate-900 truncate">
+                  {loading ? "…" : analytics.totalViews} <span className="text-xs font-normal text-slate-500 font-sans">visites</span>
+                </div>
+                {analytics.todayViews > 0 && (
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    +{analytics.todayViews} auj.
+                  </span>
+                )}
               </div>
               <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Clics boutons d&apos;achat :</span>
+                <span>Clics vers commande :</span>
                 <span className="font-bold text-purple-700 font-mono">{analytics.totalClicks} ({analytics.ctr.toFixed(1)}%)</span>
               </div>
             </div>
@@ -604,6 +639,203 @@ export default function AdminOverviewPage() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* ── SECTION DÉDIÉE : SUIVI DU TRAFIC & VISITEURS EN DIRECT PAR PRODUIT ── */}
+      <div className="card-figma p-5 sm:p-6 space-y-4 border-t-2 border-t-purple-500">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
+              <BarChart3 className="w-5 h-5 stroke-[2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="font-bold text-sm sm:text-base text-slate-900">
+                  Trafic & Visites en Direct par Produit
+                </h2>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Live Supabase
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                Suivi en temps réel des visiteurs, clics vers commande et taux de conversion de chaque landing page.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/clicks"
+              className="text-xs font-semibold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-xl border border-purple-200 inline-flex items-center gap-1.5 transition-all"
+            >
+              <span>Rapport détaillé des clics</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Barre de stats globales condensée */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/70 p-3 rounded-2xl border border-slate-100 text-xs">
+          <div className="flex flex-col">
+            <span className="text-[11px] text-slate-500 font-medium">Total Visites</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base sm:text-lg font-bold font-mono text-slate-900">{analytics.totalViews}</span>
+              {analytics.todayViews > 0 && (
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100/70 px-1.5 py-0.2 rounded">
+                  +{analytics.todayViews} auj.
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-slate-500 font-medium">Clics Formulaire</span>
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span className="text-base sm:text-lg font-bold font-mono text-purple-700">{analytics.totalClicks}</span>
+              {analytics.todayClicks > 0 && (
+                <span className="text-[10px] font-bold text-purple-600 bg-purple-100/70 px-1.5 py-0.2 rounded">
+                  +{analytics.todayClicks} auj.
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-slate-500 font-medium">Taux de Clic CTA</span>
+            <span className="text-base sm:text-lg font-bold font-mono text-slate-900 mt-0.5">
+              {analytics.ctr.toFixed(1)}%
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-slate-500 font-medium">Temps Moyen / Page</span>
+            <span className="text-base sm:text-lg font-bold font-mono text-slate-900 mt-0.5">
+              {analytics.formattedAvgTime || "—"}
+            </span>
+          </div>
+        </div>
+
+        {/* Tableau récapitulatif par produit */}
+        <div className="overflow-x-auto -mx-5 sm:mx-0 px-5 sm:px-0">
+          <table className="w-full text-left text-xs border-collapse min-w-[620px]">
+            <thead>
+              <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                <th className="py-2.5 px-3">Produit</th>
+                <th className="py-2.5 px-3 text-center">Visites (Total / Auj.)</th>
+                <th className="py-2.5 px-3 text-center">Clics CTA Formulaire</th>
+                <th className="py-2.5 px-3 text-center">Commandes Reçues</th>
+                <th className="py-2.5 px-3 text-center">Taux Conv.</th>
+                <th className="py-2.5 px-3 text-center">Temps Moyen</th>
+                <th className="py-2.5 px-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {productsList.map((prod) => {
+                const stat = analyticsBySlug[prod.slug];
+                const views = stat?.totalViews ?? 0;
+                const todayViews = stat?.todayViews ?? 0;
+                const clicks = stat?.totalClicks ?? 0;
+                const ctr = stat?.ctr ?? 0;
+                const ordersCount = ordersCountBySlug[prod.slug] || 0;
+                const convRate = views > 0 ? ((ordersCount / views) * 100).toFixed(1) : "0.0";
+                const avgTime = stat?.formattedAvgTime || "—";
+                const isCopied = copiedSlug === prod.slug;
+
+                return (
+                  <tr key={prod.slug} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={prod.image}
+                          alt={prod.title}
+                          className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0"
+                        />
+                        <div>
+                          <div className="font-bold text-slate-900 hover:text-indigo-600 transition-colors">
+                            {prod.title}
+                          </div>
+                          <div className="text-[11px] text-slate-400 font-mono">
+                            /p/{prod.slug}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="py-3 px-3 text-center">
+                      <div className="font-mono font-bold text-slate-900 text-sm">
+                        {views}
+                      </div>
+                      {todayViews > 0 ? (
+                        <span className="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200 mt-0.5">
+                          +{todayViews} aujourd'hui
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-400">0 auj.</span>
+                      )}
+                    </td>
+
+                    <td className="py-3 px-3 text-center">
+                      <div className="font-mono font-bold text-purple-700 text-sm">
+                        {clicks}
+                      </div>
+                      <div className="text-[10.5px] text-slate-500 font-mono">
+                        CTR: {ctr.toFixed(1)}%
+                      </div>
+                    </td>
+
+                    <td className="py-3 px-3 text-center">
+                      <div className="font-mono font-bold text-emerald-700 text-sm">
+                        {ordersCount}
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        commande{ordersCount > 1 ? "s" : ""}
+                      </div>
+                    </td>
+
+                    <td className="py-3 px-3 text-center">
+                      <span className={`inline-block px-2 py-0.5 rounded-md font-mono font-bold text-[11px] ${
+                        Number(convRate) >= 5 
+                          ? "bg-emerald-100 text-emerald-800" 
+                          : Number(convRate) > 0 
+                          ? "bg-blue-100 text-blue-800" 
+                          : "bg-slate-100 text-slate-500"
+                      }`}>
+                        {convRate}%
+                      </span>
+                    </td>
+
+                    <td className="py-3 px-3 text-center font-mono text-slate-600">
+                      {avgTime}
+                    </td>
+
+                    <td className="py-3 px-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Link
+                          href={`/p/${prod.slug}`}
+                          target="_blank"
+                          title="Voir la page de vente"
+                          className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyLink(prod.slug, false)}
+                          title="Copier le lien direct"
+                          className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                            isCopied
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                              : "border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                          }`}
+                        >
+                          {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 
