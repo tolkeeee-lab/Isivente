@@ -224,6 +224,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Lampe Projecteur de Noël Féerique USB 360° (Coffret Complet)", price: 16900 }
     ]
+  },
+  {
+    id: "bracelet-main-default",
+    title: "Bracelet-Bague de Main Éclat Doré & Cristaux Scintillants (Baciamano Chic)",
+    shortTitle: "Bracelet-Bague Éclat Doré",
+    slug: "bracelet-main",
+    price: 12750,
+    image_url: "/images/bracelet-main/bracelet-hero.jpg",
+    image: "/images/bracelet-main/bracelet-hero.jpg",
+    headline: "Une tenue simple... et tout change ! Le bijou de main raffiné qui sublime votre allure.",
+    bundles: [
+      { name: "Bracelet-Bague de Main Éclat Doré & Cristaux Scintillants", price: 12750 }
+    ]
   }
 ];
 

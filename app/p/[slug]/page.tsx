@@ -17,6 +17,7 @@ import SavonRepousseLanding from "@/components/features/SavonRepousseLanding";
 import SourireEclatantLanding from "@/components/features/SourireEclatantLanding";
 import ProjecteurNoelLanding from "@/components/features/ProjecteurNoelLanding";
 import ProbioticGummiesLanding from "@/components/features/ProbioticGummiesLanding";
+import BraceletMainLanding from "@/components/features/BraceletMainLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -68,6 +69,10 @@ export function generateStaticParams() {
     { slug: "gummies-probiotiques" },
     { slug: "gummies" },
     { slug: "probiotiques" },
+    { slug: "bracelet-main" },
+    { slug: "bracelet-bague" },
+    { slug: "bracelet-eclat" },
+    { slug: "bijou-main" },
   ];
 }
 
@@ -153,6 +158,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "gummies":
       case "probiotiques":
         return <ProbioticGummiesLanding slug="equilibre-feminin" />;
+      case "bracelet-main":
+      case "bracelet-bague":
+      case "bracelet-eclat":
+      case "bijou-main":
+        return <BraceletMainLanding slug="bracelet-main" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
