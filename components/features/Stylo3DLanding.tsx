@@ -314,15 +314,6 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
         >
           <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
             
-            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : Kit 12 Couleurs 36m (HAUT GAUCHE) */}
-            <div className="absolute top-2 left-2 sm:-top-3 sm:-left-4 w-[92px] h-[92px] sm:w-[106px] sm:h-[106px] bg-[#A8E6C9] text-[#241B36] rounded-full flex items-center justify-center text-center font-black text-[11px] sm:text-[12px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] -rotate-12 z-20 pointer-events-none border-2 border-white select-none">
-              12 Couleurs 36m PLA
-            </div>
-
-            {/* 🏷️ BADGE CIRCULAIRE EMBLÉMATIQUE : 100% Sûr & Non Toxique (BAS DROITE) */}
-            <div className="absolute bottom-10 right-2 sm:bottom-8 sm:-right-2 w-[84px] h-[84px] sm:w-[96px] sm:h-[96px] bg-[#F8D9B4] text-[#241B36] rounded-full flex items-center justify-center text-center font-black text-[10px] sm:text-[11px] leading-tight p-2 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.22)] rotate-12 z-20 pointer-events-none border-2 border-white select-none">
-              100% Sûr Non Toxique
-            </div>
 
             {/* Cadre image produit avec animation de fondu */}
             <div className="relative w-full h-full">
