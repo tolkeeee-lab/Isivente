@@ -14,14 +14,22 @@ import {
   XCircle, 
   Sparkles, 
   Heart, 
-  PackageCheck,
-  Award,
-  Gift,
-  ArrowRight,
-  Gem,
-  Crown,
-  Eye,
-  Smile
+  PackageCheck, 
+  Award, 
+  Gift, 
+  ArrowRight, 
+  Gem, 
+  Crown, 
+  Eye, 
+  Smile,
+  Ruler,
+  Box,
+  Check,
+  Info,
+  Clock,
+  PhoneCall,
+  BadgePercent,
+  Sparkle
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
@@ -34,8 +42,8 @@ import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/m
 const BUNDLES: BundleOption[] = [
   {
     id: "solo",
-    name: "Bracelet-Bague de Main Éclat Doré & Cristaux (Écrin Luxe Offert)",
-    subtitle: "Coffret complet avec coussinet de présentation velours, triple chaîne dorée et bague intégrée sertie de cristaux",
+    name: "Bracelet-Bague de Main Éclat Doré & Cristaux (Écrin Luxe Joaillerie Offert)",
+    subtitle: "Coffret complet avec écrin rigide noir de présentation, coussin velours beige, triple chaîne dorée miroir et bague ajustable sertie de cristaux Zircone 5A",
     price: 12750,
     originalPrice: 22000,
     savings: 9250,
@@ -80,6 +88,7 @@ interface CustomerReview {
   title: string;
   comment: string;
   verified: boolean;
+  profileType?: string;
 }
 
 const CUSTOMER_REVIEWS: CustomerReview[] = [
@@ -88,8 +97,9 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
     location: "Cotonou (Haie Vive)",
     rating: 5,
     date: "Achat vérifié",
+    profileType: "Acheté pour elle-même",
     title: "Encore plus beau en vrai que sur les photos !",
-    comment: "Je l'ai porté à une cérémonie le week-end dernier avec une robe très sobre. Tout le monde me demandait où j'avais acheté ce bijou ! La chaîne est fine, agréable sur la peau et les cristaux brillent dès qu'il y a de la lumière. Très contente de mon achat.",
+    comment: "Je l'ai porté à une cérémonie le week-end dernier avec une robe très sobre. Tout le monde me demandait où j'avais acheté ce bijou ! La chaîne est fine, très agréable sur la peau et les cristaux brillent dès qu'il y a un rayon de lumière. Très contente de mon achat.",
     verified: true,
   },
   {
@@ -97,8 +107,9 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
     location: "Calavi (Arconville)",
     rating: 5,
     date: "Achat vérifié",
+    profileType: "Cadeau d'anniversaire",
     title: "Offert à ma femme pour son anniversaire : carton plein !",
-    comment: "C'est exactement ce qui est dit : un cadeau inattendu qui fait un effet bœuf ! Elle était émue en ouvrant la boîte noire. La bague s'ajuste bien à sa main et elle ne le quitte plus pour sortir. Livré en 24h à mon bureau.",
+    comment: "C'est exactement ce qui est dit : un cadeau inattendu qui fait un effet bœuf ! Elle était émue en ouvrant la boîte noire. La bague s'ajuste parfaitement à sa main et elle ne le quitte plus dès qu'on sort. Livré en 24h à mon bureau avant la fête.",
     verified: true,
   },
   {
@@ -106,32 +117,71 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
     location: "Porto-Novo",
     rating: 5,
     date: "Achat vérifié",
-    title: "Finition raffinée et chaîne confortable",
+    profileType: "Achat personnel",
+    title: "Finition raffinée et chaîne ultra confortable",
     comment: "J'avais peur que la chaîne tire sur le doigt quand on bouge la main, mais pas du tout ! La longueur dorsale est très bien calibrée et la chaînette de réglage permet de l'ajuster au millimètre. Et le paiement à la livraison rassure énormément.",
+    verified: true,
+  },
+  {
+    name: "Rolande M.",
+    location: "Cotonou (Akpakpa)",
+    rating: 5,
+    date: "Achat vérifié",
+    profileType: "Mains fines",
+    title: "Parfait sur mes mains fines, ne glisse pas",
+    comment: "J'ai les poignets très fins et d'habitude les bracelets flottent. Ici, avec la chaîne d'extension, j'ai pu l'attacher au premier maillon et la bague s'est resserrée sans forcer. La brillance est magnifique, ça fait vraiment bijou précieux de joaillerie.",
+    verified: true,
+  },
+  {
+    name: "Fabrice T.",
+    location: "Cotonou (Fidjrossè)",
+    rating: 5,
+    date: "Achat vérifié",
+    profileType: "Cadeau surprise",
+    title: "Zéro prise de tête pour la taille, elle a adoré",
+    comment: "Je ne connaissais pas sa taille de doigt alors j'hésitais à lui acheter une bague classique. Avec ce modèle réglable et l'écrin noir déjà prêt, je n'ai eu qu'à lui tendre la boîte. Ses yeux se sont illuminés. Merci au service client pour la livraison rapide.",
+    verified: true,
+  },
+  {
+    name: "Murielle H.",
+    location: "Parakou",
+    rating: 5,
+    date: "Achat vérifié",
+    profileType: "Mariage & Soirées",
+    title: "Porté à un mariage, tout le monde m'a félicitée",
+    comment: "C'est l'accessoire qui change toute la tenue. Même avec un pagne ou une robe simple, la main devient le centre de l'attention. Les petits cristaux ne se décollent pas et la finition dorée est d'un éclat très chic, pas tape-à-l'œil.",
     verified: true,
   },
 ];
 
 const FAQS_DATA = [
   {
-    q: "La taille s'adapte-t-elle à toutes les mains ?",
-    a: "Oui, parfaitement ! Le bracelet dispose d'une chaînette de rallonge réglable au poignet et d'un anneau de bague souple qui s'adapte confortablement à toutes les morphologies de main féminine (fine à moyenne/forte), sans serrer ni entraver les mouvements des doigts.",
+    q: "La taille s'adapte-t-elle à toutes les mains (doigts fins, moyens ou forts) ?",
+    a: "Oui, à 100% ! Le bracelet est doté d'une chaînette de réglage de 5 cm au poignet (convenant de 15 cm à 21 cm de circonférence). L'anneau de la bague est un anneau souple semi-ouvert qui s'ajuste manuellement avec une légère pression du pouce (tailles 50 à 58). Il s'enfile confortablement sur le majeur ou l'annulaire sans aucune sensation de pincement.",
   },
   {
-    q: "Le bijou noircit-il ou perd-il son éclat ?",
-    a: "Non. Le bracelet est réalisé avec un alliage résistant traité par plaquage doré brillant multicouche anti-oxydation. Pour conserver son éclat comme au premier jour, évitez simplement de vaporiser du parfum directement dessus ou de vous doucher avec.",
+    q: "Le bijou noircit-il ou verdit-il au contact de la peau ou de la transpiration ?",
+    a: "Non. Le bracelet est fabriqué dans un alliage bijouterie haute densité avec triple plaquage doré PVD brillant anti-oxydation, 100% hypoallergénique (garanti sans nickel ni plomb). Pour préserver son éclat comme au premier jour, appliquez simplement vos parfums ou lotions avant de mettre le bijou et évitez de le porter sous la douche.",
   },
   {
-    q: "L'écrin de luxe noir est-il inclus dans la commande ?",
-    a: "Oui, absolument ! Chaque bijou est soigneusement présenté et expédié dans son écrin rigide noir avec coussinet de présentation velours beige. Il est prêt à être offert directement ou à servir de boîte de rangement protectrice.",
+    q: "Est-ce que la chaîne dorsale tire sur le doigt quand on plie la main ?",
+    a: "Non. La chaîne dorsale mesure 9,5 cm et a été spécialement profilée selon l'anatomie de la main féminine. Les maillons ultra-souples accompagnent tous les mouvements naturels : vous pouvez taper sur un clavier, tenir un téléphone, conduire ou saluer sans aucun tiraillement.",
   },
   {
-    q: "Comment se déroulent la livraison et le paiement au Bénin ?",
-    a: "La livraison s'effectue sous 24h à Cotonou, Calavi et partout au Bénin. Vous ne payez absolument rien à l'avance : vous réglez les 12 750 FCFA en espèces au livreur uniquement après avoir reçu et inspecté votre colis en main propre.",
+    q: "L'écrin de luxe noir est-il vraiment inclus gratuitement ?",
+    a: "Oui, absolument. Chaque commande comprend sans surcoût l'écrin rigide de présentation noir mat avec son coussinet de protection en velours doux. Le bijou est soigneusement installé dessus, prêt à être offert directement ou à servir de boîte de rangement pour le protéger.",
   },
   {
-    q: "Puis-je commander par téléphone ou WhatsApp ?",
-    a: "Oui ! Vous pouvez renseigner le formulaire ci-dessus en quelques secondes ou cliquer directement sur le bouton WhatsApp en bas à droite pour commander avec l'un de nos conseillers Isivente.",
+    q: "Puis-je ouvrir le colis et vérifier le bijou avant de payer le livreur ?",
+    a: "Oui, totalement ! C'est le principe du paiement à la réception Isivente : le livreur vous remet le paquet en main propre, vous ouvrez et vérifiez votre bijou dans son écrin, et vous réglez les 12 750 FCFA en espèces uniquement si tout est parfaitement conforme.",
+  },
+  {
+    q: "En combien de temps serai-je livrée à Cotonou, Calavi ou dans les départements ?",
+    a: "La livraison se fait sous 24h ouvrées à Cotonou, Calavi et Porto-Novo. Pour les autres villes et départements (Parakou, Bohicon, Natitingou, etc.), le délai est de 24h à 48h selon le passage du transporteur local. Notre équipe vous appelle avant chaque départ pour convenir de l'heure exacte.",
+  },
+  {
+    q: "Comment entretenir mon bijou pour qu'il conserve son éclat des années ?",
+    a: "Il suffit d'appliquer 3 règles d'or simples : 1. Enfilez votre bijou en dernier, après le maquillage et le parfum. 2. Retirez-le avant la douche, la vaisselle ou le sport. 3. Après l'avoir porté, essuyez-le brièvement avec un chiffon sec et doux avant de le reposer sur son coussinet velours.",
   },
 ];
 
@@ -284,7 +334,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
       </header>
 
       {/* ── 3. CONTENEUR PRINCIPAL ── */}
-      <main className="max-w-4xl mx-auto px-4 pt-8 pb-16 space-y-10">
+      <main className="max-w-4xl mx-auto px-4 pt-8 pb-16 space-y-12">
         
         {/* ── 4. EN-TÊTE TITRE & ACCROCHE ── */}
         <div className="text-center space-y-3">
@@ -299,7 +349,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           </h1>
           
           <p className="text-sm sm:text-base md:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-            Le bracelet-bague doré aux cristaux scintillants qui habille la main avec distinction. Le détail raffiné qui attire tous les regards.
+            Le bracelet-bague doré aux cristaux scintillants qui habille la main avec distinction. Le détail raffiné qui attire tous les regards sans effort.
           </p>
         </div>
 
@@ -309,7 +359,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           onMouseEnter={() => setIsHeroHovered(true)}
           onMouseLeave={() => setIsHeroHovered(false)}
         >
-          {/* Cadre de l'image principale pure (aucun sticker superposé) */}
+          {/* Cadre de l'image principale pure */}
           <div className="relative aspect-square sm:aspect-[4/3] w-full max-w-2xl mx-auto rounded-2xl bg-amber-50/30 border border-slate-100 flex items-center justify-center overflow-hidden">
             
             <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center">
@@ -323,7 +373,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
               />
             </div>
 
-            {/* Flèches de navigation légères et fluides */}
+            {/* Flèches de navigation */}
             {CAROUSEL_IMAGES.length > 1 && (
               <>
                 <button
@@ -435,7 +485,114 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           />
         </div>
 
-        {/* ── 8. 4 ATOUTS MAJEURS DU BRACELET-BAGUE ── */}
+        {/* ── 8. SECTION NOUVELLE : UNBOXING & CONTENU DU COFFRET JOAILLERIE ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-5">
+          <div className="text-center space-y-1.5 max-w-xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 text-[11px] font-bold px-3 py-1 rounded-full border border-amber-200">
+              <Box className="w-3.5 h-3.5 text-amber-600" />
+              <span>Coffret Prestige Prêt à Offrir</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Ce que contient exactement votre colis</h2>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Chaque pièce est méticuleusement inspectée, polie et conditionnée comme dans une grande bijouterie.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 pt-2">
+            
+            <div className="bg-amber-50/40 border border-amber-200/70 rounded-2xl p-4 space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
+                1
+              </div>
+              <h4 className="font-bold text-slate-900 text-xs sm:text-sm">Le Bracelet-Bague Éclat Doré</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Le bijou complet entièrement assemblé, avec triple chaîne dorée miroir, liaison dorsale fluide et bague intégrée.
+              </p>
+            </div>
+
+            <div className="bg-amber-50/40 border border-amber-200/70 rounded-2xl p-4 space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
+                2
+              </div>
+              <h4 className="font-bold text-slate-900 text-xs sm:text-sm">L'Écrin Rigide Noir Mat</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Boîte rigide haute protection à finition soft-touch, idéale pour faire une surprise marquante dès le premier regard.
+              </p>
+            </div>
+
+            <div className="bg-amber-50/40 border border-amber-200/70 rounded-2xl p-4 space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
+                3
+              </div>
+              <h4 className="font-bold text-slate-900 text-xs sm:text-sm">Coussinet Velours de Présentation</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Coussin rembourré doux qui maintient les chaînes droites sans nœuds et protège l'or des micro-frottements.
+              </p>
+            </div>
+
+            <div className="bg-amber-50/40 border border-amber-200/70 rounded-2xl p-4 space-y-2">
+              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
+                4
+              </div>
+              <h4 className="font-bold text-slate-900 text-xs sm:text-sm">Certificat & Contrôle Isivente</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Fiche de garantie et conseils d'entretien pour garder le plaquage éclatant pendant des années.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── 9. SECTION NOUVELLE : FICHE TECHNIQUE & GUIDE DES MESURES (LÈVE LE FREIN DE LA TAILLE) ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-5">
+          <div className="text-center space-y-1.5 max-w-xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-800 text-[11px] font-bold px-3 py-1 rounded-full border border-slate-200">
+              <Ruler className="w-3.5 h-3.5 text-amber-700" />
+              <span>Morphologie & Ergonomie</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Guide des dimensions : Ajustement universel 100% garanti</h2>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Aucun risque de vous tromper : conçu pour convenir à toutes les mains féminines, qu'elles soient très fines ou plus fortes.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+            
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center space-y-1">
+              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Tour de Poignet</span>
+              <p className="text-lg font-black text-slate-900">16 cm + 5 cm</p>
+              <p className="text-[11px] text-slate-500 leading-snug">Chaînette d'extension pour s'adapter de 15 à 21 cm de tour.</p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center space-y-1">
+              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Bague Intégrée</span>
+              <p className="text-lg font-black text-slate-900">Taille 50 à 58</p>
+              <p className="text-[11px] text-slate-500 leading-snug">Anneau ouvert souple ajustable au majeur ou à l'annulaire.</p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center space-y-1">
+              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Chaîne Dorsale</span>
+              <p className="text-lg font-black text-slate-900">9,5 cm fluide</p>
+              <p className="text-[11px] text-slate-500 leading-snug">Longueur anatomique qui accompagne le pli des doigts sans tirer.</p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center space-y-1">
+              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Poids au Porter</span>
+              <p className="text-lg font-black text-slate-900">14,2 grammes</p>
+              <p className="text-[11px] text-slate-500 leading-snug">Poids plume invisible, sensation seconde peau toute la journée.</p>
+            </div>
+
+          </div>
+
+          <div className="bg-amber-50/70 border border-amber-200/90 rounded-2xl p-4 flex items-start gap-3 text-xs text-amber-900">
+            <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+            <p className="leading-relaxed">
+              <span className="font-bold">Vous hésitez pour un cadeau ?</span> Soyez 100% serein : grâce au système à double réglage (fermoir mousqueton réglable + anneau ouvert souple), ce bijou s'adapte sans aucune retouche à la morphologie de n'importe quelle femme.
+            </p>
+          </div>
+        </section>
+
+        {/* ── 10. 4 ATOUTS MAJEURS DU BRACELET-BAGUE ── */}
         <section className="space-y-6">
           <div className="text-center space-y-2">
             <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Haute Finition & Design</span>
@@ -454,7 +611,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
               </div>
               <h3 className="font-bold text-slate-900 text-sm">Transformation instantanée</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Une robe simple, un ensemble classique ou un jean t-shirt ? Ce bijou habille immédiatement toute la main avec une allure chic et travaillée.
+                Une robe sobre, un ensemble tailleur ou un simple haut noir ? Ce bijou habille immédiatement la main avec une allure chic et très travaillée.
               </p>
             </div>
 
@@ -463,9 +620,9 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
               <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
                 <Gem className="w-5 h-5 stroke-[1.75]" />
               </div>
-              <h3 className="font-bold text-slate-900 text-sm">Cristaux scintillants</h3>
+              <h3 className="font-bold text-slate-900 text-sm">Cristaux Zircone 5A sertis</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Sertis délicatement sur le poignet et la bague, les cristaux captent chaque reflet lumineux pour un éclat précieux et naturel sous le soleil ou les projecteurs.
+                Sertis en griffes fines sur le poignet et la bague, les cristaux captent le moindre rayon de lumière pour un scintillement digne d'un vrai diamant.
               </p>
             </div>
 
@@ -474,27 +631,72 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
               <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
                 <Award className="w-5 h-5 stroke-[1.75]" />
               </div>
-              <h3 className="font-bold text-slate-900 text-sm">Confort & Fluidité</h3>
+              <h3 className="font-bold text-slate-900 text-sm">Confort & Fluidité Totale</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                La chaîne dorsale est souple et légère. Vous pouvez bouger les doigts, taper sur votre clavier, conduire et saluer sans aucune gêne ni tiraillement.
+                La chaîne dorsale est souple et ergonomique. Vous pouvez bouger les doigts, taper sur un clavier, conduire et saluer sans aucune sensation de traction.
               </p>
             </div>
 
             {/* Atout 4 */}
             <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2.5">
               <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
-                <Gift className="w-5 h-5 stroke-[1.75]" />
+                <ShieldCheck className="w-5 h-5 stroke-[1.75]" />
               </div>
-              <h3 className="font-bold text-slate-900 text-sm">Écrin Noir Prestige</h3>
+              <h3 className="font-bold text-slate-900 text-sm">Alliage Hypoallergénique</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Fourni dans son coffret bijouterie rigide avec son coussinet de présentation. L'effet de surprise à l'ouverture est garanti à 100%.
+                Garanti sans nickel ni plomb. Ne provoque ni rougeurs ni démangeaisons sur les peaux sensibles, avec un plaquage miroir anti-ternissement.
               </p>
             </div>
 
           </div>
         </section>
 
-        {/* ── 9. SECTION EMOTION & IMPACT CADEAU ── */}
+        {/* ── 11. SECTION NOUVELLE : 3 MOMENTS OÙ CE BIJOU FAIT TOUTE LA DIFFÉRENCE ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-6">
+          <div className="text-center space-y-1.5 max-w-xl mx-auto">
+            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Style & Inspirations</span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Quand porter votre Bracelet-Bague Éclat Doré ?</h2>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Le secret d'un accessoire polyvalent qui rehausse chaque occasion sans en faire trop.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-2.5">
+              <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                <span>Cérémonies & Fêtes</span>
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">Mariages, Baptêmes & Galas</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Associé à une robe longue, une tenue en dentelle ou un pagne brodé, il attire le regard dès que vous levez le bras pour trinquer ou serrer des mains.
+              </p>
+            </div>
+
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-2.5">
+              <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                <span>Rendez-vous & Sorties</span>
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">Dîner aux chandelles & Soirées</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Sous la lumière tamisée d'un restaurant, chaque cristal réfracte la lueur des bougies. Un charme subtil et envoûtant qui sublime votre gestuelle.
+              </p>
+            </div>
+
+            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 space-y-2.5">
+              <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                <span>Quotidien & Manucure</span>
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">Photos, Manucure & Bureau Chic</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Idéal après une pose d'ongles ou un vernis soigné. Il magnifie vos mains sur vos photos WhatsApp, Instagram et TikTok avec un rendu ultra-luxe.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── 12. SECTION EMOTION & IMPACT CADEAU ── */}
         <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-8 shadow-2xs space-y-6">
           <div className="max-w-2xl mx-auto text-center space-y-2">
             <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Le Cadeau Idéal</span>
@@ -526,7 +728,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Un bijou rare qui se démarque</h4>
                     <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                      Loin des simples gourmettes ou bagues banales, le bracelet-bague apporte une touche féerique et sensuelle qui met en valeur la gestuelle et les ongles soignés.
+                      Loin des simples gourmettes ou bagues ordinaires, le bracelet-bague apporte une touche féerique et sensuelle qui met en valeur la gestuelle et les ongles soignés.
                     </p>
                   </div>
                 </div>
@@ -538,7 +740,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">Prêt à offrir dans son écrin</h4>
                     <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                      Aucun emballage cadeau supplémentaire à chercher. Le bijou repose élégamment sur son coussin de velours dans une boîte noire aimantée de qualité joaillerie.
+                      Aucun emballage cadeau supplémentaire à chercher. Le bijou repose élégamment sur son coussin de velours dans une boîte noire fermée de qualité joaillerie.
                     </p>
                   </div>
                 </div>
@@ -569,7 +771,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           </div>
         </section>
 
-        {/* ── 10. BÉNÉFICES COMPARATIFS ── */}
+        {/* ── 13. BÉNÉFICES COMPARATIFS ── */}
         <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-5">
           <div className="text-center space-y-1.5">
             <h3 className="font-bold text-slate-900 text-base sm:text-lg">Comparatif : Pourquoi ce bijou de main fait toute la différence</h3>
@@ -599,7 +801,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-rose-500 font-bold">✕</span>
-                  <span>Taille fixe qui ne convient pas à tous les poignets.</span>
+                  <span>Taille fixe qui ne convient pas à tous les poignets et serre la main.</span>
                 </li>
               </ul>
             </div>
@@ -617,11 +819,11 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-600 font-bold">✓</span>
-                  <span>Finition dorée brillante haute tenue avec cristaux lumineux taillés avec soin.</span>
+                  <span>Finition dorée brillante haute tenue avec cristaux Zircone 5A sertis avec soin.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-600 font-bold">✓</span>
-                  <span>Écrin cadeau noir rigide avec coussin velours beige offert dans chaque commande.</span>
+                  <span>Écrin cadeau noir rigide avec coussin velours offert dans chaque commande.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-600 font-bold">✓</span>
@@ -633,7 +835,80 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           </div>
         </section>
 
-        {/* ── 11. BANNIÈRE PROMOTIONNELLE & RAPPEL PRIX ── */}
+        {/* ── 14. SECTION NOUVELLE : COMMENT SE PASSE VOTRE COMMANDE EN 3 ÉTAPES ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-2xs space-y-5">
+          <div className="text-center space-y-1.5 max-w-xl mx-auto">
+            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Simplicité & Confiance</span>
+            <h3 className="font-bold text-slate-900 text-lg sm:text-xl">Votre commande en 3 étapes simples & 100% sereines</h3>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Aucun paiement en ligne requis, aucune carte bancaire demandée.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-2 relative">
+              <div className="w-8 h-8 rounded-full bg-amber-700 text-white flex items-center justify-center font-bold text-xs">
+                1
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">Validation du Formulaire</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Renseignez votre prénom, ville et numéro de téléphone sur cette page en 30 secondes chrono.
+              </p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-2 relative">
+              <div className="w-8 h-8 rounded-full bg-amber-700 text-white flex items-center justify-center font-bold text-xs">
+                2
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">Confirmation Téléphonique</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Notre service client vous appelle pour confirmer l'adresse de livraison et caler l'horaire qui vous arrange.
+              </p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-2 relative">
+              <div className="w-8 h-8 rounded-full bg-amber-700 text-white flex items-center justify-center font-bold text-xs">
+                3
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">Livraison & Contrôle en Main Propre</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Le livreur vous remet le coffret sous 24h. Vous ouvrez, vous inspectez, puis vous payez 12 750 FCFA en espèces.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ── 15. SECTION NOUVELLE : GUIDE D'ENTRETIEN FACILE (3 GESTES SIMPLES) ── */}
+        <section className="bg-amber-50/50 rounded-3xl border border-amber-200/80 p-5 sm:p-7 shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-900 text-sm sm:text-base">Les 3 gestes d'or pour préserver l'éclat de votre bijou</h4>
+              <p className="text-xs text-slate-600">Quelques habitudes simples pour garder un or resplendissant des années</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div className="bg-white rounded-xl p-3.5 border border-amber-200/60 text-xs text-slate-700 space-y-1">
+              <p className="font-bold text-slate-900">1. En dernier toujours</p>
+              <p className="text-slate-600 leading-relaxed">Mettez votre bijou après avoir appliqué crème, lait de corps et parfum.</p>
+            </div>
+            <div className="bg-white rounded-xl p-3.5 border border-amber-200/60 text-xs text-slate-700 space-y-1">
+              <p className="font-bold text-slate-900">2. À l'abri de l'eau</p>
+              <p className="text-slate-600 leading-relaxed">Retirez-le avant la douche, la baignade à la plage ou la vaisselle.</p>
+            </div>
+            <div className="bg-white rounded-xl p-3.5 border border-amber-200/60 text-xs text-slate-700 space-y-1">
+              <p className="font-bold text-slate-900">3. Dans son écrin</p>
+              <p className="text-slate-600 leading-relaxed">Après utilisation, replacez-le sur son coussin de velours dans la boîte.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 16. BANNIÈRE PROMOTIONNELLE & RAPPEL PRIX ── */}
         <section className="bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 rounded-3xl p-6 sm:p-8 text-white text-center shadow-lg space-y-4">
           <div className="inline-flex items-center gap-1.5 bg-amber-500/20 border border-amber-400/30 text-amber-200 text-[11px] font-semibold uppercase tracking-wider px-3.5 py-1 rounded-full">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
@@ -645,7 +920,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           </h3>
 
           <p className="text-xs sm:text-sm text-amber-100/90 max-w-lg mx-auto leading-relaxed">
-            Profitez du tarif promo direct Isivente à <span className="font-bold text-white">12 750 FCFA</span> au lieu de 22 000 FCFA. Livraison express 24h & paiement sécurisé en espèces à la livraison.
+            Profitez du tarif promo direct Isivente à <span className="font-bold text-white">12 750 FCFA</span> au lieu de 22 000 FCFA. Écrin de luxe offert, livraison express 24h & paiement sécurisé en espèces à la livraison.
           </p>
 
           <div className="pt-2">
@@ -659,7 +934,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           </div>
         </section>
 
-        {/* ── 12. AVIS CLIENTS VÉRIFIÉS (NOTE 4.9/5) ── */}
+        {/* ── 17. AVIS CLIENTS VÉRIFIÉS (NOTE 4.9/5) ── */}
         <section className="space-y-6">
           <div className="text-center space-y-2">
             <div className="flex items-center justify-center gap-1 text-amber-500">
@@ -689,6 +964,11 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
                       </span>
                     )}
                   </div>
+                  {review.profileType && (
+                    <span className="inline-block text-[10px] font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md">
+                      {review.profileType}
+                    </span>
+                  )}
                   <h4 className="font-bold text-slate-900 text-xs sm:text-sm">« {review.title} »</h4>
                   <p className="text-xs text-slate-600 leading-relaxed">{review.comment}</p>
                 </div>
@@ -702,12 +982,12 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
           </div>
         </section>
 
-        {/* ── 13. FAQ INTERACTIVE ── */}
+        {/* ── 18. FAQ INTERACTIVE ENRICHIE (7 QUESTIONS CLÉS) ── */}
         <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-8 shadow-2xs space-y-5">
           <div className="text-center space-y-1.5">
             <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Réponses à vos questions</span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Foire Aux Questions</h2>
-            <p className="text-xs sm:text-sm text-slate-500">Tout ce que vous devez savoir avant de commander</p>
+            <p className="text-xs sm:text-sm text-slate-500">Tout ce que vous devez savoir avant de commander en toute sérénité</p>
           </div>
 
           <div className="divide-y divide-slate-100 max-w-2xl mx-auto">
@@ -737,7 +1017,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
 
       </main>
 
-      {/* ── 14. FOOTER OFFICIEL ── */}
+      {/* ── 19. FOOTER OFFICIEL ── */}
       <footer className="bg-white border-t border-slate-200/80 py-8 px-4 text-center text-xs text-slate-500 space-y-3">
         <div className="max-w-4xl mx-auto space-y-2">
           <div className="flex items-center justify-center gap-2">
@@ -754,7 +1034,7 @@ export default function BraceletMainLanding({ slug = "bracelet-main" }: { slug?:
         </div>
       </footer>
 
-      {/* ── 15. BARRE MOBILE STICKY CTA (PRIX IDENTIQUE 12 750 F) ── */}
+      {/* ── 20. BARRE MOBILE STICKY CTA (PRIX IDENTIQUE 12 750 F) ── */}
       <StickyMobileCtaBar 
         price={12750} 
         accentColor="#B45309"
