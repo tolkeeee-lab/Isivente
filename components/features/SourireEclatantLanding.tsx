@@ -189,13 +189,14 @@ export default function SourireEclatantLanding({ slug = "sourire-eclatant" }: { 
 
       markLeadConverted(customerPhone.trim(), "sourire-eclatant");
 
-      trackPurchase({
-        content_name: "Routine Sourire Éclatant",
-        content_ids: ["sourire-eclatant"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+      // Stocker les métadonnées pour la page success (qui déclenche l'événement dédupliqué avec le bon order_id)
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Routine Sourire Éclatant",
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/sourire-eclatant/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

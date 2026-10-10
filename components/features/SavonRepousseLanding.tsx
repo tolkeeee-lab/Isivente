@@ -218,17 +218,18 @@ export default function SavonRepousseLanding({ slug = "savon-repousse" }: { slug
         utm_campaign: utm.utm_campaign,
       });
 
-      trackPurchase({
-        order_id: order?.id || `order_${Date.now()}`,
-        content_name: selectedBundle.name,
-        content_ids: [slug, selectedBundle.id || "solo"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+      // Stocker les métadonnées pour la page success (qui déclenche l'événement dédupliqué avec le bon order_id)
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: selectedBundle.name,
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       await markLeadConverted(customerPhone.trim(), slug);
-      router.push(`/p/${slug}/success?order=confirmed&amount=${selectedBundle.price}`);
+      const successUrl = `/p/${slug}/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
+      router.push(successUrl);
     } catch (err) {
       console.error(err);
       setOrderError("Une erreur est survenue lors de l'enregistrement de votre commande.");

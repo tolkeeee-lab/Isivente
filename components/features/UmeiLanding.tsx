@@ -194,13 +194,14 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
 
       markLeadConverted(customerPhone.trim(), "umei");
 
-      trackPurchase({
-        content_name: "Brosse Multifonction Spray & Massage YUFAN",
-        content_ids: ["umei"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+      // Stocker les métadonnées pour la page success (qui déclenche l'événement dédupliqué avec le bon order_id)
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Brosse Multifonction Spray & Massage YUFAN",
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/umei/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

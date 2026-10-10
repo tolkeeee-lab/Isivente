@@ -85,7 +85,7 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
       {
         event_name: options.event_name,
         event_time: options.event_time || Math.floor(Date.now() / 1000),
-        event_id: options.event_id || (cData.order_id ? `order_${cData.order_id}` : undefined),
+        event_id: options.event_id || (cData.order_id ? String(cData.order_id) : undefined),
         action_source: "website",
         event_source_url: options.event_source_url,
         user_data: {

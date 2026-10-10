@@ -186,8 +186,9 @@ export default function QuickOrderDrawer({
         res?.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000);
       setOrderNumber(finalNum);
 
-      // Meta Pixel Purchase Event
+      // Meta Pixel Purchase Event (dédupliqué avec le serveur CAPI via finalNum)
       trackPurchase({
+        order_id: finalNum,
         content_name: productTitle,
         content_ids: [productSlug],
         value: totalPrice,

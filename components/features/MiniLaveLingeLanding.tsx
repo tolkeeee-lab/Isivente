@@ -204,13 +204,14 @@ export default function MiniLaveLingeLanding({ slug }: { slug: string }) {
 
       markLeadConverted(customerPhone.trim(), "mini-lave-linge");
 
-      trackPurchase({
-        content_name: "Mini Lave-Linge Stérilisateur Lingerie",
-        content_ids: ["mini-lave-linge"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+      // Stocker les métadonnées pour la page success (qui déclenche l'événement dédupliqué avec le bon order_id)
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Mini Lave-Linge Stérilisateur Lingerie",
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/mini-lave-linge/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

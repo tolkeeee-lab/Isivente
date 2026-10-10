@@ -248,13 +248,14 @@ export default function ProjecteurNoelLanding({ slug = "projecteur-noel" }: { sl
 
       markLeadConverted(customerPhone.trim(), "projecteur-noel");
 
-      trackPurchase({
-        content_name: "Lampe Projecteur de Noël Féerique USB 360°",
-        content_ids: ["projecteur-noel"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+      // Stocker les métadonnées pour la page success (qui déclenche l'événement dédupliqué avec le bon order_id)
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Lampe Projecteur de Noël Féerique USB 360°",
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/projecteur-noel/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

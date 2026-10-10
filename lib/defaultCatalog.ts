@@ -47,11 +47,11 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Microscope Numérique Portable HD 1000X",
     shortTitle: "Microscope Numérique HD 1000X",
     slug: "microscope",
-    price: 24900,
+    price: 22750,
     image_url: "/images/microscope-video-cover.webp",
     image: "/images/microscope-video-cover.webp",
     bundles: [
-      { name: "Microscope Numérique Portable HD 1000X", price: 24900 }
+      { name: "Microscope Numérique Portable HD 1000X", price: 22750 }
     ]
   },
   {

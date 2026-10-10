@@ -213,13 +213,14 @@ export default function MatelasLanding({ slug = "matelas" }: { slug?: string }) 
 
       markLeadConverted(customerPhone.trim(), "matelas");
 
-      trackPurchase({
-        content_name: "Matelas Gonflable Ergonomique Autogonflant",
-        content_ids: ["matelas"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+      // Stocker les métadonnées pour la page success (qui déclenche l'événement dédupliqué avec le bon order_id)
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Matelas Gonflable Ergonomique Autogonflant",
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/matelas/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

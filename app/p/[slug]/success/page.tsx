@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { 
   CheckCircle2, 
   ArrowRight, 
@@ -27,6 +27,7 @@ function SuccessContent() {
 
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   const [countdown, setCountdown] = useState(2);
+  const hasTrackedRef = useRef(false);
 
   // Message WhatsApp personnalisé et pré-rempli (calculé avant pour être dispo dans useEffect)
   const whatsappMsgText = 
@@ -39,26 +40,29 @@ function SuccessContent() {
   const whatsappUrl = `https://wa.me/2290192901817?text=${encodeURIComponent(whatsappMsgText)}`;
 
   useEffect(() => {
-    // 1. Meta Pixel: Track Purchase garanti
-    try {
-      let parsed: any = null;
+    // 1. Meta Pixel: Track Purchase garanti (une seule fois par commande)
+    if (!hasTrackedRef.current) {
+      hasTrackedRef.current = true;
       try {
-        const pendingMeta = sessionStorage.getItem("isivente_last_purchase_meta");
-        if (pendingMeta) {
-          parsed = JSON.parse(pendingMeta);
-          sessionStorage.removeItem("isivente_last_purchase_meta");
-        }
-      } catch {}
+        let parsed: any = null;
+        try {
+          const pendingMeta = sessionStorage.getItem("isivente_last_purchase_meta");
+          if (pendingMeta) {
+            parsed = JSON.parse(pendingMeta);
+            sessionStorage.removeItem("isivente_last_purchase_meta");
+          }
+        } catch {}
 
-      trackPurchase({
-        content_name: parsed?.title || `Produit ${slug.toUpperCase()}`,
-        content_ids: [slug],
-        value: total || parsed?.price || 14900,
-        currency: "XOF",
-        num_items: parsed?.quantity || 1,
-        order_id: orderRef || undefined,
-      });
-    } catch {}
+        trackPurchase({
+          content_name: parsed?.title || `Produit ${slug.toUpperCase()}`,
+          content_ids: [slug],
+          value: total || parsed?.price || 14900,
+          currency: "XOF",
+          num_items: parsed?.quantity || 1,
+          order_id: orderRef || undefined,
+        });
+      } catch {}
+    }
 
     // 2. Redirection automatique vers WhatsApp après 1.5 seconde (laisse le temps au pixel de tirer)
     const timer = setTimeout(() => {

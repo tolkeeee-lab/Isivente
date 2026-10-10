@@ -35,9 +35,9 @@ const BUNDLES: BundleOption[] = [
     id: "solo",
     name: "Microscope Numérique Portable HD 1000X",
     subtitle: "Appareil complet avec écran LCD 2.0\", éclairage 8 LED, batterie rechargeable et accessoires",
-    price: 24900,
+    price: 22750,
     originalPrice: 45000,
-    savings: 20100,
+    savings: 22250,
     quantity: 1,
     popular: true,
   },
@@ -235,7 +235,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
     trackViewContent({
       content_name: "Microscope Numérique Portable HD 1000X",
       content_ids: ["microscope"],
-      value: 24900,
+      value: 22750,
       currency: "XOF",
     });
   }, [slug]);
@@ -338,7 +338,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
             className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(99,102,241,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
             <span>Commander</span>
-            <span className="font-mono tabular-nums text-indigo-100 text-[11px]">(24 900 F)</span>
+            <span className="font-mono tabular-nums text-indigo-100 text-[11px]">(22 750 F)</span>
           </button>
         </div>
       </header>
@@ -574,7 +574,7 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
                 onClick={scrollToOrder}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(99,102,241,0.4)] transition-all cursor-pointer"
               >
-                <span>Commander maintenant (24 900 FCFA)</span>
+                <span>Commander maintenant (22 750 FCFA)</span>
               </button>
             </div>
           </div>
@@ -945,12 +945,12 @@ export default function MicroscopeLanding({ slug }: { slug: string }) {
 
       {/* ── BARRE MOBILE FLOTTANTE POUR COMMANDER ── */}
       <StickyMobileCtaBar
-        price={24900}
+        price={22750}
         accentColor="#4f46e5"
         buttonText="Commander"
         targetSectionId="commander"
         whatsappNumber="2290192901817"
-        whatsappMessage="Bonjour Isivente, je souhaite commander le Microscope Numérique Portable HD 1000X à 24 900 FCFA avec livraison à domicile."
+        whatsappMessage="Bonjour Isivente, je souhaite commander le Microscope Numérique Portable HD 1000X à 22 750 FCFA avec livraison à domicile."
       />
 
     </div>

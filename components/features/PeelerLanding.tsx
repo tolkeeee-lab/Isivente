@@ -206,13 +206,14 @@ export default function PeelerLanding({ slug }: { slug: string }) {
 
       markLeadConverted(customerPhone.trim(), "peeler");
 
-      trackPurchase({
-        content_name: selectedBundle.name,
-        content_ids: ["peeler", "mandoline"],
-        value: selectedBundle.price,
-        currency: "XOF",
-        num_items: 1,
-      });
+      // Stocker les métadonnées pour la page success (qui déclenche l'événement dédupliqué avec le bon order_id)
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: selectedBundle.name,
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/peeler/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

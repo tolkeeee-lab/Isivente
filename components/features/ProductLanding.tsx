@@ -252,15 +252,6 @@ export default function ProductLanding({ slug }: { slug: string }) {
         status: "pending" as const,
       });
 
-      // Meta Pixel: Purchase
-      trackPurchase({
-        content_name: product.title,
-        content_ids: [slug],
-        value: totalWithBump,
-        currency: "XOF",
-        num_items: selectedBundle.quantity || 1,
-      });
-
       try {
         sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
           title: product.title,
