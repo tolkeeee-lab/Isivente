@@ -55,6 +55,18 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     ]
   },
   {
+    id: "equilibre-feminin-default",
+    title: "Gummies Probiotiques Équilibre Féminin & Confort Intime (60 Gummies)",
+    shortTitle: "Gummies Probiotiques Équilibre Féminin",
+    slug: "equilibre-feminin",
+    price: 14900,
+    image_url: "/images/probiotic-gummies-hero-1.jpg",
+    image: "/images/probiotic-gummies-hero-1.jpg",
+    bundles: [
+      { name: "Gummies Probiotiques Équilibre Féminin & Confort Intime", price: 14900 }
+    ]
+  },
+  {
     id: "umei-default",
     title: "Brosse Multifonction Spray & Massage du Cuir Chevelu YUFAN™",
     shortTitle: "Brosse Spray & Massage YUFAN",

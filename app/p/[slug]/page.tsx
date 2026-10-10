@@ -16,6 +16,7 @@ import VoitureCameraLanding from "@/components/features/VoitureCameraLanding";
 import SavonRepousseLanding from "@/components/features/SavonRepousseLanding";
 import SourireEclatantLanding from "@/components/features/SourireEclatantLanding";
 import ProjecteurNoelLanding from "@/components/features/ProjecteurNoelLanding";
+import ProbioticGummiesLanding from "@/components/features/ProbioticGummiesLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -62,6 +63,11 @@ export function generateStaticParams() {
     { slug: "noel" },
     { slug: "projecteur-usb" },
     { slug: "magie-noel" },
+    { slug: "equilibre-feminin" },
+    { slug: "probiotiques-femme" },
+    { slug: "gummies-probiotiques" },
+    { slug: "gummies" },
+    { slug: "probiotiques" },
   ];
 }
 
@@ -141,6 +147,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "projecteur-usb":
       case "magie-noel":
         return <ProjecteurNoelLanding slug="projecteur-noel" />;
+      case "equilibre-feminin":
+      case "probiotiques-femme":
+      case "gummies-probiotiques":
+      case "gummies":
+      case "probiotiques":
+        return <ProbioticGummiesLanding slug="equilibre-feminin" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
