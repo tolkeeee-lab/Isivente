@@ -32,6 +32,25 @@ export function trackVisitorArrival(slug?: string): VisitorHistory {
     };
   }
 
+  // Ne jamais comptabiliser si l'utilisateur est admin ou sur une page d'administration
+  try {
+    if (
+      window.location.pathname.startsWith("/admin") ||
+      window.location.pathname.startsWith("/api") ||
+      localStorage.getItem("isivente_is_admin") === "true" ||
+      sessionStorage.getItem("isivente_is_admin") === "true" ||
+      document.cookie.includes("isivente_admin=true")
+    ) {
+      return {
+        visitCount: 0,
+        isFirstVisit: false,
+        isReturningVisitor: false,
+        firstVisitDate: null,
+        lastVisitDate: null,
+      };
+    }
+  } catch {}
+
   try {
     const now = new Date().toISOString();
     const storedCount = localStorage.getItem(STORAGE_KEY_VISIT_COUNT);

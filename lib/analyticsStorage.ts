@@ -50,8 +50,26 @@ export function trackUserSession(
 ) {
   try {
     if (typeof window === 'undefined') return;
+
+    // Protection absolue : Ne JAMAIS comptabiliser les pages admin ni les administrateurs
+    if (
+      window.location.pathname.startsWith('/admin') ||
+      window.location.pathname.startsWith('/api') ||
+      localStorage.getItem("isivente_is_admin") === "true" ||
+      sessionStorage.getItem("isivente_is_admin") === "true" ||
+      document.cookie.includes("isivente_admin=true")
+    ) {
+      return;
+    }
+
+    // Uniquement pour les vraies landing pages de produits (exclure tout slug admin ou invalide)
+    const cleanSlug = slug?.trim();
+    if (!cleanSlug || cleanSlug.startsWith('admin') || cleanSlug === 'autre' || cleanSlug === 'admin') {
+      return;
+    }
+
     const payload = {
-      product_slug: slug,
+      product_slug: cleanSlug,
       duration_seconds,
       clicked: clicked_order,
       session_id,
@@ -69,7 +87,7 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
   try {
     let query = supabase
       .from('analytics')
-      .select('duration_seconds, clicked, created_at')
+      .select('product_slug, duration_seconds, clicked, created_at')
       .order('created_at', { ascending: false })
       .limit(10000);
 
@@ -89,13 +107,19 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
       };
     }
 
+    // Filtrage anti-parasite : exclure formellement toute entrée admin ou slug invalide
+    const validData = data.filter((d: any) => {
+      const s = d.product_slug;
+      return s && !s.startsWith('admin') && s !== 'admin' && s !== 'autre';
+    });
+
     const startOfToday = getStartOfTodayIso();
-    const totalViews = data.length;
-    const todayRows = data.filter((d: any) => d.created_at && d.created_at >= startOfToday);
+    const totalViews = validData.length;
+    const todayRows = validData.filter((d: any) => d.created_at && d.created_at >= startOfToday);
     const todayViews = todayRows.length;
-    const totalClicks = data.filter((d: any) => d.clicked).length;
+    const totalClicks = validData.filter((d: any) => d.clicked).length;
     const todayClicks = todayRows.filter((d: any) => d.clicked).length;
-    const totalDuration = data.reduce((acc: number, d: any) => acc + (d.duration_seconds || 0), 0);
+    const totalDuration = validData.reduce((acc: number, d: any) => acc + (d.duration_seconds || 0), 0);
     const avgTimeSpentSeconds = totalViews > 0 ? Math.round(totalDuration / totalViews) : 0;
     const ctr = totalViews > 0 ? Math.round((totalClicks / totalViews) * 1000) / 10 : 0;
 
@@ -138,7 +162,11 @@ export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]
     const bySlug: Record<string, { views: number; todayViews: number; clicks: number; todayClicks: number; duration: number }> = {};
     
     data.forEach((d: any) => {
-      const slug = d.product_slug || 'autre';
+      const slug = d.product_slug;
+      // Exclure formellement l'admin et les slugs vides
+      if (!slug || slug.startsWith('admin') || slug === 'autre' || slug === 'admin') {
+        return;
+      }
       if (!bySlug[slug]) {
         bySlug[slug] = { views: 0, todayViews: 0, clicks: 0, todayClicks: 0, duration: 0 };
       }

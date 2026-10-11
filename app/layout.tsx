@@ -39,7 +39,14 @@ export default function RootLayout({
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '2150878529184686');
-            fbq('track', 'PageView');
+            if (typeof window !== 'undefined') {
+              var isAdm = window.location.pathname.indexOf('/admin') === 0 || 
+                          window.location.pathname.indexOf('/api') === 0 ||
+                          window.localStorage.getItem('isivente_is_admin') === 'true';
+              if (!isAdm) {
+                fbq('track', 'PageView');
+              }
+            }
           `}
         </Script>
         <noscript>

@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
-  MousePointerClick,
+  BarChart3,
   Users,
   Target,
   ExternalLink,
@@ -20,6 +20,15 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
+  // Marquer définitivement ce navigateur comme administrateur pour exclure à 100% ses visites
+  useEffect(() => {
+    try {
+      localStorage.setItem("isivente_is_admin", "true");
+      sessionStorage.setItem("isivente_is_admin", "true");
+      document.cookie = "isivente_admin=true; path=/; max-age=31536000; SameSite=Lax";
+    } catch {}
+  }, []);
 
   const navItems = [
     {
@@ -49,8 +58,8 @@ export default function AdminLayout({
     },
     {
       href: "/admin/clicks",
-      label: "Clics & Entonnoir Ads",
-      icon: MousePointerClick,
+      label: "KPIs des Pages",
+      icon: BarChart3,
     },
     {
       href: "/admin/tracker",

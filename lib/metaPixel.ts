@@ -41,11 +41,31 @@ function getFbq(): ((...args: any[]) => void) | null {
 }
 
 /**
+ * Vérifie si le contexte actuel correspond à un administrateur ou une page admin
+ */
+function isAdminContext(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    if (
+      window.location.pathname.startsWith("/admin") ||
+      window.location.pathname.startsWith("/api") ||
+      localStorage.getItem("isivente_is_admin") === "true" ||
+      sessionStorage.getItem("isivente_is_admin") === "true" ||
+      document.cookie.includes("isivente_admin=true")
+    ) {
+      return true;
+    }
+  } catch {}
+  return false;
+}
+
+/**
  * Envoie un événement de secours côté serveur (Meta CAPI Bridge)
  * pour contourner les bloqueurs de publicité et les restrictions iOS/Android.
  */
 async function sendServerBridge(eventName: string, customData: Record<string, any> = {}, eventId?: string) {
   if (typeof window === "undefined") return;
+  if (isAdminContext()) return;
 
   const userData = getUserDataFromStorage();
 
@@ -69,6 +89,7 @@ async function sendServerBridge(eventName: string, customData: Record<string, an
  * Envoie un événement PageView à Meta Pixel
  */
 export function trackPageView() {
+  if (isAdminContext()) return;
   const eventId = "pv_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
   const fbq = getFbq();
   if (fbq) {
@@ -81,6 +102,7 @@ export function trackPageView() {
  * Envoie un événement personnalisé
  */
 export function trackCustomEvent(name: string, options: Record<string, any> = {}) {
+  if (isAdminContext()) return;
   const eventId = "custom_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
   const fbq = getFbq();
   if (fbq) {
@@ -99,6 +121,7 @@ export function trackViewContent(params: {
   value?: number;
   currency?: string;
 }) {
+  if (isAdminContext()) return;
   const data = {
     content_name: params.content_name,
     content_category: params.content_category || "E-commerce",
@@ -126,6 +149,7 @@ export function trackAddToCart(params: {
   currency?: string;
   num_items?: number;
 }) {
+  if (isAdminContext()) return;
   const data = {
     content_name: params.content_name,
     content_ids: params.content_ids || [],
@@ -153,6 +177,7 @@ export function trackInitiateCheckout(params: {
   currency?: string;
   num_items?: number;
 }) {
+  if (isAdminContext()) return;
   const data = {
     content_name: params.content_name,
     content_ids: params.content_ids || [],

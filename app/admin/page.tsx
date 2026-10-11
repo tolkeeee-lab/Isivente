@@ -483,16 +483,16 @@ export default function AdminOverviewPage() {
 
         <Link
           href="/admin/clicks"
-          className="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-xs transition-all flex items-center gap-3 group"
+          className="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-purple-300 hover:shadow-xs transition-all flex items-center gap-3 group"
         >
           <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <MousePointerClick className="w-4 h-4" />
+            <BarChart3 className="w-4 h-4" />
           </div>
           <div className="min-w-0">
             <div className="text-xs font-bold text-slate-900 group-hover:text-purple-600 transition-colors truncate">
-              Entonnoir & Clics Ads
+              KPIs des Pages
             </div>
-            <div className="text-[11px] text-slate-400 truncate">{analytics.formattedAvgTime} d&apos;attention moyenne</div>
+            <div className="text-[11px] text-slate-400 truncate">Vues, Clics & Conversions</div>
           </div>
         </Link>
 
@@ -670,7 +670,8 @@ export default function AdminOverviewPage() {
               href="/admin/clicks"
               className="text-xs font-semibold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-xl border border-purple-200 inline-flex items-center gap-1.5 transition-all"
             >
-              <span>Rapport détaillé des clics</span>
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span>Ouvrir l&apos;onglet KPIs des Pages</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>

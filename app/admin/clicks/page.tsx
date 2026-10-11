@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { 
   MousePointerClick, 
+  BarChart3,
+  ShieldCheck,
   Eye, 
   Timer, 
   TrendingUp, 
@@ -191,15 +193,15 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 mb-1 flex items-center gap-1.5">
-            <MousePointerClick className="w-3.5 h-3.5 text-indigo-500" />
-            <span>Audience & Conversion Publicitaire</span>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-indigo-600 mb-1 flex items-center gap-1.5">
+            <BarChart3 className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Tableau de Bord Analytics Produit</span>
           </div>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-slate-900 tracking-tight">
-            Clics, Visiteurs & CTR
+            KPIs & Visiteurs des Landing Pages
           </h1>
           <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
-            Analysez le trafic réel de vos publicités Meta, l&apos;attention des visiteurs et les conversions par produit.
+            Suivi en temps réel des visiteurs réels, taux de clic (CTR), temps d&apos;attention et conversions par page produit.
           </p>
         </div>
 
@@ -221,6 +223,22 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
             <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
             <span>Remettre les clics à zéro</span>
           </button>
+        </div>
+      </div>
+
+      {/* BANNIÈRE DE GARANTIE : EXCLUSION STRICTE DU TRAFIC ADMIN */}
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200/80 flex items-start sm:items-center gap-3 text-emerald-900 text-xs shadow-2xs">
+        <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
+          <ShieldCheck className="w-4 h-4" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-bold text-emerald-950 flex items-center gap-2">
+            <span>Filtrage Anti-Pollution Actif</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+          <p className="text-emerald-800 text-[11px] sm:text-xs mt-0.5">
+            Les consultations sur vos pages d&apos;administration (<code>/admin</code>) ainsi que vos propres tests ne sont <strong>JAMAIS comptabilisés</strong>. Seules les visites réelles des acheteurs sur vos landing pages de vente (<code>/p/[produit]</code>) sont enregistrées.
+          </p>
         </div>
       </div>
 

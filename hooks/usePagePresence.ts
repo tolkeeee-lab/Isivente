@@ -18,9 +18,15 @@ export function usePagePresence(slug: string) {
   useEffect(() => {
     if (!slug || typeof window === "undefined") return;
 
-    // Ignorer si l'utilisateur est administrateur (ne pas fausser les stats avec ses propres clics de test)
+    // Ignorer si la page actuelle est sur l'admin ou si l'utilisateur est administrateur (ne jamais fausser les stats)
     try {
-      if (localStorage.getItem("isivente_is_admin") === "true") {
+      if (
+        window.location.pathname.startsWith("/admin") ||
+        window.location.pathname.startsWith("/api") ||
+        localStorage.getItem("isivente_is_admin") === "true" ||
+        sessionStorage.getItem("isivente_is_admin") === "true" ||
+        document.cookie.includes("isivente_admin=true")
+      ) {
         return;
       }
     } catch {}
