@@ -21,6 +21,7 @@ import BraceletMainLanding from "@/components/features/BraceletMainLanding";
 import Stylo3DLanding from "@/components/features/Stylo3DLanding";
 import CarteDuMondeLanding from "@/components/features/CarteDuMondeLanding";
 import CapsaCareLanding from "@/components/features/CapsaCareLanding";
+import OdorAwayLanding from "@/components/features/OdorAwayLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -90,6 +91,10 @@ export function generateStaticParams() {
     { slug: "creme-douleur" },
     { slug: "capsa-care" },
     { slug: "creme-articulaire" },
+    { slug: "odoraway" },
+    { slug: "odor-away" },
+    { slug: "creme-deodorante" },
+    { slug: "deodorant-aisselles" },
   ];
 }
 
@@ -197,6 +202,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "capsa-care":
       case "creme-articulaire":
         return <CapsaCareLanding slug="capsacare" />;
+      case "odoraway":
+      case "odor-away":
+      case "creme-deodorante":
+      case "deodorant-aisselles":
+        return <OdorAwayLanding slug="odoraway" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

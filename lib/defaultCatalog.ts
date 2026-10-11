@@ -276,6 +276,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Tube Officiel CapsaCare™ 100g Formule Complète Douleurs", price: 14900 }
     ]
+  },
+  {
+    id: "odoraway-default",
+    title: "Crème Déodorante Aisselles OdorAway™ (Boîte de 24 Sachets)",
+    shortTitle: "Crème Déodorante OdorAway™",
+    slug: "odoraway",
+    price: 14900,
+    image_url: "/images/odoraway/odoraway-hero.jpg",
+    image: "/images/odoraway/odoraway-hero.jpg",
+    headline: "Des aisselles fraîches, nettes et sans mauvaises odeurs toute la journée : formule botanique naturelle en sachets individuels nomades.",
+    bundles: [
+      { name: "Boîte Officielle OdorAway™ 24 Sachets Individuels", price: 14900 }
+    ]
   }
 ];
 
