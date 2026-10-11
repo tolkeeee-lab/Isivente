@@ -20,6 +20,7 @@ import ProbioticGummiesLanding from "@/components/features/ProbioticGummiesLandi
 import BraceletMainLanding from "@/components/features/BraceletMainLanding";
 import Stylo3DLanding from "@/components/features/Stylo3DLanding";
 import CarteDuMondeLanding from "@/components/features/CarteDuMondeLanding";
+import CapsaCareLanding from "@/components/features/CapsaCareLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -85,6 +86,10 @@ export function generateStaticParams() {
     { slug: "scratch-map" },
     { slug: "carte-a-gratter" },
     { slug: "explore-the-world" },
+    { slug: "capsacare" },
+    { slug: "creme-douleur" },
+    { slug: "capsa-care" },
+    { slug: "creme-articulaire" },
   ];
 }
 
@@ -187,6 +192,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "carte-a-gratter":
       case "explore-the-world":
         return <CarteDuMondeLanding slug="carte-du-monde" />;
+      case "capsacare":
+      case "creme-douleur":
+      case "capsa-care":
+      case "creme-articulaire":
+        return <CapsaCareLanding slug="capsacare" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

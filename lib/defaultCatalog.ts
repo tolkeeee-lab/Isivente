@@ -263,6 +263,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Coffret Carte du Monde à Gratter Deluxe (82x59cm) + Tube & Accessoires", price: 14900 }
     ]
+  },
+  {
+    id: "capsacare-default",
+    title: "Crème Anti-Douleur Articulaire & Musculaire CapsaCare™ (Tube 100g)",
+    shortTitle: "Crème Soulagement Douleurs CapsaCare™",
+    slug: "capsacare",
+    price: 14900,
+    image_url: "/images/capsacare/capsacare-hero.jpg",
+    image: "/images/capsacare/capsacare-hero.jpg",
+    headline: "Soulagement rapide et ciblé des douleurs musculaires et articulaires : formule naturelle aux extraits de Capsaïcine, Menthol, Arnica, MSM et Glucosamine.",
+    bundles: [
+      { name: "Tube Officiel CapsaCare™ 100g Formule Complète Douleurs", price: 14900 }
+    ]
   }
 ];
 
