@@ -17,6 +17,19 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "duo-bracelets-coeur-default",
+    title: "Coffret Cadeau Écrin Duo de Bracelets Cœurs Dorés Ajustables",
+    shortTitle: "Duo Bracelets Cœurs Dorés",
+    slug: "duo-bracelets-coeur",
+    price: 14900,
+    image_url: "/images/bracelets-coeur/bracelet-duo-partager.jpg",
+    image: "/images/bracelets-coeur/bracelet-duo-partager.jpg",
+    headline: "Deux designs précieux, un même éclat d'amour : coffret cadeau de luxe avec deux bracelets cœurs dorés ajustables.",
+    bundles: [
+      { name: "Coffret Cadeau Écrin Duo de Bracelets Cœurs Dorés Ajustables", price: 14900 }
+    ]
+  },
+  {
     id: "voiture-camera-default",
     title: "Voiture Télécommandée de Course avec Caméra HD & Manette Écran FPV",
     shortTitle: "Voiture Télécommandée Caméra HD",
