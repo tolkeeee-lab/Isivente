@@ -32,6 +32,7 @@ export async function sendOrderNotification(order: NotificationOrderData) {
     telegram?: boolean;
     resend?: boolean;
     formsubmit?: boolean;
+    ntfy?: boolean;
   } = {};
 
   const emailSubject = `🚨 NOUVELLE COMMANDE #${orderRef} (${order.customer_name || "Client"}) - ${formattedAmount}`;
@@ -134,6 +135,31 @@ export async function sendOrderNotification(order: NotificationOrderData) {
       results.telegram = tgRes.ok;
     } catch (tgErr) {
       console.error("Telegram notification error:", tgErr);
+    }
+  }
+
+  // 3. PUSH NOTIFICATION SMARTPHONE INSTANTANÉE (ntfy.sh - SONNERIE & BANNIÈRE SUR ÉCRAN VERROUILLÉ)
+  const ntfyTopic = (process.env.NTFY_TOPIC || "isivente-commandes-tolkeeee").trim();
+  if (ntfyTopic) {
+    try {
+      const actions = whatsappLink
+        ? `view, 💬 Contacter WhatsApp, ${whatsappLink}; view, 📦 Voir Commande, https://isivente.vercel.app/admin/orders`
+        : `view, 📦 Voir Commande, https://isivente.vercel.app/admin/orders`;
+
+      const ntfyRes = await fetch(`https://ntfy.sh/${encodeURIComponent(ntfyTopic)}`, {
+        method: "POST",
+        headers: {
+          "Title": `🚨 NOUVELLE COMMANDE (${formattedAmount})`,
+          "Priority": "urgent",
+          "Tags": "package,moneybag",
+          "Actions": actions,
+          "Click": whatsappLink || "https://isivente.vercel.app/admin/orders",
+        },
+        body: `Client : ${order.customer_name || "Client"}\nTéléphone : ${order.customer_phone || "Non renseigné"}\nProduit : ${order.product_title || "Produit"}\nLieu : ${city} (${address})`,
+      });
+      results.ntfy = ntfyRes.ok;
+    } catch (ntfyErr) {
+      console.error("ntfy push error:", ntfyErr);
     }
   }
 
@@ -317,6 +343,24 @@ export async function sendAbandonedLeadNotification(lead: {
         body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "Markdown" }),
       });
     } catch (tgErr) { }
+  }
+
+  // Push ntfy pour prospect abandonné
+  const ntfyTopic = (process.env.NTFY_TOPIC || "isivente-commandes-tolkeeee").trim();
+  if (ntfyTopic) {
+    try {
+      await fetch(`https://ntfy.sh/${encodeURIComponent(ntfyTopic)}`, {
+        method: "POST",
+        headers: {
+          "Title": `⚠️ PANIER ABANDONNÉ (${formattedAmount})`,
+          "Priority": "high",
+          "Tags": "warning,fire",
+          "Actions": whatsappLink ? `view, 💬 Relancer WhatsApp, ${whatsappLink}` : "",
+          "Click": whatsappLink || "https://isivente.vercel.app/admin/prospects",
+        },
+        body: `Prospect : ${lead.customer_name || "Client"}\nTél : ${cleanPhone}\nProduit : ${lead.product_title}`,
+      });
+    } catch (_) {}
   }
 
   return { success: true };

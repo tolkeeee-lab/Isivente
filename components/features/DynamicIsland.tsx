@@ -119,40 +119,22 @@ export default function DynamicIsland({ slug }: { slug?: string }) {
   return (
     <aside
       aria-label="Notifications Isivente en direct"
-      className="fixed top-2.5 sm:top-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none max-w-[94vw]"
+      className={`fixed top-3 sm:top-4 left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] select-none max-w-[94vw] ${
+        isOpen
+          ? "translate-y-0 opacity-100 scale-100 pointer-events-auto"
+          : "-translate-y-14 opacity-0 scale-90 pointer-events-none"
+      }`}
     >
       <div
         onClick={handleClick}
-        className={`pointer-events-auto cursor-pointer relative bg-black/95 text-white backdrop-blur-xl border border-white/15 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_16px_36px_-8px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.06)] overflow-hidden ${
-          isOpen
-            ? "w-[360px] sm:w-[410px] max-w-[94vw] p-3 sm:p-3.5 rounded-3xl"
-            : "w-[170px] sm:w-[190px] px-3.5 py-1.5 rounded-full hover:scale-105 active:scale-95"
-        }`}
+        className="cursor-pointer relative bg-black/95 text-white backdrop-blur-xl border border-white/20 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_20px_45px_-10px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.1)] overflow-hidden w-[360px] sm:w-[410px] max-w-[94vw] p-3 sm:p-3.5 rounded-3xl"
       >
         {/* Lueur d'ambiance Apple Dynamic Island */}
         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none opacity-40" />
 
-        {/* CONTENU QUAND REPLIÉ (COMPACT PILL) */}
-        {!isOpen && (
-          <div className="flex items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span className="font-semibold text-[11px] tracking-tight truncate text-slate-200">
-                Isivente Direct
-              </span>
-            </div>
-            <span className="text-[10px] text-amber-400 font-mono font-bold shrink-0">
-              {productPrice}
-            </span>
-          </div>
-        )}
-
-        {/* CONTENU QUAND DÉPLOYÉ (EXPANDED DYNAMIC CARD) */}
-        {isOpen && currentNotification && (
-          <div className="relative flex items-center justify-between gap-3 text-left animate-in fade-in zoom-in-95 duration-300">
+        {/* CONTENU DE LA NOTIFICATION DÉPLOYÉE */}
+        {currentNotification && (
+          <div className="relative flex items-center justify-between gap-3 text-left">
             {/* Icône / Avatar interactif */}
             <div className="relative shrink-0 w-9 h-9 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center">
               {currentNotification.icon === "order" && (
