@@ -27,6 +27,7 @@ import ParesoleilLanding from "@/components/features/ParesoleilLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
+import DynamicIsland from "@/components/features/DynamicIsland";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export function generateStaticParams() {
@@ -238,6 +239,7 @@ export default async function ProductPage({ params }: PageProps) {
 
   return (
     <>
+      <DynamicIsland slug={normalizedSlug} />
       {renderContent()}
       <ShoppingAgentWidget slug={normalizedSlug} />
       <ExitIntentModal slug={normalizedSlug} />

@@ -29,6 +29,7 @@ import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { trackViewContent, trackInitiateCheckout, trackAddToCart } from "@/lib/metaPixel";
+import { triggerDynamicIsland } from "@/components/features/DynamicIsland";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -127,6 +128,14 @@ export default function ParesoleilLanding({ slug = "pare-soleil" }: { slug?: str
       value: selectedBundle.price,
       currency: "XOF",
       num_items: 1,
+    });
+    triggerDynamicIsland({
+      title: "Formulaire Express COD",
+      subtitle: "Paiement 14 900 F à la livraison • Cotonou, Calavi & Bénin",
+      badge: "Prêt",
+      price: "14 900 F",
+      icon: "shipping",
+      duration: 4500,
     });
     document.getElementById("commander")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
