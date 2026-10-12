@@ -44,6 +44,7 @@ const BUNDLES: BundleOption[] = [
 ];
 
 const HERO_IMAGES = [
+  { src: "/images/pare-soleil/pare-soleil-reel.jpg", alt: "Pare-soleil anti-eblouissement installe en situation reelle dans un vehicule" },
   { src: "/images/pare-soleil/pare-soleil-hero-1.jpg", alt: "Pare-soleil anti-eblouissement dans une voiture" },
   { src: "/images/pare-soleil/pare-soleil-hero-2.jpg", alt: "Les deux ecrans jaune et fume du pare-soleil" },
   { src: "/images/pare-soleil/pare-soleil-hero-3.jpg", alt: "Installation en 3 etapes du pare-soleil" },
@@ -264,7 +265,7 @@ export default function ParesoleilLanding({ slug = "pare-soleil" }: { slug?: str
           <UmeiStyleOrderSection
             productSlug={slug}
             productTitle="Pare-Soleil Anti-Éblouissement 2-en-1 Jour/Nuit (Vision Claire HD)"
-            productImage="/images/pare-soleil/pare-soleil-hero-1.jpg"
+            productImage="/images/pare-soleil/pare-soleil-reel.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => {
@@ -314,25 +315,37 @@ export default function ParesoleilLanding({ slug = "pare-soleil" }: { slug?: str
           </div>
         </section>
 
-        {/* VIDEO DEMO */}
-        <section className="space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 text-center">Voyez la difference en action</h2>
-          <div className="rounded-3xl border border-slate-200/90 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] bg-black">
-            <video
-              src="/videos/pare-soleil-demo.mp4"
-              poster="/images/pare-soleil/pare-soleil-video-cover.jpg"
-              autoPlay
-              muted
-              playsInline
-              loop
-              controls
-              preload="auto"
-              className="w-full h-full object-cover"
+        {/* EN SITUATION RÉELLE (REMPLACE LA VIDÉO POUR UN CHARGEMENT ULTRA RAPIDE) */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] space-y-5">
+          <div className="text-center space-y-1.5">
+            <span className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-100 uppercase tracking-wider px-3 py-1 rounded-full">
+              En Condition Réelle de Conduite
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Voyez le rendu en utilisation réelle
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
+              Fixation instantanée par clip sur votre pare-soleil d&apos;origine. Les deux écrans s&apos;ajustent d&apos;un simple geste pour une visibilité haute définition.
+            </p>
+          </div>
+
+          <div className="relative max-w-sm sm:max-w-md mx-auto aspect-[3/4] rounded-2xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
+            <Image
+              src="/images/pare-soleil/pare-soleil-reel.jpg"
+              alt="Pare-soleil anti-éblouissement 2-en-1 testé en condition réelle"
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, 448px"
+              loading="lazy"
             />
           </div>
-          <div className="text-center">
-            <button onClick={scrollToOrder} className="inline-flex items-center gap-2 px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm rounded-2xl shadow-[0_4px_14px_-4px_rgba(245,158,11,0.5)] active:scale-[0.97] transition-all cursor-pointer">
-              Commander maintenant (14 900 FCFA)
+
+          <div className="text-center pt-2">
+            <button
+              onClick={scrollToOrder}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-amber-500 hover:bg-amber-600 active:scale-[0.97] text-white font-bold text-xs sm:text-sm rounded-xl shadow-[0_4px_14px_-4px_rgba(245,158,11,0.5)] transition-all cursor-pointer"
+            >
+              <span>Commander maintenant (14 900 FCFA)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
