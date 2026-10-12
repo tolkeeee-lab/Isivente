@@ -52,7 +52,7 @@ export default function AdminClicksPage() {
   const defaultProducts = getAdminDashboardProducts();
 
   const [productsList, setProductsList] = useState(defaultProducts);
-  const [metaAdClicks, setMetaAdClicks] = useState<number>(114); // Valeur de la campagne Meta actuelle
+  const [metaAdClicks, setMetaAdClicks] = useState<number>(0); // Saisi manuellement depuis le gestionnaire Meta Ads
   const [isEditingMetaClicks, setIsEditingMetaClicks] = useState(false);
   const [hasAnalyticsTable, setHasAnalyticsTable] = useState<boolean>(true);
   const [copiedSql, setCopiedSql] = useState<boolean>(false);
@@ -129,7 +129,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
       if (typeof window !== "undefined") {
         const savedMetaClicks = localStorage.getItem("isivente_meta_ad_clicks");
         if (savedMetaClicks) {
-          setMetaAdClicks(Number(savedMetaClicks) || 114);
+          setMetaAdClicks(Number(savedMetaClicks) || 0);
         }
       }
 
@@ -308,7 +308,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 <button
                   onClick={() => {
                     const el = document.getElementById("metaClicksInput") as HTMLInputElement;
-                    handleSaveMetaClicks(Number(el?.value) || 114);
+                    handleSaveMetaClicks(Number(el?.value) || 0);
                   }}
                   className="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-xs font-bold"
                 >
@@ -328,15 +328,13 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
           </div>
         </div>
 
-        {/* CALCULS DE COHÉRENCE (LES VISITEURS QUI ONT COMMANDE OU LAISSE UN NUMERO ONT NECESSAIREMENT VISITE) */}
+        {/* ENTONNOIR RÉEL (données Supabase analytics + commandes + leads) */}
         {(() => {
           const totalLeads = Object.values(leadsCountBySlug).reduce((a, b) => a + b, 0);
           const totalOrders = Object.values(orderCountsBySlug).reduce((a, b) => a + b, 0);
-          const confirmedVisitorsTotal = Math.max(analytics.totalViews, totalLeads + totalOrders);
-          const confirmedClicksTotal = Math.max(analytics.totalClicks, totalLeads + totalOrders);
-          const confirmedCtr = confirmedVisitorsTotal > 0 
-            ? Math.round((confirmedClicksTotal / confirmedVisitorsTotal) * 1000) / 10 
-            : 0;
+          const realViews = analytics.totalViews;
+          const realClicks = analytics.totalClicks;
+          const realCtr = analytics.ctr;
 
           return (
             <>
@@ -359,10 +357,10 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                     2. Visites Réelles Site
                   </span>
                   <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
-                    {confirmedVisitorsTotal}
+                    {realViews}
                   </div>
                   <div className="text-[11px] text-slate-500 font-medium">
-                    {metaAdClicks > 0 ? `${Math.min(100, Math.round((confirmedVisitorsTotal / metaAdClicks) * 100))}% parvenus` : "—"}
+                    {metaAdClicks > 0 ? `${Math.min(100, Math.round((realViews / metaAdClicks) * 100))}% parvenus` : "—"}
                   </div>
                 </div>
 
@@ -401,9 +399,9 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                   </div>
                   <div>
                     <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-slate-900">
-                      {loading ? "..." : confirmedVisitorsTotal}
+                      {loading ? "..." : realViews}
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-1">Sessions réelles détectées</div>
+                    <div className="text-[11px] text-slate-400 mt-1">Sessions réelles enregistrées</div>
                   </div>
                 </div>
 
@@ -417,7 +415,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                   </div>
                   <div>
                     <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-indigo-950">
-                      {loading ? "..." : confirmedClicksTotal}
+                      {loading ? "..." : realClicks}
                     </div>
                     <div className="text-[11px] text-indigo-600 font-medium mt-1">Clics vers formulaire ou commande</div>
                   </div>
@@ -433,10 +431,10 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                   </div>
                   <div>
                     <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-emerald-950">
-                      {loading ? "..." : `${confirmedCtr}%`}
+                      {loading ? "..." : `${realCtr}%`}
                     </div>
                     <div className="text-[11px] text-emerald-700 font-medium mt-1">
-                      {confirmedCtr >= 15 ? "🔥 Excellent engagement" : "Objectif recommandé : > 15%"}
+                      {realCtr >= 15 ? "Excellent engagement" : "Objectif recommandé : > 15%"}
                     </div>
                   </div>
                 </div>
@@ -498,11 +496,9 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 const pa = productAnalytics.find((p) => p.slug === prod.slug);
                 const orders = orderCountsBySlug[prod.slug] || 0;
                 const leads = leadsCountBySlug[prod.slug] || 0;
-                const rawViews = pa?.totalViews || 0;
-                const rawClicks = pa?.totalClicks || 0;
-                const views = Math.max(rawViews, leads + orders);
-                const clicks = Math.max(rawClicks, leads + orders);
-                const ctr = views > 0 ? Math.round((clicks / views) * 1000) / 10 : 0;
+                const views = pa?.totalViews || 0;
+                const clicks = pa?.totalClicks || 0;
+                const ctr = pa?.ctr ?? 0;
                 const avgTime = pa?.formattedAvgTime || "—";
 
                 return (
@@ -620,7 +616,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-600 leading-relaxed">
           <div className="space-y-1">
-            <div className="font-bold text-slate-800">1. Clics Meta Ads (114 clics)</div>
+            <div className="font-bold text-slate-800">1. Clics Pub Meta Ads ({metaAdClicks > 0 ? `${metaAdClicks} clics` : "à renseigner"})</div>
             <p>
               Facebook compte un clic dès qu&apos;un doigt effleure l&apos;annonce. Si la connexion 3G/4G est instable et que le visiteur ferme avant que la page charge, la session est perdue en route.
             </p>

@@ -89,14 +89,15 @@ export default function OrdersPage() {
   // ── Modale Saisie WhatsApp ──
   const [showManualModal, setShowManualModal] = useState(false);
   const [manualLoading, setManualLoading] = useState(false);
+  const defaultProduct = DEFAULT_CATALOG[0];
   const [manualForm, setManualForm] = useState({
     customer_name: "",
     customer_phone: "",
     city: "Cotonou",
     address: "",
-    product_slug: "microscope",
-    product_title: "Microscope Numérique Portable HD 1000X",
-    total_amount: 24900,
+    product_slug: defaultProduct.slug,
+    product_title: defaultProduct.title,
+    total_amount: defaultProduct.price,
     status: "confirmed",
     reservation_date: "",
     notes: "",
@@ -196,7 +197,7 @@ export default function OrdersPage() {
         product_title: manualForm.product_title,
         bundle_name: "Commande directe WhatsApp",
         quantity: 1,
-        total_amount: Number(manualForm.total_amount) || 24900,
+        total_amount: Number(manualForm.total_amount) || defaultProduct.price,
         status: manualForm.status,
         reservation_date: manualForm.reservation_date.trim(),
         notes: manualForm.notes.trim(),
@@ -208,9 +209,9 @@ export default function OrdersPage() {
         customer_phone: "",
         city: "Cotonou",
         address: "",
-        product_slug: "microscope",
-        product_title: "Microscope Numérique Portable HD 1000X",
-        total_amount: 24900,
+        product_slug: defaultProduct.slug,
+        product_title: defaultProduct.title,
+        total_amount: defaultProduct.price,
         status: "confirmed",
         reservation_date: "",
         notes: "",

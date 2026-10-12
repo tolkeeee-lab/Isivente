@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
 
     // Validation des montants et quantités (accepte total_amount, total_price ou price)
     const rawAmount = Number(body.total_amount ?? body.total_price ?? body.price);
-    const totalAmount = !isNaN(rawAmount) && rawAmount >= 0 && rawAmount <= 10000000 ? Math.round(rawAmount) : 14900;
+    const totalAmount = !isNaN(rawAmount) && rawAmount >= 0 && rawAmount <= 10000000 ? Math.round(rawAmount) : 0;
 
     const rawQuantity = Number(body.quantity);
     const quantity = !isNaN(rawQuantity) && rawQuantity >= 1 && rawQuantity <= 100 ? Math.floor(rawQuantity) : 1;

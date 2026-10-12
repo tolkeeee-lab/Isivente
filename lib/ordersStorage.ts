@@ -115,7 +115,7 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
       product_title: fallbackOrder.product_title || 'Produit Isivente',
       bundle_name: fallbackOrder.bundle_name || 'Standard',
       quantity: Number(fallbackOrder.quantity) || 1,
-      total_amount: Number(fallbackOrder.total_amount ?? (fallbackOrder as any).total_price ?? (fallbackOrder as any).price) || 14900,
+      total_amount: Number(fallbackOrder.total_amount ?? (fallbackOrder as any).total_price ?? (fallbackOrder as any).price) || 0,
       status: fallbackOrder.status || 'pending',
       created_at: fallbackOrder.created_at || new Date().toISOString(),
     };

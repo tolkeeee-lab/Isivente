@@ -75,26 +75,64 @@ export function trackUserSession(
       session_id,
       created_at: new Date().toISOString(),
     };
+
+    // 1. Enregistrement direct Supabase
     Promise.resolve(
       supabase
         .from('analytics')
         .upsert([payload], { onConflict: 'session_id' })
     ).catch(() => {});
+
+    // 2. Enregistrement résilient via l'API serveur (contourne adblockers & CSP)
+    try {
+      fetch('/api/analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
   } catch {}
 }
 
 export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> {
   try {
-    let query = supabase
-      .from('analytics')
-      .select('product_slug, duration_seconds, clicked, created_at')
-      .order('created_at', { ascending: false })
-      .limit(10000);
+    let data: any[] | null = null;
+    let error: any = null;
 
-    if (slug) {
-      query = query.eq('product_slug', slug);
+    // 1. Tenter via Supabase client
+    try {
+      let query = supabase
+        .from('analytics')
+        .select('product_slug, duration_seconds, clicked, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10000);
+
+      if (slug) {
+        query = query.eq('product_slug', slug);
+      }
+      const res = await query;
+      data = res.data;
+      error = res.error;
+    } catch (e) {
+      error = e;
     }
-    const { data, error } = await query;
+
+    // 2. Fallback via /api/analytics si Supabase client est bloqué ou échoue
+    if ((error || !data || data.length === 0) && typeof window !== 'undefined') {
+      try {
+        const url = slug ? `/api/analytics?slug=${encodeURIComponent(slug)}` : '/api/analytics';
+        const res = await fetch(url, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.rows) && json.rows.length > 0) {
+            data = json.rows;
+            error = null;
+          }
+        }
+      } catch {}
+    }
+
     if (error || !data || data.length === 0) {
       return {
         totalViews: 0,
@@ -148,11 +186,33 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
 
 export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]> {
   try {
-    const { data, error } = await supabase
-      .from('analytics')
-      .select('product_slug, duration_seconds, clicked, created_at')
-      .order('created_at', { ascending: false })
-      .limit(10000);
+    let data: any[] | null = null;
+    let error: any = null;
+
+    try {
+      const res = await supabase
+        .from('analytics')
+        .select('product_slug, duration_seconds, clicked, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10000);
+      data = res.data;
+      error = res.error;
+    } catch (e) {
+      error = e;
+    }
+
+    if ((error || !data || data.length === 0) && typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/analytics', { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.rows)) {
+            data = json.rows;
+            error = null;
+          }
+        }
+      } catch {}
+    }
 
     if (error || !data || data.length === 0) {
       return [];
