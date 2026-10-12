@@ -23,6 +23,7 @@ import CarteDuMondeLanding from "@/components/features/CarteDuMondeLanding";
 import CapsaCareLanding from "@/components/features/CapsaCareLanding";
 import OdorAwayLanding from "@/components/features/OdorAwayLanding";
 import DuoBraceletsCoeurLanding from "@/components/features/DuoBraceletsCoeurLanding";
+import ParesoleilLanding from "@/components/features/ParesoleilLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -100,6 +101,10 @@ export function generateStaticParams() {
     { slug: "bracelets-coeur" },
     { slug: "duo-coeur" },
     { slug: "bracelet-coeur" },
+    { slug: "pare-soleil" },
+    { slug: "pare-brise" },
+    { slug: "anti-eblouissement" },
+    { slug: "visiere-auto" },
   ];
 }
 
@@ -217,6 +222,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "duo-coeur":
       case "bracelet-coeur":
         return <DuoBraceletsCoeurLanding slug="duo-bracelets-coeur" />;
+      case "pare-soleil":
+      case "pare-brise":
+      case "anti-eblouissement":
+      case "visiere-auto":
+        return <ParesoleilLanding slug="pare-soleil" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

@@ -302,6 +302,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Boîte Officielle OdorAway™ 24 Sachets Individuels", price: 14900 }
     ]
+  },
+  {
+    id: "pare-soleil-default",
+    title: "Pare-Soleil Anti-\u00c9blouissement 2-en-1 Jour/Nuit (Vision Claire HD)",
+    shortTitle: "Pare-Soleil Anti-\u00c9blouissement 2-en-1",
+    slug: "pare-soleil",
+    price: 14900,
+    image_url: "/images/pare-soleil/pare-soleil-hero-1.jpg",
+    image: "/images/pare-soleil/pare-soleil-hero-1.jpg",
+    headline: "Conduisez sans aucune gêne, de jour comme de nuit. \u00c9cran jaune contre le soleil, \u00e9cran fum\u00e9 contre les phares : deux protections dans un seul accessoire.",
+    bundles: [
+      { name: "Pare-Soleil Anti-\u00c9blouissement 2-en-1 Jour/Nuit + Clip Universel", price: 14900 }
+    ]
   }
 ];
 

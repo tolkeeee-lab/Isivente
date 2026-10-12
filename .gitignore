@@ -31,3 +31,29 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ── Fichiers lourds à ne jamais commiter ──────────────────────────────
+# Vidéos
+*.mp4
+*.mov
+*.avi
+*.webm
+
+# Audio
+*.mp3
+*.wav
+*.aac
+*.ogg
+
+# Images lourdes / frames de rendu
+public/videos/
+public/audio/
+VIDEOS_PUB/
+scratch/
+render_*.js
+compile_*.js
+generate_*.js
+export_*.js
+
+# Scripts utilitaires temporaires
+scripts/
