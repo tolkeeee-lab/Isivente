@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galerie Visuels & Témoignages - Masque Curcuma & Acide Kojique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --text: #0F172A;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --primary: #F59E0B;
+      --primary-dark: #D97706;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 32px 16px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 40px; }
+    header h1 { font-size: 28px; font-weight: 800; color: #1E293B; margin-bottom: 8px; }
+    header p { color: var(--muted); font-size: 15px; }
+    
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+    .badge-amber { background: #FEF3C7; color: #92400E; }
+    .badge-green { background: #DCFCE7; color: #166534; }
+    .badge-blue { background: #DBEAFE; color: #1E40AF; }
+
+    .section-title { font-size: 20px; font-weight: 700; margin: 40px 0 20px; display: flex; align-items: center; gap: 10px; }
+    .section-title span { background: #0F172A; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+
+    .grid-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1); }
+    .card-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #F1F5F9; }
+    .card-body { padding: 16px; }
+    .card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #1E293B; }
+    .card-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
+    .brand-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-top: 10px; }
+    .tag-neutral { background: #F0FDF4; color: #15803D; border: 1px solid #BBF7D0; }
+    .tag-branded { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+
+    .grid-reviews { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+    .review-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px -4px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 14px; }
+    .review-header { display: flex; align-items: center; gap: 12px; }
+    .review-avatar { width: 44px; height: 44px; border-radius: 50%; background: #FEF3C7; color: #92400E; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; }
+    .review-author { font-weight: 700; font-size: 14px; color: #0F172A; }
+    .review-verified { font-size: 11px; color: #16A34A; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .review-stars { color: #F59E0B; font-size: 13px; letter-spacing: 2px; }
+    .review-photo { width: 100%; border-radius: 12px; max-height: 220px; object-fit: cover; border: 1px solid var(--border); }
+    .review-quote { font-size: 13.5px; line-height: 1.5; color: #334155; font-style: italic; background: #F8FAFC; padding: 12px; border-radius: 10px; border-left: 3px solid #F59E0B; }
+    .review-original { font-size: 11.5px; color: #94A3B8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge badge-amber">Isivente - Pack Ressources Produit</div>
+      <h1>Visuels Récupérés & Témoignages Traduits</h1>
+      <p>Masque de Nuit Enveloppant Curcuma & Acide Kojique (Extraction join.quiabeauty.com)</p>
+    </header>
+
+    <!-- SECTION 1: VISUELS OFFICIELS -->
+    <div class="section-title">
+      <span>1</span>
+      <h2>Les 12 Visuels Officiels Extraits</h2>
+    </div>
+
+    <div class="grid-images">
+      <!-- 1 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_1.webp" alt="Packshot Flacon">
+        <div class="card-body">
+          <div class="card-title">Slide 1 : Packshot Flacon + Pinceau</div>
+          <div class="card-desc">Tube jaune 75ml avec applicateur en silicone.</div>
+          <span class="brand-tag tag-branded">Comporte la marque QUIA (à remplacer)</span>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_2.webp" alt="Avant Après">
+        <div class="card-body">
+          <div class="card-title">Slide 2 : Avant / Après Taches Sombres</div>
+          <div class="card-desc">Résultat comparatif sur l'hyperpigmentation et les joues.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_3.webp" alt="Avant Après Joues">
+        <div class="card-body">
+          <div class="card-title">Slide 3 : Lissage du Grain de Peau</div>
+          <div class="card-desc">Atténuation des cicatrices d'acné et rougeurs.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_4.webp" alt="Zoom Résultats">
+        <div class="card-body">
+          <div class="card-title">Slide 4 : Texture Peau Lisse</div>
+          <div class="card-desc">Resserrage des pores dilatés et éclat uniforme.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_5.webp" alt="Résultats">
+        <div class="card-body">
+          <div class="card-title">Slide 5 : Teint Éclairci & Lumineux</div>
+          <div class="card-desc">Effet "Glass Skin" éclat sain au réveil.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_6.webp" alt="Zoom">
+        <div class="card-body">
+          <div class="card-title">Slide 6 : Atténuation des Taches Brunes</div>
+          <div class="card-desc">Focus sur la réduction de mélanine locale.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_7.webp" alt="Curcuma">
+        <div class="card-body">
+          <div class="card-title">Slide 7 : Ingrédient Actif Curcuma</div>
+          <div class="card-desc">Propriétés anti-inflammatoires et antioxydantes.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_8.webp" alt="Acide Kojique">
+        <div class="card-body">
+          <div class="card-title">Slide 8 : Ingrédient Acide Kojique</div>
+          <div class="card-desc">Inhibe la production excessive de mélanine sans décapage.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_9.webp" alt="Technologie Pellicule">
+        <div class="card-body">
+          <div class="card-title">Slide 9 : Technologie Wrapping Film</div>
+          <div class="card-desc">Retient l'hydratation et diffuse les actifs 8h durant la nuit.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_10.webp" alt="Application">
+        <div class="card-body">
+          <div class="card-title">Slide 10 : Étape 1 - Application Douce</div>
+          <div class="card-desc">Étaler une fine couche uniforme avec le pinceau.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 11 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_11.webp" alt="Séchage">
+        <div class="card-body">
+          <div class="card-title">Slide 11 : Étape 2 - Séchage 15 min</div>
+          <div class="card-desc">Ne colle pas à l'oreiller, film protecteur invisible.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+
+      <!-- 12 -->
+      <div class="card">
+        <img class="card-img" src="/images/quia-mask/quia_slide_12.webp" alt="Retrait">
+        <div class="card-body">
+          <div class="card-title">Slide 12 : Étape 3 - Retrait au Réveil</div>
+          <div class="card-desc">Se pèle délicatement d'un geste ou se rince à l'eau tiède.</div>
+          <span class="brand-tag tag-neutral">100% Neutre & Exploitable</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: AVIS ET TEMOIGNAGES TRADUITS -->
+    <div class="section-title">
+      <span>2</span>
+      <h2>Témoignages Clientes Traduits en Français (Cible Peaux Foncées & Taches)</h2>
+    </div>
+
+    <div class="grid-reviews">
+      <!-- Review 1 -->
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">AK</div>
+          <div>
+            <div class="review-author">Aminata K. (Abidjan)</div>
+            <div class="review-verified">✓ Achat vérifié</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+        </div>
+        <img class="review-photo" src="/images/reviews-loox/review_11.jpg" alt="Photo Cliente Aminata">
+        <div class="review-quote">
+          "Mes taches sombres sur les joues et mon mélasma ont visiblement diminué après 2 semaines d'application chaque soir. J'avais la peau sèche et terne. Le matin au retrait du masque, mon visage est lumineux et repulpé !"
+        </div>
+        <div class="review-original">Original EN: "My dark spots have lightened and my skin is glowing."</div>
+      </div>
+
+      <!-- Review 2 -->
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">GM</div>
+          <div>
+            <div class="review-author">Grace M. (Dakar)</div>
+            <div class="review-verified">✓ Achat vérifié</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+        </div>
+        <img class="review-photo" src="/images/reviews-loox/review_15.jpg" alt="Photo Cliente Grace">
+        <div class="review-quote">
+          "J'avais peur que ce produit contienne des substances agressives comme tant de crèmes éclaircissantes. C'est 100% doux ! Le curcuma et l'acide kojique ont harmonisé mon teint naturellement sans décapage."
+        </div>
+        <div class="review-original">Original EN: "My skin was glowing, love how it boosts the skin and gives smooth glow."</div>
+      </div>
+
+      <!-- Review 3 -->
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">FS</div>
+          <div>
+            <div class="review-author">Fatou S. (Douala)</div>
+            <div class="review-verified">✓ Achat vérifié</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+        </div>
+        <img class="review-photo" src="/images/reviews-loox/review_16.jpg" alt="Photo Cliente Fatou">
+        <div class="review-quote">
+          "Ce masque a complètement réglé mes problèmes de texture rugueuse et de petites bosses sur le visage. Dès qu'on retire le masque le matin, la peau est douce comme celle d'un bébé. Je rachète les yeux fermés !"
+        </div>
+        <div class="review-original">Original EN: "This wrapping mask sorted out rough texture on my cheeks for me in a couple of weeks."</div>
+      </div>
+
+      <!-- Review 4 -->
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">AD</div>
+          <div>
+            <div class="review-author">Aïcha D. (Lomé)</div>
+            <div class="review-verified">✓ Achat vérifié</div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+        </div>
+        <img class="review-photo" src="/images/reviews-loox/review_4.jpg" alt="Photo Cliente Aïcha">
+        <div class="review-quote">
+          "L'application avec le pinceau silicone est ultra propre. Il sèche en 15 minutes sans tacher les draps la nuit, et se retire d'un seul geste le lendemain matin. L'effet éclat est visible dès le premier réveil."
+        </div>
+        <div class="review-original">Original EN: "I can see the difference from the very first time I use it. Great product!"</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
