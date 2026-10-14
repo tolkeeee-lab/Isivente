@@ -19,7 +19,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
+import { trackInitiateCheckout, trackLead } from "@/lib/metaPixel";
 import { playOrderSound } from "@/lib/soundEffects";
 
 export interface BundleOption {
@@ -186,14 +186,13 @@ export default function QuickOrderDrawer({
         res?.order_number || "CMD-" + Math.floor(100000 + Math.random() * 900000);
       setOrderNumber(finalNum);
 
-      // Meta Pixel Purchase Event (dédupliqué avec le serveur CAPI via finalNum)
-      trackPurchase({
+      // Meta Pixel Lead Event (prospect qualifié COD)
+      trackLead({
         order_id: finalNum,
         content_name: productTitle,
         content_ids: [productSlug],
         value: totalPrice,
         currency: "XOF",
-        num_items: totalQuantity,
       });
 
       playOrderSound();

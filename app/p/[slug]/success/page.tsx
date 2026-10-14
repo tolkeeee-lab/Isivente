@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { trackPurchase } from "@/lib/metaPixel";
+import { trackLead } from "@/lib/metaPixel";
 
 function SuccessContent() {
   const params = useParams();
@@ -40,7 +40,7 @@ function SuccessContent() {
   const whatsappUrl = `https://wa.me/2290192901817?text=${encodeURIComponent(whatsappMsgText)}`;
 
   useEffect(() => {
-    // 1. Meta Pixel: Track Purchase garanti (une seule fois par commande)
+    // 1. Meta Pixel: Track Lead (prospect confirmé COD). L'événement "Purchase" est réservé à la livraison effective.
     if (!hasTrackedRef.current) {
       hasTrackedRef.current = true;
       try {
@@ -53,12 +53,11 @@ function SuccessContent() {
           }
         } catch {}
 
-        trackPurchase({
-          content_name: parsed?.title || `Produit ${slug.toUpperCase()}`,
+        trackLead({
+          content_name: parsed?.title || `Commande ${slug.toUpperCase()}`,
           content_ids: [slug],
           value: total || parsed?.price || 14900,
           currency: "XOF",
-          num_items: parsed?.quantity || 1,
           order_id: orderRef || undefined,
         });
       } catch {}

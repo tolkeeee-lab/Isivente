@@ -205,12 +205,29 @@ export async function updateOrderStatus(
   saveLocalOrders(updatedLocal);
 
   try {
-    const updatePayload: Record<string, any> = { status };
+    const updatePayload: Record<string, any> = { id: orderIdOrNumber, status };
     if (extraData) {
       if (extraData.notes !== undefined) updatePayload.notes = extraData.notes;
       if (extraData.reservation_date !== undefined) updatePayload.reservation_date = extraData.reservation_date;
     }
-    const query = supabase.from('orders').update(updatePayload);
+
+    // 1. Appel API serveur (déclenche notamment Meta CAPI Purchase si status === 'delivered')
+    if (typeof window !== 'undefined') {
+      fetch('/api/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatePayload),
+      }).catch(apiErr => {
+        console.warn('API /api/orders PATCH échoué, repli sur Supabase direct:', apiErr);
+      });
+    }
+
+    // 2. Mise à jour directe Supabase pour redondance instantanée
+    const sbPayload: Record<string, any> = { status };
+    if (extraData?.notes !== undefined) sbPayload.notes = extraData.notes;
+    if (extraData?.reservation_date !== undefined) sbPayload.reservation_date = extraData.reservation_date;
+
+    const query = supabase.from('orders').update(sbPayload);
     if (orderIdOrNumber.includes('-') && isNaN(Number(orderIdOrNumber))) {
       await query.eq('order_number', orderIdOrNumber);
     } else {

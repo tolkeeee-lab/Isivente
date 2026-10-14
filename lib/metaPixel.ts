@@ -196,6 +196,47 @@ export function trackInitiateCheckout(params: {
 }
 
 /**
+ * Événement Lead : soumission d'une commande COD sur la boutique
+ * En COD, la commande en ligne est un prospect/lead confirmé.
+ * L'événement officiel "Purchase" sera déclenché lors de la livraison effective.
+ */
+export function trackLead(params: {
+  order_id?: string;
+  content_name: string;
+  content_ids?: string[];
+  value?: number;
+  currency?: string;
+}) {
+  if (isAdminContext()) return;
+  const eventId = params.order_id ? String(params.order_id).trim() : "lead_" + Date.now();
+
+  if (typeof window !== "undefined") {
+    try {
+      const storageKey = `isivente_pixel_lead_${eventId}`;
+      if (sessionStorage.getItem(storageKey)) {
+        return;
+      }
+      sessionStorage.setItem(storageKey, "1");
+    } catch {}
+  }
+
+  const data = {
+    content_name: params.content_name,
+    content_ids: params.content_ids || [],
+    content_type: "product",
+    value: params.value || 0,
+    currency: params.currency || "XOF",
+    order_id: eventId,
+  };
+
+  const fbq = getFbq();
+  if (fbq) {
+    fbq("track", "Lead", data, { eventID: eventId });
+  }
+  sendServerBridge("Lead", data, eventId);
+}
+
+/**
  * Événement Purchase : confirmation de la commande (paiement à la livraison)
  * Dédupliqué avec le serveur CAPI (/api/orders) via eventID.
  */
