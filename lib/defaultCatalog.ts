@@ -315,6 +315,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Pare-Soleil Anti-\u00c9blouissement 2-en-1 Jour/Nuit + Clip Universel", price: 14900 }
     ]
+  },
+  {
+    id: "shilajit-default",
+    title: "Gummies Shilajit Gold Pur Himalaya 3000mg & Ashwagandha KSM-66 (60 Gummies)",
+    shortTitle: "Gummies Shilajit Gold Himalaya",
+    slug: "shilajit",
+    price: 14900,
+    image_url: "/images/shilajit/shilajit-hero.jpg",
+    image: "/images/shilajit/shilajit-hero.jpg",
+    headline: "Vitalité masculine et endurance au quotidien : formule sacrée de l'Himalaya au Shilajit Gold 3000 mg, Ashwagandha KSM-66, Black Musli et Gokshura en gummies savoureux.",
+    bundles: [
+      { name: "Gummies Shilajit Gold Pur Himalaya 3000mg & Ashwagandha KSM-66 (Boîte 60 Gummies)", price: 14900 }
+    ]
   }
 ];
 

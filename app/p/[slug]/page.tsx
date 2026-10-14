@@ -24,6 +24,7 @@ import CapsaCareLanding from "@/components/features/CapsaCareLanding";
 import OdorAwayLanding from "@/components/features/OdorAwayLanding";
 import DuoBraceletsCoeurLanding from "@/components/features/DuoBraceletsCoeurLanding";
 import ParesoleilLanding from "@/components/features/ParesoleilLanding";
+import ShilajitLanding from "@/components/features/ShilajitLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -106,6 +107,11 @@ export function generateStaticParams() {
     { slug: "pare-brise" },
     { slug: "anti-eblouissement" },
     { slug: "visiere-auto" },
+    { slug: "shilajit" },
+    { slug: "shilajit-gold" },
+    { slug: "shilajit-gummies" },
+    { slug: "pure-himalayan-shilajit" },
+    { slug: "himalayan-shilajit" },
   ];
 }
 
@@ -228,6 +234,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "anti-eblouissement":
       case "visiere-auto":
         return <ParesoleilLanding slug="pare-soleil" />;
+      case "shilajit":
+      case "shilajit-gold":
+      case "shilajit-gummies":
+      case "pure-himalayan-shilajit":
+      case "himalayan-shilajit":
+        return <ShilajitLanding slug="shilajit" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
