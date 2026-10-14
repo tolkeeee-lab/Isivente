@@ -328,6 +328,19 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Gummies Shilajit Gold Pur Himalaya 3000mg & Ashwagandha KSM-66 (Boîte 60 Gummies)", price: 14900 }
     ]
+  },
+  {
+    id: "filtre-eau-default",
+    title: "Filtre à Eau Universel pour Robinet 6 Couches de Filtration",
+    shortTitle: "Filtre à Eau Robinet 6 Couches",
+    slug: "filtre-eau",
+    price: 14900,
+    image_url: "/images/filtre-eau/filtre-eau-hero.jpg",
+    image: "/images/filtre-eau/filtre-eau-hero.jpg",
+    headline: "Profitez d'une eau plus propre directement sur votre robinet : système 6 couches au charbon actif, billes minérales et résine filtrante avec collier de fixation universel.",
+    bundles: [
+      { name: "Filtre à Eau Universel pour Robinet 6 Couches de Filtration", price: 14900 }
+    ]
   }
 ];
 

@@ -25,6 +25,7 @@ import OdorAwayLanding from "@/components/features/OdorAwayLanding";
 import DuoBraceletsCoeurLanding from "@/components/features/DuoBraceletsCoeurLanding";
 import ParesoleilLanding from "@/components/features/ParesoleilLanding";
 import ShilajitLanding from "@/components/features/ShilajitLanding";
+import FiltreEauLanding from "@/components/features/FiltreEauLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -112,6 +113,11 @@ export function generateStaticParams() {
     { slug: "shilajit-gummies" },
     { slug: "pure-himalayan-shilajit" },
     { slug: "himalayan-shilajit" },
+    { slug: "filtre-eau" },
+    { slug: "filtre-robinet" },
+    { slug: "filtre-eau-robinet" },
+    { slug: "purificateur-eau" },
+    { slug: "filtre-purificateur" },
   ];
 }
 
@@ -240,6 +246,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "pure-himalayan-shilajit":
       case "himalayan-shilajit":
         return <ShilajitLanding slug="shilajit" />;
+      case "filtre-eau":
+      case "filtre-robinet":
+      case "filtre-eau-robinet":
+      case "purificateur-eau":
+      case "filtre-purificateur":
+        return <FiltreEauLanding slug="filtre-eau" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
