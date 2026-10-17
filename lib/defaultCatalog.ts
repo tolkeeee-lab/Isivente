@@ -17,6 +17,19 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "cubicraft-default",
+    title: "CubiCraft™ - Coffret Blocs Magnétiques de Construction",
+    shortTitle: "CubiCraft Blocs Magnétiques",
+    slug: "cubicraft",
+    price: 16900,
+    image_url: "/images/pixelblocks/coffret-cadeau.jpg",
+    image: "/images/pixelblocks/coffret-cadeau.jpg",
+    headline: "Des cubes magnétiques réalistes pour créer, inventer et stimuler la créativité sans écran.",
+    bundles: [
+      { name: "CubiCraft™ - Coffret Blocs Magnétiques de Construction", price: 16900 }
+    ]
+  },
+  {
     id: "duo-bracelets-coeur-default",
     title: "Coffret Cadeau Écrin Duo de Bracelets Cœurs Dorés Ajustables",
     shortTitle: "Duo Bracelets Cœurs Dorés",

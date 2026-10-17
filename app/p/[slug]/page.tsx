@@ -26,6 +26,7 @@ import DuoBraceletsCoeurLanding from "@/components/features/DuoBraceletsCoeurLan
 import ParesoleilLanding from "@/components/features/ParesoleilLanding";
 import ShilajitLanding from "@/components/features/ShilajitLanding";
 import FiltreEauLanding from "@/components/features/FiltreEauLanding";
+import CubiCraftLanding from "@/components/features/CubiCraftLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -34,6 +35,11 @@ import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export function generateStaticParams() {
   return [
+    { slug: "cubicraft" },
+    { slug: "cubi-craft" },
+    { slug: "pixelcraft" },
+    { slug: "blocs-magnetiques" },
+    { slug: "mineblocks" },
     { slug: "savon-repousse" },
     { slug: "savon" },
     { slug: "savon-usma" },
@@ -141,6 +147,12 @@ export default async function ProductPage({ params }: PageProps) {
 
   const renderContent = () => {
     switch (normalizedSlug) {
+      case "cubicraft":
+      case "cubi-craft":
+      case "pixelcraft":
+      case "blocs-magnetiques":
+      case "mineblocks":
+        return <CubiCraftLanding slug="cubicraft" />;
       case "savon-repousse":
       case "savon":
       case "savon-usma":

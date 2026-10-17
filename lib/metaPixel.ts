@@ -248,17 +248,26 @@ export function trackPurchase(params: {
   currency?: string;
   num_items?: number;
 }) {
+  if (isAdminContext()) return;
   const eventId = params.order_id ? String(params.order_id).trim() : undefined;
 
-  // 1. Protection anti-doublon en mémoire de session (évite les doubles tirs sur la page de remerciement ou au rafraîchissement)
-  if (eventId && typeof window !== "undefined") {
+  // Sécurité anti-doublon : ne pas envoyer d'achat sans numéro de commande valide
+  if (!eventId) {
+    console.warn("[Meta Pixel] trackPurchase ignoré : aucun order_id valide fourni pour la déduplication.");
+    return;
+  }
+
+  // 1. Protection anti-doublon persistante (sessionStorage + localStorage)
+  // Empêche les doubles comptabilisations en cas de rafraîchissement (F5), retour arrière ou réouverture d'onglet
+  if (typeof window !== "undefined") {
     try {
       const storageKey = `isivente_pixel_purchase_${eventId}`;
-      if (sessionStorage.getItem(storageKey)) {
+      if (sessionStorage.getItem(storageKey) || localStorage.getItem(storageKey)) {
         console.info(`[Meta Pixel] Achat déjà enregistré pour la commande ${eventId}, déduplication active.`);
         return;
       }
       sessionStorage.setItem(storageKey, "1");
+      localStorage.setItem(storageKey, "1");
     } catch {}
   }
 
@@ -274,16 +283,12 @@ export function trackPurchase(params: {
 
   const fbq = getFbq();
   if (fbq) {
-    if (eventId) {
-      // DÉDUPLICATION OFFICIELLE META : le 4ème paramètre { eventID } permet à Meta de reconnaître
-      // que cet événement navigateur et l'événement serveur envoyé par /api/orders sont LA MÊME VENTE.
-      fbq("track", "Purchase", data, { eventID: eventId });
-    } else {
-      fbq("track", "Purchase", data);
-    }
+    // DÉDUPLICATION OFFICIELLE META : le 4ème paramètre { eventID } permet à Meta de reconnaître
+    // que cet événement navigateur et l'événement serveur envoyé par /api/orders sont LA MÊME VENTE.
+    fbq("track", "Purchase", data, { eventID: eventId });
   }
 
   // NOTE CRITIQUE : Ne PAS appeler sendServerBridge("Purchase") ici.
   // La route backend /api/orders déclenche déjà l'événement officiel Meta Conversions API (CAPI)
-  // avec l'event_id exact de la commande. Déclencher un second appel CAPI ici triplait le décompte !
+  // avec le même event_id de la commande. Meta fusionne automatiquement les deux en 1 seul achat.
 }

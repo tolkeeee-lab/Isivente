@@ -173,10 +173,9 @@ export async function POST(req: NextRequest) {
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
 
-      // En e-commerce COD, la commande en ligne est un LEAD qualifié.
-      // Le véritable événement "Purchase" n'est déclenché que lors de la livraison effective (statut delivered).
+      // Déclencher l'événement d'achat serveur Meta Conversions API (CAPI)
       sendMetaConversionApiEvent({
-        event_name: "Lead",
+        event_name: "Purchase",
         event_id: orderNumberStr,
         event_source_url: req.headers.get("referer") || undefined,
         user_data: {
@@ -199,7 +198,7 @@ export async function POST(req: NextRequest) {
           order_id: orderNumberStr,
           num_items: quantity,
         },
-      }).catch(e => console.error("Meta CAPI Lead error:", e?.message));
+      }).catch(e => console.error("Meta CAPI Purchase error:", e?.message));
     } catch (e: any) {
       console.error("Meta CAPI trigger error:", e?.message);
     }
@@ -218,7 +217,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// 3. UPDATE ORDER STATUS (AVEC DÉCLENCHEMENT OFFICIEL DE L'ACHAT META À LA LIVRAISON)
+// 3. UPDATE ORDER STATUS
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
@@ -236,53 +235,6 @@ export async function PATCH(req: NextRequest) {
     }
 
     const isUuid = rawId.includes("-") && rawId.length > 30;
-
-    // ── GESTION COD META PIXEL / CAPI : DÉCLENCHER LE VRAI "PURCHASE" À LA LIVRAISON EFFECTIVE ──
-    if (rawStatus === "delivered") {
-      try {
-        let fetchOrderQuery = supabase.from("orders").select("*");
-        if (isUuid) {
-          fetchOrderQuery = fetchOrderQuery.eq("id", rawId);
-        } else {
-          fetchOrderQuery = fetchOrderQuery.eq("order_number", rawId);
-        }
-        const { data: existingOrder } = await fetchOrderQuery.maybeSingle();
-
-        // N'envoyer l'événement d'achat que si la commande n'était pas déjà marquée comme livrée
-        if (existingOrder && existingOrder.status !== "delivered") {
-          const clientPhone = String(existingOrder.customer_phone || existingOrder.phone || "").replace(/\D/g, "");
-          const nameParts = String(existingOrder.customer_name || existingOrder.name || "Client").trim().split(/\s+/);
-          const firstName = nameParts[0] || "";
-          const lastName = nameParts.slice(1).join(" ") || "";
-          const totalVal = Number(existingOrder.total_amount ?? existingOrder.total_price ?? existingOrder.price ?? 0);
-          const orderNum = String(existingOrder.order_number || rawId);
-
-          sendMetaConversionApiEvent({
-            event_name: "Purchase",
-            event_id: `delivery_purchase_${orderNum}`,
-            event_source_url: req.headers.get("referer") || undefined,
-            user_data: {
-              phone: clientPhone,
-              first_name: firstName,
-              last_name: lastName,
-              city: existingOrder.city || existingOrder.shipping_city || "Cotonou",
-              country: "bj",
-              external_id: orderNum,
-            },
-            custom_data: {
-              currency: "XOF",
-              value: totalVal,
-              content_name: existingOrder.product_title || existingOrder.product_name || "Produit Isivente",
-              content_ids: [existingOrder.product_slug || "produit"],
-              order_id: orderNum,
-              num_items: existingOrder.quantity || 1,
-            },
-          }).catch(e => console.error("Meta CAPI Delivered Purchase error:", e?.message));
-        }
-      } catch (metaErr: any) {
-        console.error("Delivered purchase trigger error:", metaErr?.message);
-      }
-    }
 
     const updatePayload: Record<string, any> = { status: rawStatus };
     if (body.notes !== undefined) updatePayload.notes = body.notes;
