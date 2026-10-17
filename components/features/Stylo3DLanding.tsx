@@ -39,9 +39,9 @@ const BUNDLES: BundleOption[] = [
     id: "solo",
     name: "Kit Complet Stylo 3D 3DPEN-2 + 12 Recharges Filaments PLA (36m)",
     subtitle: "Coffret complet avec stylo 3D ergonomique, 12 couleurs de filament PLA, base de support, adaptateur EU et guide",
-    price: 14900,
-    originalPrice: 25000,
-    savings: 10100,
+    price: 16900,
+    originalPrice: 28000,
+    savings: 11100,
     quantity: 1,
     popular: true,
   },
@@ -101,12 +101,12 @@ const FAQS_DATA = [
     a: "Non, absolument pas ! Le filament PLA est fabriqué à base d'amidon végétal biodégradable (maïs). Il est 100% non toxique, sans BPA et ne dégage aucune fumée nocive, ce qui permet de créer sereinement dans une chambre fermée."
   },
   {
-    q: "Que contient exactement le kit à 14 900 FCFA ?",
+    q: "Que contient exactement le kit à 16 900 FCFA ?",
     a: "Le kit officiel complet comprend : 1 Stylo 3D ergonomique avec écran LCD de contrôle, 12 rouleaux de filaments PLA multicolores (soit 36 mètres au total), 1 base de support de table, 1 adaptateur secteur EU sécurisé, et 1 manuel d'instructions étape par étape."
   },
   {
     q: "Comment se déroulent la livraison et le paiement au Bénin ?",
-    a: "La livraison est effectuée sous 24h chrono à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous ne payez rien d'avance : vous réglez les 14 900 FCFA en espèces au livreur uniquement après avoir reçu et inspecté votre colis."
+    a: "La livraison est effectuée sous 24h chrono à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous ne payez rien d'avance : vous réglez les 16 900 FCFA en espèces au livreur uniquement après avoir reçu et inspecté votre colis."
   }
 ];
 
@@ -191,7 +191,7 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
     trackViewContent({
       content_name: "Kit Complet Stylo 3D Professionnel 3DPEN-2",
       content_ids: ["stylo-3d", "stylo"],
-      value: 14900,
+      value: 16900,
       currency: "XOF",
     });
   }, []);
@@ -282,7 +282,7 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
             className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(2,132,199,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
             <span>Commander</span>
-            <span className="font-mono tabular-nums text-sky-100 text-[11px]">(14 900 F)</span>
+            <span className="font-mono tabular-nums text-sky-100 text-[11px]">(16 900 F)</span>
           </button>
         </div>
       </header>
@@ -338,7 +338,7 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
               {/* Pastille Prix Officiel */}
               <div className="absolute top-3 right-3 z-30 pointer-events-none">
                 <span className="inline-flex items-center gap-1 bg-sky-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
-                  14 900 FCFA
+                  16 900 FCFA
                 </span>
               </div>
 
@@ -401,7 +401,7 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
             </div>
             <div>
               <p className="text-xs font-bold text-slate-900">Paiement à la Réception</p>
-              <p className="text-[11px] text-slate-500">Réglez 14 900 F après contrôle</p>
+              <p className="text-[11px] text-slate-500">Réglez 16 900 F après contrôle</p>
             </div>
           </div>
 
@@ -578,7 +578,7 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
               onClick={scrollToOrder}
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
             >
-              <span>Commander le coffret complet (14 900 FCFA)</span>
+              <span>Commander le coffret complet (16 900 FCFA)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -697,14 +697,14 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
               Commandez votre Kit Stylo 3D Complet
             </h4>
             <p className="text-sky-100 text-xs sm:text-sm">
-              Seulement <strong className="text-white font-mono text-base">14 900 FCFA</strong> au lieu de <span className="line-through opacity-75">25 000 FCFA</span> (Économisez 10 100 F).
+              Seulement <strong className="text-white font-mono text-base">16 900 FCFA</strong> au lieu de <span className="line-through opacity-75">28 000 FCFA</span> (Économisez 11 100 F).
             </p>
           </div>
           <button
             onClick={scrollToOrder}
             className="w-full sm:w-auto px-6 py-3.5 bg-white text-sky-900 font-bold text-sm rounded-xl hover:bg-sky-50 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
           >
-            Commander maintenant (14 900 F)
+            Commander maintenant (16 900 F)
           </button>
         </div>
 
@@ -797,11 +797,11 @@ export default function Stylo3DLanding({ slug = "stylo-3d" }: { slug?: string })
 
       {/* ── 16. BARRE MOBILE STICKY CTA (PILIER 1 & 2) ── */}
       <StickyMobileCtaBar
-        price={14900}
+        price={16900}
         targetSectionId="commander"
         accentColor="#0284c7"
-        buttonText="Commander (14 900 F)"
-        whatsappMessage="Bonjour Isivente, je souhaite commander le Kit Complet Stylo 3D Professionnel à 14 900 FCFA."
+        buttonText="Commander (16 900 F)"
+        whatsappMessage="Bonjour Isivente, je souhaite commander le Kit Complet Stylo 3D Professionnel à 16 900 FCFA."
       />
 
     </div>
