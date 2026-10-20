@@ -27,6 +27,7 @@ import ParesoleilLanding from "@/components/features/ParesoleilLanding";
 import ShilajitLanding from "@/components/features/ShilajitLanding";
 import FiltreEauLanding from "@/components/features/FiltreEauLanding";
 import CubiCraftLanding from "@/components/features/CubiCraftLanding";
+import TrousseBiometriqueLanding from "@/components/features/TrousseBiometriqueLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -124,6 +125,10 @@ export function generateStaticParams() {
     { slug: "filtre-eau-robinet" },
     { slug: "purificateur-eau" },
     { slug: "filtre-purificateur" },
+    { slug: "trousse-biometrique" },
+    { slug: "trousse-cuir" },
+    { slug: "pochette-biometrique" },
+    { slug: "organiseur-cuir" },
   ];
 }
 
@@ -264,6 +269,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "purificateur-eau":
       case "filtre-purificateur":
         return <FiltreEauLanding slug="filtre-eau" />;
+      case "trousse-biometrique":
+      case "trousse-cuir":
+      case "pochette-biometrique":
+      case "organiseur-cuir":
+        return <TrousseBiometriqueLanding slug="trousse-biometrique" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

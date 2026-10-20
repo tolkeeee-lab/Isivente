@@ -17,6 +17,19 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "trousse-biometrique-default",
+    title: "Trousse de Voyage Cuir Luxe avec Verrouillage Biométrique par Empreinte",
+    shortTitle: "Trousse Cuir Biométrique",
+    slug: "trousse-biometrique",
+    price: 24900,
+    image_url: "/images/trousse-biometrique/trousse-hero-protection.jpg",
+    image: "/images/trousse-biometrique/trousse-hero-protection.jpg",
+    headline: "Cuir grainé imperméable et cadenas intelligent à reconnaissance d'empreinte digitale pour sécuriser et organiser tous vos essentiels.",
+    bundles: [
+      { name: "Trousse de Voyage Cuir Luxe avec Verrouillage Biométrique", price: 24900 }
+    ]
+  },
+  {
     id: "cubicraft-default",
     title: "CubiCraft™ - Coffret Blocs Magnétiques de Construction",
     shortTitle: "CubiCraft Blocs Magnétiques",
