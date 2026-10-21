@@ -28,6 +28,7 @@ import ShilajitLanding from "@/components/features/ShilajitLanding";
 import FiltreEauLanding from "@/components/features/FiltreEauLanding";
 import CubiCraftLanding from "@/components/features/CubiCraftLanding";
 import TrousseBiometriqueLanding from "@/components/features/TrousseBiometriqueLanding";
+import DigestiGumLanding from "@/components/features/DigestiGumLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -129,6 +130,10 @@ export function generateStaticParams() {
     { slug: "trousse-cuir" },
     { slug: "pochette-biometrique" },
     { slug: "organiseur-cuir" },
+    { slug: "digestigum" },
+    { slug: "gummies-digestifs" },
+    { slug: "enzymes-digestives" },
+    { slug: "probio-digest" },
   ];
 }
 
@@ -274,6 +279,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "pochette-biometrique":
       case "organiseur-cuir":
         return <TrousseBiometriqueLanding slug="trousse-biometrique" />;
+      case "digestigum":
+      case "gummies-digestifs":
+      case "enzymes-digestives":
+      case "probio-digest":
+        return <DigestiGumLanding slug="digestigum" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

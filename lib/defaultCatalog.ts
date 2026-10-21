@@ -17,6 +17,19 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "digestigum-default",
+    title: "DigestiGum™ - Gummies Enzymes Digestives + Probiotiques + Prébiotiques",
+    shortTitle: "DigestiGum™ Gummies Digestifs",
+    slug: "digestigum",
+    price: 14900,
+    image_url: "/images/digestigum/digestigum-hero-60-gummies.jpg",
+    image: "/images/digestigum/digestigum-hero-60-gummies.jpg",
+    headline: "60 gummies Plant-Based 3-en-1 pour un ventre serein, une digestion légère et une flore intestinale équilibrée au quotidien.",
+    bundles: [
+      { name: "DigestiGum™ - Gummies Enzymes Digestives + Probiotiques + Prébiotiques (60 gummies)", price: 14900 }
+    ]
+  },
+  {
     id: "trousse-biometrique-default",
     title: "Trousse de Voyage Cuir Luxe avec Verrouillage Biométrique par Empreinte",
     shortTitle: "Trousse Cuir Biométrique",
