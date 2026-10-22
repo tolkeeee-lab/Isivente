@@ -29,6 +29,7 @@ import FiltreEauLanding from "@/components/features/FiltreEauLanding";
 import CubiCraftLanding from "@/components/features/CubiCraftLanding";
 import TrousseBiometriqueLanding from "@/components/features/TrousseBiometriqueLanding";
 import DigestiGumLanding from "@/components/features/DigestiGumLanding";
+import Calendrier3DLanding from "@/components/features/Calendrier3DLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -134,6 +135,10 @@ export function generateStaticParams() {
     { slug: "gummies-digestifs" },
     { slug: "enzymes-digestives" },
     { slug: "probio-digest" },
+    { slug: "calendrier-3d" },
+    { slug: "calendrier-perpetuel" },
+    { slug: "calendrier-decoratif" },
+    { slug: "calendrier-magnetique" },
   ];
 }
 
@@ -284,6 +289,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "enzymes-digestives":
       case "probio-digest":
         return <DigestiGumLanding slug="digestigum" />;
+      case "calendrier-3d":
+      case "calendrier-perpetuel":
+      case "calendrier-decoratif":
+      case "calendrier-magnetique":
+        return <Calendrier3DLanding slug="calendrier-3d" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

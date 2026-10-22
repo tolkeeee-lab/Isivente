@@ -17,6 +17,19 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "calendrier-3d-default",
+    title: "Calendrier Perpétuel Décoratif 3D Magnétique",
+    shortTitle: "Calendrier Décoratif 3D",
+    slug: "calendrier-3d",
+    price: 24900,
+    image_url: "/images/calendrier-3d/calendrier-3d-hero-colors.jpg",
+    image: "/images/calendrier-3d/calendrier-3d-hero-colors.jpg",
+    headline: "Un objet sculptural unique alliant décoration moderne et mécanisme perpétuel magnétique utilisable toute la vie.",
+    bundles: [
+      { name: "Calendrier Perpétuel Décoratif 3D Magnétique", price: 24900 }
+    ]
+  },
+  {
     id: "digestigum-default",
     title: "DigestiGum™ - Gummies Enzymes Digestives + Probiotiques + Prébiotiques",
     shortTitle: "DigestiGum™ Gummies Digestifs",
