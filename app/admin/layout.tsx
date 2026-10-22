@@ -37,14 +37,14 @@ export default function AdminLayout({
       icon: LayoutDashboard,
     },
     {
+      href: "/admin/orders",
+      label: "Commandes & Dispatch",
+      icon: Package,
+    },
+    {
       href: "/admin/prospects",
       label: "Paniers Abandonnés",
       icon: Users,
-    },
-    {
-      href: "/admin/studio",
-      label: "Studio AI",
-      icon: Wand2,
     },
     {
       href: "/admin/landings",
@@ -52,9 +52,9 @@ export default function AdminLayout({
       icon: Store,
     },
     {
-      href: "/admin/orders",
-      label: "Commandes & Dispatch",
-      icon: Package,
+      href: "/admin/studio",
+      label: "Studio AI",
+      icon: Wand2,
     },
     {
       href: "/admin/clicks",
