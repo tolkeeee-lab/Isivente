@@ -240,6 +240,7 @@ export async function sendAbandonedLeadNotification(lead: {
   total_amount?: number;
 }) {
   const recipientEmail = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || "tolkeeee@gmail.com";
+  const cleanPhone = (lead.customer_phone || "").replace(/\D/g, "");
   const whatsappPhone = formatBeninPhoneForWhatsApp(lead.customer_phone);
   const callPhone = formatBeninPhoneForCall(lead.customer_phone);
   const prefilledMsg = encodeURIComponent(
