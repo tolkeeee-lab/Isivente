@@ -49,6 +49,22 @@ export default function RootLayout({
             }
           `}
         </Script>
+        {/* Microsoft Clarity (Heatmaps & Session Recording) */}
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {`
+            (function(c,l,a,r,i,t,y){
+              if (typeof window !== 'undefined') {
+                var isAdm = window.location.pathname.indexOf('/admin') === 0 || 
+                            window.location.pathname.indexOf('/api') === 0 ||
+                            window.localStorage.getItem('isivente_is_admin') === 'true';
+                if (isAdm) return;
+              }
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "z2fg8kxx85");
+          `}
+        </Script>
         <noscript>
           <img
             height="1"
