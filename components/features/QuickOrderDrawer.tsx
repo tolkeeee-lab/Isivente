@@ -21,6 +21,7 @@ import {
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import { playOrderSound } from "@/lib/soundEffects";
+import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 
 export interface BundleOption {
   id?: string;
@@ -99,7 +100,7 @@ export default function QuickOrderDrawer({
 
   // Validation téléphone WhatsApp
   const cleanPhone = (customerPhone || "").replace(/\D/g, "");
-  const isPhoneValid = cleanPhone.length >= 8;
+  const isPhoneValid = isBeninPhoneComplete(cleanPhone);
 
   // Synchronisation lors de l'ouverture
   useEffect(() => {

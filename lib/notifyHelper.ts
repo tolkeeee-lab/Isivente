@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { formatBeninPhoneForWhatsApp, formatBeninPhoneForCall } from "@/lib/phoneUtils";
 
 export interface NotificationOrderData {
   order_number?: string | number;
@@ -20,8 +21,8 @@ export interface NotificationOrderData {
 export async function sendOrderNotification(order: NotificationOrderData) {
   const recipientEmail = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || "tolkeeee@gmail.com";
   const formattedAmount = new Intl.NumberFormat("fr-FR").format(order.total_amount || 0) + " FCFA";
-  const cleanPhone = (order.customer_phone || "").replace(/[^0-9]/g, "");
-  const whatsappLink = cleanPhone ? `https://wa.me/229${cleanPhone}` : "";
+  const whatsappPhone = formatBeninPhoneForWhatsApp(order.customer_phone);
+  const whatsappLink = whatsappPhone ? `https://wa.me/${whatsappPhone}` : "";
   const dateFormatted = new Date().toLocaleString("fr-FR", { timeZone: "Africa/Porto-Novo" });
   const city = order.shipping_city || order.city || "Cotonou";
   const address = order.shipping_address || order.address || "Non précisé";
@@ -239,13 +240,13 @@ export async function sendAbandonedLeadNotification(lead: {
   total_amount?: number;
 }) {
   const recipientEmail = process.env.NOTIFICATION_EMAIL || process.env.GMAIL_USER || "tolkeeee@gmail.com";
-  const cleanPhone = (lead.customer_phone || "").replace(/\D/g, "");
-  const whatsappPhone = cleanPhone.startsWith("229") ? cleanPhone : `229${cleanPhone}`;
+  const whatsappPhone = formatBeninPhoneForWhatsApp(lead.customer_phone);
+  const callPhone = formatBeninPhoneForCall(lead.customer_phone);
   const prefilledMsg = encodeURIComponent(
     `Bonjour ${lead.customer_name || ""}, j'ai vu que vous vous intéressiez à notre ${lead.product_title || "produit"} sur Isivente. Avez-vous rencontré une difficulté pour finaliser votre commande ? Nous pouvons vous livrer aujourd'hui avec paiement à la réception !`
   );
-  const whatsappLink = cleanPhone ? `https://wa.me/${whatsappPhone}?text=${prefilledMsg}` : "";
-  const callLink = cleanPhone ? `tel:${cleanPhone}` : "";
+  const whatsappLink = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=${prefilledMsg}` : "";
+  const callLink = callPhone ? `tel:${callPhone}` : "";
   const formattedAmount = lead.total_amount
     ? new Intl.NumberFormat("fr-FR").format(lead.total_amount) + " FCFA"
     : "Non calculé";

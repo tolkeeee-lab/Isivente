@@ -9,6 +9,11 @@ import {
   LeadRecord 
 } from "@/lib/leadsStorage";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import {
+  formatBeninPhoneForWhatsApp,
+  formatBeninPhoneForCall,
+  formatBeninPhoneDisplay,
+} from "@/lib/phoneUtils";
 import { 
   PhoneCall, 
   MessageSquare, 
@@ -67,8 +72,7 @@ export default function ProspectsPage() {
       prev.map((l) => (l.id === lead.id ? { ...l, status: "contacted" } : l))
     );
 
-    const cleanPhone = lead.customer_phone.replace(/\D/g, "");
-    const intlPhone = cleanPhone.startsWith("229") ? cleanPhone : `229${cleanPhone}`;
+    const intlPhone = formatBeninPhoneForWhatsApp(lead.customer_phone);
     const clientName = lead.customer_name && lead.customer_name !== "Client intéressé" 
       ? ` ${lead.customer_name}` 
       : "";
@@ -332,8 +336,9 @@ export default function ProspectsPage() {
         ) : (
           <div className="divide-y divide-slate-100">
             {filteredLeads.map((lead) => {
-              const cleanPhone = lead.customer_phone.replace(/\D/g, "");
-              const intlPhone = cleanPhone.startsWith("229") ? cleanPhone : `229${cleanPhone}`;
+              const intlPhone = formatBeninPhoneForWhatsApp(lead.customer_phone);
+              const callPhone = formatBeninPhoneForCall(lead.customer_phone);
+              const displayPhone = formatBeninPhoneDisplay(lead.customer_phone);
 
               return (
                 <div 
@@ -375,7 +380,7 @@ export default function ProspectsPage() {
                     <div className="flex items-center gap-3 text-xs text-slate-600 flex-wrap">
                       {/* Téléphone */}
                       <span className="inline-flex items-center gap-1 font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">
-                        🇧🇯 +229 {cleanPhone.replace(/^229/, "")}
+                        🇧🇯 +229 {displayPhone}
                       </span>
 
                       {/* Ville & Quartier */}
@@ -405,7 +410,7 @@ export default function ProspectsPage() {
                       onClick={() => handleWhatsAppRelance(lead)}
                       disabled={actionLoadingId === lead.id}
                       className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all cursor-pointer"
-                      title="Ouvrir la discussion WhatsApp avec message personnalisé"
+                      title="Ouvrir la discussion WhatsApp avec message personnalisé (format 10 chiffres garanti)"
                     >
                       <MessageSquare className="w-3.5 h-3.5 fill-current" />
                       <span>Relancer WhatsApp</span>
@@ -413,7 +418,7 @@ export default function ProspectsPage() {
 
                     {/* 2. BOUTON APPEL DIRECT */}
                     <a
-                      href={`tel:+${intlPhone}`}
+                      href={`tel:${callPhone}`}
                       className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 active:scale-[0.98] transition-all"
                       title="Appeler directement ce client"
                     >

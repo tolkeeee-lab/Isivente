@@ -12,6 +12,11 @@ import {
 import { supabase } from "@/lib/supabase";
 import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
 import {
+  formatBeninPhoneForWhatsApp,
+  formatBeninPhoneForCall,
+  formatBeninPhoneDisplay,
+} from "@/lib/phoneUtils";
+import {
   Search,
   Phone,
   MapPin,
@@ -1501,22 +1506,32 @@ export default function OrdersPage() {
                   {/* 2. CLIENT & TÉLÉPHONE */}
                   <td className="py-3 px-4">
                     <div className="font-semibold text-slate-900">{order.customer_name || "Client"}</div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="font-mono text-[11px] text-slate-500 font-medium">{order.customer_phone || "-"}</span>
-                      {phoneDigits && (
-                        <a
-                          href={`https://wa.me/229${phoneDigits}?text=${order.status === "reserved" ? whatsappReservationMsg :
-                              order.status === "postponed" ? whatsappRelanceMsg :
-                                whatsappDeliveryMsg
-                            }`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-200/60 inline-flex items-center gap-0.5"
-                          title="Ouvrir la conversation WhatsApp avec message pré-rempli"
-                        >
-                          <MessageSquare className="w-2.5 h-2.5 text-emerald-600" />
-                          <span>WhatsApp</span>
-                        </a>
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                      <span className="font-mono text-[11px] text-slate-500 font-medium">{formatBeninPhoneDisplay(order.customer_phone)}</span>
+                      {order.customer_phone && (
+                        <>
+                          <a
+                            href={`https://wa.me/${formatBeninPhoneForWhatsApp(order.customer_phone)}?text=${order.status === "reserved" ? whatsappReservationMsg :
+                                order.status === "postponed" ? whatsappRelanceMsg :
+                                  whatsappDeliveryMsg
+                              }`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-200/60 inline-flex items-center gap-0.5 transition-colors"
+                            title="Ouvrir la conversation WhatsApp (format 10 chiffres avec 01 garanti)"
+                          >
+                            <MessageSquare className="w-2.5 h-2.5 text-emerald-600" />
+                            <span>WhatsApp</span>
+                          </a>
+                          <a
+                            href={`tel:${formatBeninPhoneForCall(order.customer_phone)}`}
+                            className="text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold border border-blue-200/60 inline-flex items-center gap-0.5 transition-colors"
+                            title="Appeler directement ce client"
+                          >
+                            <Phone className="w-2.5 h-2.5 text-blue-600" />
+                            <span>Appeler</span>
+                          </a>
+                        </>
                       )}
                     </div>
                   </td>

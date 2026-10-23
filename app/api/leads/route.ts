@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { sendAbandonedLeadNotification } from "@/lib/notifyHelper";
+import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 
 export const dynamic = "force-dynamic";
 
@@ -62,14 +63,20 @@ export async function POST(req: Request) {
     } = body;
 
     const cleanPhone = String(customer_phone || "").replace(/\D/g, "");
-    if (!cleanPhone || cleanPhone.length < 8 || cleanPhone.length > 15) {
-      return NextResponse.json({ error: "Numéro de téléphone incomplet (8 à 15 chiffres requis)" }, { status: 400 });
+    if (!cleanPhone || !isBeninPhoneComplete(cleanPhone) || cleanPhone.length > 15) {
+      return NextResponse.json({ error: "Numéro de téléphone incomplet (10 chiffres pour le format avec 01 ou 8 chiffres requis)" }, { status: 400 });
     }
 
     // Assainissement du slug pour éviter toute injection dans l'ID
     const rawSlug = String(product_slug || "microscope").trim();
     const cleanSlug = /^[a-zA-Z0-9_\-]+$/.test(rawSlug) ? rawSlug.slice(0, 50) : "microscope";
-    const leadId = `lead_${cleanPhone}_${cleanSlug}`;
+    
+    // Normaliser la clé pour dédupliquer les versions avec et sans "01"
+    const normalizedKey = cleanPhone.startsWith("01") && cleanPhone.length === 10
+      ? cleanPhone.slice(2)
+      : cleanPhone;
+    const leadId = `lead_${normalizedKey}_${cleanSlug}`;
+    const legacyLeadId = `lead_${cleanPhone}_${cleanSlug}`;
     const now = new Date().toISOString();
 
     const supabase = getSupabase();
@@ -79,7 +86,7 @@ export async function POST(req: Request) {
       await supabase
         .from("leads")
         .update({ status: "converted", updated_at: now })
-        .eq("id", leadId);
+        .or(`id.eq.${leadId},id.eq.${legacyLeadId}`);
       return NextResponse.json({ success: true, converted: true });
     }
 

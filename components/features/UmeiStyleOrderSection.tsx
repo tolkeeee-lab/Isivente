@@ -18,6 +18,7 @@ import {
 import { playOrderSound } from "@/lib/soundEffects";
 import { trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 import { saveOrUpdateLead, markLeadConverted } from "@/lib/leadsStorage";
+import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 
 export interface BundleOption {
   id?: string;
@@ -388,9 +389,9 @@ export default function UmeiStyleOrderSection({
   const currentBundle = selectedBundle || availableBundles[0];
   const totalPrice = currentBundle.price;
 
-  // Validation téléphone
+  // Validation téléphone adaptée au Bénin (10 chiffres si avec 01, ou 8 chiffres si sans 01)
   const cleanPhone = (customerPhone || "").replace(/\D/g, "");
-  const isPhoneValid = cleanPhone.length >= 8;
+  const isPhoneValid = isBeninPhoneComplete(cleanPhone);
 
   // Estimation ville
   const selectedCityObj = BENIN_CITIES.find(
@@ -425,7 +426,7 @@ export default function UmeiStyleOrderSection({
 
   const captureGhostLead = () => {
     const digits = (customerPhone || "").replace(/\D/g, "");
-    if (digits.length >= 8) {
+    if (isBeninPhoneComplete(digits)) {
       const payload = {
         customer_name: customerName,
         customer_phone: digits,
@@ -474,14 +475,14 @@ export default function UmeiStyleOrderSection({
     }
   };
 
-  // Dès que le client a tapé au moins 8 chiffres ou qu'il modifie ses infos, déclencher la capture après 1 seconde
+  // Dès que le client a tapé un numéro complet selon son format (10 chiffres si avec 01, ou 8 chiffres si sans 01)
   useEffect(() => {
     const digits = (customerPhone || "").replace(/\D/g, "");
-    if (digits.length >= 8) {
+    if (isBeninPhoneComplete(digits)) {
       if (captureTimeoutRef.current) clearTimeout(captureTimeoutRef.current);
       captureTimeoutRef.current = setTimeout(() => {
         captureGhostLead();
-      }, 1000);
+      }, 1200);
     }
     return () => {
       if (captureTimeoutRef.current) clearTimeout(captureTimeoutRef.current);
@@ -743,7 +744,7 @@ export default function UmeiStyleOrderSection({
                   onFocus={handleInteractionTrigger}
                   onBlur={captureGhostLead}
                   onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="97 00 00 00"
+                  placeholder="01 97 00 00 00 ou 97 00 00 00"
                   className="w-full pl-16 pr-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-mono font-semibold"
                 />
               </div>

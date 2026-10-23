@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 
 export interface LeadRecord {
   id: string;
@@ -65,14 +66,18 @@ export async function saveOrUpdateLead(data: {
   total_amount?: number;
 }): Promise<LeadRecord | null> {
   const cleanPhone = (data.customer_phone || "").replace(/\D/g, "");
-  if (cleanPhone.length < 8) return null;
+  // Ne jamais capturer un numéro tronqué si le client a commencé par "01" (doit atteindre 10 chiffres)
+  if (!isBeninPhoneComplete(cleanPhone)) return null;
 
   const rawSlug = String(data.product_slug || "product").trim();
   const cleanSlug = /^[a-zA-Z0-9_\-]+$/.test(rawSlug) ? rawSlug.slice(0, 50) : "product";
 
   const now = new Date().toISOString();
-  // Générer un ID prévisible basé sur le téléphone et le produit pour dédupliquer
-  const leadId = `lead_${cleanPhone}_${cleanSlug}`;
+  // Générer un ID prévisible basé sur le téléphone de base et le produit pour dédupliquer (avec ou sans 01)
+  const normalizedKey = cleanPhone.startsWith("01") && cleanPhone.length === 10
+    ? cleanPhone.slice(2)
+    : cleanPhone;
+  const leadId = `lead_${normalizedKey}_${cleanSlug}`;
 
   const lead: LeadRecord = {
     id: leadId,

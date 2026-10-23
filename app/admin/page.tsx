@@ -20,6 +20,7 @@ import {
   ProductAnalyticsStats
 } from "@/lib/analyticsStorage";
 import { supabase } from "@/lib/supabase";
+import { formatBeninPhoneForWhatsApp } from "@/lib/phoneUtils";
 import {
   LayoutDashboard,
   TrendingUp,
@@ -208,8 +209,7 @@ export default function AdminOverviewPage() {
     await updateLeadStatus(lead.id, "contacted");
     setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, status: "contacted" } : l));
 
-    const cleanPhone = lead.customer_phone.replace(/\D/g, "");
-    const intlPhone = cleanPhone.startsWith("229") ? cleanPhone : `229${cleanPhone}`;
+    const intlPhone = formatBeninPhoneForWhatsApp(lead.customer_phone);
     const clientName = lead.customer_name && lead.customer_name !== "Client intéressé" 
       ? ` ${lead.customer_name}` 
       : "";
@@ -870,8 +870,7 @@ export default function AdminOverviewPage() {
           ) : (
             <div className="divide-y divide-slate-100">
               {orders.slice(0, 6).map((order) => {
-                const cleanPhone = (order.customer_phone || "").replace(/\D/g, "");
-                const intlPhone = cleanPhone.startsWith("229") ? cleanPhone : `229${cleanPhone}`;
+                const intlPhone = formatBeninPhoneForWhatsApp(order.customer_phone);
                 return (
                   <div key={order.id || String(order.order_number)} className="py-3 flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
