@@ -40,10 +40,11 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
 14. **FAQ Interactive** : Questions/Réponses rétractables.
 15. **Footer Officiel** : Mentions légales basiques.
 16. **Barre Mobile Sticky CTA** : Composant `<StickyMobileCtaBar />` pour un appel à l'action permanent sur mobile.
+17. **Pop-up d'Abandon Intelligent (Exit Intent & Objections WhatsApp)** : Composant `<ExitIntentModal slug={slug} />` systématiquement monté sur la page. Il intercepte les départs (souris haute sur desktop, bouton retour sur mobile), propose 4 résolutions d'objections en 1-clic redirigeant vers WhatsApp avec un message pré-rempli, ainsi qu'un champ libre pour toute question personnalisée.
 
 ---
 
-## 🎯 3. Les 6 Piliers Fondamentaux de Chaque Landing Page
+## 🎯 3. Les 7 Piliers Fondamentaux de Chaque Landing Page
 
 ### 💎 Pilier 1 : Offre Unique (Single Offer)
 - **Zéro sélecteur de packs multiples** (Duo, Trio, VIP, SD) sur la page principale.
@@ -96,3 +97,12 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
 ### ⚡ Pilier 6 : Intégration Meta & TikTok Pixel
 - Utiliser `trackViewContent`, `trackAddToCart`, `trackInitiateCheckout`, et `trackPurchase` depuis `lib/metaPixel`.
 - S'assurer que le routing vers la page de succès passe le nom, le numéro et le total dans l'URL pour l'attribution.
+
+### 📲 Pilier 7 : Filet de Sauvetage & Capture d'Objections WhatsApp (Exit Intent)
+- **Composant obligatoire** : `<ExitIntentModal slug={slug} />` actif sur chaque route produit.
+- **Rôle CRO** : Ne pas laisser partir un visiteur indécis dans le silence.
+- **Fonctionnement** :
+  1. Interception du départ (mouvement vers le haut sur PC, appui sur retour sur mobile).
+  2. 4 objections 1-clic pré-rédigées (Prix/Ristourne, Faisabilité/Délai livraison ville, Qualité/Garantie, Commande directe).
+  3. Champ libre si la question du client n'est pas dans la liste.
+  4. Redirection automatique vers WhatsApp (`wa.me`) avec le produit et la question pré-remplis pour engager la vente en direct.

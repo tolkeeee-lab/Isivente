@@ -98,3 +98,15 @@ Avant d'écrire une seule ligne de code pour une landing page produit :
 ### ⚡ Pilier 6 : Déploiement Continu & Validation
 - Chaque modification doit être validée par `npm run build` (0 erreur).
 - Commit & push immédiat sur `origin/main` pour mise en ligne automatique sur Vercel.
+
+---
+
+### 📲 Pilier 7 : Filet de Sauvetage & Capture d'Objections WhatsApp (Exit Intent)
+- **Composant obligatoire** : `<ExitIntentModal slug={slug} />` actif sur chaque route produit (intégré nativement dans le layout/wrapper `app/p/[slug]/page.tsx`).
+- **Objectif CRO** : Récupérer les indécis avant qu'ils ne quittent et comprendre la cause exacte du départ.
+- **Mécanique** :
+  1. Détection de sortie : Mouvement de souris vers la barre d'onglets (Desktop) ou tentative de retour arrière (Mobile).
+  2. 4 options 1-clic traitant les objections clés (Prix trop élevé, Vérification de livraison par ville, Doute sur la qualité/test à réception, Préférence commande par message).
+  3. Champ de question libre si l'objection du client n'est pas dans la liste.
+  4. Redirection automatique vers WhatsApp (`wa.me/2290192901817`) avec le nom du produit, le prix et le texte de l'objection pré-rédigé.
+  5. Tracking Pixel Meta (`ExitWhatsApp_Redirect`) pour analyser les motifs d'abandon.
