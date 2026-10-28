@@ -205,13 +205,18 @@ export default function ExitIntentModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={handleClose}
     >
       <div 
-        className="relative w-full max-w-lg rounded-3xl bg-white border border-slate-200 shadow-2xl p-5 sm:p-6 overflow-hidden animate-in zoom-in-95 duration-200 select-none text-slate-800 max-h-[92vh] overflow-y-auto"
+        className="relative w-full max-w-lg rounded-t-[28px] sm:rounded-3xl bg-white border-t sm:border border-slate-200 shadow-2xl p-5 sm:p-6 pb-8 sm:pb-6 overflow-hidden animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300 sm:duration-200 select-none text-slate-800 max-h-[90vh] sm:max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Poignée de tirage / drag pill pour le format Pull-Up mobile */}
+        <div className="sm:hidden flex justify-center pb-2.5 -mt-1 cursor-grab">
+          <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
+        </div>
+
         {/* Bouton fermeture */}
         <button
           onClick={handleClose}
@@ -221,7 +226,7 @@ export default function ExitIntentModal({
           <X className="w-4 h-4 stroke-[2]" />
         </button>
 
-        <div className="space-y-4 pt-1">
+        <div className="space-y-4 pt-0.5">
           {/* Badge statut en ligne */}
           <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
