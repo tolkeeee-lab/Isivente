@@ -60,6 +60,8 @@ function SuccessContent() {
           currency: "XOF",
           num_items: parsed?.quantity || 1,
           order_id: orderRef || undefined,
+          customer_phone: phone || undefined,
+          customer_name: name || undefined,
         });
       } catch {}
     }

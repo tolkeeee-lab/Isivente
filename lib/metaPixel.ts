@@ -63,11 +63,17 @@ function isAdminContext(): boolean {
  * Envoie un événement de secours côté serveur (Meta CAPI Bridge)
  * pour contourner les bloqueurs de publicité et les restrictions iOS/Android.
  */
-async function sendServerBridge(eventName: string, customData: Record<string, any> = {}, eventId?: string) {
+async function sendServerBridge(
+  eventName: string,
+  customData: Record<string, any> = {},
+  eventId?: string,
+  overrideUserData?: Record<string, any>
+) {
   if (typeof window === "undefined") return;
   if (isAdminContext()) return;
 
-  const userData = getUserDataFromStorage();
+  const storageUserData = getUserDataFromStorage();
+  const userData = { ...storageUserData, ...overrideUserData };
 
   try {
     fetch("/api/pixel/event", {
@@ -197,8 +203,6 @@ export function trackInitiateCheckout(params: {
 
 /**
  * Événement Lead : soumission d'une commande COD sur la boutique
- * En COD, la commande en ligne est un prospect/lead confirmé.
- * L'événement officiel "Purchase" sera déclenché lors de la livraison effective.
  */
 export function trackLead(params: {
   order_id?: string;
@@ -239,6 +243,7 @@ export function trackLead(params: {
 /**
  * Événement Purchase : confirmation de la commande (paiement à la livraison)
  * Dédupliqué avec le serveur CAPI (/api/orders) via eventID.
+ * Inclut la Correspondance Avancée (Advanced Matching) : téléphone, nom, external_id.
  */
 export function trackPurchase(params: {
   order_id?: string;
@@ -247,6 +252,10 @@ export function trackPurchase(params: {
   value: number;
   currency?: string;
   num_items?: number;
+  customer_phone?: string;
+  customer_name?: string;
+  customer_email?: string;
+  city?: string;
 }) {
   if (isAdminContext()) return;
   const eventId = params.order_id ? String(params.order_id).trim() : undefined;
@@ -271,6 +280,20 @@ export function trackPurchase(params: {
     } catch {}
   }
 
+  // Normalisation du téléphone pour Meta (ajouter indicatif 229 si absent)
+  const rawPhone = (params.customer_phone || "").replace(/\D/g, "");
+  let cleanPhone = rawPhone;
+  if (cleanPhone.length === 8 || cleanPhone.length === 10) {
+    if (!cleanPhone.startsWith("229")) {
+      cleanPhone = "229" + cleanPhone;
+    }
+  }
+
+  const nameParts = (params.customer_name || "").trim().split(/\s+/);
+  const firstName = nameParts[0] || undefined;
+  const lastName = nameParts.slice(1).join(" ") || undefined;
+  const city = params.city || "Cotonou";
+
   const data = {
     content_name: params.content_name,
     content_ids: params.content_ids || [],
@@ -283,12 +306,32 @@ export function trackPurchase(params: {
 
   const fbq = getFbq();
   if (fbq) {
-    // DÉDUPLICATION OFFICIELLE META : le 4ème paramètre { eventID } permet à Meta de reconnaître
-    // que cet événement navigateur et l'événement serveur envoyé par /api/orders sont LA MÊME VENTE.
+    // 2. CORRESPONDANCE AVANCÉE NAVIGATEUR (Advanced Matching)
+    // Permet à Meta d'attribuer la vente à l'utilisateur Facebook/Instagram avec un EMQ élevé
+    if (cleanPhone || firstName) {
+      try {
+        fbq("init", FB_PIXEL_ID, {
+          ph: cleanPhone || undefined,
+          fn: firstName || undefined,
+          ln: lastName || undefined,
+          ct: city.toLowerCase(),
+          country: "bj",
+          external_id: eventId,
+        });
+      } catch {}
+    }
+
+    // DÉDUPLICATION OFFICIELLE META : le 4ème paramètre { eventID } fusionne avec le serveur
     fbq("track", "Purchase", data, { eventID: eventId });
   }
 
-  // NOTE CRITIQUE : Ne PAS appeler sendServerBridge("Purchase") ici.
-  // La route backend /api/orders déclenche déjà l'événement officiel Meta Conversions API (CAPI)
-  // avec le même event_id de la commande. Meta fusionne automatiquement les deux en 1 seul achat.
+  // 3. PONT SERVEUR CAPI SÉCURISÉ (Déduplication garantie par le même eventId)
+  sendServerBridge("Purchase", data, eventId, {
+    phone: cleanPhone || undefined,
+    first_name: firstName,
+    last_name: lastName,
+    city: city,
+    external_id: eventId,
+  });
 }
+

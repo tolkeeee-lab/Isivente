@@ -195,6 +195,9 @@ export default function QuickOrderDrawer({
         value: totalPrice,
         currency: "XOF",
         num_items: totalQuantity,
+        customer_phone: customerPhone,
+        customer_name: customerName,
+        city: city,
       });
 
       playOrderSound();

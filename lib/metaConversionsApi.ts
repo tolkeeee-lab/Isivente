@@ -63,17 +63,17 @@ export interface MetaCapiEventOptions {
  * Envoie un événement serveur à Meta Conversions API (CAPI) avec Event Match Quality (EMQ) maximal
  */
 export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions): Promise<boolean> {
-  const pixelId = META_PIXEL_ID;
-  const token = META_CAPI_TOKEN;
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || META_PIXEL_ID || "2150878529184686";
+  const token = (process.env.META_CONVERSIONS_API_TOKEN || META_CAPI_TOKEN || "").trim();
 
   if (!pixelId) {
     console.warn("⚠️ Meta CAPI: Aucun Pixel ID configuré.");
     return false;
   }
 
-  // Si le token n'est pas encore renseigné dans .env.local, loguer sans planter
+  // Si le token n'est pas encore renseigné dans l'environnement, loguer sans planter
   if (!token) {
-    console.info(`ℹ️ Meta CAPI: Événement [${options.event_name}] prêt mais META_CONVERSIONS_API_TOKEN n'est pas encore défini dans .env.local`);
+    console.info(`ℹ️ Meta CAPI: Événement [${options.event_name}] prêt mais META_CONVERSIONS_API_TOKEN n'est pas défini.`);
     return false;
   }
 
