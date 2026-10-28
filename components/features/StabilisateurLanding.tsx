@@ -26,6 +26,7 @@ import { markLeadConverted } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
+import { trackViewContent, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -141,7 +142,25 @@ export default function StabilisateurLanding({ slug = "stabilisateur" }: { slug?
     return () => clearInterval(interval);
   }, [isHeroHovered]);
 
+  // Pixel Meta : ViewContent officiel
+  useEffect(() => {
+    trackViewContent({
+      content_name: "Stabilisateur Pro-Mobile Z3 Zoom™",
+      content_ids: ["stabilisateur"],
+      value: 49900,
+      currency: "XOF",
+    });
+  }, [slug]);
+
   const scrollToOrder = () => {
+    recordInteraction();
+    trackInitiateCheckout({
+      content_name: "Stabilisateur Pro-Mobile Z3 Zoom™",
+      content_ids: ["stabilisateur"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: 1,
+    });
     orderSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -179,6 +198,14 @@ export default function StabilisateurLanding({ slug = "stabilisateur" }: { slug?
       });
 
       await markLeadConverted(customerPhone, "stabilisateur");
+
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Stabilisateur Pro-Mobile Z3 Zoom™",
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/stabilisateur/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

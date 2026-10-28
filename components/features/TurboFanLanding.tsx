@@ -21,6 +21,7 @@ import { markLeadConverted } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
+import { trackViewContent, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -96,7 +97,25 @@ export default function TurboFanLanding({ slug = "turbofan" }: { slug?: string }
 
   const orderSectionRef = useRef<HTMLDivElement>(null);
 
+  // Pixel Meta : ViewContent officiel
+  useEffect(() => {
+    trackViewContent({
+      content_name: "Ventilateur Ceinture & Powerbank TurboFan™ Max",
+      content_ids: ["turbofan"],
+      value: 16900,
+      currency: "XOF",
+    });
+  }, [slug]);
+
   const scrollToOrder = () => {
+    recordInteraction();
+    trackInitiateCheckout({
+      content_name: "Ventilateur Ceinture & Powerbank TurboFan™ Max",
+      content_ids: ["turbofan"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: 1,
+    });
     orderSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -134,6 +153,14 @@ export default function TurboFanLanding({ slug = "turbofan" }: { slug?: string }
       });
 
       await markLeadConverted(customerPhone, "turbofan");
+
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Ventilateur Ceinture & Powerbank TurboFan™ Max",
+          price: selectedBundle.price,
+          quantity: 1,
+        }));
+      }
 
       const successUrl = `/p/turbofan/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);

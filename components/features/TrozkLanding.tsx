@@ -42,6 +42,7 @@ import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
+import { trackViewContent, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -164,10 +165,27 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
     return () => clearInterval(timer);
   }, [isHeroHovered]);
 
+  // Pixel Meta : ViewContent officiel
+  useEffect(() => {
+    trackViewContent({
+      content_name: "Système Électrique Modulaire 3-en-1 Trozk T3™",
+      content_ids: ["trozk"],
+      value: 29900,
+      currency: "XOF",
+    });
+  }, [slug]);
+
   const { recordInteraction } = usePagePresence(slug);
 
   const scrollToOrder = () => {
     recordInteraction();
+    trackInitiateCheckout({
+      content_name: "Système Électrique Modulaire 3-en-1 Trozk T3™",
+      content_ids: ["trozk"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: 1,
+    });
     const el = document.getElementById("commander");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -229,6 +247,14 @@ export default function TrozkLanding({ slug = "trozk" }: { slug?: string }) {
       setOrderInfo({ orderNumber, total: finalTotal, name: customerName, phone: customerPhone });
       setOrderSuccess(true);
       setIsSubmitting(false);
+
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("isivente_last_purchase_meta", JSON.stringify({
+          title: "Système Électrique Modulaire 3-en-1 Trozk T3™",
+          price: finalTotal,
+          quantity: 1,
+        }));
+      }
 
       // Redirection directe vers la page success pour confirmation WhatsApp automatique
       router.push(

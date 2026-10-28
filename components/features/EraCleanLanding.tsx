@@ -23,6 +23,7 @@ import { markLeadConverted } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -103,7 +104,23 @@ export default function EraCleanLanding({ slug = "eraclean" }: { slug?: string }
   const orderSectionRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  useEffect(() => {
+    trackViewContent({
+      content_name: "Purificateur d'Air & Anti-Odeurs Frigo EraClean™ Officiel",
+      content_ids: [slug, "eraclean"],
+      value: 19900,
+      currency: "XOF",
+    });
+  }, [slug]);
+
   const scrollToOrder = () => {
+    trackInitiateCheckout({
+      content_name: "Purificateur d'Air & Anti-Odeurs Frigo EraClean™ Officiel",
+      content_ids: [slug],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: 1,
+    });
     orderSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 

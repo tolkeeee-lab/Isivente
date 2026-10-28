@@ -39,6 +39,7 @@ import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted } from "@/lib/leadsStorage";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
+import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 
 const BUNDLES: BundleOption[] = [
   {
@@ -165,9 +166,25 @@ export default function CameraLanding({ slug = "camera" }: { slug?: string }) {
     return () => clearInterval(subTimer);
   }, [isDemoPlaying]);
 
+  useEffect(() => {
+    trackViewContent({
+      content_name: "Mini Caméra Espionne & Surveillance HD A9 Pro™",
+      content_ids: [slug, "camera"],
+      value: 16900,
+      currency: "XOF",
+    });
+  }, [slug]);
+
   const { recordInteraction } = usePagePresence(slug);
 
   const scrollToOrder = () => {
+    trackInitiateCheckout({
+      content_name: "Mini Caméra Espionne & Surveillance HD A9 Pro™",
+      content_ids: [slug],
+      value: selectedBundle.price,
+      currency: "XOF",
+      num_items: 1,
+    });
     const el = document.getElementById("commander");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
