@@ -153,24 +153,7 @@ export default function ExitIntentModal({
       message 
     });
 
-    // Envoi discret en arrière-plan pour analyse des objections
-    try {
-      if (typeof window !== "undefined") {
-        fetch("/api/analytics", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            session_id: `exit_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-            product_slug: `${slug}_exit_${optionId}`,
-            duration_seconds: 1,
-            clicked: true,
-          }),
-          keepalive: true,
-        }).catch(() => {});
-      }
-    } catch {}
-
-    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+        const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
     setIsOpen(false);
     window.open(url, "_blank");
   };

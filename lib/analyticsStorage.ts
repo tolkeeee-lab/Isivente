@@ -28,6 +28,9 @@ export interface ProductAnalyticsStats {
   formattedAvgTime: string;
 }
 
+const BOT_UA_REGEX =
+  /bot|crawler|spider|crawling|headless|lighthouse|facebookexternalhit|facebot|whatsapp|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|embedly|quora|pinterest|outbrain|vkshare|w3c_validator|vercel|prerender|preview|curl|wget|python|node-fetch|axios/i;
+
 function formatDuration(seconds: number): string {
   if (!seconds || seconds <= 0) return "—";
   const m = Math.floor(seconds / 60);
@@ -42,17 +45,74 @@ function getStartOfTodayIso(): string {
   return now.toISOString();
 }
 
+function isValidAnalyticsRow(d: any): boolean {
+  const s = d?.product_slug;
+  if (!s || typeof s !== 'string') return false;
+  if (
+    s.startsWith('admin') ||
+    s === 'admin' ||
+    s === 'autre' ||
+    s.includes('_exit_')
+  ) {
+    return false;
+  }
+  if (d?.session_id && String(d.session_id).startsWith('exit_')) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Fusionne les doublons historiques en rafale (ex: +3 ou +4 lignes créées en moins de 45 secondes
+ * sur le même produit lors d'un rechargement ou pré-chargement) pour garantir 1 visiteur = 1 visite.
+ */
+function deduplicateAnalyticsRows(rows: any[]): any[] {
+  const valid = rows.filter(isValidAnalyticsRow);
+  // Trier du plus ancien au plus récent pour regrouper les rafales proches
+  const sorted = [...valid].sort(
+    (a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
+  );
+
+  const lastBySlug: Record<string, any> = {};
+  const deduped: any[] = [];
+  const BURST_WINDOW_MS = 45 * 1000; // 45 secondes
+
+  for (const row of sorted) {
+    const slug = String(row.product_slug).trim().toLowerCase();
+    const rowTime = new Date(row.created_at || 0).getTime();
+    const prev = lastBySlug[slug];
+
+    if (prev && Math.abs(rowTime - new Date(prev.created_at || 0).getTime()) <= BURST_WINDOW_MS) {
+      // C'est un doublon de rafale de la même visite : on fusionne sans ajouter +1 visite
+      prev.clicked = Boolean(prev.clicked || row.clicked);
+      prev.duration_seconds = Math.max(
+        Number(prev.duration_seconds) || 0,
+        Number(row.duration_seconds) || 0
+      );
+    } else {
+      const cloned = { ...row, product_slug: slug };
+      deduped.push(cloned);
+      lastBySlug[slug] = cloned;
+    }
+  }
+
+  return deduped;
+}
+
 export function trackUserSession(
   slug: string,
   duration_seconds: number,
   clicked_order: boolean,
-  session_id: string
+  session_id: string,
+  initial_created_at?: string
 ) {
   try {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') return;
 
-    // Protection absolue : Ne JAMAIS comptabiliser les pages admin ni les administrateurs
+    // 1. Protection anti-robot et anti-admin
     if (
+      navigator.webdriver ||
+      BOT_UA_REGEX.test(navigator.userAgent || '') ||
       window.location.pathname.startsWith('/admin') ||
       window.location.pathname.startsWith('/api') ||
       localStorage.getItem("isivente_is_admin") === "true" ||
@@ -62,36 +122,44 @@ export function trackUserSession(
       return;
     }
 
-    // Uniquement pour les vraies landing pages de produits (exclure tout slug admin ou invalide)
-    const cleanSlug = slug?.trim();
-    if (!cleanSlug || cleanSlug.startsWith('admin') || cleanSlug === 'autre' || cleanSlug === 'admin') {
+    // 2. Uniquement pour les vraies landing pages de produits
+    const cleanSlug = slug?.trim().toLowerCase();
+    if (
+      !cleanSlug ||
+      cleanSlug.startsWith('admin') ||
+      cleanSlug === 'autre' ||
+      cleanSlug === 'admin' ||
+      cleanSlug.includes('_exit_')
+    ) {
       return;
     }
 
-    const payload = {
+    const safeDuration = Math.max(0, Math.min(1800, Math.round(Number(duration_seconds) || 0)));
+
+    const payload: Record<string, any> = {
       product_slug: cleanSlug,
-      duration_seconds,
-      clicked: clicked_order,
+      duration_seconds: safeDuration,
+      clicked: Boolean(clicked_order),
       session_id,
-      created_at: new Date().toISOString(),
     };
 
-    // 1. Enregistrement direct Supabase
-    Promise.resolve(
-      supabase
-        .from('analytics')
-        .upsert([payload], { onConflict: 'session_id' })
-    ).catch(() => {});
+    if (initial_created_at) {
+      payload.created_at = initial_created_at;
+    }
 
-    // 2. Enregistrement résilient via l'API serveur (contourne adblockers & CSP)
-    try {
-      fetch('/api/analytics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        keepalive: true,
-      }).catch(() => {});
-    } catch {}
+    // Enregistrement unique via l'API serveur (et fallback direct Supabase uniquement en cas d'erreur réseau)
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {
+      Promise.resolve(
+        supabase
+          .from('analytics')
+          .upsert([payload], { onConflict: 'session_id' })
+      ).catch(() => {});
+    });
   } catch {}
 }
 
@@ -100,11 +168,10 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
     let data: any[] | null = null;
     let error: any = null;
 
-    // 1. Tenter via Supabase client
     try {
       let query = supabase
         .from('analytics')
-        .select('product_slug, duration_seconds, clicked, created_at')
+        .select('session_id, product_slug, duration_seconds, clicked, created_at')
         .order('created_at', { ascending: false })
         .limit(10000);
 
@@ -118,7 +185,6 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
       error = e;
     }
 
-    // 2. Fallback via /api/analytics si Supabase client est bloqué ou échoue
     if ((error || !data || data.length === 0) && typeof window !== 'undefined') {
       try {
         const url = slug ? `/api/analytics?slug=${encodeURIComponent(slug)}` : '/api/analytics';
@@ -145,11 +211,7 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
       };
     }
 
-    // Filtrage anti-parasite : exclure formellement toute entrée admin ou slug invalide
-    const validData = data.filter((d: any) => {
-      const s = d.product_slug;
-      return s && !s.startsWith('admin') && s !== 'admin' && s !== 'autre';
-    });
+    const validData = deduplicateAnalyticsRows(data);
 
     const startOfToday = getStartOfTodayIso();
     const totalViews = validData.length;
@@ -157,7 +219,10 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
     const todayViews = todayRows.length;
     const totalClicks = validData.filter((d: any) => d.clicked).length;
     const todayClicks = todayRows.filter((d: any) => d.clicked).length;
-    const totalDuration = validData.reduce((acc: number, d: any) => acc + (d.duration_seconds || 0), 0);
+    const totalDuration = validData.reduce(
+      (acc: number, d: any) => acc + Math.min(1800, Math.max(0, Number(d.duration_seconds) || 0)),
+      0
+    );
     const avgTimeSpentSeconds = totalViews > 0 ? Math.round(totalDuration / totalViews) : 0;
     const ctr = totalViews > 0 ? Math.round((totalClicks / totalViews) * 1000) / 10 : 0;
 
@@ -192,7 +257,7 @@ export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]
     try {
       const res = await supabase
         .from('analytics')
-        .select('product_slug, duration_seconds, clicked, created_at')
+        .select('session_id, product_slug, duration_seconds, clicked, created_at')
         .order('created_at', { ascending: false })
         .limit(10000);
       data = res.data;
@@ -218,15 +283,12 @@ export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]
       return [];
     }
 
+    const dedupedData = deduplicateAnalyticsRows(data);
     const startOfToday = getStartOfTodayIso();
     const bySlug: Record<string, { views: number; todayViews: number; clicks: number; todayClicks: number; duration: number }> = {};
-    
-    data.forEach((d: any) => {
+
+    dedupedData.forEach((d: any) => {
       const slug = d.product_slug;
-      // Exclure formellement l'admin et les slugs vides
-      if (!slug || slug.startsWith('admin') || slug === 'autre' || slug === 'admin') {
-        return;
-      }
       if (!bySlug[slug]) {
         bySlug[slug] = { views: 0, todayViews: 0, clicks: 0, todayClicks: 0, duration: 0 };
       }
@@ -237,7 +299,7 @@ export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]
         bySlug[slug].clicks += 1;
         if (isToday) bySlug[slug].todayClicks += 1;
       }
-      bySlug[slug].duration += d.duration_seconds || 0;
+      bySlug[slug].duration += Math.min(1800, Math.max(0, Number(d.duration_seconds) || 0));
     });
 
     return Object.entries(bySlug).map(([slug, stat]) => {

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
 import { trackViewContent, trackInitiateCheckout, trackPurchase } from "@/lib/metaPixel";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
@@ -89,11 +89,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   }, [imagesList.length]);
 
   // Analytics
-  const sessionIdRef = useRef(
-    "sess_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8)
-  );
-  const startTimeRef = useRef(Date.now());
-  const clickedRef = useRef(false);
+  const { recordInteraction } = usePagePresence(slug);
 
   /* ─── Fetch product from Supabase avec fallback DEFAULT_CATALOG ─── */
   useEffect(() => {
@@ -180,22 +176,10 @@ export default function ProductLanding({ slug }: { slug: string }) {
     load();
   }, [slug]);
 
-  /* ─── Analytics tracking ─── */
-  useEffect(() => {
-    const save = () => {
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      trackUserSession(slug, duration, clickedRef.current, sessionIdRef.current);
-    };
-    window.addEventListener("beforeunload", save);
-    return () => {
-      save();
-      window.removeEventListener("beforeunload", save);
-    };
-  }, [slug]);
-
-  /* ─── Helpers ─── */
+    /* ─── Helpers ─── */
   const scrollToSection = (id: string) => {
     if ((id === "order-form" || id === "commander") && product) {
+      recordInteraction();
       trackInitiateCheckout({
         content_name: product.title,
         content_ids: [slug],
@@ -260,9 +244,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
         }));
       } catch {}
 
-      clickedRef.current = true;
-      const duration = (Date.now() - startTimeRef.current) / 1000;
-      await trackUserSession(slug, duration, true, sessionIdRef.current);
+      recordInteraction();
 
       const orderRef = createdOrder?.order_number || ("CMD-" + Math.floor(100000 + Math.random() * 900000));
       setOrderNumber(orderRef);
