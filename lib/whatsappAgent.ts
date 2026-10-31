@@ -396,7 +396,7 @@ export function generateWhatsAppAgentReply(params: {
     const specialPrice = Math.max(10000, price - 1000);
     const replyText =
       `Bonjour${clientFirstName} ! 😊 Merci pour votre intérêt pour le *${prodTitle}*.\n\n` +
-      `Le tarif est déjà en promotion à *${fmt(price)} FCFA* (au lieu de ${fmt((product as any)?.originalPrice || product?.original_price || price + 8000)} F) avec la *livraison express incluse* et la garantie officielle.\n\n` +
+      `Le tarif est déjà en promotion à *${fmt(price)} FCFA* (au lieu de ${fmt((product as any)?.originalPrice || (product as any)?.original_price || price + 8000)} F) avec la *livraison express incluse* et la garantie officielle.\n\n` +
       `🎁 *Exceptionnellement pour vous sur WhatsApp*, si vous validez votre livraison pour aujourd'hui, je peux vous accorder une *remise directe de 1 000 FCFA* (soit *${fmt(specialPrice)} FCFA* à régler à la réception après vérification du produit) !\n\n` +
       `👉 Dans quelle *Ville et quel Quartier* souhaitez-vous être livré(e) pour que je réserve votre colis à ce tarif ?`;
 
