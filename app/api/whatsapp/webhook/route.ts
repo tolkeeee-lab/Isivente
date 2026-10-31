@@ -71,7 +71,9 @@ export async function POST(req: NextRequest) {
     let idInstance =
       urlInstance || process.env.GREEN_API_ID_INSTANCE || "710722786457";
     let apiTokenInstance =
-      urlToken || process.env.GREEN_API_TOKEN_INSTANCE || "";
+      urlToken ||
+      process.env.GREEN_API_TOKEN_INSTANCE ||
+      "99dea8e77aaf4ca383583b213ab2a5b37f0b3f9114fa48e59d";
     let isSimulation = false;
     let forcedFallbackSlug: string | undefined = undefined;
 
@@ -334,7 +336,9 @@ export async function PUT(req: NextRequest) {
       body.idInstance || process.env.GREEN_API_ID_INSTANCE || "710722786457"
     ).trim();
     const apiTokenInstance = String(
-      body.apiTokenInstance || process.env.GREEN_API_TOKEN_INSTANCE || ""
+      body.apiTokenInstance ||
+        process.env.GREEN_API_TOKEN_INSTANCE ||
+        "99dea8e77aaf4ca383583b213ab2a5b37f0b3f9114fa48e59d"
     ).trim();
     const action = String(body.action || "status");
     const prefix = idInstance.slice(0, 4);

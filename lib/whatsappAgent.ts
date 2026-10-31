@@ -521,7 +521,9 @@ export async function sendGreenApiWhatsAppMessage(params: {
     process.env.GREEN_API_ID_INSTANCE ||
     "710722786457";
   const apiTokenInstance =
-    params.apiTokenInstance || process.env.GREEN_API_TOKEN_INSTANCE || "";
+    params.apiTokenInstance ||
+    process.env.GREEN_API_TOKEN_INSTANCE ||
+    "99dea8e77aaf4ca383583b213ab2a5b37f0b3f9114fa48e59d";
 
   if (!idInstance || !apiTokenInstance) {
     return {

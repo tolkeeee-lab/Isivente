@@ -29,7 +29,9 @@ interface SimulatedChatMsg {
 
 export default function AdminWhatsAppPage() {
   const [idInstance, setIdInstance] = useState("710722786457");
-  const [apiTokenInstance, setApiTokenInstance] = useState("");
+  const [apiTokenInstance, setApiTokenInstance] = useState(
+    "99dea8e77aaf4ca383583b213ab2a5b37f0b3f9114fa48e59d"
+  );
   const [statusLoading, setStatusLoading] = useState(false);
   const [webhookLoading, setWebhookLoading] = useState(false);
   const [instanceState, setInstanceState] = useState<string | null>(null);
