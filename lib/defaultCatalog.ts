@@ -17,6 +17,19 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "likel-rite-default",
+    title: "Diffuseur d'Arômes & Veilleuse Cristal LIKEL RITE™ (500 ml)",
+    shortTitle: "Diffuseur d'Arômes LIKEL RITE™ 500 ml",
+    slug: "likel-rite",
+    price: 14900,
+    image_url: "/images/likel-rite/hero-clean.jpg",
+    image: "/images/likel-rite/hero-clean.jpg",
+    headline: "Même chambre, autre ambiance : diffuseur d'arômes ultrasonique 500 ml design flacon de parfum avec veilleuse cristal 3 tons.",
+    bundles: [
+      { name: "Diffuseur d'Arômes & Veilleuse Cristal LIKEL RITE™ (500 ml)", price: 14900 }
+    ]
+  },
+  {
     id: "calendrier-3d-default",
     title: "Calendrier Perpétuel Décoratif 3D Magnétique",
     shortTitle: "Calendrier Décoratif 3D",

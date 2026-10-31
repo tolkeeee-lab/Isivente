@@ -83,6 +83,22 @@ const BENIN_LOCATIONS = [
 // Mots-clés permettant d'identifier chacun des 31 produits dans le message du client
 const PRODUCT_KEYWORDS: { slug: string; keywords: string[] }[] = [
   {
+    slug: "likel-rite",
+    keywords: [
+      "likel",
+      "likel rite",
+      "likel-rite",
+      "diffuseur",
+      "diffuseur d'arome",
+      "diffuseur d'arômes",
+      "humidificateur",
+      "parfum d'interieur",
+      "parfum interieur",
+      "500 ml",
+      "500ml",
+    ],
+  },
+  {
     slug: "pare-soleil",
     keywords: ["pare-soleil", "pare soleil", "eblouissement", "éblouissement", "visiere", "visière", "pare-brise"],
   },

@@ -76,6 +76,16 @@ const THEME_PALETTES: Record<
     badgeText: string;
   }
 > = {
+  "likel-rite": {
+    primary: "#B45309",
+    primaryHover: "#92400E",
+    primaryLight: "#FFFBEB",
+    border: "#FDE68A",
+    textPrimary: "#78350F",
+    ringColor: "rgba(180, 83, 9, 0.25)",
+    badgeBg: "#FEF3C7",
+    badgeText: "#92400E",
+  },
   "bracelet-main": {
     primary: "#B45309",
     primaryHover: "#92400E",

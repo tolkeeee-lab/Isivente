@@ -30,6 +30,7 @@ import CubiCraftLanding from "@/components/features/CubiCraftLanding";
 import TrousseBiometriqueLanding from "@/components/features/TrousseBiometriqueLanding";
 import DigestiGumLanding from "@/components/features/DigestiGumLanding";
 import Calendrier3DLanding from "@/components/features/Calendrier3DLanding";
+import LikelRiteLanding from "@/components/features/LikelRiteLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -139,6 +140,11 @@ export function generateStaticParams() {
     { slug: "calendrier-perpetuel" },
     { slug: "calendrier-decoratif" },
     { slug: "calendrier-magnetique" },
+    { slug: "likel-rite" },
+    { slug: "diffuseur" },
+    { slug: "diffuseur-arome" },
+    { slug: "humidificateur" },
+    { slug: "parfum-interieur" },
   ];
 }
 
@@ -294,6 +300,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "calendrier-decoratif":
       case "calendrier-magnetique":
         return <Calendrier3DLanding slug="calendrier-3d" />;
+      case "likel-rite":
+      case "diffuseur":
+      case "diffuseur-arome":
+      case "humidificateur":
+      case "parfum-interieur":
+        return <LikelRiteLanding slug="likel-rite" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
