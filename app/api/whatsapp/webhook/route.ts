@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     service: "Isivente WhatsApp AI Sales Agent Webhook",
-    defaultInstance: "710722786456",
+    defaultInstance: "710722786457",
   });
 }
 
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     let incomingText = "";
     let chatId = "";
     let idInstance =
-      urlInstance || process.env.GREEN_API_ID_INSTANCE || "710722786456";
+      urlInstance || process.env.GREEN_API_ID_INSTANCE || "710722786457";
     let apiTokenInstance =
       urlToken || process.env.GREEN_API_TOKEN_INSTANCE || "";
     let isSimulation = false;
@@ -331,7 +331,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const idInstance = String(
-      body.idInstance || process.env.GREEN_API_ID_INSTANCE || "710722786456"
+      body.idInstance || process.env.GREEN_API_ID_INSTANCE || "710722786457"
     ).trim();
     const apiTokenInstance = String(
       body.apiTokenInstance || process.env.GREEN_API_TOKEN_INSTANCE || ""
@@ -432,3 +432,4 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
+
