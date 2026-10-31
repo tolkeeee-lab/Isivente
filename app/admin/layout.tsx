@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Store,
   Wand2,
+  Bot,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -45,6 +46,11 @@ export default function AdminLayout({
       href: "/admin/prospects",
       label: "Paniers Abandonnés",
       icon: Users,
+    },
+    {
+      href: "/admin/whatsapp",
+      label: "Bot WhatsApp",
+      icon: Bot,
     },
     {
       href: "/admin/landings",
