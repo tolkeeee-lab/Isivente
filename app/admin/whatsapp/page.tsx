@@ -9,13 +9,11 @@ import {
   RefreshCw,
   QrCode,
   Zap,
-  ShieldCheck,
   Sparkles,
-  Copy,
-  Check,
   Bot,
   Smartphone,
   ExternalLink,
+  Terminal,
 } from "lucide-react";
 import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
 
@@ -28,19 +26,20 @@ interface SimulatedChatMsg {
 }
 
 export default function AdminWhatsAppPage() {
-  const [idInstance, setIdInstance] = useState("710722786457");
-  const [apiTokenInstance, setApiTokenInstance] = useState(
-    "99dea8e77aaf4ca383583b213ab2a5b37f0b3f9114fa48e59d"
-  );
-  const [statusLoading, setStatusLoading] = useState(false);
-  const [webhookLoading, setWebhookLoading] = useState(false);
-  const [instanceState, setInstanceState] = useState<string | null>(null);
-  const [qrCodeBase64, setQrCodeBase64] = useState<string | null>(null);
-  const [feedbackMsg, setFeedbackMsg] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
-  const [copiedWebhook, setCopiedWebhook] = useState(false);
+  // Statut Baileys Local (100% Gratuit & Illimité)
+  const [baileysStatus, setBaileysStatus] = useState<{
+    running: boolean;
+    status: string;
+    qrCodeBase64: string | null;
+    connectedPhone: string | null;
+    logs: string[];
+  }>({
+    running: false,
+    status: "offline",
+    qrCodeBase64: null,
+    connectedPhone: null,
+    logs: [],
+  });
 
   // Simulateur de conversation
   const products = getAdminDashboardProducts();
@@ -57,130 +56,35 @@ export default function AdminWhatsAppPage() {
   ]);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const checkBaileysServer = async () => {
     try {
-      const savedId = localStorage.getItem("isivente_greenapi_id");
-      const savedToken = localStorage.getItem("isivente_greenapi_token");
-      if (savedId) setIdInstance(savedId);
-      if (savedToken) setApiTokenInstance(savedToken);
+      const res = await fetch("http://localhost:4040/status", {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBaileysStatus({
+          running: true,
+          status: data.status || "starting",
+          qrCodeBase64: data.qrCodeBase64 || null,
+          connectedPhone: data.connectedPhone || null,
+          logs: Array.isArray(data.logs) ? data.logs : [],
+        });
+        return;
+      }
     } catch {}
+    setBaileysStatus((prev) => ({ ...prev, running: false }));
+  };
+
+  useEffect(() => {
+    checkBaileysServer();
+    const interval = setInterval(checkBaileysServer, 3500);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
-
-  const saveCredentialsLocally = (id: string, token: string) => {
-    try {
-      localStorage.setItem("isivente_greenapi_id", id.trim());
-      localStorage.setItem("isivente_greenapi_token", token.trim());
-    } catch {}
-  };
-
-  const handleCheckStatusAndQr = async () => {
-    if (!apiTokenInstance.trim()) {
-      setFeedbackMsg({
-        type: "error",
-        text: "Colle d'abord ton ApiTokenInstance (visible quand tu cliques sur l'instance 710722786456 dans Green-API).",
-      });
-      return;
-    }
-
-    setStatusLoading(true);
-    setFeedbackMsg(null);
-    saveCredentialsLocally(idInstance, apiTokenInstance);
-
-    try {
-      const res = await fetch("/api/whatsapp/webhook", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "status",
-          idInstance: idInstance.trim(),
-          apiTokenInstance: apiTokenInstance.trim(),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
-        setFeedbackMsg({
-          type: "error",
-          text: data.error || "Impossible de joindre Green-API.",
-        });
-      } else {
-        setInstanceState(data.stateInstance);
-        setQrCodeBase64(data.qrCodeBase64 || null);
-        if (data.stateInstance === "authorized") {
-          setFeedbackMsg({
-            type: "success",
-            text: "Ton WhatsApp est bien connecté (Authorized) ! Clique maintenant sur 'Activer le Webhook Automatique'.",
-          });
-        } else {
-          setFeedbackMsg({
-            type: "error",
-            text: "Ton instance est 'Not Authorized'. Scanne le QR Code ci-dessous (ou sur Green-API) avec ton téléphone WhatsApp !",
-          });
-        }
-      }
-    } catch (err: any) {
-      setFeedbackMsg({
-        type: "error",
-        text: "Erreur réseau lors de la vérification Green-API.",
-      });
-    } finally {
-      setStatusLoading(false);
-    }
-  };
-
-  const handleConfigureWebhookOneClick = async () => {
-    if (!apiTokenInstance.trim()) {
-      setFeedbackMsg({
-        type: "error",
-        text: "Colle d'abord ton ApiTokenInstance dans le champ prévu.",
-      });
-      return;
-    }
-
-    setWebhookLoading(true);
-    setFeedbackMsg(null);
-    saveCredentialsLocally(idInstance, apiTokenInstance);
-
-    const origin =
-      typeof window !== "undefined" && !window.location.origin.includes("localhost")
-        ? window.location.origin
-        : "https://isivente.vercel.app";
-
-    try {
-      const res = await fetch("/api/whatsapp/webhook", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "configure_webhook",
-          idInstance: idInstance.trim(),
-          apiTokenInstance: apiTokenInstance.trim(),
-          siteOrigin: origin,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
-        setFeedbackMsg({
-          type: "error",
-          text: data.error || "Échec de la configuration du Webhook.",
-        });
-      } else {
-        setFeedbackMsg({
-          type: "success",
-          text: "✅ Webhook activé automatiquement sur Green-API ! Dès qu'un client t'écrit sur WhatsApp, Awa lui répondra et enregistrera ses commandes dans ton Admin.",
-        });
-      }
-    } catch {
-      setFeedbackMsg({
-        type: "error",
-        text: "Erreur lors de la connexion à Green-API.",
-      });
-    } finally {
-      setWebhookLoading(false);
-    }
-  };
 
   const sendSimulatedMessage = async (textToSend: string) => {
     const clean = textToSend.trim();
@@ -234,10 +138,6 @@ export default function AdminWhatsAppPage() {
   const selectedProductObj =
     products.find((p) => p.slug === selectedSlug) || products[0];
 
-  const webhookFullUrl = `https://isivente.vercel.app/api/whatsapp/webhook?instance=${encodeURIComponent(
-    idInstance.trim()
-  )}&token=${encodeURIComponent(apiTokenInstance.trim() || "TON_TOKEN")}`;
-
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-[staggerFadeUp_220ms_cubic-bezier(0.16,1,0.3,1)_both]">
       {/* ── EN-TÊTE ── */}
@@ -247,193 +147,117 @@ export default function AdminWhatsAppPage() {
             <Bot className="w-6 h-6 stroke-[2]" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h1 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900">
                 Agent & Répondeur WhatsApp 24/7
               </h1>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Green-API Ready
+                100% Gratuit & Numéros Illimités (Baileys)
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Répond automatiquement aux clients sur WhatsApp, lève les objections et crée les commandes dans ton Admin.
+              Répond automatiquement à tous tes clients sur WhatsApp, lève les objections et crée les commandes dans ton Admin.
             </p>
           </div>
         </div>
 
         <a
-          href="https://console.green-api.com/instanceList"
+          href="http://localhost:4040"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-2xs transition-all"
         >
-          <Smartphone className="w-4 h-4" />
-          <span>Ouvrir ma Console Green-API</span>
-          <ExternalLink className="w-3.5 h-3.5" />
+          <QrCode className="w-4 h-4 text-emerald-400" />
+          <span>Ouvrir la Console QR Code (Port 4040)</span>
+          <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
         </a>
       </div>
 
-      {/* ── GRILLE : CONNEXION GREEN-API (GAUCHE) & SIMULATEUR LIVE (DROITE) ── */}
+      {/* ── GRILLE : SERVEUR BAILEYS ILLIMITÉ (GAUCHE) & SIMULATEUR LIVE (DROITE) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* COLONNE GAUCHE (6/12) : CONFIGURATION 1-CLIC GREEN-API */}
+        {/* COLONNE GAUCHE (6/12) : CONNEXION QR CODE ILLIMITÉE BAILEYS */}
         <div className="lg:col-span-6 card-figma p-5 sm:p-6 space-y-5">
-          <div className="border-b border-slate-100 pb-3">
-            <h2 className="font-bold text-base text-slate-900 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-emerald-600" />
-              <span>1. Connecter ton Instance Green-API en 3 clics</span>
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Ton instance <code className="font-mono font-bold text-slate-800">710722786456</code> est déjà pré-remplie ci-dessous !
-            </p>
-          </div>
-
-          {/* Guide rapide 3 étapes */}
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs text-slate-700">
-            <div className="font-bold text-slate-900">
-              Que faire sur ton écran Green-API ?
-            </div>
-            <ol className="list-decimal list-inside space-y-1.5 text-[11.5px] leading-relaxed">
-              <li>
-                Clique sur la carte <strong>Instance 710722786456 (WhatsApp: Developer)</strong>.
-              </li>
-              <li>
-                Copie la ligne <strong>apiTokenInstance</strong> et colle-la dans la case ci-dessous.
-              </li>
-              <li>
-                Clique sur <strong>&laquo; Obtenir le QR Code / Vérifier &raquo;</strong> pour scanner avec ton WhatsApp, puis sur <strong>&laquo; Activer le Webhook en 1 clic &raquo;</strong> !
-              </li>
-            </ol>
-          </div>
-
-          {/* Champs ID & Token */}
-          <div className="space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                ID de ton Instance (idInstance)
-              </label>
-              <input
-                type="text"
-                value={idInstance}
-                onChange={(e) => setIdInstance(e.target.value)}
-                placeholder="710722786456"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
-              />
+              <h2 className="font-bold text-base text-slate-900 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-emerald-600" />
+                <span>1. Connexion WhatsApp Illimitée (Baileys)</span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Zéro abonnement, zéro limite de 3 numéros : répond à 100 % des clients.
+              </p>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Clé secrète (apiTokenInstance)
-              </label>
-              <input
-                type="text"
-                value={apiTokenInstance}
-                onChange={(e) => setApiTokenInstance(e.target.value)}
-                placeholder="Colle ici ton apiTokenInstance depuis Green-API..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
+            {baileysStatus.running && baileysStatus.status === "connected" ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Connecté ({baileysStatus.connectedPhone})
+              </span>
+            ) : baileysStatus.running ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                <QrCode className="w-3.5 h-3.5" />
+                Prêt à scanner
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                Serveur local en pause
+              </span>
+            )}
           </div>
 
-          {/* Boutons d'action 1-clic */}
-          <div className="flex flex-col sm:flex-row gap-2.5">
-            <button
-              type="button"
-              onClick={handleCheckStatusAndQr}
-              disabled={statusLoading}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold inline-flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              {statusLoading ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
-              ) : (
-                <QrCode className="w-4 h-4" />
-              )}
-              <span>Vérifier Statut / Afficher QR Code</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleConfigureWebhookOneClick}
-              disabled={webhookLoading}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
-            >
-              {webhookLoading ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
-              ) : (
-                <Zap className="w-4 h-4" />
-              )}
-              <span>Activer le Webhook en 1 clic</span>
-            </button>
-          </div>
-
-          {/* Message de retour */}
-          {feedbackMsg && (
-            <div
-              className={`p-3.5 rounded-xl border text-xs flex items-start gap-2.5 ${
-                feedbackMsg.type === "success"
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-900"
-                  : "bg-amber-50 border-amber-200 text-amber-900"
-              }`}
-            >
-              {feedbackMsg.type === "success" ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              )}
-              <span>{feedbackMsg.text}</span>
-            </div>
-          )}
-
-          {/* Affichage direct du QR Code s'il n'est pas encore scanné */}
-          {qrCodeBase64 && (
-            <div className="p-4 rounded-2xl bg-white border-2 border-emerald-500 text-center space-y-2">
-              <div className="text-xs font-bold text-slate-900">
-                Scanne ce QR Code avec ton WhatsApp (Appareils connectés) :
+          {/* QR CODE EN DIRECT SI DISPONIBLE */}
+          {baileysStatus.running && baileysStatus.qrCodeBase64 && (
+            <div className="p-5 rounded-2xl bg-emerald-50/50 border-2 border-emerald-500 text-center space-y-3">
+              <div className="text-xs font-extrabold text-emerald-950 uppercase tracking-wider">
+                📱 Scanne ce QR Code avec ton WhatsApp (Appareils connectés)
               </div>
               <img
-                src={qrCodeBase64}
-                alt="QR Code WhatsApp Green-API"
-                className="w-52 h-52 mx-auto rounded-xl border border-slate-200 p-2"
+                src={baileysStatus.qrCodeBase64}
+                alt="QR Code WhatsApp Illimité"
+                className="w-56 h-56 mx-auto rounded-2xl bg-white border border-emerald-200 p-2 shadow-sm"
               />
-              <p className="text-[11px] text-slate-500">
-                Une fois scanné sur ton téléphone, reclique sur &laquo; Activer le Webhook en 1 clic &raquo;.
+              <p className="text-xs text-slate-600">
+                Sur ton téléphone : <strong>WhatsApp &rarr; Appareils connectés &rarr; Connecter un appareil</strong>
               </p>
             </div>
           )}
 
-          {/* Lien Webhook manuel au cas où */}
-          <div className="pt-3 border-t border-slate-100 space-y-1.5">
-            <div className="text-[11px] font-semibold text-slate-500">
-              URL Webhook automatique reliée à ton site :
+          {/* STATUT CONNECTÉ */}
+          {baileysStatus.running && baileysStatus.status === "connected" && (
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 text-emerald-950 text-xs">
+              <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+              <div>
+                <div className="font-bold text-sm">
+                  Ton WhatsApp ({baileysStatus.connectedPhone}) est connecté en illimité !
+                </div>
+                <p className="text-emerald-800 mt-0.5">
+                  Tous les clients qui t&apos;écrivent reçoivent automatiquement la réponse d&apos;Awa et leurs commandes sont créées dans <strong>Commandes &amp; Dispatch</strong>.
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                readOnly
-                value={webhookFullUrl}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-mono text-slate-600"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(webhookFullUrl);
-                  setCopiedWebhook(true);
-                  setTimeout(() => setCopiedWebhook(false), 2000);
-                }}
-                className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 inline-flex items-center gap-1 cursor-pointer"
-              >
-                {copiedWebhook ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Copié</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copier</span>
-                  </>
-                )}
-              </button>
+          )}
+
+          {/* JOURNAL EN DIRECT */}
+          {baileysStatus.logs.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <Terminal className="w-3.5 h-3.5 text-slate-500" />
+                <span>Activité WhatsApp en direct :</span>
+              </div>
+              <pre className="p-3.5 rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] max-h-44 overflow-y-auto leading-relaxed">
+                {baileysStatus.logs.join("\n")}
+              </pre>
             </div>
+          )}
+
+          {/* COMMANDE DE LANCEMENT */}
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-xs">
+            <div className="font-bold text-slate-900">
+              Comment lancer le Bot Illimité sur ton PC :
+            </div>
+            <p className="text-slate-600 text-[11.5px]">
+              Lance simplement la commande <code className="px-1.5 py-0.5 rounded bg-slate-200 font-mono font-bold text-slate-900">node whatsapp-bot/server.mjs</code> (ou ouvre <a href="http://localhost:4040" target="_blank" rel="noreferrer" className="text-emerald-700 font-bold underline">http://localhost:4040</a>).
+            </p>
           </div>
         </div>
 
@@ -563,4 +387,3 @@ export default function AdminWhatsAppPage() {
     </div>
   );
 }
-

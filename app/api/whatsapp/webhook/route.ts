@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
       process.env.GREEN_API_TOKEN_INSTANCE ||
       "99dea8e77aaf4ca383583b213ab2a5b37f0b3f9114fa48e59d";
     let isSimulation = false;
+    const isBaileys = body.source === "baileys";
     let forcedFallbackSlug: string | undefined = undefined;
 
     // CAS 1 : Simulateur Admin (/admin/whatsapp)
@@ -140,7 +141,7 @@ export async function POST(req: NextRequest) {
     if (incomingText.includes("je viens de valider ma commande sur le site")) {
       const quickAck =
         `Merci ${senderName} ! ✅ Nous avons bien reçu le récapitulatif de votre commande sur WhatsApp. Notre service d'expédition vous appelle très vite pour la livraison.`;
-      if (!isSimulation && chatId && apiTokenInstance) {
+      if (!isSimulation && !isBaileys && chatId && apiTokenInstance) {
         await sendGreenApiWhatsAppMessage({
           chatId,
           message: quickAck,
@@ -292,9 +293,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Envoyer la réponse automatique au client sur WhatsApp via Green-API
+    // Envoyer la réponse automatique au client sur WhatsApp via Green-API (uniquement si ce n'est pas Baileys qui gère l'envoi direct)
     let sentViaGreenApi = false;
-    if (!isSimulation && chatId && apiTokenInstance) {
+    if (!isSimulation && !isBaileys && chatId && apiTokenInstance) {
       const sendRes = await sendGreenApiWhatsAppMessage({
         chatId,
         message: agentResult.replyText,
