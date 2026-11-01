@@ -155,8 +155,9 @@ export async function POST(req: NextRequest) {
     // Déclencher EN PARALLÈLE l'événement d'achat serveur Meta CAPI (priorité immédiate) et l'alerte email/mobile
     const userAgent = req.headers.get("user-agent") || undefined;
     const clientIp =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("cf-connecting-ip") ||
       req.headers.get("x-real-ip") ||
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       undefined;
     const cookies = req.cookies;
     const fbp = cookies.get("_fbp")?.value || body.fbp;

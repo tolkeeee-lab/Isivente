@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { DEFAULT_CATALOG, DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
+import { playAlertNotificationSound } from "@/lib/soundEffects";
 import {
   Target,
   RefreshCw,
@@ -19,6 +20,7 @@ import {
   Copy,
   Check,
   Link2,
+  Bell,
 } from "lucide-react";
 
 /* ─── Types ─── */
@@ -178,9 +180,65 @@ export default function TrackerPage() {
     setLoading(false);
   };
 
+  const [liveToast, setLiveToast] = useState<{
+    text: string;
+    type: "order" | "lead";
+  } | null>(null);
+  const initialLoadRef = useRef(false);
+
   useEffect(() => {
-    fetchSiteData();
+    fetchSiteData().then(() => {
+      initialLoadRef.current = true;
+    });
   }, [filterDays]);
+
+  // ── Écoute en temps réel Supabase (Nouvelles Commandes & Nouveaux Prospects) ──
+  useEffect(() => {
+    const ordersChannel = supabase
+      .channel("realtime-tracker-orders")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "orders" },
+        (payload) => {
+          const newOrder = payload.new as OrderRow;
+          setOrders((prev) => [newOrder, ...prev]);
+          if (initialLoadRef.current) {
+            playAlertNotificationSound();
+            setLiveToast({
+              text: `Nouvelle Commande #${newOrder.order_number} (${fmt(newOrder.total_amount)} F) !`,
+              type: "order",
+            });
+            setTimeout(() => setLiveToast(null), 5000);
+          }
+        }
+      )
+      .subscribe();
+
+    const leadsChannel = supabase
+      .channel("realtime-tracker-leads")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "leads" },
+        (payload) => {
+          const newLead = payload.new as LeadRow;
+          setLeads((prev) => [newLead, ...prev]);
+          if (initialLoadRef.current) {
+            playAlertNotificationSound();
+            setLiveToast({
+              text: `Nouveau Panier Abandonné capturé (${newLead.product_slug}) !`,
+              type: "lead",
+            });
+            setTimeout(() => setLiveToast(null), 5000);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(leadsChannel);
+    };
+  }, []);
 
   // ── Synchroniser avec Meta Marketing API ──
   const syncMetaAds = async (customAcc?: string, customTok?: string) => {
@@ -550,7 +608,21 @@ export default function TrackerPage() {
   ]);
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-12 relative">
+      {/* ── TOAST ALERT EN TEMPS RÉEL (FLOTTANT) ── */}
+      {liveToast && (
+        <div
+          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white text-xs sm:text-sm font-bold border transition-all animate-bounce ${
+            liveToast.type === "order"
+              ? "bg-emerald-600 border-emerald-400"
+              : "bg-amber-600 border-amber-400"
+          }`}
+        >
+          <Bell className="w-5 h-5 text-white animate-pulse" />
+          <span>{liveToast.text}</span>
+        </div>
+      )}
+
       {/* ── 1. EN-TÊTE & SÉLECTEUR DE PÉRIODE ── */}
       <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-2xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-1">

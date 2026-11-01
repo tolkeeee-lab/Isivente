@@ -10,8 +10,9 @@ export async function POST(req: NextRequest) {
 
     const userAgent = req.headers.get("user-agent") || undefined;
     const clientIp = 
+      req.headers.get("cf-connecting-ip") ||
+      req.headers.get("x-real-ip") ||
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
-      req.headers.get("x-real-ip") || 
       undefined;
 
     const cookies = req.cookies;
@@ -20,6 +21,15 @@ export async function POST(req: NextRequest) {
     const fbc = cookies.get("_fbc")?.value || reqUserData.fbc;
     const testEventCode = body.test_event_code || req.nextUrl.searchParams.get("test_event_code") || undefined;
 
+    // Normalisation nom / prénom si fournis
+    let firstName = reqUserData.first_name;
+    let lastName = reqUserData.last_name;
+    if (reqUserData.customer_name && !firstName) {
+      const parts = String(reqUserData.customer_name).trim().split(/\s+/);
+      firstName = parts[0] || undefined;
+      lastName = parts.slice(1).join(" ") || undefined;
+    }
+
     // Relais serveur Meta CAPI ATTENDU (await indispensable sur Vercel Serverless pour éviter la coupure du processus)
     const result = await sendMetaConversionApiEvent({
       event_name: eventName,
@@ -27,12 +37,12 @@ export async function POST(req: NextRequest) {
       event_id: body.event_id,
       test_event_code: testEventCode,
       user_data: {
-        phone: reqUserData.phone,
-        first_name: reqUserData.first_name,
-        last_name: reqUserData.last_name,
-        city: reqUserData.city,
+        phone: reqUserData.phone || reqUserData.customer_phone,
+        first_name: firstName,
+        last_name: lastName,
+        city: reqUserData.city || "Cotonou",
         country: "bj",
-        external_id: reqUserData.external_id,
+        external_id: reqUserData.external_id || body.event_id,
         client_ip_address: clientIp,
         client_user_agent: userAgent,
         fbp,

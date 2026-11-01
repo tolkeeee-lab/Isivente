@@ -43,3 +43,32 @@ export function playOrderSound() {
     // Silencieux si non supporté ou bloqué par les politiques de lecture automatique
   }
 }
+
+/**
+ * Son d'alerte discret pour notification de nouveau prospect / commande en temps réel
+ */
+export function playAlertNotificationSound() {
+  try {
+    if (typeof window === "undefined") return;
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(440, now); // A4
+    osc.frequency.exponentialRampToValueAtTime(880, now + 0.1); // A5
+
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.25);
+  } catch {}
+}

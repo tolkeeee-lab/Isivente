@@ -88,6 +88,7 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
   const cData = options.custom_data || {};
 
   // Nettoyer les clés undefined dans user_data pour un payload Graph API 100% strict
+  const clientIp = (uData.client_ip_address || "").replace(/::ffff:/, "").trim();
   const rawUserData: Record<string, any> = {
     ph: uData.phone ? [hashPhone(uData.phone)] : undefined,
     em: uData.email ? [hashSha256(uData.email)] : undefined,
@@ -96,7 +97,7 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
     ct: uData.city ? [hashSha256(uData.city)] : [hashSha256("cotonou")],
     country: [hashSha256(uData.country || "bj")],
     external_id: uData.external_id ? [hashSha256(uData.external_id)] : undefined,
-    client_ip_address: uData.client_ip_address || undefined,
+    client_ip_address: clientIp || undefined,
     client_user_agent: uData.client_user_agent || undefined,
     fbc: uData.fbc || undefined,
     fbp: uData.fbp || undefined,
