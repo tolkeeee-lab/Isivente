@@ -59,22 +59,29 @@ export interface MetaCapiEventOptions {
   };
 }
 
+export interface MetaCapiResult {
+  sent: boolean;
+  events_received?: number;
+  fbtrace_id?: string;
+  error?: any;
+}
+
 /**
  * Envoie un événement serveur à Meta Conversions API (CAPI) avec Event Match Quality (EMQ) maximal
  */
-export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions): Promise<boolean> {
+export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions): Promise<MetaCapiResult> {
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || META_PIXEL_ID || "2150878529184686";
   const token = (process.env.META_CONVERSIONS_API_TOKEN || META_CAPI_TOKEN || "").trim();
 
   if (!pixelId) {
     console.warn("⚠️ Meta CAPI: Aucun Pixel ID configuré.");
-    return false;
+    return { sent: false, error: "missing_pixel_id" };
   }
 
   // Si le token n'est pas encore renseigné dans l'environnement, loguer sans planter
   if (!token) {
     console.info(`ℹ️ Meta CAPI: Événement [${options.event_name}] prêt mais META_CONVERSIONS_API_TOKEN n'est pas défini.`);
-    return false;
+    return { sent: false, error: "missing_token" };
   }
 
   const uData = options.user_data || {};
@@ -131,13 +138,17 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
     const result = await res.json();
     if (res.ok && result?.events_received) {
       console.log(`✅ Meta CAPI: Événement [${options.event_name}] envoyé avec succès au serveur Meta !`, result);
-      return true;
+      return {
+        sent: true,
+        events_received: result.events_received,
+        fbtrace_id: result.fbtrace_id,
+      };
     } else {
       console.error(`❌ Meta CAPI: Erreur réponse Meta Graph:`, result);
-      return false;
+      return { sent: false, error: result?.error || result };
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(`❌ Meta CAPI: Échec de connexion au serveur Meta:`, err);
-    return false;
+    return { sent: false, error: err?.message || "network_error" };
   }
 }

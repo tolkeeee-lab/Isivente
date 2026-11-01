@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
     const fbc = cookies.get("_fbc")?.value || reqUserData.fbc;
     const testEventCode = body.test_event_code || req.nextUrl.searchParams.get("test_event_code") || undefined;
 
-    // Relais serveur Meta CAPI en tâche de fond non bloquante avec données utilisateur
-    sendMetaConversionApiEvent({
+    // Relais serveur Meta CAPI ATTENDU (await indispensable sur Vercel Serverless pour éviter la coupure du processus)
+    const result = await sendMetaConversionApiEvent({
       event_name: eventName,
       event_source_url: eventSourceUrl,
       event_id: body.event_id,
@@ -32,15 +32,16 @@ export async function POST(req: NextRequest) {
         last_name: reqUserData.last_name,
         city: reqUserData.city,
         country: "bj",
+        external_id: reqUserData.external_id,
         client_ip_address: clientIp,
         client_user_agent: userAgent,
         fbp,
         fbc,
       },
       custom_data: customData,
-    }).catch(() => {});
+    }).catch((e) => ({ sent: false, error: e?.message }));
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, capi: result });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 400 });
   }

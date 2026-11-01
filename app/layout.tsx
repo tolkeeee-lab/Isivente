@@ -44,7 +44,20 @@ export default function RootLayout({
                           window.location.pathname.indexOf('/api') === 0 ||
                           window.localStorage.getItem('isivente_is_admin') === 'true';
               if (!isAdm) {
-                fbq('track', 'PageView');
+                var pvId = 'pv_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+                fbq('track', 'PageView', {}, { eventID: pvId });
+                try {
+                  fetch('/api/pixel/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      event_name: 'PageView',
+                      event_id: pvId,
+                      event_source_url: window.location.href
+                    }),
+                    keepalive: true
+                  }).catch(function(){});
+                } catch(e) {}
               }
             }
           `}

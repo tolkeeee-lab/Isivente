@@ -191,7 +191,7 @@ export async function POST(req: NextRequest) {
       const lastName = nameParts.slice(1).join(" ") || "";
 
       // Déclencher l'événement d'achat serveur Meta Conversions API (CAPI)
-      sendMetaConversionApiEvent({
+      await sendMetaConversionApiEvent({
         event_name: "Purchase",
         event_id: orderNumberStr,
         event_source_url: req.headers.get("referer") || undefined,
