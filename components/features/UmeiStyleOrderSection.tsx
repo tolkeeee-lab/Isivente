@@ -465,6 +465,7 @@ export default function UmeiStyleOrderSection({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             event_name: "InitiateCheckout",
+            event_id: `ic_${normalizedSlug || "prod"}_${digits}`,
             event_source_url: window.location.href,
             user_data: {
               phone: digits,

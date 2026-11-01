@@ -8,6 +8,7 @@ import {
   sendOrderNotification,
   sendAbandonedLeadNotification,
 } from "@/lib/notifyHelper";
+import { sendMetaConversionApiEvent } from "@/lib/metaConversionsApi";
 
 export const dynamic = "force-dynamic";
 
@@ -257,7 +258,27 @@ export async function POST(req: NextRequest) {
       } catch {}
 
       if (!isSimulation) {
-        sendOrderNotification(orderPayload).catch(() => {});
+        await sendOrderNotification(orderPayload).catch(() => {});
+        await sendMetaConversionApiEvent({
+          event_name: "Purchase",
+          event_id: orderRef,
+          event_source_url: `https://isivente.vercel.app/p/${agentResult.detectedSlug}`,
+          user_data: {
+            phone: cleanLocalPhone || senderPhone,
+            first_name: (orderPayload.customer_name || "").split(/\s+/)[0] || "",
+            city: orderPayload.city || "Cotonou",
+            country: "bj",
+            external_id: orderRef,
+          },
+          custom_data: {
+            currency: "XOF",
+            value: finalPrice,
+            content_name: agentResult.detectedProductTitle,
+            content_ids: [agentResult.detectedSlug],
+            order_id: orderRef,
+            num_items: 1,
+          },
+        }).catch(() => {});
       }
     }
     // CAS B : C'est une question / objection -> CAPTURER IMMÉDIATEMENT LE NUMÉRO DANS LES PANIERS ABANDONNÉS (/admin/prospects)

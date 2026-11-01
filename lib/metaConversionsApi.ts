@@ -87,6 +87,24 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
   const uData = options.user_data || {};
   const cData = options.custom_data || {};
 
+  // Nettoyer les clés undefined dans user_data pour un payload Graph API 100% strict
+  const rawUserData: Record<string, any> = {
+    ph: uData.phone ? [hashPhone(uData.phone)] : undefined,
+    em: uData.email ? [hashSha256(uData.email)] : undefined,
+    fn: uData.first_name ? [hashSha256(uData.first_name)] : undefined,
+    ln: uData.last_name ? [hashSha256(uData.last_name)] : undefined,
+    ct: uData.city ? [hashSha256(uData.city)] : [hashSha256("cotonou")],
+    country: [hashSha256(uData.country || "bj")],
+    external_id: uData.external_id ? [hashSha256(uData.external_id)] : undefined,
+    client_ip_address: uData.client_ip_address || undefined,
+    client_user_agent: uData.client_user_agent || undefined,
+    fbc: uData.fbc || undefined,
+    fbp: uData.fbp || undefined,
+  };
+  const cleanUserData = Object.fromEntries(
+    Object.entries(rawUserData).filter(([, v]) => v !== undefined && v !== "")
+  );
+
   const payload = {
     data: [
       {
@@ -95,19 +113,7 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
         event_id: options.event_id || (cData.order_id ? String(cData.order_id) : undefined),
         action_source: "website",
         event_source_url: options.event_source_url,
-        user_data: {
-          ph: uData.phone ? [hashPhone(uData.phone)] : undefined,
-          em: uData.email ? [hashSha256(uData.email)] : undefined,
-          fn: uData.first_name ? [hashSha256(uData.first_name)] : undefined,
-          ln: uData.last_name ? [hashSha256(uData.last_name)] : undefined,
-          ct: uData.city ? [hashSha256(uData.city)] : [hashSha256("cotonou")],
-          country: [hashSha256(uData.country || "bj")],
-          external_id: uData.external_id ? [hashSha256(uData.external_id)] : undefined,
-          client_ip_address: uData.client_ip_address,
-          client_user_agent: uData.client_user_agent,
-          fbc: uData.fbc,
-          fbp: uData.fbp,
-        },
+        user_data: cleanUserData,
         custom_data: {
           currency: cData.currency || "XOF",
           value: cData.value !== undefined ? cData.value : 0,

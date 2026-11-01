@@ -71,7 +71,7 @@ function SuccessContent() {
       if (typeof window !== "undefined") {
         window.location.href = whatsappUrl;
       }
-    }, 1500);
+    }, 2500);
 
     const interval = setInterval(() => {
       setCountdown((prev) => (prev > 1 ? prev - 1 : 0));
