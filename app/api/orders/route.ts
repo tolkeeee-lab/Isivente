@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { getSupabase } from "@/lib/supabase";
 import { sendOrderNotification } from "@/lib/notifyHelper";
 import { sendMetaConversionApiEvent } from "@/lib/metaConversionsApi";
-
-const defaultUrl = "https://uelognqedzqtvupwzejh.supabase.co";
-const defaultKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlbG9nbnFlZHpxdHZ1cHd6ZWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMTE0ODgsImV4cCI6MjEwMzc4NzQ4OH0.DjUgqgALNjMIIolen-L6blr4kxUgPi3TKUBeX-TnK9k";
 
 const ALLOWED_STATUSES = new Set([
   "pending",
@@ -16,23 +13,10 @@ const ALLOWED_STATUSES = new Set([
   "returned",
 ]);
 
-function getSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultUrl;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultKey;
-
-  return createServerClient(url, key, {
-    cookies: {
-      get() { return undefined; },
-      set() {},
-      remove() {},
-    },
-  });
-}
-
 // 1. GET ALL ORDERS DIRECTEMENT DEPUIS SUPABASE (LIMITÉ À 1000 POUR ÉVITER DOS)
 export async function GET() {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from("orders")
       .select("*")
@@ -63,7 +47,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Corps de requête invalide" }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
 
     // Validation stricte du téléphone client
     const rawPhone = String(body.customer_phone || body.phone || "").trim();
@@ -235,7 +219,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Corps de requête invalide" }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
 
     const rawId = String(body.id || "").trim();
     const rawStatus = String(body.status || "").trim();
@@ -276,7 +260,7 @@ export async function DELETE(req: NextRequest) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id")?.trim();
     const clearAll = url.searchParams.get("clearAll");
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
 
     // Protection critique : interdire la suppression totale sans jeton d'administration
     if (clearAll === "true") {
