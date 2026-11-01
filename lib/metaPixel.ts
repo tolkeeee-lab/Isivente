@@ -300,6 +300,22 @@ export function trackLead(params: {
 
   const fbq = getFbq();
   if (fbq) {
+    const uData = getUserDataFromStorage();
+    if (uData.phone || uData.first_name) {
+      let cleanPh = String(uData.phone || "").replace(/\D/g, "");
+      if ((cleanPh.length === 8 || cleanPh.length === 10) && !cleanPh.startsWith("229")) {
+        cleanPh = "229" + cleanPh;
+      }
+      try {
+        fbq("init", FB_PIXEL_ID, {
+          ph: cleanPh || undefined,
+          fn: uData.first_name || undefined,
+          ln: uData.last_name || undefined,
+          ct: (uData.city || "cotonou").toLowerCase(),
+          country: "bj",
+        });
+      } catch {}
+    }
     fbq("track", "Lead", data, { eventID: eventId });
   }
   sendServerBridge("Lead", data, eventId);

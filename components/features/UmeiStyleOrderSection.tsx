@@ -16,7 +16,7 @@ import {
   Bookmark,
 } from "lucide-react";
 import { playOrderSound } from "@/lib/soundEffects";
-import { trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
+import { trackAddToCart, trackInitiateCheckout, trackLead } from "@/lib/metaPixel";
 import { saveOrUpdateLead, markLeadConverted } from "@/lib/leadsStorage";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
@@ -226,6 +226,14 @@ export default function UmeiStyleOrderSection({
       };
       // Sauvegarde locale instantanée
       saveOrUpdateLead(payload);
+      // Transmission de l'événement Lead à Meta Pixel & CAPI
+      trackLead({
+        order_id: `lead_${digits}_${normalizedSlug || productSlug}`,
+        content_name: productTitle,
+        content_ids: [normalizedSlug || productSlug],
+        value: totalPrice,
+        currency: "XOF",
+      });
       // Transmission silencieuse au serveur
       try {
         fetch("/api/leads", {
