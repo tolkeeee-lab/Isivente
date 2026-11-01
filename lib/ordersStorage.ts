@@ -133,7 +133,7 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
       .single();
 
     if (error && (error.message?.includes('orders_product_slug_fkey') || error.code === '23503')) {
-      cleanDbPayload.product_slug = 'umei';
+      await supabase.from('products').upsert([{ slug: cleanDbPayload.product_slug, title: cleanDbPayload.product_title, headline: cleanDbPayload.product_title, description: cleanDbPayload.product_title, price: cleanDbPayload.total_amount || 14900, original_price: 25000, is_active: true }], { onConflict: 'slug' });
       const retry = await supabase.from('orders').insert([cleanDbPayload]).select().single();
       data = retry.data;
       error = retry.error;

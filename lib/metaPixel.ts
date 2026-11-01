@@ -12,12 +12,13 @@ declare global {
   interface Window {
     fbq?: any;
     _fbq?: any;
+    _fbq_initialized?: boolean;
   }
 }
 
 /**
- * Assure que window.fbq existe et met en file d'attente les événements
- * même si le script fbevents.js n'a pas encore fini de charger.
+ * Assure que window.fbq existe, que fbq('init', FB_PIXEL_ID) est appelé en premier,
+ * et que le script officiel fbevents.js est bien injecté dans le DOM.
  */
 function getFbq(): ((...args: any[]) => void) | null {
   if (typeof window === "undefined") return null;
@@ -32,11 +33,34 @@ function getFbq(): ((...args: any[]) => void) | null {
     };
     if (!window._fbq) window._fbq = n;
     n.push = n;
-    n.loaded = false;
+    n.loaded = true;
     n.version = "2.0";
     n.queue = [];
     window.fbq = n;
   }
+
+  if (!window._fbq_initialized) {
+    window._fbq_initialized = true;
+    window.fbq("init", FB_PIXEL_ID);
+  }
+
+  if (
+    typeof document !== "undefined" &&
+    !document.getElementById("fb-pixel-script") &&
+    !document.querySelector('script[src*="connect.facebook.net"]')
+  ) {
+    const t = document.createElement("script");
+    t.id = "fb-pixel-script";
+    t.async = true;
+    t.src = "https://connect.facebook.net/en_US/fbevents.js";
+    const s = document.getElementsByTagName("script")[0];
+    if (s && s.parentNode) {
+      s.parentNode.insertBefore(t, s);
+    } else if (document.head) {
+      document.head.appendChild(t);
+    }
+  }
+
   return window.fbq;
 }
 
