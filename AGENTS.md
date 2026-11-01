@@ -106,3 +106,18 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
   2. 4 objections 1-clic pré-rédigées (Prix/Ristourne, Faisabilité/Délai livraison ville, Qualité/Garantie, Commande directe).
   3. Champ libre si la question du client n'est pas dans la liste.
   4. Redirection automatique vers WhatsApp (`wa.me`) avec le produit et la question pré-remplis pour engager la vente en direct.
+
+---
+
+## 🛡️ 4. Règle Absolue d'Ingénierie : Zéro Doublon & Correction à la Racine (Root-Cause Fix Only)
+
+Consulter `.agents/skills/isivente-anti-doublon-root-cause/SKILL.md` avant toute modification technique :
+1. **Ne jamais empiler une solution "par-dessus" un bug** : Si une fonctionnalité (Pixel, CAPI, Analytics, Bot, Route API) ne fonctionne pas, diagnostiquer la cause racine dans le fichier existant, la corriger sur place et supprimer tout code redondant.
+2. **Zéro Doublon d'Événements Meta Pixel / CAPI** :
+   - Tous les événements navigateur + pont CAPI passent exclusivement par `lib/metaPixel.ts` (verrouillés par `getSessionEventLock` : 1 seul événement par type et par session).
+   - Aucun composant ne doit appeler `/api/pixel/event` en direct.
+   - Pour `Purchase` : 1 seul envoi Serveur CAPI dans `app/api/orders/route.ts` (avec `await`) + 1 seul envoi Navigateur `fbq` sur `app/p/[slug]/success/page.tsx` partageant le même `event_id = order_number`.
+3. **Zéro Doublon Visiteurs / Leads / Commandes** :
+   - Visiteurs comptés uniquement dans `hooks/usePagePresence.ts` (session unique de 6h par produit).
+   - Paniers abandonnés dédupliqués par `lead_{phone}_{slug}`.
+   - Ne jamais écraser `product_slug` par `"umei"` dans `app/api/orders/route.ts`.
