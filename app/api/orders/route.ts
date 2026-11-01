@@ -138,7 +138,20 @@ export async function POST(req: NextRequest) {
     // Protection anti-rejet : si le slug produit viole la contrainte de clé étrangère
     if (error && (error.message?.includes("orders_product_slug_fkey") || error.code === "23503")) {
       console.warn("Slug produit non trouvé dans la table products, repli de sécurité sur 'umei':", productSlug);
-      payload.product_slug = "umei";
+      await supabase.from("products").upsert(
+        [
+          {
+            slug: productSlug,
+            title: productTitle || productSlug,
+            headline: productTitle || productSlug,
+            description: productTitle || productSlug,
+            price: totalAmount || 14900,
+            original_price: Math.round((totalAmount || 14900) * 1.5),
+            is_active: true,
+          },
+        ],
+        { onConflict: "slug" }
+      );
       const retry = await supabase.from("orders").insert([payload]).select();
       data = retry.data;
       error = retry.error;
