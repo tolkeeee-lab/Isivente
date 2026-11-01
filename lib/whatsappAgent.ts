@@ -1,4 +1,4 @@
-import { DEFAULT_CATALOG_MAP, CatalogProduct } from "@/lib/defaultCatalog";
+import { DEFAULT_CATALOG, DEFAULT_CATALOG_MAP, CatalogProduct } from "@/lib/defaultCatalog";
 
 export interface WhatsAppProcessResult {
   replyText: string;
@@ -80,146 +80,6 @@ const BENIN_LOCATIONS = [
   "st michel",
 ];
 
-// Mots-clés permettant d'identifier chacun des 31 produits dans le message du client
-const PRODUCT_KEYWORDS: { slug: string; keywords: string[] }[] = [
-  {
-    slug: "likel-rite",
-    keywords: [
-      "likel",
-      "likel rite",
-      "likel-rite",
-      "diffuseur",
-      "diffuseur d'arome",
-      "diffuseur d'arômes",
-      "humidificateur",
-      "parfum d'interieur",
-      "parfum interieur",
-      "500 ml",
-      "500ml",
-    ],
-  },
-  {
-    slug: "pare-soleil",
-    keywords: ["pare-soleil", "pare soleil", "eblouissement", "éblouissement", "visiere", "visière", "pare-brise"],
-  },
-  {
-    slug: "trousse-biometrique",
-    keywords: ["trousse", "biometrique", "biométrique", "empreinte", "pochette cuir", "sacoche cuir"],
-  },
-  {
-    slug: "umei",
-    keywords: ["brosse", "yufan", "umei", "spray", "brume", "cheveux", "demelage", "démêlage"],
-  },
-  {
-    slug: "stylo-3d",
-    keywords: ["stylo 3d", "stylo-3d", "3d pen", "impression 3d", "stylo magique"],
-  },
-  {
-    slug: "voiture-camera",
-    keywords: ["voiture", "telecommandee", "télécommandée", "c6", "voiture camera", "voiture caméra"],
-  },
-  {
-    slug: "cubicraft",
-    keywords: ["cubicraft", "cubi-craft", "minecraft", "blocs magnetiques", "blocs magnétiques", "cubes"],
-  },
-  {
-    slug: "shilajit",
-    keywords: ["shilajit", "himalaya", "gummies shilajit", "energie", "vitalite"],
-  },
-  {
-    slug: "filtre-eau",
-    keywords: ["filtre", "purificateur", "robinet", "eau potable", "calcaire"],
-  },
-  {
-    slug: "digestigum",
-    keywords: ["digestigum", "digestion", "ballonnement", "ventre plat", "enzymes"],
-  },
-  {
-    slug: "calendrier-3d",
-    keywords: ["calendrier", "perpetuel", "perpétuel", "calendrier 3d", "moma"],
-  },
-  {
-    slug: "savon-repousse",
-    keywords: ["savon", "usma", "biota", "repousse", "alopecie", "chute de cheveux"],
-  },
-  {
-    slug: "sourire-eclatant",
-    keywords: ["dentifrice", "sourire", "blanchiment", "dents", "violet"],
-  },
-  {
-    slug: "equilibre-feminin",
-    keywords: ["probiotique", "intime", "equilibre feminin", "équilibre féminin", "femme"],
-  },
-  {
-    slug: "capsacare",
-    keywords: ["capsacare", "capsa", "douleur", "articulaire", "genou", "dos", "arthrose"],
-  },
-  {
-    slug: "odoraway",
-    keywords: ["odoraway", "odor", "deodorant", "déodorant", "aisselles", "transpiration"],
-  },
-  {
-    slug: "bracelet-main",
-    keywords: ["bracelet bague", "chaine de main", "chaîne de main", "bijou main"],
-  },
-  {
-    slug: "duo-bracelets-coeur",
-    keywords: ["duo bracelet", "bracelets coeur", "couple", "aimant"],
-  },
-  {
-    slug: "carte-du-monde",
-    keywords: ["carte du monde", "carte a gratter", "carte à gratter", "scratch map"],
-  },
-  {
-    slug: "peeler",
-    keywords: ["mandoline", "peeler", "coupe-legumes", "coupe légumes", "eplucheur", "éplucheur"],
-  },
-  {
-    slug: "eraclean",
-    keywords: ["eraclean", "desodorisant", "désodorisant", "frigo", "refrigerateur"],
-  },
-  {
-    slug: "turbofan",
-    keywords: ["turbofan", "ventilateur", "souffleur", "turbine"],
-  },
-  {
-    slug: "stabilisateur",
-    keywords: ["stabilisateur", "gimbal", "trepied", "trépied", "selfie"],
-  },
-  {
-    slug: "trozk",
-    keywords: ["trozk", "multiprise", "chargeur", "station de charge"],
-  },
-  {
-    slug: "veilleuse",
-    keywords: ["veilleuse", "lampe", "méduse", "meduse", "deco"],
-  },
-  {
-    slug: "mini-lave-linge",
-    keywords: ["lave-linge", "lave linge", "machine a laver", "pliable"],
-  },
-  {
-    slug: "matelas",
-    keywords: ["matelas", "gonflable", "camping"],
-  },
-  {
-    slug: "microscope",
-    keywords: ["microscope", "loupe"],
-  },
-  {
-    slug: "camera",
-    keywords: ["camera", "caméra", "surveillance", "wifi"],
-  },
-  {
-    slug: "masseur-oculaire",
-    keywords: ["masseur", "oculaire", "yeux", "migraine"],
-  },
-  {
-    slug: "projecteur-noel",
-    keywords: ["projecteur", "noel", "noël"],
-  },
-];
-
 function normalizeText(str: string): string {
   return (str || "")
     .toLowerCase()
@@ -237,19 +97,22 @@ export function detectProductFromMessage(
 ): { slug: string; product: CatalogProduct } {
   const norm = normalizeText(message);
 
-  // 1. Chercher par mots-clés spécifiques
-  for (const item of PRODUCT_KEYWORDS) {
-    if (item.keywords.some((kw) => norm.includes(normalizeText(kw)))) {
-      const prod = DEFAULT_CATALOG_MAP[item.slug];
-      if (prod) return { slug: item.slug, product: prod };
+  // 1. Chercher par mots-clés centralisés dans DEFAULT_CATALOG (Source Unique)
+  for (const prod of DEFAULT_CATALOG) {
+    if (prod.keywords && prod.keywords.some((kw) => norm.includes(normalizeText(kw)))) {
+      return { slug: prod.slug, product: prod };
     }
   }
 
-  // 2. Chercher par correspondance avec les titres du catalogue
-  for (const [slug, prod] of Object.entries(DEFAULT_CATALOG_MAP)) {
+  // 2. Chercher par slug ou correspondance avec les titres du catalogue
+  for (const prod of DEFAULT_CATALOG) {
+    const slugNorm = normalizeText(prod.slug.replace(/-/g, " "));
     const shortNorm = normalizeText(prod.shortTitle || "");
-    if (shortNorm && shortNorm.length > 4 && norm.includes(shortNorm)) {
-      return { slug, product: prod };
+    if (
+      (slugNorm && slugNorm.length > 3 && norm.includes(slugNorm)) ||
+      (shortNorm && shortNorm.length > 4 && norm.includes(shortNorm))
+    ) {
+      return { slug: prod.slug, product: prod };
     }
   }
 

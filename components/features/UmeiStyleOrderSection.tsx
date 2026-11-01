@@ -19,6 +19,7 @@ import { playOrderSound } from "@/lib/soundEffects";
 import { trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 import { saveOrUpdateLead, markLeadConverted } from "@/lib/leadsStorage";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
+import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
 export interface BundleOption {
   id?: string;
@@ -62,241 +63,28 @@ interface UmeiStyleOrderSectionProps {
   onResetOrder?: () => void;
 }
 
-/* Palettes épurées et harmonisées au pixel près par produit */
-const THEME_PALETTES: Record<
-  string,
-  {
-    primary: string;
-    primaryHover: string;
-    primaryLight: string;
-    border: string;
-    textPrimary: string;
-    ringColor: string;
-    badgeBg: string;
-    badgeText: string;
-  }
-> = {
-  "likel-rite": {
-    primary: "#B45309",
-    primaryHover: "#92400E",
-    primaryLight: "#FFFBEB",
-    border: "#FDE68A",
-    textPrimary: "#78350F",
-    ringColor: "rgba(180, 83, 9, 0.25)",
-    badgeBg: "#FEF3C7",
-    badgeText: "#92400E",
-  },
-  "bracelet-main": {
-    primary: "#B45309",
-    primaryHover: "#92400E",
-    primaryLight: "#FFFBEB",
-    border: "#FDE68A",
-    textPrimary: "#78350F",
-    ringColor: "rgba(180, 83, 9, 0.25)",
-    badgeBg: "#FEF3C7",
-    badgeText: "#92400E",
-  },
-  "bracelet-bague": {
-    primary: "#B45309",
-    primaryHover: "#92400E",
-    primaryLight: "#FFFBEB",
-    border: "#FDE68A",
-    textPrimary: "#78350F",
-    ringColor: "rgba(180, 83, 9, 0.25)",
-    badgeBg: "#FEF3C7",
-    badgeText: "#92400E",
-  },
-  "bracelet-eclat": {
-    primary: "#B45309",
-    primaryHover: "#92400E",
-    primaryLight: "#FFFBEB",
-    border: "#FDE68A",
-    textPrimary: "#78350F",
-    ringColor: "rgba(180, 83, 9, 0.25)",
-    badgeBg: "#FEF3C7",
-    badgeText: "#92400E",
-  },
-  umei: {
-    primary: "#FF5C93",
-    primaryHover: "#E13D74",
-    primaryLight: "#FFF1F5",
-    border: "#FECDD6",
-    textPrimary: "#831843",
-    ringColor: "rgba(255, 92, 147, 0.25)",
-    badgeBg: "#FFE4EC",
-    badgeText: "#BE185D",
-  },
-  "equilibre-feminin": {
-    primary: "#E11D48",
-    primaryHover: "#BE123C",
-    primaryLight: "#FFF1F2",
-    border: "#FECDD3",
-    textPrimary: "#9F1239",
-    ringColor: "rgba(225, 29, 72, 0.25)",
-    badgeBg: "#FFE4E6",
-    badgeText: "#BE123C",
-  },
-  probiotiques: {
-    primary: "#E11D48",
-    primaryHover: "#BE123C",
-    primaryLight: "#FFF1F2",
-    border: "#FECDD3",
-    textPrimary: "#9F1239",
-    ringColor: "rgba(225, 29, 72, 0.25)",
-    badgeBg: "#FFE4E6",
-    badgeText: "#BE123C",
-  },
-  microscope: {
-    primary: "#4F46E5",
-    primaryHover: "#4338CA",
-    primaryLight: "#EEF2FF",
-    border: "#C7D2FE",
-    textPrimary: "#312E81",
-    ringColor: "rgba(79, 70, 229, 0.25)",
-    badgeBg: "#E0E7FF",
-    badgeText: "#3730A3",
-  },
-  eraclean: {
-    primary: "#2563EB",
-    primaryHover: "#1D4ED8",
-    primaryLight: "#EFF6FF",
-    border: "#BFDBFE",
-    textPrimary: "#1E3A8A",
-    ringColor: "rgba(37, 99, 235, 0.25)",
-    badgeBg: "#DBEAFE",
-    badgeText: "#1E40AF",
-  },
-  "mini-lave-linge": {
-    primary: "#0284C7",
-    primaryHover: "#0369A1",
-    primaryLight: "#F0F9FF",
-    border: "#BAE6FD",
-    textPrimary: "#075985",
-    ringColor: "rgba(2, 132, 199, 0.25)",
-    badgeBg: "#E0F2FE",
-    badgeText: "#0369A1",
-  },
-  "lave-linge": {
-    primary: "#0284C7",
-    primaryHover: "#0369A1",
-    primaryLight: "#F0F9FF",
-    border: "#BAE6FD",
-    textPrimary: "#075985",
-    ringColor: "rgba(2, 132, 199, 0.25)",
-    badgeBg: "#E0F2FE",
-    badgeText: "#0369A1",
-  },
-  turbofan: {
-    primary: "#059669",
-    primaryHover: "#047857",
-    primaryLight: "#ECFDF5",
-    border: "#A7F3D0",
-    textPrimary: "#064E3B",
-    ringColor: "rgba(5, 150, 105, 0.25)",
-    badgeBg: "#D1FAE5",
-    badgeText: "#065F46",
-  },
-  peeler: {
-    primary: "#059669",
-    primaryHover: "#047857",
-    primaryLight: "#ECFDF5",
-    border: "#A7F3D0",
-    textPrimary: "#064E3B",
-    ringColor: "rgba(5, 150, 105, 0.25)",
-    badgeBg: "#D1FAE5",
-    badgeText: "#065F46",
-  },
-  mandoline: {
-    primary: "#059669",
-    primaryHover: "#047857",
-    primaryLight: "#ECFDF5",
-    border: "#A7F3D0",
-    textPrimary: "#064E3B",
-    ringColor: "rgba(5, 150, 105, 0.25)",
-    badgeBg: "#D1FAE5",
-    badgeText: "#065F46",
-  },
-  chefpeel: {
-    primary: "#0047AB",
-    primaryHover: "#003580",
-    primaryLight: "#F0F5FF",
-    border: "#BCD0F7",
-    textPrimary: "#002B66",
-    ringColor: "rgba(0, 71, 171, 0.25)",
-    badgeBg: "#E0ECFF",
-    badgeText: "#003A8C",
-  },
-  stabilisateur: {
-    primary: "#D97706",
-    primaryHover: "#B45309",
-    primaryLight: "#FFFBEB",
-    border: "#FDE68A",
-    textPrimary: "#78350F",
-    ringColor: "rgba(217, 119, 6, 0.25)",
-    badgeBg: "#FEF3C7",
-    badgeText: "#92400E",
-  },
-  veilleuse: {
-    primary: "#4F46E5",
-    primaryHover: "#4338CA",
-    primaryLight: "#EEF2FF",
-    border: "#C7D2FE",
-    textPrimary: "#312E81",
-    ringColor: "rgba(79, 70, 229, 0.25)",
-    badgeBg: "#E0E7FF",
-    badgeText: "#3730A3",
-  },
-  camera: {
-    primary: "#059669",
-    primaryHover: "#047857",
-    primaryLight: "#ECFDF5",
-    border: "#A7F3D0",
-    textPrimary: "#064E3B",
-    ringColor: "rgba(5, 150, 105, 0.25)",
-    badgeBg: "#D1FAE5",
-    badgeText: "#065F46",
-  },
-  trozk: {
-    primary: "#F97316",
-    primaryHover: "#EA580C",
-    primaryLight: "#FFF7ED",
-    border: "#FED7AA",
-    textPrimary: "#9A3412",
-    ringColor: "rgba(249, 115, 22, 0.25)",
-    badgeBg: "#FFEDD5",
-    badgeText: "#C2410C",
-  },
-  "projecteur-noel": {
-    primary: "#DC2626",
-    primaryHover: "#B91C1C",
-    primaryLight: "#FEF2F2",
-    border: "#FECACA",
-    textPrimary: "#991B1B",
-    ringColor: "rgba(220, 38, 38, 0.25)",
-    badgeBg: "#FEE2E2",
-    badgeText: "#991B1B",
-  },
-  "lampe-noel": {
-    primary: "#DC2626",
-    primaryHover: "#B91C1C",
-    primaryLight: "#FEF2F2",
-    border: "#FECACA",
-    textPrimary: "#991B1B",
-    ringColor: "rgba(220, 38, 38, 0.25)",
-    badgeBg: "#FEE2E2",
-    badgeText: "#991B1B",
-  },
-  noel: {
-    primary: "#DC2626",
-    primaryHover: "#B91C1C",
-    primaryLight: "#FEF2F2",
-    border: "#FECACA",
-    textPrimary: "#991B1B",
-    ringColor: "rgba(220, 38, 38, 0.25)",
-    badgeBg: "#FEE2E2",
-    badgeText: "#991B1B",
-  },
-};
+/* Génération dynamique de la palette (boutons, bordures, badges, fonds) à partir de accentColor */
+function buildDynamicTheme(hexInput?: string) {
+  const cleanHex = (hexInput || "#0F172A").replace("#", "").trim();
+  const isValidHex = /^[0-9A-Fa-f]{6}$/.test(cleanHex);
+  const r = isValidHex ? parseInt(cleanHex.slice(0, 2), 16) : 15;
+  const g = isValidHex ? parseInt(cleanHex.slice(2, 4), 16) : 23;
+  const b = isValidHex ? parseInt(cleanHex.slice(4, 6), 16) : 42;
+
+  const darken = (factor: number) =>
+    `rgb(${Math.max(0, Math.round(r * (1 - factor)))}, ${Math.max(0, Math.round(g * (1 - factor)))}, ${Math.max(0, Math.round(b * (1 - factor)))})`;
+
+  return {
+    primary: isValidHex ? `#${cleanHex}` : "#0F172A",
+    primaryHover: darken(0.18),
+    primaryLight: `rgba(${r}, ${g}, ${b}, 0.06)`,
+    border: `rgba(${r}, ${g}, ${b}, 0.28)`,
+    textPrimary: darken(0.38),
+    ringColor: `rgba(${r}, ${g}, ${b}, 0.25)`,
+    badgeBg: `rgba(${r}, ${g}, ${b}, 0.12)`,
+    badgeText: darken(0.25),
+  };
+}
 
 /* Villes majeures du Bénin */
 const BENIN_CITIES = [
@@ -347,23 +135,11 @@ export default function UmeiStyleOrderSection({
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   const normalizedSlug = (productSlug || "").toLowerCase();
 
-  const baseTheme = THEME_PALETTES[normalizedSlug] || {
-    primary: accentColor || "#0F172A",
-    primaryHover: "#000000",
-    primaryLight: "#F8FAFC",
-    border: "#E2E8F0",
-    textPrimary: "#0F172A",
-    ringColor: "rgba(15, 23, 42, 0.15)",
-    badgeBg: "rgba(16, 185, 129, 0.12)",
-    badgeText: "#047857",
-  };
-
-  const theme = accentColor
-    ? {
-      ...baseTheme,
-      primary: accentColor,
-    }
-    : baseTheme;
+  const resolvedAccentColor =
+    accentColor ||
+    DEFAULT_CATALOG_MAP[normalizedSlug]?.accentColor ||
+    "#0F172A";
+  const theme = buildDynamicTheme(resolvedAccentColor);
 
   // Liste de packs par défaut si non fournie
   const defaultBundles: BundleOption[] = [

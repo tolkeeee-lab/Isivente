@@ -111,7 +111,11 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
 
 ## 🛡️ 4. Règle Absolue d'Ingénierie : Zéro Doublon & Correction à la Racine (Root-Cause Fix Only)
 
-Consulter `.agents/skills/isivente-anti-doublon-root-cause/SKILL.md` avant toute modification technique :
+Consulter obligatoirement :
+- `.agents/skills/isivente-anti-doublon-root-cause/SKILL.md`
+- `.agents/skills/isivente-meta-capi-attribution-guard/SKILL.md`
+- `.agents/skills/isivente-single-source-catalog/SKILL.md`
+
 1. **Ne jamais empiler une solution "par-dessus" un bug** : Si une fonctionnalité (Pixel, CAPI, Analytics, Bot, Route API) ne fonctionne pas, diagnostiquer la cause racine dans le fichier existant, la corriger sur place et supprimer tout code redondant.
 2. **Zéro Doublon d'Événements Meta Pixel / CAPI** :
    - Tous les événements navigateur + pont CAPI passent exclusivement par `lib/metaPixel.ts` (verrouillés par `getSessionEventLock` : 1 seul événement par type et par session).
@@ -121,3 +125,7 @@ Consulter `.agents/skills/isivente-anti-doublon-root-cause/SKILL.md` avant toute
    - Visiteurs comptés uniquement dans `hooks/usePagePresence.ts` (session unique de 6h par produit).
    - Paniers abandonnés dédupliqués par `lead_{phone}_{slug}`.
    - Ne jamais écraser `product_slug` par `"umei"` dans `app/api/orders/route.ts`.
+4. **Catalogue Source Unique (`lib/defaultCatalog.ts`)** :
+   - Chaque produit est défini une seule fois dans `lib/defaultCatalog.ts` avec `accentColor` et `keywords`.
+   - `components/features/UmeiStyleOrderSection.tsx` calcule dynamiquement toute la palette du formulaire via `buildDynamicTheme(accentColor)` (ne jamais recréer de dictionnaire `THEME_PALETTES`).
+   - `lib/whatsappAgent.ts` lit automatiquement `keywords`, `slug` et `shortTitle` depuis `DEFAULT_CATALOG` (ne jamais recréer de liste `PRODUCT_KEYWORDS` séparée).

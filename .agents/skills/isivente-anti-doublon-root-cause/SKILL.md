@@ -55,3 +55,4 @@ Avant de valider et pousser une modification :
 2. **Ai-je supprimé l'ancien code défectueux au lieu de le laisser tourner à côté ?**
 3. **Toutes les promesses serveur sur Vercel (`sendMetaConversionApiEvent`, `sendOrderNotification`, `supabase`) ont-elles bien `await` avant le `return NextResponse.json()` ?**
 4. **Le build TypeScript (`npx tsc --noEmit`) passe-t-il avec 0 erreur ?**
+
