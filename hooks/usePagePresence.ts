@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { trackUserSession } from "@/lib/analyticsStorage";
+import { trackUserSession, BOT_UA_REGEX } from "@/lib/analyticsStorage";
 import { captureAndPersistAttribution } from "@/lib/utm";
-
-const BOT_UA_REGEX =
-  /bot|crawler|spider|crawling|headless|lighthouse|facebookexternalhit|facebot|whatsapp|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|embedly|quora|pinterest|outbrain|vkshare|w3c_validator|vercel|prerender|preview|curl|wget|python|node-fetch|axios/i;
 
 function isBotOrAutomated(): boolean {
   if (typeof window === "undefined" || typeof navigator === "undefined") {

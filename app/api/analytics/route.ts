@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { BOT_UA_REGEX } from "@/lib/analyticsStorage";
 
 export const dynamic = "force-dynamic";
-
-const BOT_UA_REGEX =
-  /bot|crawler|spider|crawling|headless|lighthouse|facebookexternalhit|facebot|whatsapp|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|embedly|quora|pinterest|outbrain|vkshare|w3c_validator|vercel|prerender|preview|curl|wget|python|node-fetch|axios/i;
 
 // ── GET : Récupérer les sessions ou statistiques réelles ──
 export async function GET(req: NextRequest) {

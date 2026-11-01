@@ -28,7 +28,7 @@ export interface ProductAnalyticsStats {
   formattedAvgTime: string;
 }
 
-const BOT_UA_REGEX =
+export const BOT_UA_REGEX =
   /bot|crawler|spider|crawling|headless|lighthouse|facebookexternalhit|facebot|whatsapp|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|embedly|quora|pinterest|outbrain|vkshare|w3c_validator|vercel|prerender|preview|curl|wget|python|node-fetch|axios/i;
 
 function formatDuration(seconds: number): string {

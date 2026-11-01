@@ -86,3 +86,4 @@ Exécuter à tout moment :
 node .agents/skills/isivente-function-registry-guard/scripts/check-functions.js
 ```
 Ce script analyse tous les fichiers de `lib/` et `hooks/` et signale immédiatement toute fonction déclarée en doublon dans deux fichiers différents.
+
