@@ -146,6 +146,7 @@ export default function ExitIntentModal({
   };
 
   const openWhatsAppWithMessage = (message: string, optionId: string) => {
+    trackCustomEvent("WhatsApp_Contact", { slug, product: productTitle, option: optionId });
     trackCustomEvent("ExitWhatsApp_Redirect", { 
       slug, 
       product: productTitle, 

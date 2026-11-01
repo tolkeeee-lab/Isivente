@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { trackUserSession, BOT_UA_REGEX } from "@/lib/analyticsStorage";
 import { captureAndPersistAttribution } from "@/lib/utm";
+import { trackCustomEvent } from "@/lib/metaPixel";
 
 function isBotOrAutomated(): boolean {
   if (typeof window === "undefined" || typeof navigator === "undefined") {
@@ -172,9 +173,29 @@ export function usePagePresence(slug: string) {
       }
     };
 
-    // 3. Détecter le premier geste humain réel (scroll, touch, souris, clavier)
+    // 3. Détecter le premier geste humain réel (scroll, touch, souris, clavier) et la profondeur de scroll (25%, 50%, 75%, 90%)
+    const scrollMilestonesRef = { 25: false, 50: false, 75: false, 90: false };
+
+    const checkScrollDepth = () => {
+      try {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (scrollHeight <= 0) return;
+        const percent = Math.round((scrollTop / scrollHeight) * 100);
+
+        const thresholds = [25, 50, 75, 90] as const;
+        for (const t of thresholds) {
+          if (percent >= t && !scrollMilestonesRef[t]) {
+            scrollMilestonesRef[t] = true;
+            trackCustomEvent(`Scroll_${t}`, { slug, percent: t });
+          }
+        }
+      } catch {}
+    };
+
     const markHumanActivity = () => {
       if (document.visibilityState !== "visible") return;
+      checkScrollDepth();
       if (!hasHumanInteractionRef.current) {
         hasHumanInteractionRef.current = true;
         // Valider la visite dès le premier geste humain (scroll, touch, clic)
@@ -215,6 +236,28 @@ export function usePagePresence(slug: string) {
     window.addEventListener("pagehide", handlePageHide);
     window.addEventListener("beforeunload", flushDuration);
 
+    // 6. Écoute globale de l'engagement vidéo (sans modifier manuellement chaque landing page)
+    const trackedVideos = new WeakSet<HTMLVideoElement>();
+    const handleVideoPlay = (e: Event) => {
+      const video = e.target as HTMLVideoElement;
+      if (!video || trackedVideos.has(video)) return;
+
+      const checkTime = () => {
+        if (video.currentTime >= 6 && !trackedVideos.has(video)) {
+          trackedVideos.add(video);
+          trackCustomEvent("VideoEngagement", {
+            slug,
+            duration: Math.round(video.currentTime),
+          });
+          video.removeEventListener("timeupdate", checkTime);
+        }
+      };
+
+      video.addEventListener("timeupdate", checkTime);
+    };
+
+    document.addEventListener("play", handleVideoPlay, true);
+
     return () => {
       clearInterval(interval);
       flushDuration();
@@ -226,6 +269,7 @@ export function usePagePresence(slug: string) {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("pagehide", handlePageHide);
       window.removeEventListener("beforeunload", flushDuration);
+      document.removeEventListener("play", handleVideoPlay, true);
     };
   }, [slug]);
 

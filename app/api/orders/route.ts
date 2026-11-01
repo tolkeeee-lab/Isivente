@@ -242,10 +242,42 @@ export async function PATCH(req: NextRequest) {
       query = query.eq("order_number", rawId);
     }
 
-    const { error } = await query;
+    const { data: updatedData, error } = await query.select();
     if (error) {
       console.error("Supabase PATCH error:", error?.message);
       return NextResponse.json({ success: false, error: "Erreur lors de la mise à jour du statut" }, { status: 500 });
+    }
+
+    // Si la commande est passée à "delivered" (Livrée & Encaissée), déclencher l'événement Offline CAPI "Purchase_Delivered"
+    if (rawStatus === "delivered" && updatedData && updatedData[0]) {
+      const order = updatedData[0];
+      const cleanPhone = (order.customer_phone || "").replace(/\D/g, "");
+      const nameParts = (order.customer_name || "").trim().split(/\s+/);
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+      const orderNum = order.order_number || rawId;
+
+      sendMetaConversionApiEvent({
+        event_name: "Purchase_Delivered",
+        event_id: "deliv_" + orderNum,
+        event_source_url: `https://isivente.vercel.app/p/${order.product_slug || "product"}`,
+        user_data: {
+          phone: cleanPhone,
+          first_name: firstName,
+          last_name: lastName,
+          city: order.city || "Cotonou",
+          country: "bj",
+          external_id: orderNum,
+        },
+        custom_data: {
+          currency: "XOF",
+          value: Number(order.total_amount) || 0,
+          content_name: order.product_title || order.product_slug,
+          content_ids: [order.product_slug || "product"],
+          order_id: orderNum,
+          num_items: order.quantity || 1,
+        },
+      }).catch((e) => console.error("Meta CAPI Purchase_Delivered error:", e?.message));
     }
 
     return NextResponse.json({ success: true, id: rawId, status: rawStatus });
