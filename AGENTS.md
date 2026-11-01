@@ -115,6 +115,8 @@ Consulter obligatoirement :
 - `.agents/skills/isivente-anti-doublon-root-cause/SKILL.md`
 - `.agents/skills/isivente-meta-capi-attribution-guard/SKILL.md`
 - `.agents/skills/isivente-single-source-catalog/SKILL.md`
+- `.agents/skills/isivente-clean-visual-assets/SKILL.md`
+- `.agents/skills/isivente-whatsapp-cod-closing/SKILL.md`
 
 1. **Ne jamais empiler une solution "par-dessus" un bug** : Si une fonctionnalité (Pixel, CAPI, Analytics, Bot, Route API) ne fonctionne pas, diagnostiquer la cause racine dans le fichier existant, la corriger sur place et supprimer tout code redondant.
 2. **Zéro Doublon d'Événements Meta Pixel / CAPI** :
