@@ -113,12 +113,15 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
 
 Consulter obligatoirement :
 - `.agents/skills/isivente-anti-doublon-root-cause/SKILL.md`
+- `.agents/skills/isivente-function-registry-guard/SKILL.md`
 - `.agents/skills/isivente-meta-capi-attribution-guard/SKILL.md`
 - `.agents/skills/isivente-single-source-catalog/SKILL.md`
 - `.agents/skills/isivente-clean-visual-assets/SKILL.md`
 - `.agents/skills/isivente-whatsapp-cod-closing/SKILL.md`
 
-1. **Ne jamais empiler une solution "par-dessus" un bug** : Si une fonctionnalité (Pixel, CAPI, Analytics, Bot, Route API) ne fonctionne pas, diagnostiquer la cause racine dans le fichier existant, la corriger sur place et supprimer tout code redondant.
+1. **Ne jamais empiler une solution "par-dessus" un bug ni recréer une fonction existante** :
+   - Avant d'écrire n'importe quelle fonction, vérifier dans `.agents/skills/isivente-function-registry-guard/SKILL.md` (ou via `node .agents/skills/isivente-function-registry-guard/scripts/check-functions.js`) si elle existe déjà dans `lib/` ou `hooks/`.
+   - Si une fonctionnalité (Pixel, CAPI, Analytics, Bot, Route API, fonction utilitaire) ne fonctionne pas, diagnostiquer la cause racine dans le fichier existant, la corriger sur place et supprimer tout code redondant.
 2. **Zéro Doublon d'Événements Meta Pixel / CAPI** :
    - Tous les événements navigateur + pont CAPI passent exclusivement par `lib/metaPixel.ts` (verrouillés par `getSessionEventLock` : 1 seul événement par type et par session).
    - Aucun composant ne doit appeler `/api/pixel/event` en direct.

@@ -37,3 +37,4 @@ Un message WhatsApp ne doit **jamais** se terminer en impasse ("Merci", "À bien
   1. Enregistrée dans Supabase (`orders`) avec le vrai `product_slug`.
   2. Marquée comme convertie dans `abandoned_leads`.
   3. Envoyée à Meta Conversions API (`Purchase`) avec `await sendMetaConversionApiEvent(...)` pour que Facebook attribue la vente WhatsApp à la publicité d'origine.
+

@@ -1,23 +1,11 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { getSupabase } from "@/lib/supabase";
 import { sendAbandonedLeadNotification } from "@/lib/notifyHelper";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 
 export const dynamic = "force-dynamic";
 
 const ALLOWED_LEAD_STATUSES = new Set(["abandoned", "contacted", "converted"]);
-
-function getSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://uelognqedzqtvupwzejh.supabase.co";
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlbG9nbnFlZHpxdHZ1cHd6ZWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMTE0ODgsImV4cCI6MjEwMzc4NzQ4OH0.DjUgqgALNjMIIolen-L6blr4kxUgPi3TKUBeX-TnK9k";
-  return createServerClient(url, key, {
-    cookies: {
-      get() { return undefined; },
-      set() { },
-      remove() { },
-    },
-  });
-}
 
 // ── GET : Récupérer tous les prospects (limité à 1000) ──
 export async function GET() {

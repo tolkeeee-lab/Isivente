@@ -42,3 +42,4 @@ Au lieu de mettre toutes les images au hasard au même endroit :
 
 1. Toujours ranger les visuels d'un nouveau produit dans un sous-dossier dédié : `public/images/<slug>/` avec des noms explicites en minuscules (`hero-clean.jpg`, `avant-apres.jpg`, `infographie.jpg`, etc.).
 2. Si une erreur `ENOSPC` / `Espace insuffisant sur le disque` survient lors de la copie sous Windows, nettoyer immédiatement les fichiers temporaires obsolètes dans `$env:TEMP` (`C:\Users\...\AppData\Local\Temp`) avant de relancer la copie.
+
