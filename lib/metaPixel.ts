@@ -60,6 +60,33 @@ function isAdminContext(): boolean {
 }
 
 /**
+ * Génère ou récupère un event_id déterministe par session et par produit
+ * afin qu'un même visiteur ne génère JAMAIS de doublons ViewContent, AddToCart ou InitiateCheckout
+ */
+function getSessionEventLock(
+  eventType: string,
+  productKey: string
+): { alreadySent: boolean; eventId: string } {
+  const cleanKey = (productKey || "global").toLowerCase().replace(/[^a-z0-9_-]/g, "");
+  const storageKey = `isivente_px_lock_${eventType}_${cleanKey}`;
+  const eventId = `${eventType}_${cleanKey}_${Math.floor(Date.now() / (6 * 3600 * 1000))}`;
+
+  if (typeof window === "undefined") {
+    return { alreadySent: false, eventId };
+  }
+
+  try {
+    const existing = sessionStorage.getItem(storageKey);
+    if (existing) {
+      return { alreadySent: true, eventId: existing };
+    }
+    sessionStorage.setItem(storageKey, eventId);
+  } catch {}
+
+  return { alreadySent: false, eventId };
+}
+
+/**
  * Envoie un événement de secours côté serveur (Meta CAPI Bridge)
  * pour contourner les bloqueurs de publicité et les restrictions iOS/Android.
  */
@@ -87,16 +114,19 @@ async function sendServerBridge(
         event_source_url: window.location.href,
       }),
       keepalive: true,
-    }).catch(() => { });
-  } catch { }
+    }).catch(() => {});
+  } catch {}
 }
 
 /**
- * Envoie un événement PageView à Meta Pixel
+ * Envoie un événement PageView à Meta Pixel (verrouillé à 1 par page chargée)
  */
 export function trackPageView() {
   if (isAdminContext()) return;
-  const eventId = "pv_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+  const pathKey = typeof window !== "undefined" ? window.location.pathname : "home";
+  const { alreadySent, eventId } = getSessionEventLock("pv", pathKey);
+  if (alreadySent) return;
+
   const fbq = getFbq();
   if (fbq) {
     fbq("track", "PageView", {}, { eventID: eventId });
@@ -105,11 +135,13 @@ export function trackPageView() {
 }
 
 /**
- * Envoie un événement personnalisé
+ * Envoie un événement personnalisé (1 fois par session)
  */
 export function trackCustomEvent(name: string, options: Record<string, any> = {}) {
   if (isAdminContext()) return;
-  const eventId = "custom_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+  const { alreadySent, eventId } = getSessionEventLock(`custom_${name}`, options.slug || "page");
+  if (alreadySent) return;
+
   const fbq = getFbq();
   if (fbq) {
     fbq("trackCustom", name, options, { eventID: eventId });
@@ -118,7 +150,7 @@ export function trackCustomEvent(name: string, options: Record<string, any> = {}
 }
 
 /**
- * Événement ViewContent : consultation de la fiche produit
+ * Événement ViewContent : consultation de la fiche produit (verrouillé à 1 seule fois par produit par session)
  */
 export function trackViewContent(params: {
   content_name: string;
@@ -128,6 +160,10 @@ export function trackViewContent(params: {
   currency?: string;
 }) {
   if (isAdminContext()) return;
+  const prodKey = params.content_ids?.[0] || params.content_name || "prod";
+  const { alreadySent, eventId } = getSessionEventLock("vc", prodKey);
+  if (alreadySent) return;
+
   const data = {
     content_name: params.content_name,
     content_category: params.content_category || "E-commerce",
@@ -137,7 +173,6 @@ export function trackViewContent(params: {
     currency: params.currency || "XOF",
   };
 
-  const eventId = "vc_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
   const fbq = getFbq();
   if (fbq) {
     fbq("track", "ViewContent", data, { eventID: eventId });
@@ -146,7 +181,7 @@ export function trackViewContent(params: {
 }
 
 /**
- * Événement AddToCart : le client sélectionne un bundle ou clique pour commander
+ * Événement AddToCart : le client sélectionne un bundle ou clique pour commander (verrouillé à 1 seule fois par produit par session)
  */
 export function trackAddToCart(params: {
   content_name: string;
@@ -156,6 +191,10 @@ export function trackAddToCart(params: {
   num_items?: number;
 }) {
   if (isAdminContext()) return;
+  const prodKey = params.content_ids?.[0] || params.content_name || "prod";
+  const { alreadySent, eventId } = getSessionEventLock("atc", prodKey);
+  if (alreadySent) return;
+
   const data = {
     content_name: params.content_name,
     content_ids: params.content_ids || [],
@@ -165,7 +204,6 @@ export function trackAddToCart(params: {
     num_items: params.num_items || 1,
   };
 
-  const eventId = "atc_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
   const fbq = getFbq();
   if (fbq) {
     fbq("track", "AddToCart", data, { eventID: eventId });
@@ -174,7 +212,7 @@ export function trackAddToCart(params: {
 }
 
 /**
- * Événement InitiateCheckout : le client interagit avec le formulaire de commande
+ * Événement InitiateCheckout : le client interagit avec le formulaire de commande (verrouillé à 1 seule fois par produit par session)
  */
 export function trackInitiateCheckout(params: {
   content_name: string;
@@ -184,6 +222,10 @@ export function trackInitiateCheckout(params: {
   num_items?: number;
 }) {
   if (isAdminContext()) return;
+  const prodKey = params.content_ids?.[0] || params.content_name || "prod";
+  const { alreadySent, eventId } = getSessionEventLock("ic", prodKey);
+  if (alreadySent) return;
+
   const data = {
     content_name: params.content_name,
     content_ids: params.content_ids || [],
@@ -193,7 +235,6 @@ export function trackInitiateCheckout(params: {
     num_items: params.num_items || 1,
   };
 
-  const eventId = "ic_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
   const fbq = getFbq();
   if (fbq) {
     fbq("track", "InitiateCheckout", data, { eventID: eventId });
@@ -202,7 +243,7 @@ export function trackInitiateCheckout(params: {
 }
 
 /**
- * Événement Lead : soumission d'une commande COD sur la boutique
+ * Événement Lead : soumission d'un prospect
  */
 export function trackLead(params: {
   order_id?: string;
@@ -242,8 +283,9 @@ export function trackLead(params: {
 
 /**
  * Événement Purchase : confirmation de la commande (paiement à la livraison)
- * Dédupliqué avec le serveur CAPI (/api/orders) via eventID.
- * Inclut la Correspondance Avancée (Advanced Matching) : téléphone, nom, external_id.
+ * Important : Le serveur CAPI (/api/orders) a DÉJÀ envoyé l'événement Purchase avec event_id = order_id.
+ * Ici sur la page de succès, on envoie UNIQUEMENT l'événement navigateur fbq('track', 'Purchase', ..., { eventID: order_id })
+ * pour que Meta fusionne (1 Navigateur + 1 Serveur CAPI = 1 seul Achat dédupliqué), sans rappeler /api/pixel/event une 2ème fois !
  */
 export function trackPurchase(params: {
   order_id?: string;
@@ -260,19 +302,15 @@ export function trackPurchase(params: {
   if (isAdminContext()) return;
   const eventId = params.order_id ? String(params.order_id).trim() : undefined;
 
-  // Sécurité anti-doublon : ne pas envoyer d'achat sans numéro de commande valide
   if (!eventId) {
     console.warn("[Meta Pixel] trackPurchase ignoré : aucun order_id valide fourni pour la déduplication.");
     return;
   }
 
-  // 1. Protection anti-doublon persistante (sessionStorage + localStorage)
-  // Empêche les doubles comptabilisations en cas de rafraîchissement (F5), retour arrière ou réouverture d'onglet
   if (typeof window !== "undefined") {
     try {
       const storageKey = `isivente_pixel_purchase_${eventId}`;
       if (sessionStorage.getItem(storageKey) || localStorage.getItem(storageKey)) {
-        console.info(`[Meta Pixel] Achat déjà enregistré pour la commande ${eventId}, déduplication active.`);
         return;
       }
       sessionStorage.setItem(storageKey, "1");
@@ -280,7 +318,6 @@ export function trackPurchase(params: {
     } catch {}
   }
 
-  // Normalisation du téléphone pour Meta (ajouter indicatif 229 si absent)
   const rawPhone = (params.customer_phone || "").replace(/\D/g, "");
   let cleanPhone = rawPhone;
   if (cleanPhone.length === 8 || cleanPhone.length === 10) {
@@ -306,8 +343,6 @@ export function trackPurchase(params: {
 
   const fbq = getFbq();
   if (fbq) {
-    // 2. CORRESPONDANCE AVANCÉE NAVIGATEUR (Advanced Matching)
-    // Permet à Meta d'attribuer la vente à l'utilisateur Facebook/Instagram avec un EMQ élevé
     if (cleanPhone || firstName) {
       try {
         fbq("init", FB_PIXEL_ID, {
@@ -321,17 +356,7 @@ export function trackPurchase(params: {
       } catch {}
     }
 
-    // DÉDUPLICATION OFFICIELLE META : le 4ème paramètre { eventID } fusionne avec le serveur
+    // Envoi navigateur uniquement (le serveur /api/orders a déjà envoyé le CAPI avec ce même eventID)
     fbq("track", "Purchase", data, { eventID: eventId });
   }
-
-  // 3. PONT SERVEUR CAPI SÉCURISÉ (Déduplication garantie par le même eventId)
-  sendServerBridge("Purchase", data, eventId, {
-    phone: cleanPhone || undefined,
-    first_name: firstName,
-    last_name: lastName,
-    city: city,
-    external_id: eventId,
-  });
 }
-

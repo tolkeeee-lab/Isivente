@@ -458,31 +458,7 @@ export default function UmeiStyleOrderSection({
           body: JSON.stringify(payload),
         }).catch(() => { });
 
-        // Envoyer InitiateCheckout à Meta CAPI avec les données de correspondance avancée (EMQ 9+)
-        const nameParts = (customerName || "").trim().split(/\s+/);
-        fetch("/api/pixel/event", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            event_name: "InitiateCheckout",
-            event_id: `ic_${normalizedSlug || "prod"}_${digits}`,
-            event_source_url: window.location.href,
-            user_data: {
-              phone: digits,
-              first_name: nameParts[0] || "",
-              last_name: nameParts.slice(1).join(" ") || "",
-              city: city || "Cotonou",
-            },
-            custom_data: {
-              content_name: productTitle,
-              content_ids: [normalizedSlug || productSlug],
-              value: totalPrice,
-              currency: "XOF",
-              num_items: currentBundle.quantity || 1,
-            },
-          }),
-        }).catch(() => { });
-      } catch { }
+        } catch { }
     }
   };
 
