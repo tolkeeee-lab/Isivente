@@ -128,6 +128,10 @@ export async function POST(req: NextRequest) {
       quantity: quantity,
       status: status,
       created_at: createdAt,
+      utm_source: body.utm_source || null,
+      utm_medium: body.utm_medium || null,
+      utm_campaign: body.utm_campaign || null,
+      utm_content: body.utm_content || null,
     };
 
     let { data, error } = await supabase
@@ -179,8 +183,8 @@ export async function POST(req: NextRequest) {
         req.headers.get("x-real-ip") || 
         undefined;
       const cookies = req.cookies;
-      const fbp = cookies.get("_fbp")?.value;
-      const fbc = cookies.get("_fbc")?.value;
+      const fbp = cookies.get("_fbp")?.value || body.fbp;
+      const fbc = cookies.get("_fbc")?.value || body.fbc;
 
       const nameParts = customerName.trim().split(/\s+/);
       const firstName = nameParts[0] || "";

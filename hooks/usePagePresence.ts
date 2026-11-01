@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { trackUserSession } from "@/lib/analyticsStorage";
+import { captureAndPersistAttribution } from "@/lib/utm";
 
 const BOT_UA_REGEX =
   /bot|crawler|spider|crawling|headless|lighthouse|facebookexternalhit|facebot|whatsapp|telegrambot|twitterbot|slackbot|discordbot|linkedinbot|embedly|quora|pinterest|outbrain|vkshare|w3c_validator|vercel|prerender|preview|curl|wget|python|node-fetch|axios/i;
@@ -120,7 +121,8 @@ export function usePagePresence(slug: string) {
       return;
     }
 
-    // 2. Récupérer ou créer la session dédupliquée pour ce produit
+    // 2. Capturer immédiatement fbclid / _fbc / _fbp et récupérer la session dédupliquée pour ce produit
+    captureAndPersistAttribution();
     const sessionState = getOrCreateProductSession(slug);
     sessionIdRef.current = sessionState.sessionId;
     sessionCreatedAtRef.current = sessionState.createdAt;
@@ -150,8 +152,7 @@ export function usePagePresence(slug: string) {
       // Ne JAMAIS enregistrer tant qu'aucun geste humain réel n'a été détecté
       if (!hasHumanInteractionRef.current && !clickedRef.current) return;
 
-      const totalElapsed = computeTotalElapsed();
-      if (totalElapsed < 2 && !clickedRef.current) return;
+      const totalElapsed = Math.max(1, computeTotalElapsed());
 
       if (
         totalElapsed > lastSavedDurationRef.current ||
@@ -179,10 +180,10 @@ export function usePagePresence(slug: string) {
       if (document.visibilityState !== "visible") return;
       if (!hasHumanInteractionRef.current) {
         hasHumanInteractionRef.current = true;
-        // Valider la visite après 2 secondes de présence réelle
+        // Valider la visite dès le premier geste humain (scroll, touch, clic)
         setTimeout(() => {
           flushDuration();
-        }, 2000);
+        }, 400);
       }
     };
 
