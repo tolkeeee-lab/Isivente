@@ -168,30 +168,22 @@ export async function POST(req: NextRequest) {
 
     const savedOrder = data?.[0] || payload;
 
-    // Déclencher l'alerte email & mobile immédiatement de manière attendue (AWAITED)
-    try {
-      await sendOrderNotification(savedOrder);
-    } catch (e: any) {
-      console.error("Server notify error:", e?.message);
-    }
+    // Déclencher EN PARALLÈLE l'événement d'achat serveur Meta CAPI (priorité immédiate) et l'alerte email/mobile
+    const userAgent = req.headers.get("user-agent") || undefined;
+    const clientIp =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      undefined;
+    const cookies = req.cookies;
+    const fbp = cookies.get("_fbp")?.value || body.fbp;
+    const fbc = cookies.get("_fbc")?.value || body.fbc;
 
-    // Déclencher l'événement d'achat serveur Meta Conversions API (CAPI)
-    try {
-      const userAgent = req.headers.get("user-agent") || undefined;
-      const clientIp = 
-        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
-        req.headers.get("x-real-ip") || 
-        undefined;
-      const cookies = req.cookies;
-      const fbp = cookies.get("_fbp")?.value || body.fbp;
-      const fbc = cookies.get("_fbc")?.value || body.fbc;
+    const nameParts = customerName.trim().split(/\s+/);
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
-      const nameParts = customerName.trim().split(/\s+/);
-      const firstName = nameParts[0] || "";
-      const lastName = nameParts.slice(1).join(" ") || "";
-
-      // Déclencher l'événement d'achat serveur Meta Conversions API (CAPI)
-      await sendMetaConversionApiEvent({
+    await Promise.allSettled([
+      sendMetaConversionApiEvent({
         event_name: "Purchase",
         event_id: orderNumberStr,
         event_source_url: req.headers.get("referer") || undefined,
@@ -215,10 +207,11 @@ export async function POST(req: NextRequest) {
           order_id: orderNumberStr,
           num_items: quantity,
         },
-      }).catch(e => console.error("Meta CAPI Purchase error:", e?.message));
-    } catch (e: any) {
-      console.error("Meta CAPI trigger error:", e?.message);
-    }
+      }).catch((e) => console.error("Meta CAPI Purchase error:", e?.message)),
+      sendOrderNotification(savedOrder).catch((e) =>
+        console.error("Server notify error:", e?.message)
+      ),
+    ]);
 
     return NextResponse.json({
       success: true,

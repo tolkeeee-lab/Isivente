@@ -85,7 +85,7 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
   // 1. Tenter via l'API sécurisée avec timeout défensif
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 7500);
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
 
     const res = await fetch('/api/orders', {
       method: 'POST',
