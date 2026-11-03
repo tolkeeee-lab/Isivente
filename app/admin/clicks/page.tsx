@@ -106,24 +106,30 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
       } catch {
         setHasAnalyticsTable(false);
       }
-      // Charger les produits de Supabase
+      // Charger les produits officiels (Source Unique Catalog)
       try {
         const { supabase } = await import("@/lib/supabase");
         const { data: dbProds } = await supabase
           .from("products")
-          .select("title, slug, price, images");
+          .select("title, slug, price, images")
+          .eq("is_active", true);
         if (dbProds && dbProds.length > 0) {
-          const formatted = dbProds.map((p: any) => ({
-            title: p.title,
-            slug: p.slug,
-            price: p.price,
-            image: (p.images && p.images[0]?.url) || (DEFAULT_CATALOG_MAP[p.slug]?.image_url) || "/images/microscope-video-cover.webp",
-          }));
-          const existingSlugs = new Set(formatted.map((p: any) => p.slug));
-          const merged = [...formatted, ...defaultProducts.filter((p) => !existingSlugs.has(p.slug))];
-          setProductsList(merged);
+          const dbMap = new Map(dbProds.map((p: any) => [p.slug, p]));
+          const formatted = defaultProducts.map((p) => {
+            const dbP = dbMap.get(p.slug);
+            return {
+              ...p,
+              price: dbP?.price || p.price,
+              title: dbP?.title || p.title,
+            };
+          });
+          setProductsList(formatted);
+        } else {
+          setProductsList(defaultProducts);
         }
-      } catch {}
+      } catch {
+        setProductsList(defaultProducts);
+      }
 
       // Charger les clics Meta sauvegardés
       if (typeof window !== "undefined") {
