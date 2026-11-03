@@ -152,6 +152,25 @@ export async function POST(req: NextRequest) {
 
     const savedOrder = data?.[0] || payload;
 
+    // Auto-conversion du lead dans la table `leads` côté serveur
+    // Utilise les 8 derniers chiffres pour matcher quel que soit le préfixe saisi (01, 229, 00229)
+    const phoneDigits = cleanPhone.replace(/\D/g, "");
+    if (phoneDigits.length >= 8) {
+      const last8 = phoneDigits.slice(-8);
+      try {
+        await supabase
+          .from("leads")
+          .update({
+            status: "converted",
+            updated_at: new Date().toISOString(),
+          })
+          .ilike("customer_phone", `%${last8}`)
+          .eq("product_slug", productSlug);
+      } catch (err: any) {
+        console.warn("Auto-convert lead warning:", err?.message);
+      }
+    }
+
     // Déclencher EN PARALLÈLE l'événement d'achat serveur Meta CAPI (priorité immédiate) et l'alerte email/mobile
     const userAgent = req.headers.get("user-agent") || undefined;
     const clientIp =

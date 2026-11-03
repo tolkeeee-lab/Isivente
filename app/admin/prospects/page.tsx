@@ -97,17 +97,23 @@ export default function ProspectsPage() {
 
     setActionLoadingId(lead.id);
     try {
+      const cleanMainPhone = (lead.customer_phone || "").replace(/\D/g, "");
+      const secondaryPhoneNote = lead.customer_phone2 ? ` (Tél 2: ${lead.customer_phone2})` : "";
+
       await saveNewOrder({
         customer_name: lead.customer_name,
-        customer_phone: lead.customer_phone + (lead.customer_phone2 ? ` / ${lead.customer_phone2}` : ""),
+        customer_phone: cleanMainPhone,
         shipping_city: lead.city || "Cotonou",
-        shipping_address: lead.address || `${lead.city || "Cotonou"} - Commande relance`,
+        shipping_address: (lead.address || `${lead.city || "Cotonou"} - Commande relance`) + secondaryPhoneNote,
         product_slug: lead.product_slug,
         product_title: lead.product_title,
         bundle_name: lead.bundle_name || "Offre standard",
         quantity: 1,
         total_amount: lead.total_amount,
         status: "pending",
+        utm_source: "whatsapp",
+        utm_medium: "relance_panier",
+        utm_campaign: "RECUPERATION_LEAD_ISIVENTE",
       });
 
       await updateLeadStatus(lead.id, "converted");
