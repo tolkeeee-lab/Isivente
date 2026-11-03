@@ -57,4 +57,5 @@ export_*.js
 
 # Scripts utilitaires temporaires
 scripts/
+!.agents/**/scripts/
 .whatsapp-session/
