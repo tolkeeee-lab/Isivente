@@ -40,7 +40,11 @@ import {
   Filter,
   Check,
   Tag,
-  AlertCircle
+  AlertCircle,
+  Copy,
+  Send,
+  Share2,
+  CheckCheck
 } from "lucide-react";
 
 export default function OrdersPage() {
@@ -86,6 +90,28 @@ export default function OrdersPage() {
   // ── États d'actions ──
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // ── Modale Dispatch Livreur WhatsApp ──
+  const [dispatchOrder, setDispatchOrder] = useState<OrderItem | null>(null);
+  const [dispatchTourOrders, setDispatchTourOrders] = useState<OrderItem[] | null>(null);
+  const [courierPhone, setCourierPhone] = useState<string>("");
+  const [autoMarkShipped, setAutoMarkShipped] = useState<boolean>(true);
+  const [copiedNotice, setCopiedNotice] = useState<boolean>(false);
+
+  // Charger le numéro du livreur depuis localStorage au montage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("isivente_courier_phone");
+      if (saved) setCourierPhone(saved);
+    } catch {}
+  }, []);
+
+  const handleCourierPhoneChange = (val: string) => {
+    setCourierPhone(val);
+    try {
+      localStorage.setItem("isivente_courier_phone", val);
+    } catch {}
+  };
 
   // ── Modale d'édition de note / date de réservation ──
   const [editingNoteOrder, setEditingNoteOrder] = useState<OrderItem | null>(null);
@@ -465,6 +491,109 @@ export default function OrdersPage() {
   };
 
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
+
+  // ── Génération Fiche Livreur & Tournée ──
+  const getCourierMessage = (order: OrderItem) => {
+    const phoneDisplay = formatBeninPhoneDisplay(order.customer_phone);
+    const phoneCall = formatBeninPhoneForCall(order.customer_phone);
+    const city = order.shipping_city || order.city || "Cotonou";
+    const address = order.shipping_address || order.address || "À préciser par appel";
+    const product = order.product_title || "Produit Isivente";
+    const bundle = (order.bundle_name || "Standard").split("[OFFRE VIP]")[0].trim();
+    const qty = order.quantity || 1;
+    const amount = fmt(order.total_amount || 0);
+    const ref = order.order_number || "ISV-CMD";
+
+    let text = `📦 *COURSE À LIVRER - ISIVENTE*\n`;
+    text += `══════════════════════\n`;
+    text += `🔖 *Réf. Commande :* #${ref}\n`;
+    text += `👤 *Client :* ${order.customer_name || "Client"}\n`;
+    text += `📱 *Téléphone :* ${phoneDisplay} (Appel: ${phoneCall})\n`;
+    text += `📍 *Ville :* ${city}\n`;
+    text += `🗺️ *Quartier / Adresse :* ${address}\n\n`;
+    text += `📦 *Colis à récupérer au stock :*\n`;
+    text += `👉 ${product} (x${qty})\n`;
+    if (bundle && bundle !== "Standard") {
+      text += `ℹ️ Formule : ${bundle}\n`;
+    }
+    text += `\n`;
+    text += `💰 *MONTANT À ENCAISSER :*\n`;
+    text += `👉 *${amount} FCFA* (Cash à la livraison / Momo)\n`;
+    if (order.notes) {
+      text += `\n📝 *Consignes :* ${order.notes}\n`;
+    }
+    text += `══════════════════════\n`;
+    text += `⚠️ *Consignes de livraison :*\n`;
+    text += `1. Prévenir le client par appel 30 min avant.\n`;
+    text += `2. Faire ouvrir et vérifier le contenu avant encaissement.\n`;
+    text += `3. Encaisser la somme exacte (${amount} F) et confirmer sur WhatsApp.`;
+
+    return text;
+  };
+
+  const getTourMessage = (tourOrders: OrderItem[]) => {
+    const dateStr = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const totalAmount = tourOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+
+    let text = `🛵 *FEUILLE DE TOURNÉE LIVREUR - ISIVENTE*\n`;
+    text += `📅 *Date :* ${dateStr}\n`;
+    text += `📊 *Total :* ${tourOrders.length} colis à distribuer\n`;
+    text += `💰 *Total à encaisser :* *${fmt(totalAmount)} FCFA*\n`;
+    text += `══════════════════════\n\n`;
+
+    tourOrders.forEach((o, i) => {
+      const city = o.shipping_city || o.city || "Cotonou";
+      const address = o.shipping_address || o.address || "-";
+      text += `*COLIS ${i + 1}/${tourOrders.length}* • #${o.order_number || ""}\n`;
+      text += `👤 *Client :* ${o.customer_name || "Client"} - 📱 ${formatBeninPhoneDisplay(o.customer_phone)}\n`;
+      text += `📍 *Lieu :* ${city} (${address})\n`;
+      text += `📦 *Article :* ${o.product_title} (x${o.quantity || 1})\n`;
+      text += `💰 *À Encaisser : ${fmt(o.total_amount || 0)} FCFA*\n`;
+      if (o.notes) text += `📝 Consigne : ${o.notes}\n`;
+      text += `─────────────\n\n`;
+    });
+
+    text += `⚠️ Toujours faire vérifier chaque colis au client avant de récupérer l'argent. Bon courage !`;
+    return text;
+  };
+
+  const handleSendDispatch = async (targetText: string, specificPhone?: string) => {
+    const encoded = encodeURIComponent(targetText);
+    const targetNumber = specificPhone !== undefined ? specificPhone : courierPhone;
+    const cleanNumber = formatBeninPhoneForWhatsApp(targetNumber);
+
+    const waUrl = cleanNumber
+      ? `https://wa.me/${cleanNumber}?text=${encoded}`
+      : `https://wa.me/?text=${encoded}`;
+
+    if (typeof window !== "undefined") {
+      window.open(waUrl, "_blank");
+    }
+
+    if (autoMarkShipped) {
+      if (dispatchOrder?.id) {
+        await handleStatusChange(dispatchOrder.id, "shipped");
+      } else if (dispatchTourOrders && dispatchTourOrders.length > 0) {
+        for (const o of dispatchTourOrders) {
+          if (o.id) {
+            await handleStatusChange(o.id, "shipped");
+          }
+        }
+      }
+    }
+
+    setDispatchOrder(null);
+    setDispatchTourOrders(null);
+  };
+
+  const handleCopyDispatch = (text: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedNotice(true);
+      setTimeout(() => setCopiedNotice(false), 2500);
+    }
+  };
+
 
   return (
     <div className="space-y-6 animate-[staggerFadeUp_240ms_cubic-bezier(0.16,1,0.3,1)_both]">
@@ -1249,6 +1378,161 @@ export default function OrdersPage() {
         </div>
       )}
 
+
+      {/* ── MODALE DISPATCH LIVREUR WHATSAPP (FICHE DE COURSE & TOURNÉE) ── */}
+      {(dispatchOrder || (dispatchTourOrders && dispatchTourOrders.length > 0)) && (() => {
+        const activeText = dispatchOrder 
+          ? getCourierMessage(dispatchOrder) 
+          : dispatchTourOrders 
+          ? getTourMessage(dispatchTourOrders) 
+          : "";
+        const isSingle = !!dispatchOrder;
+
+        return (
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+            <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-lg w-full p-5 sm:p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+              
+              {/* En-tête de la modale */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-700 flex items-center justify-center font-bold shadow-xs">
+                    <Truck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-sm text-slate-900 flex items-center gap-2">
+                      <span>{isSingle ? `Fiche Livreur • #${dispatchOrder?.order_number || ""}` : `Feuille de Tournée (${dispatchTourOrders?.length} colis)`}</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold">
+                        WhatsApp 1-Clic
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      {isSingle 
+                        ? `Client : ${dispatchOrder?.customer_name || "Client"} • ${dispatchOrder?.shipping_city || dispatchOrder?.city || "Cotonou"}` 
+                        : "Transmission groupée de la tournée aux coursiers"
+                      }
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDispatchOrder(null);
+                    setDispatchTourOrders(null);
+                  }}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Paramétrage rapide du livreur */}
+              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 space-y-2.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Numéro WhatsApp du coursier :</span>
+                  </label>
+                  <span className="text-[10.5px] text-slate-400 italic">
+                    Mémorisé automatiquement
+                  </span>
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="tel"
+                    value={courierPhone}
+                    onChange={(e) => handleCourierPhoneChange(e.target.value)}
+                    placeholder="ex: 01 97 12 34 56 ou 97 12 34 56"
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-900 text-xs font-mono font-medium focus:outline-none focus:border-emerald-500 placeholder:text-slate-400"
+                  />
+                </div>
+
+                {/* Case à cocher : passer en statut Shipped */}
+                <label className="flex items-center gap-2 text-[11.5px] text-slate-600 cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    checked={autoMarkShipped}
+                    onChange={(e) => setAutoMarkShipped(e.target.checked)}
+                    className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer"
+                  />
+                  <span>Passer automatiquement la commande en statut <strong className="text-sky-700 font-semibold">« 🚚 En cours livreur »</strong></span>
+                </label>
+              </div>
+
+              {/* Aperçu direct de la fiche WhatsApp */}
+              <div className="space-y-1.5 flex-1 min-h-0 flex flex-col">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="font-bold text-slate-600 uppercase tracking-wider text-[10px]">
+                    Message pré-rempli pour WhatsApp :
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyDispatch(activeText)}
+                    className="text-emerald-700 hover:text-emerald-800 text-[11px] font-bold inline-flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-emerald-50 transition-colors cursor-pointer"
+                  >
+                    {copiedNotice ? (
+                      <>
+                        <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-600">Copié !</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copier la fiche</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="bg-slate-950 text-slate-100 rounded-2xl p-3.5 font-mono text-[11px] leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap select-all border border-slate-800 shadow-inner">
+                  {activeText}
+                </div>
+              </div>
+
+              {/* Actions Footer */}
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <button
+                  type="button"
+                  onClick={() => handleSendDispatch(activeText)}
+                  className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-slate-950 font-black text-xs sm:text-sm py-3 px-4 rounded-xl shadow-[0_8px_20px_-4px_rgba(37,211,102,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                >
+                  <Send className="w-4 h-4 fill-current" />
+                  <span>
+                    {courierPhone.trim() 
+                      ? `Envoyer sur WhatsApp (${formatBeninPhoneDisplay(courierPhone)})` 
+                      : "Ouvrir WhatsApp (Choisir le livreur)"}
+                  </span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSendDispatch(activeText, "")}
+                    className="flex-1 py-2 px-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    title="Ouvrir WhatsApp sans numéro pour choisir un groupe ou contact"
+                  >
+                    <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Partage libre WhatsApp</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDispatchOrder(null);
+                      setDispatchTourOrders(null);
+                    }}
+                    className="px-4 py-2 rounded-xl text-slate-500 hover:bg-slate-100 font-semibold text-xs transition-colors cursor-pointer"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ── MODALE DE SAISIE COMMANDE DIRECTE WHATSAPP ── */}
       {showManualModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
@@ -1612,6 +1896,26 @@ export default function OrdersPage() {
                   {/* 8. ACTIONS RAPIDES 1-CLIC */}
                   <td className="py-3 px-4 text-center whitespace-nowrap">
                     <div className="flex items-center justify-center gap-1">
+
+                      {/* 🚚 BOUTON PRINCIPAL DISPATCH LIVREUR */}
+                      {(order.status === "confirmed" || order.status === "pending" || order.status === "shipped") && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDispatchOrder(order);
+                            setDispatchTourOrders(null);
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs ${
+                            order.status === "confirmed"
+                              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                              : "bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200"
+                          }`}
+                          title="Générer la fiche de livraison et l'envoyer au livreur sur WhatsApp"
+                        >
+                          <Truck className="w-3 h-3" />
+                          <span>Livreur</span>
+                        </button>
+                      )}
 
                       {/* Si pas encore validée : bouton Valider 1-clic */}
                       {order.status !== "confirmed" && (
