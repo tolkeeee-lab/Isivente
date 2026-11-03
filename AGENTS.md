@@ -109,15 +109,21 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
 
 ---
 
-## 🛡️ 4. Règle Absolue d'Ingénierie : Zéro Doublon & Correction à la Racine (Root-Cause Fix Only)
+## 🛡️ 4. Règle Absolue d'Ingénierie : Zéro Doublon & Blindage Anti-Régression (Ironclad Standard)
 
-Consulter obligatoirement :
+Consulter et appliquer obligatoirement :
+- `.agents/skills/isivente-ironclad-zero-regression/SKILL.md` (Loi suprême de blindage & intégrité)
 - `.agents/skills/isivente-anti-doublon-root-cause/SKILL.md`
 - `.agents/skills/isivente-function-registry-guard/SKILL.md`
 - `.agents/skills/isivente-meta-capi-attribution-guard/SKILL.md`
 - `.agents/skills/isivente-single-source-catalog/SKILL.md`
 - `.agents/skills/isivente-clean-visual-assets/SKILL.md`
 - `.agents/skills/isivente-whatsapp-cod-closing/SKILL.md`
+
+0. **Blindage Absolu & Interdiction du Code à l'Aveugle** :
+   - Tout ce qui fonctionne (Zone Rouge : tunnel de commande, CAPI, capture de leads, lecture vidéo) est sanctuarisé.
+   - Ne JAMAIS modifier un fichier sans l'avoir lu entièrement et vérifié ses dépendances.
+   - Toujours exécuter `node .agents/skills/isivente-ironclad-zero-regression/scripts/verify-integrity.js` et `npm run build` pour valider qu'aucune régression n'a été introduite.
 
 1. **Ne jamais empiler une solution "par-dessus" un bug ni recréer une fonction existante** :
    - Avant d'écrire n'importe quelle fonction, vérifier dans `.agents/skills/isivente-function-registry-guard/SKILL.md` (ou via `node .agents/skills/isivente-function-registry-guard/scripts/check-functions.js`) si elle existe déjà dans `lib/` ou `hooks/`.
