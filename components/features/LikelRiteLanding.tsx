@@ -522,15 +522,15 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
 
           <div className="relative max-w-xs sm:max-w-sm mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
             <video
-              src="/videos/likel-rite-silent.mp4"
+              src="/videos/likel-rite-muet-v2.mp4?v=20261103"
               poster="/images/likel-rite/hero-clean.jpg"
               autoPlay
               muted
               playsInline
               loop
-              controls
+              controls={false}
               preload="auto"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover pointer-events-none"
             />
           </div>
 
