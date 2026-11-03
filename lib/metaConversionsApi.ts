@@ -29,6 +29,43 @@ function hashPhone(phone: string | undefined): string | undefined {
   return crypto.createHash("sha256").update(digits).digest("hex");
 }
 
+/**
+ * Détecte si un événement provient d'un test interne (admin, mot-clé test, numéro factice)
+ */
+export function isTestEventData(data: {
+  phone?: string;
+  first_name?: string;
+  last_name?: string;
+  name?: string;
+  email?: string;
+}): boolean {
+  const phone = (data.phone || "").replace(/\D/g, "");
+  const fullName = `${data.first_name || ""} ${data.last_name || ""} ${data.name || ""}`.toLowerCase();
+  const email = (data.email || "").toLowerCase();
+
+  // 1. Numéros de test récurrents
+  const testPhones = ["0100000000", "00000000", "2290100000000", "22900000000", "12345678", "0112345678", "2290112345678", "0197000000", "2290197000000"];
+  if (testPhones.includes(phone) || /^0+$/.test(phone)) return true;
+
+  // 2. Mots-clés évidents de test dans le nom
+  if (
+    fullName.includes("test") ||
+    fullName.includes("admin") ||
+    fullName.includes("essaie") ||
+    fullName.includes("essai") ||
+    fullName.includes("fictif")
+  ) {
+    return true;
+  }
+
+  // 3. Adresses email de test
+  if (email.includes("test") || email.includes("example.com")) {
+    return true;
+  }
+
+  return false;
+}
+
 export interface MetaCapiEventOptions {
   event_name: "PageView" | "ViewContent" | "AddToCart" | "InitiateCheckout" | "Purchase" | string;
   event_time?: number;
@@ -86,6 +123,19 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
 
   const uData = options.user_data || {};
   const cData = options.custom_data || {};
+
+  // Si c'est un événement de test interne (nom "test", "admin", "essaie" ou numéro factice), ignorer l'envoi pour ne pas polluer Meta Events Manager
+  if (
+    isTestEventData({
+      phone: uData.phone,
+      first_name: uData.first_name,
+      last_name: uData.last_name,
+      email: uData.email,
+    })
+  ) {
+    console.info(`🛡️ Meta CAPI: Événement [${options.event_name}] ignoré car identifié comme un TEST interne (${uData.first_name || ""} ${uData.phone || ""}).`);
+    return { sent: false, error: "ignored_test_event" };
+  }
 
   // Nettoyer les clés undefined dans user_data pour un payload Graph API 100% strict
   const clientIp = (uData.client_ip_address || "").replace(/::ffff:/, "").trim();

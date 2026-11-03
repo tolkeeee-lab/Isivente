@@ -340,6 +340,23 @@ export function trackPurchase(params: {
   city?: string;
 }) {
   if (isAdminContext()) return;
+
+  // Filtrer les commandes tests côté navigateur pour ne pas polluer l'historique Meta
+  const rawCustomerName = (params.customer_name || "").toLowerCase();
+  const rawPhoneDigits = (params.customer_phone || "").replace(/\D/g, "");
+  const testPhones = ["0100000000", "00000000", "2290100000000", "22900000000", "12345678", "0112345678", "2290112345678", "0197000000", "2290197000000"];
+  if (
+    rawCustomerName.includes("test") ||
+    rawCustomerName.includes("admin") ||
+    rawCustomerName.includes("essaie") ||
+    rawCustomerName.includes("essai") ||
+    testPhones.includes(rawPhoneDigits) ||
+    /^0+$/.test(rawPhoneDigits)
+  ) {
+    console.info(`🛡️ [Meta Pixel] trackPurchase ignoré car identifié comme commande de test (${params.customer_name} / ${params.customer_phone}).`);
+    return;
+  }
+
   const eventId = params.order_id ? String(params.order_id).trim() : undefined;
 
   if (!eventId) {
