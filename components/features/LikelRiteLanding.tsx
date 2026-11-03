@@ -127,8 +127,8 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
 
 const FAQS_DATA = [
   {
-    q: "Que faut-il mettre à l'intérieur du réservoir de 500 ml ?",
-    a: "Il suffit de remplir le réservoir avec de l'eau propre (jusqu'à 500 ml) et d'y ajouter quelques gouttes de votre huile essentielle hydrosoluble ou parfum d'ambiance préféré. La brume ultrasonique à froid diffuse ensuite le parfum de manière homogène sans chauffer ni altérer les arômes.",
+    q: "Le diffuseur est-il déjà rempli ou faut-il ajouter de l'eau ?",
+    a: "Le flacon de 500 ml est livré déjà pré-rempli avec sa fragrance parfumée de luxe, prêt à l'emploi. Vous n'avez aucune manipulation à faire, pas besoin d'ajouter d'eau ni de doser des huiles : vous l'allumez simplement d'une touche pour profiter d'une brume parfumée délicate.",
   },
   {
     q: "Comment fonctionnent la diffusion et les 3 ambiances lumineuses ?",
@@ -468,9 +468,9 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
               <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
                 <Wind className="w-5 h-5 stroke-[1.75]" />
               </div>
-              <h3 className="text-sm font-bold text-slate-900">Brume Fine & Parfum Homogène</h3>
+              <h3 className="text-sm font-bold text-slate-900">Brume Fine & Parfum de Luxe Pré-rempli</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Ajoutez simplement de l'eau et quelques gouttes de votre huile essentielle préférée. Sa nano-brumisation à froid parfume toute la pièce et adoucit l'air sec lié à la climatisation ou au ventilateur.
+                Aucun mélange à faire ni eau à ajouter : le flacon arrive déjà rempli avec sa fragrance de luxe. Sa nano-brumisation à froid diffuse le parfum de manière continue et enveloppante dans toute la pièce.
               </p>
             </div>
 
@@ -522,7 +522,7 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
 
           <div className="relative max-w-xs sm:max-w-sm mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
             <video
-              src="/videos/likel-rite-crea-voix-off.mp4"
+              src="/videos/likel-rite-silent.mp4"
               poster="/images/likel-rite/hero-clean.jpg"
               autoPlay
               muted
@@ -646,7 +646,7 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
                   ["Capacité du réservoir", "80 à 150 ml (se vide vite)", "Grande capacité 500 ml"],
                   ["Esthétique", "Plastique basique ou bombe aérosol", "Flacon de parfum luxe & cristal"],
                   ["Éclairage d'ambiance", "Aucun ou LED criarde", "Veilleuse cristal 3 tons (Chaude, Neutre, Douce)"],
-                  ["Confort respiratoire", "Assèche l'air ou gaz chimique", "Brume d'eau + huile essentielle qui adoucit l'air"],
+                  ["Utilisation & Parfum", "Recharges chimiques contraignantes", "Flacon 500 ml pré-rempli de parfum, prêt à l'emploi"],
                   ["Niveau sonore", "Jet bruyant ou bourdonnement", "Ultrasonique silencieux (< 25 dB)"],
                   ["Autonomie", "Doit rester branché en permanence", "Batterie longue durée rechargeable USB"],
                 ].map(([label, bad, good], idx) => (
