@@ -63,40 +63,37 @@ function isValidAnalyticsRow(d: any): boolean {
 }
 
 /**
- * Fusionne les doublons historiques en rafale (ex: +3 ou +4 lignes créées en moins de 45 secondes
- * sur le même produit lors d'un rechargement ou pré-chargement) pour garantir 1 visiteur = 1 visite.
+ * Déduplique strictement les lignes d'analytics par session unique (session_id).
+ * Chaque session_id correspond à un visiteur unique (verrouillé sur 6h par produit).
+ * Fusionne les pulsations d'une même session sans jamais écraser deux visiteurs distincts.
  */
 function deduplicateAnalyticsRows(rows: any[]): any[] {
   const valid = rows.filter(isValidAnalyticsRow);
-  // Trier du plus ancien au plus récent pour regrouper les rafales proches
-  const sorted = [...valid].sort(
-    (a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
-  );
+  const bySessionId = new Map<string, any>();
 
-  const lastBySlug: Record<string, any> = {};
-  const deduped: any[] = [];
-  const BURST_WINDOW_MS = 45 * 1000; // 45 secondes
+  for (const row of valid) {
+    const sId = String(row.session_id || "").trim();
+    if (!sId) continue;
 
-  for (const row of sorted) {
-    const slug = String(row.product_slug).trim().toLowerCase();
-    const rowTime = new Date(row.created_at || 0).getTime();
-    const prev = lastBySlug[slug];
-
-    if (prev && Math.abs(rowTime - new Date(prev.created_at || 0).getTime()) <= BURST_WINDOW_MS) {
-      // C'est un doublon de rafale de la même visite : on fusionne sans ajouter +1 visite
-      prev.clicked = Boolean(prev.clicked || row.clicked);
-      prev.duration_seconds = Math.max(
-        Number(prev.duration_seconds) || 0,
+    const existing = bySessionId.get(sId);
+    if (existing) {
+      existing.clicked = Boolean(existing.clicked || row.clicked);
+      existing.duration_seconds = Math.max(
+        Number(existing.duration_seconds) || 0,
         Number(row.duration_seconds) || 0
       );
+      if (!existing.created_at || (row.created_at && row.created_at < existing.created_at)) {
+        existing.created_at = row.created_at;
+      }
     } else {
-      const cloned = { ...row, product_slug: slug };
-      deduped.push(cloned);
-      lastBySlug[slug] = cloned;
+      bySessionId.set(sId, {
+        ...row,
+        product_slug: String(row.product_slug).trim().toLowerCase(),
+      });
     }
   }
 
-  return deduped;
+  return Array.from(bySessionId.values());
 }
 
 export function trackUserSession(
@@ -160,6 +157,40 @@ export function trackUserSession(
           .upsert([payload], { onConflict: 'session_id' })
       ).catch(() => {});
     });
+  } catch {}
+}
+
+/**
+ * Marque immédiatement la session courante du visiteur comme ayant cliqué (Intention de commande)
+ * Utilisé dès qu'un visiteur interagit avec le formulaire, sélectionne une formule ou soumet une commande.
+ */
+export function markCurrentSessionClicked(slug: string) {
+  try {
+    if (typeof window === "undefined") return;
+    const cleanSlug = slug.trim().toLowerCase();
+    const storageKey = `isivente_visit_session_${cleanSlug}`;
+    const raw = localStorage.getItem(storageKey) || sessionStorage.getItem(storageKey);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.sessionId) {
+        parsed.alreadyClicked = true;
+        const serialized = JSON.stringify(parsed);
+        localStorage.setItem(storageKey, serialized);
+        sessionStorage.setItem(storageKey, serialized);
+
+        fetch("/api/analytics", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: parsed.sessionId,
+            product_slug: cleanSlug,
+            clicked: true,
+            duration_seconds: Math.max(1, Number(parsed.accumulatedSeconds) || 5),
+          }),
+          keepalive: true,
+        }).catch(() => {});
+      }
+    }
   } catch {}
 }
 

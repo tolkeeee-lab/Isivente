@@ -18,6 +18,7 @@ import {
 import { playOrderSound } from "@/lib/soundEffects";
 import { trackAddToCart, trackInitiateCheckout, trackLead } from "@/lib/metaPixel";
 import { saveOrUpdateLead, markLeadConverted } from "@/lib/leadsStorage";
+import { markCurrentSessionClicked } from "@/lib/analyticsStorage";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 
@@ -188,6 +189,7 @@ export default function UmeiStyleOrderSection({
   // Suivi Meta Pixel & CAPI automatique (AddToCart & InitiateCheckout)
   const checkoutTrackedRef = useRef(false);
   const handleInteractionTrigger = () => {
+    markCurrentSessionClicked(normalizedSlug || productSlug);
     if (!checkoutTrackedRef.current) {
       checkoutTrackedRef.current = true;
       trackAddToCart({
@@ -211,6 +213,7 @@ export default function UmeiStyleOrderSection({
   const captureTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const captureGhostLead = () => {
+    markCurrentSessionClicked(normalizedSlug || productSlug);
     const digits = (customerPhone || "").replace(/\D/g, "");
     if (isBeninPhoneComplete(digits)) {
       const payload = {
@@ -418,7 +421,13 @@ export default function UmeiStyleOrderSection({
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-5">
+        <form
+          onSubmit={(e) => {
+            markCurrentSessionClicked(normalizedSlug || productSlug);
+            onSubmit(e);
+          }}
+          className="space-y-5"
+        >
 
           {/* 1. RÉCAPITULATIF DU PRODUIT UNIQUE ADAPTÉ AUX COULEURS DU PRODUIT */}
           <div
