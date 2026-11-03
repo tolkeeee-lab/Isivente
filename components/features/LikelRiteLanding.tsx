@@ -506,7 +506,47 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
           </div>
         </section>
 
-        {/* ── 9. AVANT / APRÈS & AMBIANCE VISUELLE ── */}
+        {/* ── 9. DÉMONSTRATION VIDÉO (Autoplay - Pilier 4) ── */}
+        <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.04)] space-y-6">
+          <div className="text-center space-y-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+              Démonstration Vidéo Réelle
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Découvrez la brume délicate et l&apos;ambiance lumineuse en action
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto">
+              Voyez comment une simple touche transforme instantanément l&apos;atmosphère de votre intérieur avec une fine brume parfumée et son halo lumineux apaisant.
+            </p>
+          </div>
+
+          <div className="relative max-w-xs sm:max-w-sm mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
+            <video
+              src="/videos/likel-rite-demo.mp4"
+              poster="/images/likel-rite/hero-clean.jpg"
+              autoPlay
+              muted
+              playsInline
+              loop
+              controls
+              preload="auto"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="text-center pt-2">
+            <button
+              type="button"
+              onClick={scrollToOrder}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-amber-700 hover:bg-amber-800 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
+            >
+              <span>Commander mon Diffuseur (14 900 FCFA)</span>
+              <ArrowRight className="w-4 h-4 stroke-[1.75]" />
+            </button>
+          </div>
+        </section>
+
+        {/* ── 10. AVANT / APRÈS & AMBIANCE VISUELLE ── */}
         <section className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.04)] space-y-6">
           <div className="text-center space-y-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
