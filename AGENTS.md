@@ -130,6 +130,7 @@ Consulter et appliquer obligatoirement :
    - Si une fonctionnalité (Pixel, CAPI, Analytics, Bot, Route API, fonction utilitaire) ne fonctionne pas, diagnostiquer la cause racine dans le fichier existant, la corriger sur place et supprimer tout code redondant.
 2. **Zéro Doublon d'Événements Meta Pixel / CAPI** :
    - Tous les événements navigateur + pont CAPI passent exclusivement par `lib/metaPixel.ts` (verrouillés par `getSessionEventLock` : 1 seul événement par type et par session).
+   - Les clés et tokens (`META_CONVERSIONS_API_TOKEN`, `NEXT_PUBLIC_META_PIXEL_ID`) sont configurés directement dans l'environnement **Vercel Production**.
    - Aucun composant ne doit appeler `/api/pixel/event` en direct.
    - Pour `Purchase` : 1 seul envoi Serveur CAPI dans `app/api/orders/route.ts` (avec `await`) + 1 seul envoi Navigateur `fbq` sur `app/p/[slug]/success/page.tsx` partageant le même `event_id = order_number`.
 3. **Zéro Doublon Visiteurs / Leads / Commandes** :

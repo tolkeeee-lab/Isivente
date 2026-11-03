@@ -18,6 +18,7 @@ Il répond à une exigence non négociable : **Garantir que ce qui marche ne soi
 1. **JAMAIS de modification à l'aveugle** :
    - Avant de toucher à un composant ou un fichier, lire son contenu complet et comprendre ses dépendances amont et aval.
    - Ne jamais deviner un nom de table, un nom de colonne, un slug produit, une route ou une variable d'environnement sans vérification préalable dans le code ou la base.
+   - **Environnement Vercel Production** : `META_CONVERSIONS_API_TOKEN`, `NEXT_PUBLIC_META_PIXEL_ID` et les clés CAPI sont configurés et actifs sur Vercel en production. Ne jamais oublier que la production Vercel possède ces secrets.
 
 2. **Blindage Absolu de la "Zone Rouge"** :
    - Les fonctionnalités éprouvées et validées (qui convertissent et génèrent du chiffre d'affaires) sont sanctuarisées.
@@ -119,3 +120,4 @@ Exécution :
 node .agents/skills/isivente-ironclad-zero-regression/scripts/verify-integrity.js
 ```
 Tout déploiement ou validation de tâche est conditionné au passage au vert de ce script.
+
