@@ -8,6 +8,7 @@ const ALLOWED_STATUSES = new Set([
   "confirmed",
   "reserved",
   "postponed",
+  "shipped",
   "delivered",
   "cancelled",
   "returned",

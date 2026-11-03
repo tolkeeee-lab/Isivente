@@ -522,6 +522,8 @@ export default function OrdersPage() {
     if (order.notes) {
       text += `\n📝 *Consignes :* ${order.notes}\n`;
     }
+    text += `\n📲 *LIEN CONFIRMATION LIVRAISON (1-CLIC) :*\n`;
+    text += `👉 Valider la livraison ici : https://isivente.vercel.app/livreur?cmd=${encodeURIComponent(ref)}\n`;
     text += `══════════════════════\n`;
     text += `⚠️ *Consignes de livraison :*\n`;
     text += `1. Prévenir le client par appel 30 min avant.\n`;
@@ -550,6 +552,7 @@ export default function OrdersPage() {
       text += `📦 *Article :* ${o.product_title} (x${o.quantity || 1})\n`;
       text += `💰 *À Encaisser : ${fmt(o.total_amount || 0)} FCFA*\n`;
       if (o.notes) text += `📝 Consigne : ${o.notes}\n`;
+      text += `🔗 Valider ce colis : https://isivente.vercel.app/livreur?cmd=${encodeURIComponent(o.order_number || "")}\n`;
       text += `─────────────\n\n`;
     });
 
