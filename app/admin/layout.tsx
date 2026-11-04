@@ -8,11 +8,8 @@ import {
   Package,
   BarChart3,
   Users,
-  Target,
-  ExternalLink,
   Store,
-  Wand2,
-  Bot,
+  ExternalLink,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -31,56 +28,46 @@ export default function AdminLayout({
     } catch {}
   }, []);
 
+  // ── 5 PÔLES MAJEURS ÉPURÉS (Fini l'encombrement des 8 onglets) ──
   const navItems = [
     {
       href: "/admin",
-      label: "Vue d'ensemble",
+      label: "Tableau de Bord",
       icon: LayoutDashboard,
+      matcher: (p: string) => p === "/admin",
     },
     {
       href: "/admin/orders",
-      label: "Commandes & Dispatch",
+      label: "Commandes & Livraisons",
       icon: Package,
+      matcher: (p: string) => p.startsWith("/admin/orders"),
     },
     {
       href: "/admin/prospects",
-      label: "Paniers Abandonnés",
+      label: "Relances WhatsApp",
       icon: Users,
-    },
-    {
-      href: "/admin/whatsapp",
-      label: "Bot WhatsApp",
-      icon: Bot,
-    },
-    {
-      href: "/admin/landings",
-      label: "Landing Pages",
-      icon: Store,
-    },
-    {
-      href: "/admin/studio",
-      label: "Studio AI",
-      icon: Wand2,
+      matcher: (p: string) => p.startsWith("/admin/prospects") || p.startsWith("/admin/whatsapp"),
     },
     {
       href: "/admin/clicks",
-      label: "KPIs des Pages",
+      label: "Performances & Pubs",
       icon: BarChart3,
+      matcher: (p: string) => p.startsWith("/admin/clicks") || p.startsWith("/admin/tracker"),
     },
     {
-      href: "/admin/tracker",
-      label: "Tracker UTM & ROI",
-      icon: Target,
+      href: "/admin/landings",
+      label: "Catalogue & Pages",
+      icon: Store,
+      matcher: (p: string) => p.startsWith("/admin/landings") || p.startsWith("/admin/studio"),
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100/70 text-slate-900 font-sans">
-      {/* ── TOPBAR NAVIGATION ADMIN UNIFIÉE ET 100% RESPONSIVE ── */}
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased">
+      {/* ── TOPBAR NAVIGATION ADMIN UNIFIÉE ET ÉPURÉE ── */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-[1400px] mx-auto px-3 sm:px-6">
           
-          {/* Ligne 1 : Logo & Boutique (Mobile) ou Barre Unique (Desktop) */}
           <div className="flex items-center justify-between h-14 md:h-16 gap-3">
             {/* Logo / Marque */}
             <div className="flex items-center gap-3 shrink-0">
@@ -94,24 +81,22 @@ export default function AdminLayout({
               </Link>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1">
+            {/* Desktop Navigation épurée */}
+            <nav className="hidden md:flex items-center gap-1.5 py-1">
               {navItems.map((item) => {
-                const isActive = item.href === "/admin" 
-                  ? pathname === "/admin" 
-                  : pathname.startsWith(item.href);
+                const isActive = item.matcher(pathname);
                 const Icon = item.icon;
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                       isActive
                         ? "bg-slate-900 text-white shadow-xs"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-white" : "text-slate-500"}`} />
                     <span>{item.label}</span>
                   </Link>
                 );
@@ -123,7 +108,7 @@ export default function AdminLayout({
               <Link
                 href="/p/voiture-camera"
                 target="_blank"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-all shadow-2xs"
               >
                 <Store className="w-3.5 h-3.5 text-indigo-600" />
                 <span className="hidden sm:inline">Voir la boutique</span>
@@ -132,12 +117,10 @@ export default function AdminLayout({
             </div>
           </div>
 
-          {/* Ligne 2 : Navigation mobile scrollable à 100% de largeur (Mobile uniquement) */}
+          {/* Ligne 2 : Navigation mobile scrollable propre (5 onglets nets) */}
           <div className="md:hidden border-t border-slate-100 -mx-3 px-3 py-2 overflow-x-auto scrollbar-none flex items-center gap-1.5">
             {navItems.map((item) => {
-              const isActive = item.href === "/admin" 
-                ? pathname === "/admin" 
-                : pathname.startsWith(item.href);
+              const isActive = item.matcher(pathname);
               const Icon = item.icon;
               return (
                 <Link

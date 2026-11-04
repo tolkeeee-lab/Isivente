@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { 
   getAllLeads, 
   getLocalLeads,
@@ -170,6 +171,19 @@ export default function ProspectsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
+      {/* ── SOUS-NAVIGATION PÔLE RELANCES WHATSAPP ── */}
+      <div className="flex items-center gap-1.5 p-1 bg-slate-200/70 rounded-2xl w-fit">
+        <span className="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-xs">
+          🛒 Paniers Abandonnés
+        </span>
+        <Link
+          href="/admin/whatsapp"
+          className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          🤖 Bot & Scripts WhatsApp
+        </Link>
+      </div>
+
       {/* ── HEADER DE PAGE ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

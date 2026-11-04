@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
   Wand2, 
   Sparkles, 
@@ -226,6 +227,20 @@ export default function MarketingStudioPage() {
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 space-y-6">
+      {/* ── SOUS-NAVIGATION PÔLE CATALOGUE & PAGES ── */}
+      <div className="flex items-center gap-1.5 p-1 bg-slate-200/70 rounded-2xl w-fit mb-4">
+        <Link
+          href="/admin/landings"
+          className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          🛍️ Les 31 Landing Pages
+        </Link>
+        <span className="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-xs">
+          ✨ Studio IA & Visuels
+        </span>
+      </div>
+
+
       
       {/* ── EN-TÊTE DU STUDIO MARKETING ── */}
       <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">

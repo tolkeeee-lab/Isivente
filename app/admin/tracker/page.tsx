@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { DEFAULT_CATALOG, DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import { playAlertNotificationSound } from "@/lib/soundEffects";

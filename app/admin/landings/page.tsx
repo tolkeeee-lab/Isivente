@@ -55,6 +55,19 @@ export default function AdminLandingsPage() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 space-y-6">
       
+      {/* ── SOUS-NAVIGATION PÔLE CATALOGUE & PAGES ── */}
+      <div className="flex items-center gap-1.5 p-1 bg-slate-200/70 rounded-2xl w-fit">
+        <span className="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-xs">
+          🛍️ Les 31 Landing Pages
+        </span>
+        <Link
+          href="/admin/studio"
+          className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+        >
+          ✨ Studio IA & Visuels
+        </Link>
+      </div>
+
       {/* ── EN-TÊTE DE LA PAGE ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
         <div>

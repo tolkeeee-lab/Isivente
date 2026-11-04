@@ -59,7 +59,7 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // ── Mode d'affichage des sections dans le tableau de triage ──
-  const [triageFilter, setTriageFilter] = useState<"all" | "pending" | "confirmed" | "reserved" | "postponed">("all");
+  const [triageFilter, setTriageFilter] = useState<"all" | "pending" | "confirmed" | "reserved" | "postponed">("confirmed");
 
   // ── Filtres dédiés et autonomes pour chaque section du tableau à part ──
   const [pendingFilters, setPendingFilters] = useState({
@@ -703,7 +703,7 @@ export default function OrdersPage() {
 
             {/* Carte Nouvelles Reçues (À Traiter) */}
             <div
-              onClick={() => setTriageFilter(triageFilter === "pending" ? "all" : "pending")}
+              onClick={() => setTriageFilter("pending")}
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-blue-500 hover:shadow-md ${triageFilter === "pending" ? "ring-2 ring-blue-500/40 bg-blue-50/20" : ""
                 } ${pendingOrders.length > 0 ? "ring-1 ring-blue-400/30" : ""}`}
             >
@@ -730,7 +730,7 @@ export default function OrdersPage() {
 
             {/* Carte Validées */}
             <div
-              onClick={() => setTriageFilter(triageFilter === "confirmed" ? "all" : "confirmed")}
+              onClick={() => setTriageFilter("confirmed")}
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-emerald-500 hover:shadow-md ${triageFilter === "confirmed" ? "ring-2 ring-emerald-500/40 bg-emerald-50/20" : ""
                 }`}
             >
@@ -755,7 +755,7 @@ export default function OrdersPage() {
 
             {/* Carte Réservations */}
             <div
-              onClick={() => setTriageFilter(triageFilter === "reserved" ? "all" : "reserved")}
+              onClick={() => setTriageFilter("reserved")}
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-amber-500 hover:shadow-md ${triageFilter === "reserved" ? "ring-2 ring-amber-500/40 bg-amber-50/20" : ""
                 }`}
             >
@@ -780,7 +780,7 @@ export default function OrdersPage() {
 
             {/* Carte Mises à plus tard */}
             <div
-              onClick={() => setTriageFilter(triageFilter === "postponed" ? "all" : "postponed")}
+              onClick={() => setTriageFilter("postponed")}
               className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-purple-500 hover:shadow-md ${triageFilter === "postponed" ? "ring-2 ring-purple-500/40 bg-purple-50/20" : ""
                 }`}
             >
