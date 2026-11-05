@@ -180,8 +180,24 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       undefined;
     const cookies = req.cookies;
-    const fbp = cookies.get("_fbp")?.value || body.fbp;
-    const fbc = cookies.get("_fbc")?.value || body.fbc;
+    let fbp = cookies.get("_fbp")?.value || body.fbp;
+    let fbc = cookies.get("_fbc")?.value || body.fbc;
+
+    if (!fbc && body.fbclid) {
+      fbc = `fb.1.${Date.now()}.${String(body.fbclid).trim()}`;
+    }
+    if (!fbc && req.headers.get("referer")) {
+      try {
+        const refUrl = new URL(req.headers.get("referer")!);
+        const fbclid = refUrl.searchParams.get("fbclid") || refUrl.searchParams.get("fb_action_ids");
+        if (fbclid && fbclid.trim().length > 5) {
+          fbc = `fb.1.${Date.now()}.${fbclid.trim()}`;
+        }
+      } catch {}
+    }
+    if (!fbp || !/^fb\.\d+\.\d+\.\d+$/.test(fbp)) {
+      fbp = `fb.1.${Date.now()}.${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+    }
 
     const nameParts = customerName.trim().split(/\s+/);
     const firstName = nameParts[0] || "";
@@ -218,11 +234,20 @@ export async function POST(req: NextRequest) {
       ),
     ]);
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       order: savedOrder,
       message: "Commande enregistrée avec succès",
     });
+
+    if (fbp) {
+      res.cookies.set("_fbp", fbp, { maxAge: 90 * 24 * 60 * 60, path: "/", sameSite: "lax" });
+    }
+    if (fbc) {
+      res.cookies.set("_fbc", fbc, { maxAge: 90 * 24 * 60 * 60, path: "/", sameSite: "lax" });
+    }
+
+    return res;
   } catch (error: any) {
     console.error("Orders POST error:", error?.message);
     return NextResponse.json(

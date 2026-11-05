@@ -21,6 +21,7 @@ import { saveOrUpdateLead, markLeadConverted } from "@/lib/leadsStorage";
 import { markCurrentSessionClicked } from "@/lib/analyticsStorage";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
+import { saveUserContactInfo } from "@/lib/userTracking";
 
 export interface BundleOption {
   id?: string;
@@ -198,6 +199,9 @@ export default function UmeiStyleOrderSection({
         value: totalPrice,
         currency: "XOF",
         num_items: currentBundle.quantity || 1,
+        customer_phone: customerPhone || undefined,
+        customer_name: customerName || undefined,
+        city: city || undefined,
       });
       trackInitiateCheckout({
         content_name: productTitle,
@@ -205,6 +209,9 @@ export default function UmeiStyleOrderSection({
         value: totalPrice,
         currency: "XOF",
         num_items: currentBundle.quantity || 1,
+        customer_phone: customerPhone || undefined,
+        customer_name: customerName || undefined,
+        city: city || undefined,
       });
     }
   };
@@ -216,6 +223,25 @@ export default function UmeiStyleOrderSection({
     markCurrentSessionClicked(normalizedSlug || productSlug);
     const digits = (customerPhone || "").replace(/\D/g, "");
     if (isBeninPhoneComplete(digits)) {
+      // Sauvegarder les coordonnées pour le Pixel & CAPI
+      saveUserContactInfo({
+        phone: digits,
+        name: customerName,
+        city: city || "Cotonou",
+      });
+
+      // Mettre à jour InitiateCheckout avec le numéro de téléphone pour maximiser l'Event Match Quality
+      trackInitiateCheckout({
+        content_name: productTitle,
+        content_ids: [normalizedSlug || "product"],
+        value: totalPrice,
+        currency: "XOF",
+        num_items: currentBundle.quantity || 1,
+        customer_phone: digits,
+        customer_name: customerName || undefined,
+        city: city || undefined,
+      });
+
       const payload = {
         customer_name: customerName,
         customer_phone: digits,
@@ -245,7 +271,7 @@ export default function UmeiStyleOrderSection({
           body: JSON.stringify(payload),
         }).catch(() => { });
 
-        } catch { }
+      } catch { }
     }
   };
 

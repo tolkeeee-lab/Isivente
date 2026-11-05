@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { getOrCreateFbp, getOrCreateFbc } from './userTracking';
 
 export interface Order {
   id?: string;
@@ -76,8 +77,8 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
     utm_medium: orderData.utm_medium || (typeof window !== 'undefined' ? (() => { try { return JSON.parse(sessionStorage.getItem('isivente_utm') || localStorage.getItem('isivente_utm') || '{}').utm_medium; } catch { return undefined; } })() : undefined),
     utm_campaign: orderData.utm_campaign || (typeof window !== 'undefined' ? (() => { try { return JSON.parse(sessionStorage.getItem('isivente_utm') || localStorage.getItem('isivente_utm') || '{}').utm_campaign; } catch { return undefined; } })() : undefined),
     utm_content: orderData.utm_content || (typeof window !== 'undefined' ? (() => { try { return JSON.parse(sessionStorage.getItem('isivente_utm') || localStorage.getItem('isivente_utm') || '{}').utm_content; } catch { return undefined; } })() : undefined),
-    fbc: typeof window !== 'undefined' ? (localStorage.getItem('isivente_fbc') || undefined) : undefined,
-    fbp: typeof window !== 'undefined' ? (localStorage.getItem('isivente_fbp') || undefined) : undefined,
+    fbc: typeof window !== 'undefined' ? (getOrCreateFbc() || localStorage.getItem('isivente_fbc') || undefined) : undefined,
+    fbp: typeof window !== 'undefined' ? (getOrCreateFbp() || localStorage.getItem('isivente_fbp') || undefined) : undefined,
     status: orderData.status || 'pending',
     created_at: orderData.created_at || new Date().toISOString(),
   };

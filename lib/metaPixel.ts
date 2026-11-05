@@ -1,4 +1,10 @@
-import { getUserDataFromStorage } from "./userTracking";
+import {
+  getUserDataFromStorage,
+  getOrCreateFbp,
+  getOrCreateFbc,
+  getOrCreateExternalId,
+  saveUserContactInfo,
+} from "./userTracking";
 
 export const PIXEL_CONFIG = {
   pixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686",
@@ -124,7 +130,17 @@ async function sendServerBridge(
   if (isAdminContext()) return;
 
   const storageUserData = getUserDataFromStorage();
-  const userData = { ...storageUserData, ...overrideUserData };
+  const fbp = overrideUserData?.fbp || storageUserData.fbp || getOrCreateFbp();
+  const fbc = overrideUserData?.fbc || storageUserData.fbc || getOrCreateFbc();
+  const externalId = overrideUserData?.external_id || storageUserData.external_id || getOrCreateExternalId();
+
+  const userData = {
+    ...storageUserData,
+    ...overrideUserData,
+    ...(fbp ? { fbp } : {}),
+    ...(fbc ? { fbc } : {}),
+    ...(externalId ? { external_id: externalId } : {}),
+  };
 
   try {
     fetch("/api/pixel/event", {
@@ -147,6 +163,8 @@ async function sendServerBridge(
  */
 export function trackPageView() {
   if (isAdminContext()) return;
+  getOrCreateFbp();
+  getOrCreateFbc();
   const pathKey = typeof window !== "undefined" ? window.location.pathname : "home";
   const { alreadySent, eventId } = getSessionEventLock("pv", pathKey);
   if (alreadySent) return;
@@ -184,6 +202,9 @@ export function trackViewContent(params: {
   currency?: string;
 }) {
   if (isAdminContext()) return;
+  const fbp = getOrCreateFbp();
+  const fbc = getOrCreateFbc();
+
   const prodKey = params.content_ids?.[0] || params.content_name || "prod";
   const { alreadySent, eventId } = getSessionEventLock("vc", prodKey);
   if (alreadySent) return;
@@ -201,7 +222,10 @@ export function trackViewContent(params: {
   if (fbq) {
     fbq("track", "ViewContent", data, { eventID: eventId });
   }
-  sendServerBridge("ViewContent", data, eventId);
+  sendServerBridge("ViewContent", data, eventId, {
+    fbp,
+    ...(fbc ? { fbc } : {}),
+  });
 }
 
 /**
@@ -213,8 +237,22 @@ export function trackAddToCart(params: {
   value?: number;
   currency?: string;
   num_items?: number;
+  customer_phone?: string;
+  customer_name?: string;
+  city?: string;
 }) {
   if (isAdminContext()) return;
+  const fbp = getOrCreateFbp();
+  const fbc = getOrCreateFbc();
+
+  if (params.customer_phone || params.customer_name) {
+    saveUserContactInfo({
+      phone: params.customer_phone,
+      name: params.customer_name,
+      city: params.city,
+    });
+  }
+
   const prodKey = params.content_ids?.[0] || params.content_name || "prod";
   const { alreadySent, eventId } = getSessionEventLock("atc", prodKey);
   if (alreadySent) return;
@@ -232,7 +270,13 @@ export function trackAddToCart(params: {
   if (fbq) {
     fbq("track", "AddToCart", data, { eventID: eventId });
   }
-  sendServerBridge("AddToCart", data, eventId);
+  sendServerBridge("AddToCart", data, eventId, {
+    fbp,
+    ...(fbc ? { fbc } : {}),
+    ...(params.customer_phone ? { phone: params.customer_phone } : {}),
+    ...(params.customer_name ? { customer_name: params.customer_name } : {}),
+    ...(params.city ? { city: params.city } : {}),
+  });
 }
 
 /**
@@ -244,11 +288,24 @@ export function trackInitiateCheckout(params: {
   value?: number;
   currency?: string;
   num_items?: number;
+  customer_phone?: string;
+  customer_name?: string;
+  city?: string;
 }) {
   if (isAdminContext()) return;
+  const fbp = getOrCreateFbp();
+  const fbc = getOrCreateFbc();
+
+  if (params.customer_phone || params.customer_name) {
+    saveUserContactInfo({
+      phone: params.customer_phone,
+      name: params.customer_name,
+      city: params.city,
+    });
+  }
+
   const prodKey = params.content_ids?.[0] || params.content_name || "prod";
   const { alreadySent, eventId } = getSessionEventLock("ic", prodKey);
-  if (alreadySent) return;
 
   const data = {
     content_name: params.content_name,
@@ -259,11 +316,35 @@ export function trackInitiateCheckout(params: {
     num_items: params.num_items || 1,
   };
 
+  // Si déjà envoyé mais qu'un numéro vient d'être renseigné : envoyer une mise à jour CAPI enrichie avec le même eventId
+  if (alreadySent) {
+    if (params.customer_phone && typeof window !== "undefined") {
+      const upgradeKey = `isivente_px_ic_ph_${prodKey}`;
+      if (!sessionStorage.getItem(upgradeKey)) {
+        sessionStorage.setItem(upgradeKey, "1");
+        sendServerBridge("InitiateCheckout", data, eventId, {
+          fbp,
+          ...(fbc ? { fbc } : {}),
+          phone: params.customer_phone,
+          ...(params.customer_name ? { customer_name: params.customer_name } : {}),
+          ...(params.city ? { city: params.city } : {}),
+        });
+      }
+    }
+    return;
+  }
+
   const fbq = getFbq();
   if (fbq) {
     fbq("track", "InitiateCheckout", data, { eventID: eventId });
   }
-  sendServerBridge("InitiateCheckout", data, eventId);
+  sendServerBridge("InitiateCheckout", data, eventId, {
+    fbp,
+    ...(fbc ? { fbc } : {}),
+    ...(params.customer_phone ? { phone: params.customer_phone } : {}),
+    ...(params.customer_name ? { customer_name: params.customer_name } : {}),
+    ...(params.city ? { city: params.city } : {}),
+  });
 }
 
 /**
