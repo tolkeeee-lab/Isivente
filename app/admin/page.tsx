@@ -64,6 +64,86 @@ export default function AdminOverviewPage() {
   const [orderTab, setOrderTab] = useState<OrderQuickFilter>("all");
 
   const productsList = useMemo(() => getAdminDashboardProducts(), []);
+  // ── Rapprochement Livraisons & CA Réel ──
+  const [deliveredOverrides, setDeliveredOverrides] = useState<Record<string, number>>({});
+  const [showOnlyWithOrders, setShowOnlyWithOrders] = useState<boolean>(true);
+
+  // Charger les ajustements enregistrés
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("isivente_delivered_counts");
+      if (saved) setDeliveredOverrides(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  const handleUpdateDeliveredCount = (slug: string, newCount: number) => {
+    const safeCount = Math.max(0, Math.floor(newCount || 0));
+    const updated = { ...deliveredOverrides, [slug]: safeCount };
+    setDeliveredOverrides(updated);
+    try {
+      localStorage.setItem("isivente_delivered_counts", JSON.stringify(updated));
+    } catch {}
+  };
+
+  const handleResetToAutoDelivered = () => {
+    setDeliveredOverrides({});
+    try {
+      localStorage.removeItem("isivente_delivered_counts");
+    } catch {}
+  };
+
+  const realDeliveryReport = useMemo(() => {
+    // 1. Décompte automatique par slug
+    const ordersBySlug: Record<string, { totalOrders: number; autoDelivered: number }> = {};
+    orders.forEach((o) => {
+      const s = o.product_slug || "autre";
+      if (!ordersBySlug[s]) ordersBySlug[s] = { totalOrders: 0, autoDelivered: 0 };
+      ordersBySlug[s].totalOrders += 1;
+      if (o.status === "delivered") {
+        ordersBySlug[s].autoDelivered += 1;
+      }
+    });
+
+    // 2. Construction des données par produit
+    const rows = productsList.map((p) => {
+      const stat = ordersBySlug[p.slug] || { totalOrders: 0, autoDelivered: 0 };
+      const isOverridden = deliveredOverrides[p.slug] !== undefined;
+      const deliveredCount = isOverridden ? deliveredOverrides[p.slug] : stat.autoDelivered;
+      const realRevenue = deliveredCount * p.price;
+      const deliveryRate = stat.totalOrders > 0 ? (deliveredCount / stat.totalOrders) * 100 : 0;
+
+      return {
+        ...p,
+        totalOrders: stat.totalOrders,
+        autoDelivered: stat.autoDelivered,
+        deliveredCount,
+        realRevenue,
+        deliveryRate,
+        isOverridden,
+      };
+    });
+
+    // 3. Totaux globaux
+    const totalDelivered = rows.reduce((sum, r) => sum + r.deliveredCount, 0);
+    const totalRealRevenue = rows.reduce((sum, r) => sum + r.realRevenue, 0);
+    const totalOrdersCount = rows.reduce((sum, r) => sum + r.totalOrders, 0);
+    const globalDeliveryRate = totalOrdersCount > 0 ? (totalDelivered / totalOrdersCount) * 100 : 0;
+
+    // 4. Filtrage d'affichage (produits avec commandes/livraisons d'abord)
+    const displayedRows = showOnlyWithOrders
+      ? rows.filter((r) => r.totalOrders > 0 || r.deliveredCount > 0)
+      : rows;
+
+    return {
+      rows: displayedRows,
+      totalDelivered,
+      totalRealRevenue,
+      totalOrdersCount,
+      globalDeliveryRate,
+      hasOverrides: Object.keys(deliveredOverrides).length > 0,
+    };
+  }, [orders, productsList, deliveredOverrides, showOnlyWithOrders]);
+
 
   const handleCopyLink = (slug: string, withUtm = false) => {
     const origin =
@@ -501,9 +581,9 @@ export default function AdminOverviewPage() {
               </span>
             </div>
             <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Validées :</span>
+              <span>Encaissé Réel :</span>
               <span className="font-bold text-emerald-700 font-mono">
-                {metrics.confirmedOrdersCount} cmd ({metrics.conversionRate.toFixed(0)}%)
+                {loading ? "…" : fmt(realDeliveryReport.totalRealRevenue)} F ({realDeliveryReport.totalDelivered} livrés)
               </span>
             </div>
           </div>
@@ -608,6 +688,228 @@ export default function AdminOverviewPage() {
             </div>
           </div>
         </Link>
+      </div>
+
+
+      {/* ── 2.5 TABLEAU FINANCIER FIGMA-GRADE : CA RÉEL & BILAN LIVRAISONS PAR PRODUIT ── */}
+      <div className="card-figma p-5 space-y-4 border-2 border-emerald-500/30 shadow-xs bg-white">
+        
+        {/* En-tête du tableau & Totaux Clés */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-200/60">
+                💰
+              </span>
+              <h2 className="font-display font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">
+                CA Réel Encaissé & Bilan des Livraisons
+              </h2>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 font-mono">
+                Point de Caisse COD
+              </span>
+            </div>
+            <p className="text-xs text-slate-500">
+              Chiffre d’affaires calculé sur les colis réellement livrés. Vous pouvez ajuster le nombre livré directement dans chaque case.
+            </p>
+          </div>
+
+          {/* Synthèse Chiffres Réels */}
+          <div className="flex items-center gap-3 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-3 shrink-0">
+            <div className="text-right">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
+                Total CA Réel Encaissé
+              </span>
+              <span className="text-lg sm:text-xl font-black font-mono text-emerald-700 tabular-nums">
+                {fmt(realDeliveryReport.totalRealRevenue)} FCFA
+              </span>
+            </div>
+            <div className="h-8 w-px bg-emerald-200" />
+            <div className="text-left">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">
+                Colis Livrés
+              </span>
+              <span className="text-base sm:text-lg font-black font-mono text-slate-900 tabular-nums">
+                {realDeliveryReport.totalDelivered}{" "}
+                <span className="text-xs font-normal text-slate-500 font-sans">
+                  / {realDeliveryReport.totalOrdersCount} ({realDeliveryReport.globalDeliveryRate.toFixed(0)}%)
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Contrôles d'affichage & Réinitialisation */}
+        <div className="flex items-center justify-between gap-2 text-xs flex-wrap">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowOnlyWithOrders(!showOnlyWithOrders)}
+              className={`px-3 py-1.5 rounded-xl font-bold transition-all text-xs cursor-pointer ${
+                showOnlyWithOrders
+                  ? "bg-slate-900 text-white shadow-2xs"
+                  : "bg-slate-100 text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              {showOnlyWithOrders
+                ? `Produits commandés (${realDeliveryReport.rows.length})`
+                : `Tous les 31 produits (${productsList.length})`}
+            </button>
+            <span className="text-[11px] text-slate-400">
+              {showOnlyWithOrders ? "Affichage condensé des produits ayant des commandes" : "Affichage de tout le catalogue"}
+            </span>
+          </div>
+
+          {realDeliveryReport.hasOverrides && (
+            <button
+              type="button"
+              onClick={handleResetToAutoDelivered}
+              className="text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+              title="Réinitialiser tous les chiffres saisis pour reprendre les commandes marquées livrées sur le site"
+            >
+              <RefreshCw className="w-3 h-3" />
+              <span>Rétablir livraisons automatiques du site</span>
+            </button>
+          )}
+        </div>
+
+        {/* Tableau Figma-Grade */}
+        <div className="overflow-x-auto -mx-5 sm:mx-0 px-5 sm:px-0">
+          <table className="w-full text-left text-xs border-collapse min-w-[620px]">
+            <thead>
+              <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10.5px]">
+                <th className="py-2.5 px-3">Produit</th>
+                <th className="py-2.5 px-3 text-center">Commandes Reçues</th>
+                <th className="py-2.5 px-3 text-center">Colis Livrés (Ajustable)</th>
+                <th className="py-2.5 px-3 text-center">Taux Livraison</th>
+                <th className="py-2.5 px-3 text-right">CA Réel Encaissé</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {realDeliveryReport.rows.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-slate-400 text-xs">
+                    Aucune commande enregistrée pour le moment.
+                  </td>
+                </tr>
+              ) : (
+                realDeliveryReport.rows.map((prod) => (
+                  <tr key={prod.slug} className="hover:bg-slate-50/80 transition-colors">
+                    
+                    {/* Colonne Produit */}
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src={prod.image}
+                          alt={prod.title}
+                          className="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-50"
+                        />
+                        <div className="min-w-0">
+                          <Link
+                            href={`/p/${prod.slug}`}
+                            target="_blank"
+                            className="font-bold text-slate-900 hover:text-indigo-600 transition-colors truncate max-w-[220px] block"
+                          >
+                            {prod.title}
+                          </Link>
+                          <span className="text-[10.5px] text-slate-500 font-mono">
+                            {fmt(prod.price)} FCFA / unité
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Colonne Commandes Totales */}
+                    <td className="py-3 px-3 text-center font-mono font-bold text-slate-700">
+                      {prod.totalOrders}
+                    </td>
+
+                    {/* Colonne Colis Livrés (Saisie interactive) */}
+                    <td className="py-3 px-3 text-center">
+                      <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl p-1 shadow-2xs">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount - 1)}
+                          disabled={prod.deliveredCount <= 0}
+                          className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors disabled:opacity-30 cursor-pointer"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min={0}
+                          value={prod.deliveredCount}
+                          onChange={(e) => handleUpdateDeliveredCount(prod.slug, parseInt(e.target.value) || 0)}
+                          className="w-12 text-center font-mono font-bold text-xs text-slate-900 bg-transparent focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount + 1)}
+                          className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors cursor-pointer"
+                        >
+                          +
+                        </button>
+                      </div>
+                      {prod.isOverridden && (
+                        <span className="block text-[9.5px] text-amber-600 font-medium mt-0.5">
+                          Manuel
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Colonne Taux de Livraison */}
+                    <td className="py-3 px-3 text-center">
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full font-mono font-bold text-[11px] ${
+                          prod.deliveryRate >= 70
+                            ? "bg-emerald-100 text-emerald-800"
+                            : prod.deliveryRate >= 40
+                            ? "bg-amber-100 text-amber-800"
+                            : prod.deliveryRate > 0
+                            ? "bg-rose-100 text-rose-800"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {prod.deliveryRate.toFixed(0)}%
+                      </span>
+                    </td>
+
+                    {/* Colonne CA Réel Encaissé */}
+                    <td className="py-3 px-3 text-right">
+                      <span className="font-mono font-black text-sm text-emerald-700 tabular-nums">
+                        {fmt(prod.realRevenue)} FCFA
+                      </span>
+                    </td>
+
+                  </tr>
+                ))
+              )}
+            </tbody>
+            {realDeliveryReport.rows.length > 0 && (
+              <tfoot>
+                <tr className="bg-slate-50/90 border-t-2 border-slate-200 font-bold text-xs text-slate-900">
+                  <td className="py-3 px-3">
+                    TOTAL BOUTIQUE
+                  </td>
+                  <td className="py-3 px-3 text-center font-mono">
+                    {realDeliveryReport.totalOrdersCount}
+                  </td>
+                  <td className="py-3 px-3 text-center font-mono text-emerald-800 font-black">
+                    {realDeliveryReport.totalDelivered} colis livrés
+                  </td>
+                  <td className="py-3 px-3 text-center">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full font-mono bg-emerald-100 text-emerald-800">
+                      {realDeliveryReport.globalDeliveryRate.toFixed(0)}%
+                    </span>
+                  </td>
+                  <td className="py-3 px-3 text-right font-mono font-black text-base text-emerald-700 tabular-nums">
+                    {fmt(realDeliveryReport.totalRealRevenue)} FCFA
+                  </td>
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
+
       </div>
 
       {/* ── 3. CŒUR OPÉRATIONNEL : COMMANDES À TRAITER (GAUCHE) & RELANCES WHATSAPP (DROITE) ── */}
