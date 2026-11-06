@@ -31,6 +31,7 @@ import TrousseBiometriqueLanding from "@/components/features/TrousseBiometriqueL
 import DigestiGumLanding from "@/components/features/DigestiGumLanding";
 import Calendrier3DLanding from "@/components/features/Calendrier3DLanding";
 import LikelRiteLanding from "@/components/features/LikelRiteLanding";
+import StarlightLanding from "@/components/features/StarlightLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -145,6 +146,10 @@ export function generateStaticParams() {
     { slug: "diffuseur-arome" },
     { slug: "humidificateur" },
     { slug: "parfum-interieur" },
+    { slug: "starlight-chargeur" },
+    { slug: "chargeur-retractable" },
+    { slug: "starlight" },
+    { slug: "chargeur-5en1" },
   ];
 }
 
@@ -300,6 +305,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "calendrier-decoratif":
       case "calendrier-magnetique":
         return <Calendrier3DLanding slug="calendrier-3d" />;
+      case "starlight-chargeur":
+      case "chargeur-retractable":
+      case "starlight":
+      case "chargeur-5en1":
+      case "chargeur-allume-cigare":
+        return <StarlightLanding slug="starlight-chargeur" />;
       case "likel-rite":
       case "diffuseur":
       case "diffuseur-arome":

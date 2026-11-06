@@ -482,6 +482,53 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Filtre à Eau Universel pour Robinet 6 Couches de Filtration", price: 14900 }
     ]
+  },
+  {
+    id: "starlight-chargeur-default",
+    title: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™ avec Diffuseur & Projection Ciel Étoilé",
+    shortTitle: "Chargeur Starlight 5-en-1",
+    slug: "starlight-chargeur",
+    price: 16900,
+    accentColor: "#D97706",
+    keywords: [
+      "starlight",
+      "chargeur",
+      "chargeur retractable",
+      "chargeur rétractable",
+      "allume-cigare",
+      "allume cigare",
+      "cables retractables",
+      "câbles rétractables",
+      "yango",
+      "vtc",
+      "ciel etoile",
+      "ciel étoilé",
+      "arome",
+      "arôme",
+      "parfum voiture",
+      "laser auto",
+    ],
+    image_url: "/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg",
+    image: "/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg",
+    headline: "Câbles rétractables ultrarapides, diffuseur de parfum d'ambiance avec 3 flacons inclus, anneau cristal RGB et projection laser ciel étoilé dans un seul boîtier rotatif 180°.",
+    bundles: [
+      { name: "Coffret Officiel Chargeur 5-en-1 Starlight™ + 3 Arômes Inclus", price: 16900 }
+    ]
+  },
+  {
+    id: "chargeur-retractable-alias",
+    title: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™",
+    shortTitle: "Chargeur Starlight 5-en-1",
+    slug: "chargeur-retractable",
+    price: 16900,
+    accentColor: "#D97706",
+    keywords: ["chargeur-retractable", "chargeur retractable"],
+    image_url: "/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg",
+    image: "/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg",
+    headline: "Câbles rétractables ultrarapides, diffuseur de parfum d'ambiance avec 3 flacons inclus, anneau cristal RGB et projection laser ciel étoilé.",
+    bundles: [
+      { name: "Coffret Officiel Chargeur 5-en-1 Starlight™ + 3 Arômes Inclus", price: 16900 }
+    ]
   }
 ];
 
