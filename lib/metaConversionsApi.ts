@@ -30,6 +30,21 @@ function hashPhone(phone: string | undefined): string | undefined {
 }
 
 /**
+ * Résout le département béninois à partir de la ville pour le paramètre 'st' de Meta CAPI
+ */
+function getStateFromCity(city: string | undefined): string {
+  if (!city) return "littoral";
+  const c = city.toLowerCase().trim();
+  if (c.includes("calavi") || c.includes("ouidah") || c.includes("allada") || c.includes("godomey")) return "atlantique";
+  if (c.includes("porto") || c.includes("seme") || c.includes("sema") || c.includes("ekpe")) return "oueme";
+  if (c.includes("parakou")) return "borgou";
+  if (c.includes("bohicon") || c.includes("abomey")) return "zou";
+  if (c.includes("lokossa")) return "mono";
+  if (c.includes("natitingou")) return "atacora";
+  return "littoral"; // Cotonou par défaut
+}
+
+/**
  * Détecte si un événement provient d'un test interne (admin, mot-clé test, numéro factice)
  */
 export function isTestEventData(data: {
@@ -145,6 +160,7 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
     fn: uData.first_name ? [hashSha256(uData.first_name)] : undefined,
     ln: uData.last_name ? [hashSha256(uData.last_name)] : undefined,
     ct: uData.city ? [hashSha256(uData.city)] : [hashSha256("cotonou")],
+    st: [hashSha256(getStateFromCity(uData.city))],
     country: [hashSha256(uData.country || "bj")],
     external_id: uData.external_id ? [hashSha256(uData.external_id)] : undefined,
     client_ip_address: clientIp || undefined,
@@ -173,6 +189,15 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
           content_type: cData.content_type || "product",
           order_id: cData.order_id,
           num_items: cData.num_items || 1,
+          delivery_category: "home_delivery",
+          contents:
+            cData.content_ids && cData.content_ids.length > 0
+              ? cData.content_ids.map((id) => ({
+                  id,
+                  quantity: cData.num_items || 1,
+                  item_price: cData.value || 0,
+                }))
+              : undefined,
         },
       },
     ],
