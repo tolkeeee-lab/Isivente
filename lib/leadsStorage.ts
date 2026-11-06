@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
+import { saveUserContactInfo } from "@/lib/userTracking";
 
 export interface LeadRecord {
   id: string;
@@ -95,8 +96,16 @@ export async function saveOrUpdateLead(data: {
     updated_at: now,
   };
 
-  // 1. Sauvegarde locale immédiate
+  // 1. Sauvegarde locale immédiate & synchronisation Meta Pixel Advanced Matching
   if (typeof window !== "undefined") {
+    try {
+      saveUserContactInfo({
+        phone: cleanPhone,
+        name: data.customer_name,
+        city: data.city,
+      });
+    } catch {}
+
     const localList = getLocalLeads();
     const existingIdx = localList.findIndex((l) => l.id === leadId);
     if (existingIdx >= 0) {
