@@ -67,3 +67,32 @@ Ne jamais oublier d'ancrer la fin du script dans la réalité d'achat locale :
 - Réassurance clé : **« Vous ne payez qu'à la réception, après avoir testé votre appareil »**
 - Appel à l'action : **« Cliquez vite sur le lien sous la vidéo pour commander »**
 
+---
+
+## 🎵 6. Règle de l'Intensité Non-Stop (Musique de Fond Obligatoire)
+
+Une voix-off publicitaire ne doit **JAMAIS** être livrée sans musique de fond (« dry voice ») :
+1. **Musique continue de 0:00 à la dernière frame** : Un beat moderne, commercial ou tech house rythmé doit porter la vidéo du début à la fin sans interruption.
+2. **Duck sonore équilibré** : Le volume de la musique de fond est calé à **18% - 22%**, tandis que la voix de Vivienne est boostée à **140% - 145%** avec `normalize=0` dans FFmpeg (`amix=inputs=2:dropout_transition=0:normalize=0`).
+3. **Fondu doux à la fin** : L'audio se conclut avec un fade-out doux de 1,0s à 1,2s sur le CTA final (`afade=t=out:st=...:d=1.2`).
+
+---
+
+## ✂️ 7. Règle du Recadrage Temporel (Zéro Fin Morte)
+
+Si la voix s'achève avant la fin de la vidéo brute :
+1. **Interdiction de laisser traîner la vidéo** : Ne jamais laisser des secondes muettes ou répétitives flotter après le CTA.
+2. **Recadrage temporel à la milliseconde** : Couper la vidéo (`-t <durée>`) au moment exact où la voix de Vivienne termine son appel à l'action et que la musique atteint son climax (ex: 32.0s pile).
+3. **Format court punchy recommandé (28s - 34s)** : Condenser le script en 6 à 7 punchlines percutantes pour maximiser le taux de complétion (VTR) et la conversion publicitaire.
+
+---
+
+## 💰 8. Harmonisation Absolue du Prix
+
+Le prix annoncé doit être **strictement identique** dans tous les éléments de la création :
+- Dans la voix-off : prononcé distinctement (ex: « 16 900 Francs »).
+- Dans le sous-titre cinématique : affiché en toutes lettres (« 16 900 FCFA »).
+- Dans le badge promo clignotant / fixe : bandeau doré ambre (`PRIX PROMO EXCLUSIF : 16 900 FCFA`).
+- Sur la landing page et le formulaire de commande associé.
+
+
