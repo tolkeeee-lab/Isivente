@@ -33,7 +33,7 @@ import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/m
 const BUNDLES: BundleOption[] = [
   {
     id: "solo",
-    name: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™",
+    name: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
     subtitle: "Coffret complet avec boîtier rotatif 180°, 2 câbles rétractables, 3 flacons de parfum et projection ciel étoilé",
     price: 16900,
     originalPrice: 25000,
@@ -134,7 +134,7 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
 const FAQS_DATA = [
   {
     q: "Ce chargeur convient-il à toutes les voitures ?",
-    a: "Oui, à 100%. Il se branche sur n'importe quelle prise allume-cigare standard 12V ou 24V. Il est donc parfaitement compatible avec toutes les berlines, SUV, 4x4, camionnettes et taxis en circulation au Bénin.",
+    a: "Oui, à 100%. Il se branche sur n'importe quelle prise 12V ou 24V de véhicule. Il est donc parfaitement compatible avec toutes les berlines, SUV, 4x4, camionnettes et taxis en circulation au Bénin.",
   },
   {
     q: "Quels types de téléphones peuvent être rechargés ?",
@@ -193,7 +193,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
         city: city,
         address: address,
         product_slug: slug,
-        product_title: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™",
+        product_title: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
         bundle_name: selectedBundle.name,
         total_amount: selectedBundle.price,
       }).catch(() => {});
@@ -203,7 +203,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
   // Meta Pixel ViewContent
   useEffect(() => {
     trackViewContent({
-      content_name: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™",
+      content_name: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
       content_ids: [slug, "starlight", "chargeur-retractable"],
       value: 16900,
       currency: "XOF",
@@ -213,7 +213,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
   const scrollToOrder = () => {
     recordInteraction();
     trackInitiateCheckout({
-      content_name: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™",
+      content_name: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
       content_ids: [slug],
       value: selectedBundle.price,
       currency: "XOF",
@@ -237,7 +237,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
 
     try {
       const order = await saveNewOrder({
-        product_title: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™",
+        product_title: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
         product_slug: slug,
         customer_name: customerName.trim() || "Client Isivente",
         customer_phone: customerPhone.trim(),
@@ -257,7 +257,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
         sessionStorage.setItem(
           "isivente_last_purchase_meta",
           JSON.stringify({
-            title: "Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™",
+            title: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
             price: selectedBundle.price,
             quantity: 1,
           })
@@ -435,7 +435,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
           )}
           <UmeiStyleOrderSection
             productSlug={slug}
-            productTitle="Chargeur Allume-Cigare Rétractable 5-en-1 Starlight™"
+            productTitle="Chargeur Voiture Rétractable 5-en-1 Starlight™"
             productImage="/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
@@ -573,7 +573,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
             <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-3">
               <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wide">
                 <XCircle className="w-4 h-4" />
-                <span>Chargeur allume-cigare standard</span>
+                <span>Chargeur auto ordinaire</span>
               </div>
               <ul className="space-y-2 text-xs text-slate-600">
                 <li className="flex items-start gap-2">
@@ -816,7 +816,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
         targetSectionId="commander"
         accentColor="#D97706"
         buttonText="Commander (16 900 F)"
-        whatsappMessage="Bonjour Isivente, je souhaite commander le Chargeur Allume-Cigare Rétractable 5-en-1 Starlight à 16 900 FCFA."
+        whatsappMessage="Bonjour Isivente, je souhaite commander le Chargeur Voiture Rétractable 5-en-1 Starlight à 16 900 FCFA."
       />
     </div>
   );

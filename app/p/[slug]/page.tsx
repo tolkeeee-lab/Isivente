@@ -309,7 +309,7 @@ export default async function ProductPage({ params }: PageProps) {
       case "chargeur-retractable":
       case "starlight":
       case "chargeur-5en1":
-      case "chargeur-allume-cigare":
+      case "chargeur-voiture":
         return <StarlightLanding slug="starlight-chargeur" />;
       case "likel-rite":
       case "diffuseur":
