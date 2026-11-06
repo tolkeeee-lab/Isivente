@@ -11,28 +11,40 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const slug = url.searchParams.get("slug");
 
-    let query = supabase
-      .from("analytics")
-      .select("session_id, product_slug, duration_seconds, clicked, created_at")
-      .order("created_at", { ascending: false })
-      .limit(10000);
+    const pageSize = 1000;
+    let allRows: any[] = [];
+    let from = 0;
 
-    if (slug) {
-      query = query.eq("product_slug", slug);
-    }
+    while (true) {
+      let query = supabase
+        .from("analytics")
+        .select("session_id, product_slug, duration_seconds, clicked, created_at")
+        .order("created_at", { ascending: false })
+        .range(from, from + pageSize - 1);
 
-    const { data, error } = await query;
-    if (error) {
-      return NextResponse.json(
-        { success: false, error: error.message, rows: [] },
-        { status: 500 }
-      );
+      if (slug) {
+        query = query.eq("product_slug", slug);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        if (allRows.length > 0) break;
+        return NextResponse.json(
+          { success: false, error: error.message, rows: [] },
+          { status: 500 }
+        );
+      }
+      if (!data || data.length === 0) break;
+      allRows.push(...data);
+      if (data.length < pageSize) break;
+      from += pageSize;
+      if (from >= 50000) break; // Sécurité anti-boucle
     }
 
     return NextResponse.json({
       success: true,
-      count: data?.length || 0,
-      rows: data || [],
+      count: allRows.length,
+      rows: allRows,
     });
   } catch (err: any) {
     return NextResponse.json(

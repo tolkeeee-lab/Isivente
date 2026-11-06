@@ -194,27 +194,49 @@ export function markCurrentSessionClicked(slug: string) {
   } catch {}
 }
 
-export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> {
+/**
+ * Récupère l'intégralité des sessions d'analytics depuis Supabase avec pagination par page de 1000.
+ * Résout la limitation par défaut de PostgREST qui plafonne chaque requête brute à 1000 lignes.
+ */
+async function fetchAllAnalyticsRows(slug?: string): Promise<{ data: any[] | null; error: any }> {
   try {
-    let data: any[] | null = null;
-    let error: any = null;
+    const pageSize = 1000;
+    let allRows: any[] = [];
+    let from = 0;
 
-    try {
+    while (true) {
       let query = supabase
         .from('analytics')
         .select('session_id, product_slug, duration_seconds, clicked, created_at')
         .order('created_at', { ascending: false })
-        .limit(10000);
+        .range(from, from + pageSize - 1);
 
       if (slug) {
         query = query.eq('product_slug', slug);
       }
+
       const res = await query;
-      data = res.data;
-      error = res.error;
-    } catch (e) {
-      error = e;
+      if (res.error) {
+        if (allRows.length > 0) return { data: allRows, error: null };
+        return { data: null, error: res.error };
+      }
+
+      const chunk = res.data || [];
+      allRows.push(...chunk);
+      if (chunk.length < pageSize) break;
+      from += pageSize;
+      if (from >= 50000) break; // Sécurité anti-boucle
     }
+
+    return { data: allRows, error: null };
+  } catch (err) {
+    return { data: null, error: err };
+  }
+}
+
+export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> {
+  try {
+    let { data, error } = await fetchAllAnalyticsRows(slug);
 
     if ((error || !data || data.length === 0) && typeof window !== 'undefined') {
       try {
@@ -282,20 +304,7 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
 
 export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]> {
   try {
-    let data: any[] | null = null;
-    let error: any = null;
-
-    try {
-      const res = await supabase
-        .from('analytics')
-        .select('session_id, product_slug, duration_seconds, clicked, created_at')
-        .order('created_at', { ascending: false })
-        .limit(10000);
-      data = res.data;
-      error = res.error;
-    } catch (e) {
-      error = e;
-    }
+    let { data, error } = await fetchAllAnalyticsRows();
 
     if ((error || !data || data.length === 0) && typeof window !== 'undefined') {
       try {
