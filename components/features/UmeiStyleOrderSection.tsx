@@ -22,6 +22,7 @@ import { markCurrentSessionClicked } from "@/lib/analyticsStorage";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import { saveUserContactInfo } from "@/lib/userTracking";
+import { detectBeninCity } from "@/lib/cityUtils";
 
 export interface BundleOption {
   id?: string;
@@ -593,12 +594,30 @@ export default function UmeiStyleOrderSection({
                   required
                   value={address}
                   onFocus={handleInteractionTrigger}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAddress(val);
+                    const detected = detectBeninCity(city, val, customerName);
+                    if (detected.wasOverridden && detected.detectedCity && detected.detectedCity !== city) {
+                      setCity(detected.detectedCity);
+                    }
+                  }}
                   placeholder="Ex: Haie Vive, face pharmacie"
                   className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
                 />
               </div>
             </div>
+
+            {/* Note d'expédition pour Parakou ou villes hors Cotonou/Calavi */}
+            {selectedCityObj && !selectedCityObj.express && city && city !== "Autre ville" && (
+              <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2 animate-in fade-in">
+                <Truck className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold">Livraison pour {city} :</p>
+                  <p className="text-amber-800/90 leading-tight">Colis expédié sous {selectedCityObj.delay} par compagnie de transport. Règlement à la réception.</p>
+                </div>
+              </div>
+            )}
 
             {/* Si Autre ville sélectionnée */}
             {city === "Autre ville" && (

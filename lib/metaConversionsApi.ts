@@ -93,6 +93,7 @@ export interface MetaCapiEventOptions {
     first_name?: string;
     last_name?: string;
     city?: string;
+    st?: string;
     country?: string;
     external_id?: string;
     client_ip_address?: string;
@@ -160,7 +161,7 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
     fn: uData.first_name ? [hashSha256(uData.first_name)] : undefined,
     ln: uData.last_name ? [hashSha256(uData.last_name)] : undefined,
     ct: uData.city ? [hashSha256(uData.city)] : [hashSha256("cotonou")],
-    st: [hashSha256(getStateFromCity(uData.city))],
+    st: [hashSha256(uData.st || getStateFromCity(uData.city))],
     country: [hashSha256(uData.country || "bj")],
     external_id: uData.external_id ? [hashSha256(uData.external_id)] : undefined,
     client_ip_address: clientIp || undefined,

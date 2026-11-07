@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { sendOrderNotification } from "@/lib/notifyHelper";
 import { sendMetaConversionApiEvent } from "@/lib/metaConversionsApi";
+import { detectBeninCity } from "@/lib/cityUtils";
 
 const ALLOWED_STATUSES = new Set([
   "pending",
@@ -64,11 +65,14 @@ export async function POST(req: NextRequest) {
     const rawName = String(body.customer_name || body.name || "Client").trim();
     const customerName = (rawName.slice(0, 100) || "Client").replace(/[<>]/g, "");
 
-    const rawCity = String(body.city || body.shipping_city || "Cotonou").trim();
-    const city = (rawCity.slice(0, 100) || "Cotonou").replace(/[<>]/g, "");
-
     const rawAddress = String(body.address || body.shipping_address || body.delivery_address || "").trim();
     const address = rawAddress.slice(0, 250).replace(/[<>]/g, "");
+
+    // Détection intelligente de la vraie ville (corrige si le client a laissé Cotonou mais a tapé Parakou/Calavi/etc. dans l'adresse)
+    const rawCity = String(body.city || body.shipping_city || "").trim();
+    const cityDetection = detectBeninCity(rawCity, address, customerName);
+    const city = cityDetection.detectedCity;
+    const department = cityDetection.department;
 
     // Validation du slug produit
     const rawSlug = String(body.product_slug || "produit").trim();
@@ -214,6 +218,7 @@ export async function POST(req: NextRequest) {
           first_name: firstName,
           last_name: lastName,
           city: city,
+          st: department,
           country: "bj",
           external_id: orderNumberStr,
           client_ip_address: clientIp,

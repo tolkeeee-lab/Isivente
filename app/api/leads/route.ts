@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { sendAbandonedLeadNotification } from "@/lib/notifyHelper";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
+import { detectBeninCity } from "@/lib/cityUtils";
 
 export const dynamic = "force-dynamic";
 
@@ -90,8 +91,11 @@ export async function POST(req: Request) {
 
     const safeName = String(customer_name || "").trim().slice(0, 100).replace(/[<>]/g, "") || "Client intéressé";
     const safePhone2 = String(customer_phone2 || "").trim().slice(0, 20).replace(/[<>]/g, "");
-    const safeCity = String(city || "Cotonou").trim().slice(0, 100).replace(/[<>]/g, "");
     const safeAddress = String(address || "").trim().slice(0, 250).replace(/[<>]/g, "");
+    
+    // Détection intelligente de la vraie ville du prospect
+    const cityDetection = detectBeninCity(city, safeAddress, safeName);
+    const safeCity = cityDetection.detectedCity;
     const safeTitle = String(product_title || "Produit Isivente").trim().slice(0, 150).replace(/[<>]/g, "");
     const safeBundle = String(bundle_name || "Formule standard").trim().slice(0, 150).replace(/[<>]/g, "");
     const safeAmount = !isNaN(Number(total_amount)) && Number(total_amount) >= 0 ? Math.round(Number(total_amount)) : 0;

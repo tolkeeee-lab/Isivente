@@ -26,6 +26,7 @@ import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
 import { useUTM } from "@/lib/utm";
+import { detectBeninCity } from "@/lib/cityUtils";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
@@ -167,7 +168,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
-  const [city, setCity] = useState("Cotonou");
+  const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
@@ -182,15 +183,16 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
     return () => clearInterval(interval);
   }, [isHeroHovered]);
 
-  // Capture silencieuse du prospect dès 8 chiffres
+  // Capture silencieuse du prospect dès 8 chiffres avec détection intelligente de la ville
   useEffect(() => {
     const cleanPhone = customerPhone.replace(/\D/g, "");
     if (cleanPhone.length >= 8) {
+      const cityDetect = detectBeninCity(city, address, customerName);
       saveOrUpdateLead({
         customer_name: customerName,
         customer_phone: cleanPhone,
         customer_phone2: customerPhone2,
-        city: city,
+        city: cityDetect.detectedCity,
         address: address,
         product_slug: slug,
         product_title: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
@@ -236,14 +238,17 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
     setOrderError("");
 
     try {
+      const cityDetect = detectBeninCity(city, address, customerName);
+      const finalCity = cityDetect.detectedCity;
+
       const order = await saveNewOrder({
         product_title: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
         product_slug: slug,
         customer_name: customerName.trim() || "Client Isivente",
         customer_phone: customerPhone.trim(),
         customer_phone2: customerPhone2.trim() || undefined,
-        city: city.trim() || "Cotonou",
-        address: address.trim() || "Cotonou",
+        city: finalCity,
+        address: address.trim() || finalCity,
         bundle_name: selectedBundle.name,
         total_amount: selectedBundle.price,
         utm_source: utm?.utm_source || undefined,
