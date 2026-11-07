@@ -488,7 +488,7 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Chargeur Voiture Rétractable 5-en-1 Starlight™ avec Diffuseur & Projection Ciel Étoilé",
     shortTitle: "Chargeur Starlight 5-en-1",
     slug: "starlight-chargeur",
-    price: 17900,
+    price: 16900,
     accentColor: "#D97706",
     keywords: [
       "starlight",
@@ -512,7 +512,7 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     image: "/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg",
     headline: "Câbles rétractables ultrarapides, diffuseur de parfum d'ambiance avec 3 flacons inclus, anneau cristal RGB et projection laser ciel étoilé dans un seul boîtier rotatif 180°.",
     bundles: [
-      { name: "Coffret Officiel Chargeur 5-en-1 Starlight™ + 3 Arômes Inclus", price: 17900 }
+      { name: "Coffret Officiel Chargeur 5-en-1 Starlight™ + 3 Arômes Inclus", price: 16900 }
     ]
   },
   {
@@ -520,14 +520,14 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
     shortTitle: "Chargeur Starlight 5-en-1",
     slug: "chargeur-retractable",
-    price: 17900,
+    price: 16900,
     accentColor: "#D97706",
     keywords: ["chargeur-retractable", "chargeur retractable", "chargeur voiture"],
     image_url: "/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg",
     image: "/images/chargeur-retractable/visuel_coffret_starlight_reel.jpg",
     headline: "Câbles rétractables ultrarapides, diffuseur de parfum d'ambiance avec 3 flacons inclus, anneau cristal RGB et projection laser ciel étoilé.",
     bundles: [
-      { name: "Coffret Officiel Chargeur 5-en-1 Starlight™ + 3 Arômes Inclus", price: 17900 }
+      { name: "Coffret Officiel Chargeur 5-en-1 Starlight™ + 3 Arômes Inclus", price: 16900 }
     ]
   }
 ];
