@@ -35,9 +35,9 @@ const BUNDLES: BundleOption[] = [
     id: "solo",
     name: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
     subtitle: "Coffret complet avec boîtier rotatif 180°, 2 câbles rétractables, 3 flacons de parfum et projection ciel étoilé",
-    price: 16900,
+    price: 17900,
     originalPrice: 25000,
-    savings: 8100,
+    savings: 7100,
     quantity: 1,
     popular: true,
   },
@@ -126,7 +126,7 @@ const CUSTOMER_REVIEWS: CustomerReview[] = [
     date: "Achat vérifié",
     title: "Charge très rapide même avec Waze et la clim allumée",
     comment:
-      "Recharge rapide conforme pour mon iPhone et le Samsung de ma femme en même temps. Aucun surchauffe, l'appareil est robuste et bien fini. Rapport qualité-prix imbattable à 16 900 F.",
+      "Recharge rapide conforme pour mon iPhone et le Samsung de ma femme en même temps. Aucun surchauffe, l'appareil est robuste et bien fini. Rapport qualité-prix imbattable à 17 900 F.",
     verified: true,
   },
 ];
@@ -150,7 +150,7 @@ const FAQS_DATA = [
   },
   {
     q: "Comment se déroulent la livraison et le paiement au Bénin ?",
-    a: "La livraison est effectuée en 24h à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous ne payez rien à l'avance : vous ouvrez le colis, vérifiez l'appareil et réglez les 16 900 FCFA en espèces au livreur après confirmation.",
+    a: "La livraison est effectuée en 24h à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous ne payez rien à l'avance : vous ouvrez le colis, vérifiez l'appareil et réglez les 17 900 FCFA en espèces au livreur après confirmation.",
   },
 ];
 
@@ -205,7 +205,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
     trackViewContent({
       content_name: "Chargeur Voiture Rétractable 5-en-1 Starlight™",
       content_ids: [slug, "starlight", "chargeur-retractable"],
-      value: 16900,
+      value: 17900,
       currency: "XOF",
     });
   }, [slug]);
@@ -304,7 +304,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
             className="relative inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 active:scale-[0.97] rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_2px_8px_-2px_rgba(217,119,6,0.4)] transition-all duration-100 ease-[cubic-bezier(0.2,0,0,1)] cursor-pointer"
           >
             <span>Commander</span>
-            <span className="font-mono tabular-nums text-amber-100 text-[11px]">(16 900 F)</span>
+            <span className="font-mono tabular-nums text-amber-100 text-[11px]">(17 900 F)</span>
           </button>
         </div>
       </header>
@@ -346,7 +346,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
             {/* Pastille Prix Officiel Discrète */}
             <div className="absolute top-3 right-3 z-10 pointer-events-none">
               <span className="inline-flex items-center gap-1 bg-amber-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">
-                16 900 FCFA
+                17 900 FCFA
               </span>
             </div>
 
@@ -411,7 +411,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
             </div>
             <div>
               <p className="text-xs font-bold text-slate-900">Paiement à la Réception</p>
-              <p className="text-[11px] text-slate-500">Réglez 16 900 F après contrôle</p>
+              <p className="text-[11px] text-slate-500">Réglez 17 900 F après contrôle</p>
             </div>
           </div>
 
@@ -555,7 +555,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
               onClick={scrollToOrder}
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer"
             >
-              <span>Commander maintenant (16 900 FCFA)</span>
+              <span>Commander maintenant (17 900 FCFA)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -712,7 +712,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
               Commandez votre Starlight™ 5-en-1
             </h4>
             <p className="text-amber-100 text-xs sm:text-sm">
-              Seulement <strong className="text-white font-mono text-base">16 900 FCFA</strong> au lieu de{" "}
+              Seulement <strong className="text-white font-mono text-base">17 900 FCFA</strong> au lieu de{" "}
               <span className="line-through opacity-75">25 000 FCFA</span>.
             </p>
           </div>
@@ -720,7 +720,7 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
             onClick={scrollToOrder}
             className="w-full sm:w-auto px-6 py-3.5 bg-white text-amber-900 font-bold text-sm rounded-xl hover:bg-amber-50 active:scale-95 transition-all shadow-md shrink-0 cursor-pointer"
           >
-            Commander maintenant (16 900 F)
+            Commander maintenant (17 900 F)
           </button>
         </div>
 
@@ -812,11 +812,11 @@ export default function StarlightLanding({ slug = "starlight-chargeur" }: { slug
 
       {/* ── 17. BARRE MOBILE STICKY CTA (PILIER 1 & 2) ── */}
       <StickyMobileCtaBar
-        price={16900}
+        price={17900}
         targetSectionId="commander"
         accentColor="#D97706"
-        buttonText="Commander (16 900 F)"
-        whatsappMessage="Bonjour Isivente, je souhaite commander le Chargeur Voiture Rétractable 5-en-1 Starlight à 16 900 FCFA."
+        buttonText="Commander (17 900 F)"
+        whatsappMessage="Bonjour Isivente, je souhaite commander le Chargeur Voiture Rétractable 5-en-1 Starlight à 17 900 FCFA."
       />
     </div>
   );
