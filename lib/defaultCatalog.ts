@@ -19,6 +19,36 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "the-5-tresors-default",
+    title: "Tisane des Cinq Trésors™ - Ginseng & Racine de Maca Pure (30 Sachets)",
+    shortTitle: "Tisane des 5 Trésors 150g",
+    slug: "the-5-tresors",
+    price: 12900,
+    accentColor: "#991B1B",
+    keywords: [
+      "the",
+      "tisane",
+      "cinq tresors",
+      "5 tresors",
+      "the 5 tresors",
+      "tisane des cinq tresors",
+      "ginseng",
+      "maca",
+      "goji",
+      "vitalite",
+      "endurance",
+      "energie",
+      "reins",
+      "fatigue",
+    ],
+    image_url: "/images/the-5-tresors/hero-performance-masculine.jpg",
+    image: "/images/the-5-tresors/hero-performance-masculine.jpg",
+    headline: "Infusion naturelle aux 5 plantes ancestrales (Ginseng, Maca, Goji, Dattes rouges, Mûres) pour une vitalité et une endurance durables au quotidien.",
+    bundles: [
+      { name: "Tisane des Cinq Trésors™ (Boîte 30 Sachets - Cure 30 jours)", price: 12900 }
+    ]
+  },
+  {
     id: "likel-rite-default",
     title: "Diffuseur d'Arômes & Veilleuse Cristal LIKEL RITE™ (500 ml)",
     shortTitle: "Diffuseur d'Arômes LIKEL RITE™ 500 ml",

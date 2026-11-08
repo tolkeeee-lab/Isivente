@@ -32,6 +32,7 @@ import DigestiGumLanding from "@/components/features/DigestiGumLanding";
 import Calendrier3DLanding from "@/components/features/Calendrier3DLanding";
 import LikelRiteLanding from "@/components/features/LikelRiteLanding";
 import StarlightLanding from "@/components/features/StarlightLanding";
+import The5TresorsLanding from "@/components/features/The5TresorsLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -150,6 +151,10 @@ export function generateStaticParams() {
     { slug: "chargeur-retractable" },
     { slug: "starlight" },
     { slug: "chargeur-5en1" },
+    { slug: "the-5-tresors" },
+    { slug: "tisane-5-tresors" },
+    { slug: "the-cinq-tresors" },
+    { slug: "tisane-des-cinq-tresors" },
   ];
 }
 
@@ -305,6 +310,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "calendrier-decoratif":
       case "calendrier-magnetique":
         return <Calendrier3DLanding slug="calendrier-3d" />;
+      case "the-5-tresors":
+      case "tisane-5-tresors":
+      case "the-cinq-tresors":
+      case "tisane-des-cinq-tresors":
+        return <The5TresorsLanding slug="the-5-tresors" />;
       case "starlight-chargeur":
       case "chargeur-retractable":
       case "starlight":
