@@ -116,6 +116,9 @@ export async function POST(req: NextRequest) {
       total_amount: totalAmount,
       quantity: quantity,
       status: status,
+      admin_notes: cityDetection.requiresPrepayment
+        ? `[EXPÉDITION ${city.toUpperCase()} - PAIEMENT AVANT DÉPART PAR COMPAGNIE]`
+        : null,
       created_at: createdAt,
       utm_source: body.utm_source || null,
       utm_medium: body.utm_medium || null,

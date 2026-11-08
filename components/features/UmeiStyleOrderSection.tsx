@@ -182,11 +182,10 @@ export default function UmeiStyleOrderSection({
   const cleanPhone = (customerPhone || "").replace(/\D/g, "");
   const isPhoneValid = isBeninPhoneComplete(cleanPhone);
 
-  // Estimation ville
-  const selectedCityObj = BENIN_CITIES.find(
-    (c) => c.name.toLowerCase() === (city || "").trim().toLowerCase()
-  );
-  const deliveryDelay = selectedCityObj ? selectedCityObj.delay : "24h à 48h";
+  // Détection intelligente de la ville et du mode de livraison
+  const cityDetection = detectBeninCity(city, address, customerName);
+  const deliveryDelay = cityDetection.deliveryDelay;
+  const isPrepayment = cityDetection.requiresPrepayment;
 
   // Suivi Meta Pixel & CAPI automatique (AddToCart & InitiateCheckout)
   const checkoutTrackedRef = useRef(false);
@@ -557,82 +556,60 @@ export default function UmeiStyleOrderSection({
               </div>
             </div>
 
-            {/* Champ 3 : Ville & Quartier */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1 text-left">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Ville <span className="text-rose-500">*</span></span>
-                  </label>
-                  <span className="text-[10px] font-medium text-slate-500 flex items-center gap-0.5">
-                    <Clock className="w-3 h-3" /> {deliveryDelay}
+            {/* Champ 3 : Ville & Quartier automatique (1 seul champ simplifié) */}
+            <div className="space-y-1.5 text-left">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Votre ville et quartier de livraison <span className="text-rose-500">*</span></span>
+                </label>
+                {cityDetection.detectedCity && (
+                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1 animate-in fade-in">
+                    <CheckCircle2 className="w-2.5 h-2.5" />
+                    <span>Zone : {cityDetection.detectedCity}</span>
                   </span>
-                </div>
-                <select
-                  value={city}
-                  required
-                  onFocus={handleInteractionTrigger}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
-                >
-                  <option value="">Choisir votre ville...</option>
-                  {BENIN_CITIES.map((c) => (
-                    <option key={c.name} value={c.name}>
-                      {c.name} {c.express ? "⚡ (Express 24h)" : `(${c.delay})`}
-                    </option>
-                  ))}
-                </select>
+                )}
               </div>
 
-              <div className="space-y-1 text-left">
-                <label className="text-xs font-bold text-slate-700 block">
-                  Quartier / Repère <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={address}
-                  onFocus={handleInteractionTrigger}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setAddress(val);
-                    const detected = detectBeninCity(city, val, customerName);
-                    if (detected.wasOverridden && detected.detectedCity && detected.detectedCity !== city) {
-                      setCity(detected.detectedCity);
-                    }
-                  }}
-                  placeholder="Ex: Haie Vive, face pharmacie"
-                  className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
-                />
-              </div>
+              <input
+                type="text"
+                required
+                value={address}
+                onFocus={handleInteractionTrigger}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setAddress(val);
+                  const detected = detectBeninCity(city, val, customerName);
+                  if (detected.detectedCity && detected.detectedCity !== city) {
+                    setCity(detected.detectedCity);
+                  }
+                }}
+                placeholder="Ex: Cotonou Akpakpa, Calavi Cococodji, Parakou Titirou..."
+                className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
+              />
+              <p className="text-[10.5px] text-slate-400">
+                Tapez votre quartier (ex: Fidjrossè, Cococodji, Parakou...). La ville et le mode de livraison sont détectés automatiquement.
+              </p>
             </div>
 
-            {/* Note d'expédition pour Parakou ou villes hors Cotonou/Calavi */}
-            {selectedCityObj && !selectedCityObj.express && city && city !== "Autre ville" && (
-              <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2 animate-in fade-in">
-                <Truck className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-bold">Livraison pour {city} :</p>
-                  <p className="text-amber-800/90 leading-tight">Colis expédié sous {selectedCityObj.delay} par compagnie de transport. Règlement à la réception.</p>
+            {/* Note d'information dynamique selon la zone détectée */}
+            {isPrepayment ? (
+              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-1.5 animate-in fade-in">
+                <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                  <Truck className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Expédition vers {cityDetection.detectedCity} (Hors Cotonou / Calavi)</span>
                 </div>
+                <p className="text-[11px] text-amber-800 leading-relaxed">
+                  Pour les expéditions vers {cityDetection.detectedCity}, le colis part sous 24h-48h par compagnie de transport. <strong>Le règlement s'effectue par Mobile Money (MTN / Moov) avant le départ du colis</strong>. Dès validation, notre équipe vous contacte pour vous transmettre le reçu et les coordonnées du chauffeur.
+                </p>
               </div>
-            )}
-
-            {/* Si Autre ville sélectionnée */}
-            {city === "Autre ville" && (
-              <div className="space-y-1 text-left animate-fade-in">
-                <label className="text-xs font-bold text-slate-700">
-                  Précisez votre commune / localité <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: Lokossa, Abomey, Natitingou..."
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all"
-                />
-              </div>
+            ) : (
+              address.trim().length >= 3 && (
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-900 flex items-center gap-2 animate-in fade-in">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Livraison express en moins de 24h à <strong>{cityDetection.detectedCity || "Cotonou"}</strong> • <strong>Paiement à la réception après test</strong></span>
+                </div>
+              )
             )}
 
             {/* OPTION DE LIVRAISON OU RÉSERVATION */}
@@ -687,7 +664,9 @@ export default function UmeiStyleOrderSection({
           {/* 3. RÉCAPITULATIF DU TOTAL & BOUTON COMMANDE */}
           <div className="pt-3 border-t border-slate-100 space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-slate-600">Total à payer à la livraison :</span>
+              <span className="text-xs font-bold text-slate-600">
+                {isPrepayment ? `Total commande (${cityDetection.detectedCity}) :` : "Total à payer à la livraison :"}
+              </span>
               <span
                 className="text-xl font-bold font-mono tabular-nums"
                 style={{ color: theme.primary }}
@@ -715,6 +694,8 @@ export default function UmeiStyleOrderSection({
                   <span>
                     {orderType === "reservation"
                       ? `Confirmer ma réservation (${fmt(totalPrice)} F)`
+                      : isPrepayment
+                      ? `Commander (${cityDetection.detectedCity} • ${fmt(totalPrice)} F)`
                       : `Confirmer ma commande (${fmt(totalPrice)} F)`}
                   </span>
                   <ArrowRight className="w-4 h-4" />

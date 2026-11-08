@@ -15,6 +15,7 @@ export interface BeninCityInfo {
   name: string;
   department: string;
   isExpressLocal: boolean; // Livrable à moto le jour même (Cotonou / Calavi)
+  requiresPrepayment: boolean; // Paiement obligatoire par Mobile Money avant expédition par bus (ex: Parakou, Natitingou...)
   deliveryDelay: string;
   shippingNote?: string;
   keywords: string[];
@@ -25,6 +26,7 @@ export const BENIN_CITIES_CATALOG: BeninCityInfo[] = [
     name: "Cotonou",
     department: "Littoral",
     isExpressLocal: true,
+    requiresPrepayment: false,
     deliveryDelay: "Moins de 24h",
     keywords: [
       "cotonou",
@@ -66,6 +68,7 @@ export const BENIN_CITIES_CATALOG: BeninCityInfo[] = [
     name: "Abomey-Calavi",
     department: "Atlantique",
     isExpressLocal: true,
+    requiresPrepayment: false,
     deliveryDelay: "Moins de 24h",
     keywords: [
       "calavi",
@@ -106,7 +109,8 @@ export const BENIN_CITIES_CATALOG: BeninCityInfo[] = [
   {
     name: "Porto-Novo",
     department: "Ouémé",
-    isExpressLocal: false,
+    isExpressLocal: true,
+    requiresPrepayment: false,
     deliveryDelay: "24h à 48h",
     shippingNote: "Livraison express 24h-48h",
     keywords: [
@@ -137,8 +141,9 @@ export const BENIN_CITIES_CATALOG: BeninCityInfo[] = [
     name: "Parakou",
     department: "Borgou",
     isExpressLocal: false,
+    requiresPrepayment: true,
     deliveryDelay: "48h",
-    shippingNote: "Expédition sous 48h par compagnie de transport",
+    shippingNote: "Expédition sous 48h par compagnie de transport. Règlement Mobile Money avant départ.",
     keywords: [
       "parakou",
       "titirou",
@@ -156,8 +161,9 @@ export const BENIN_CITIES_CATALOG: BeninCityInfo[] = [
     name: "Bohicon",
     department: "Zou",
     isExpressLocal: false,
+    requiresPrepayment: true,
     deliveryDelay: "24h à 48h",
-    shippingNote: "Expédition 24h-48h par bus/taxi",
+    shippingNote: "Expédition par compagnie de transport",
     keywords: [
       "bohicon",
       "abomey",
@@ -171,6 +177,7 @@ export const BENIN_CITIES_CATALOG: BeninCityInfo[] = [
     name: "Ouidah",
     department: "Atlantique",
     isExpressLocal: false,
+    requiresPrepayment: false,
     deliveryDelay: "24h à 48h",
     shippingNote: "Livraison sous 24h-48h",
     keywords: [
@@ -179,31 +186,33 @@ export const BENIN_CITIES_CATALOG: BeninCityInfo[] = [
       "tori",
       "tori-bossito",
       "kpomasse",
-      "kpomasse",
     ],
   },
   {
     name: "Natitingou",
     department: "Atacora",
     isExpressLocal: false,
+    requiresPrepayment: true,
     deliveryDelay: "48h à 72h",
-    shippingNote: "Expédition grand Nord par compagnie",
+    shippingNote: "Expédition grand Nord par compagnie de transport. Paiement avant expédition.",
     keywords: ["natitingou", "nati", "tanguieta", "toucountouna", "kouande"],
   },
   {
     name: "Djougou",
     department: "Donga",
     isExpressLocal: false,
+    requiresPrepayment: true,
     deliveryDelay: "48h",
-    shippingNote: "Expédition par compagnie de transport",
+    shippingNote: "Expédition par compagnie de transport. Paiement avant expédition.",
     keywords: ["djougou", "bassila", "copargo", "ouake"],
   },
   {
     name: "Lokossa",
     department: "Mono",
     isExpressLocal: false,
+    requiresPrepayment: true,
     deliveryDelay: "24h à 48h",
-    shippingNote: "Expédition Mono-Couffo sous 48h",
+    shippingNote: "Expédition Mono-Couffo sous 48h. Paiement avant expédition.",
     keywords: ["lokossa", "come", "comè", "athieme", "athiémé", "bopa", "grand-popo", "grand popo"],
   },
 ];
@@ -232,6 +241,7 @@ export function detectBeninCity(
   detectedCity: string;
   department: string;
   isExpressLocal: boolean;
+  requiresPrepayment: boolean;
   deliveryDelay: string;
   wasOverridden: boolean;
   shippingNote?: string;
@@ -259,6 +269,7 @@ export function detectBeninCity(
           detectedCity: cityInfo.name,
           department: cityInfo.department,
           isExpressLocal: cityInfo.isExpressLocal,
+          requiresPrepayment: cityInfo.requiresPrepayment,
           deliveryDelay: cityInfo.deliveryDelay,
           wasOverridden,
           shippingNote: cityInfo.shippingNote,
@@ -276,6 +287,7 @@ export function detectBeninCity(
           detectedCity: cityInfo.name,
           department: cityInfo.department,
           isExpressLocal: cityInfo.isExpressLocal,
+          requiresPrepayment: cityInfo.requiresPrepayment,
           deliveryDelay: cityInfo.deliveryDelay,
           wasOverridden: false,
           shippingNote: cityInfo.shippingNote,
@@ -289,6 +301,7 @@ export function detectBeninCity(
     detectedCity: declaredCity?.trim() || "Cotonou",
     department: "Littoral",
     isExpressLocal: true,
+    requiresPrepayment: false,
     deliveryDelay: "Moins de 24h",
     wasOverridden: false,
   };
