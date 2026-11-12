@@ -527,7 +527,43 @@ export default function GameStickLanding({ slug = "game-stick-4k" }: { slug?: st
           </div>
         </section>
 
-        {/* ── 9. MISE EN SITUATION : MULTIJOUEUR & FAMILLE ── */}
+        {/* ── 9. DÉMONSTRATION VIDÉO EN SITUATION RÉELLE (PILIER 4) ── */}
+        <section className="bg-white rounded-3xl p-4 sm:p-7 border border-slate-200/80 shadow-sm space-y-4">
+          <div className="text-center space-y-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200/60 inline-flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-red-600" />
+              <span>Démonstration Réelle • Prise en Main Directe</span>
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+              Voyez le Game Stick 4K Pro en Action
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+              Déballage, branchement HDMI immédiat sur la TV et navigation fluide dans les catalogues de jeux cultes.
+            </p>
+          </div>
+
+          <div className="relative aspect-[9/16] w-full max-w-xs sm:max-w-sm mx-auto rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
+            <video
+              src="/videos/game-stick-demo.mp4"
+              poster="/images/game-stick/video-poster.jpg"
+              autoPlay
+              muted
+              playsInline
+              loop
+              controls
+              preload="metadata"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="text-center">
+            <p className="text-[11px] sm:text-xs font-medium text-slate-500">
+              🔊 Activez le son sur la vidéo pour entendre les effets sonores des jeux cultes !
+            </p>
+          </div>
+        </section>
+
+        {/* ── 10. MISE EN SITUATION : MULTIJOUEUR & FAMILLE ── */}
         <section className="bg-white rounded-3xl p-3 sm:p-5 border border-slate-200/80 shadow-sm space-y-4">
           <div className="relative aspect-square sm:aspect-16/11 w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100">
             <Image
