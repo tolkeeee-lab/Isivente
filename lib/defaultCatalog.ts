@@ -19,6 +19,36 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "r36s-default",
+    title: "Console de Jeux Portable R36S™ - Écran IPS 3.5\" HD + 64 Go (+15 000 Jeux Rétro)",
+    shortTitle: "Console Portable R36S",
+    slug: "r36s",
+    price: 34900,
+    accentColor: "#2563EB",
+    keywords: [
+      "r36s",
+      "console portable",
+      "console r36s",
+      "console de jeux",
+      "retro gaming",
+      "jeux retro",
+      "mario",
+      "pokemon",
+      "ps1",
+      "psp",
+      "gameboy",
+      "64go",
+      "cadeau enfant",
+      "r36",
+    ],
+    image_url: "/images/r36s/hero-r36s-console-portable.jpg",
+    image: "/images/r36s/hero-r36s-console-portable.jpg",
+    headline: "Emportez des milliers de jeux rétro cultes dans votre poche avec écran IPS haute définition 3.5 pouces, 64 Go de stockage et batterie longue durée sans aucun abonnement.",
+    bundles: [
+      { name: "Pack Intégral Console Portable R36S™ (Console R36S + Carte 64 Go 15 000+ Jeux)", price: 34900 }
+    ]
+  },
+  {
     id: "game-stick-4k-default",
     title: "Game Stick 4K Pro™ - Console Rétro HDMI Plug & Play + 2 Manettes Sans Fil (+10 000 Jeux)",
     shortTitle: "Game Stick 4K Pro",

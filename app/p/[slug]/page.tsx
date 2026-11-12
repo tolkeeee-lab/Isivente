@@ -34,6 +34,7 @@ import LikelRiteLanding from "@/components/features/LikelRiteLanding";
 import StarlightLanding from "@/components/features/StarlightLanding";
 import The5TresorsLanding from "@/components/features/The5TresorsLanding";
 import GameStickLanding from "@/components/features/GameStickLanding";
+import R36SLanding from "@/components/features/R36SLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -161,6 +162,9 @@ export function generateStaticParams() {
     { slug: "gamestick" },
     { slug: "game-stick-pro" },
     { slug: "console-retro" },
+    { slug: "r36s" },
+    { slug: "console-r36s" },
+    { slug: "r36s-portable" },
   ];
 }
 
@@ -339,6 +343,10 @@ export default async function ProductPage({ params }: PageProps) {
       case "game-stick-pro":
       case "console-retro":
         return <GameStickLanding slug="game-stick-4k" />;
+      case "r36s":
+      case "console-r36s":
+      case "r36s-portable":
+        return <R36SLanding slug="r36s" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
