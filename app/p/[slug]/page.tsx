@@ -33,6 +33,7 @@ import Calendrier3DLanding from "@/components/features/Calendrier3DLanding";
 import LikelRiteLanding from "@/components/features/LikelRiteLanding";
 import StarlightLanding from "@/components/features/StarlightLanding";
 import The5TresorsLanding from "@/components/features/The5TresorsLanding";
+import GameStickLanding from "@/components/features/GameStickLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -155,6 +156,11 @@ export function generateStaticParams() {
     { slug: "tisane-5-tresors" },
     { slug: "the-cinq-tresors" },
     { slug: "tisane-des-cinq-tresors" },
+    { slug: "game-stick-4k" },
+    { slug: "game-stick" },
+    { slug: "gamestick" },
+    { slug: "game-stick-pro" },
+    { slug: "console-retro" },
   ];
 }
 
@@ -327,6 +333,12 @@ export default async function ProductPage({ params }: PageProps) {
       case "humidificateur":
       case "parfum-interieur":
         return <LikelRiteLanding slug="likel-rite" />;
+      case "game-stick-4k":
+      case "game-stick":
+      case "gamestick":
+      case "game-stick-pro":
+      case "console-retro":
+        return <GameStickLanding slug="game-stick-4k" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

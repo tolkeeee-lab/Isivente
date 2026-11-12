@@ -19,6 +19,36 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "game-stick-4k-default",
+    title: "Game Stick 4K Pro™ - Console Rétro HDMI Plug & Play + 2 Manettes Sans Fil (+10 000 Jeux)",
+    shortTitle: "Game Stick 4K Pro",
+    slug: "game-stick-4k",
+    price: 22900,
+    accentColor: "#DC2626",
+    keywords: [
+      "game stick",
+      "gamestick",
+      "game stick 4k",
+      "console",
+      "jeux video",
+      "jeux vidéo",
+      "manette",
+      "retro",
+      "mario",
+      "playstation",
+      "hdmi",
+      "cadeau enfant",
+      "2 manettes",
+      "console de jeux",
+    ],
+    image_url: "/images/game-stick/hero-game-stick-4k-pro.jpg",
+    image: "/images/game-stick/hero-game-stick-4k-pro.jpg",
+    headline: "Transformez votre téléviseur en console de jeux avec plus de 10 000 jeux rétro intégrés, 2 manettes sans fil et résolution 4K sans aucun abonnement.",
+    bundles: [
+      { name: "Pack Intégral Game Stick 4K Pro™ (Stick HDMI + 2 Manettes Sans Fil + 10 000+ Jeux)", price: 22900 }
+    ]
+  },
+  {
     id: "the-5-tresors-default",
     title: "Tisane des Cinq Trésors™ - Ginseng & Racine de Maca Pure (30 Sachets)",
     shortTitle: "Tisane des 5 Trésors 150g",
