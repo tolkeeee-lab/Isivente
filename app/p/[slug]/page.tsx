@@ -35,6 +35,7 @@ import StarlightLanding from "@/components/features/StarlightLanding";
 import The5TresorsLanding from "@/components/features/The5TresorsLanding";
 import GameStickLanding from "@/components/features/GameStickLanding";
 import R36SLanding from "@/components/features/R36SLanding";
+import MoustiquairePorteLanding from "@/components/features/MoustiquairePorteLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -165,6 +166,10 @@ export function generateStaticParams() {
     { slug: "r36s" },
     { slug: "console-r36s" },
     { slug: "r36s-portable" },
+    { slug: "moustiquaire-porte" },
+    { slug: "moustiquaire" },
+    { slug: "moustiquaire-magnetique" },
+    { slug: "moustiquaire-aimantee" },
   ];
 }
 
@@ -347,6 +352,11 @@ export default async function ProductPage({ params }: PageProps) {
       case "console-r36s":
       case "r36s-portable":
         return <R36SLanding slug="r36s" />;
+      case "moustiquaire-porte":
+      case "moustiquaire":
+      case "moustiquaire-magnetique":
+      case "moustiquaire-aimantee":
+        return <MoustiquairePorteLanding slug="moustiquaire-porte" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {

@@ -771,3 +771,4 @@ export default function R36SLanding({ slug = "r36s" }: { slug?: string }) {
     </div>
   );
 }
+

@@ -19,6 +19,34 @@ export interface CatalogProduct {
 
 export const DEFAULT_CATALOG: CatalogProduct[] = [
   {
+    id: "moustiquaire-porte-default",
+    title: "Moustiquaire de Porte Magnétique Automatique™ - Fermeture Aimantée Mains Libres (Sans Perçage)",
+    shortTitle: "Moustiquaire de Porte Magnétique",
+    slug: "moustiquaire-porte",
+    price: 16900,
+    accentColor: "#16A34A",
+    keywords: [
+      "moustiquaire",
+      "moustique",
+      "moustiquaire porte",
+      "moustiquaire magnetique",
+      "porte magnetique",
+      "paludisme",
+      "aimant",
+      "velcro",
+      "mains libres",
+      "air frais",
+      "moustiquaire aimantee",
+      "insectes",
+    ],
+    image_url: "/images/moustiquaire-porte/hero-moustiquaire-porte-magnetique.jpg",
+    image: "/images/moustiquaire-porte/hero-moustiquaire-porte-magnetique.jpg",
+    headline: "Profitez de l'air frais tout en bloquant 100% des moustiques et insectes : fermeture magnétique automatique, passage mains libres et installation sans perçage en 5 minutes.",
+    bundles: [
+      { name: "Pack Intégral Moustiquaire de Porte Magnétique™ (Rideau Maille Renforcée + Bande Velcro + Aimants)", price: 16900 }
+    ]
+  },
+  {
     id: "r36s-default",
     title: "Console de Jeux Portable R36S™ - Écran IPS 3.5\" HD + 64 Go (+15 000 Jeux Rétro)",
     shortTitle: "Console Portable R36S",
