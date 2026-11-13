@@ -10,6 +10,7 @@ import {
   Users,
   Store,
   ExternalLink,
+  Wallet,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -41,6 +42,12 @@ export default function AdminLayout({
       label: "Commandes & Livraisons",
       icon: Package,
       matcher: (p: string) => p.startsWith("/admin/orders"),
+    },
+    {
+      href: "/admin/finances",
+      label: "Finances & Bénéfices",
+      icon: Wallet,
+      matcher: (p: string) => p.startsWith("/admin/finances"),
     },
     {
       href: "/admin/prospects",
