@@ -62,6 +62,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -233,6 +234,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
         city: city,
         shipping_address: address,
         address: address,
+        customer_email: customerEmail.trim() || undefined,
         status: "pending" as const,
       });
 
@@ -241,6 +243,7 @@ export default function ProductLanding({ slug }: { slug: string }) {
           title: product.title,
           price: totalWithBump,
           quantity: selectedBundle.quantity || 1,
+          customer_email: customerEmail.trim() || undefined,
         }));
       } catch {}
 
@@ -423,6 +426,8 @@ export default function ProductLanding({ slug }: { slug: string }) {
             setCustomerPhone={setCustomerPhone}
             customerPhone2={customerPhone2}
             setCustomerPhone2={setCustomerPhone2}
+            customerEmail={customerEmail}
+            setCustomerEmail={setCustomerEmail}
             city={city}
             setCity={setCity}
             address={address}

@@ -7,6 +7,7 @@ export interface LeadRecord {
   customer_name: string;
   customer_phone: string;
   customer_phone2?: string;
+  customer_email?: string;
   city?: string;
   address?: string;
   product_slug: string;
@@ -59,6 +60,7 @@ export async function saveOrUpdateLead(data: {
   customer_name?: string;
   customer_phone: string;
   customer_phone2?: string;
+  customer_email?: string;
   city?: string;
   address?: string;
   product_slug: string;
@@ -85,6 +87,7 @@ export async function saveOrUpdateLead(data: {
     customer_name: (data.customer_name || "").trim().slice(0, 100) || "Client intéressé",
     customer_phone: cleanPhone,
     customer_phone2: (data.customer_phone2 || "").trim().slice(0, 20),
+    customer_email: (data.customer_email || "").trim().toLowerCase() || undefined,
     city: (data.city || "").trim().slice(0, 100) || "Cotonou",
     address: (data.address || "").trim().slice(0, 250),
     product_slug: cleanSlug,

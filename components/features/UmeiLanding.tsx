@@ -118,6 +118,7 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [city, setCity] = useState("Cotonou");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -183,6 +184,7 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
         customer_name: customerName.trim() || "Cliente Isivente",
         customer_phone: customerPhone.trim(),
         customer_phone2: customerPhone2.trim() || undefined,
+        customer_email: customerEmail.trim() || undefined,
         city: city.trim() || "Cotonou",
         address: address.trim() || "Cotonou",
         bundle_name: selectedBundle.name,
@@ -200,10 +202,11 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
           title: "Brosse Multifonction Spray & Massage YUFAN",
           price: selectedBundle.price,
           quantity: 1,
+          customer_email: customerEmail.trim() || undefined,
         }));
       }
 
-      const successUrl = `/p/umei/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
+      const successUrl = `/p/umei/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&email=${encodeURIComponent(customerEmail.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);
     } catch (err: any) {
       console.error("Order error:", err);
@@ -359,6 +362,8 @@ export default function UmeiLanding({ slug = "umei" }: { slug?: string }) {
             setCustomerPhone={setCustomerPhone}
             customerPhone2={customerPhone2}
             setCustomerPhone2={setCustomerPhone2}
+            customerEmail={customerEmail}
+            setCustomerEmail={setCustomerEmail}
             city={city}
             setCity={setCity}
             address={address}

@@ -52,11 +52,15 @@ export function isTestEventData(data: {
   first_name?: string;
   last_name?: string;
   name?: string;
-  email?: string;
+  email?: string | string[];
 }): boolean {
   const phone = (data.phone || "").replace(/\D/g, "");
   const fullName = `${data.first_name || ""} ${data.last_name || ""} ${data.name || ""}`.toLowerCase();
-  const email = (data.email || "").toLowerCase();
+  const emailList = Array.isArray(data.email) ? data.email : [data.email || ""];
+  const isTestEmail = emailList.some((em) => {
+    const e = (em || "").toLowerCase();
+    return e.includes("test") || e.includes("example.com");
+  });
 
   // 1. Numéros de test récurrents
   const testPhones = ["0100000000", "00000000", "2290100000000", "22900000000", "12345678", "0112345678", "2290112345678", "0197000000", "2290197000000"];
@@ -74,7 +78,7 @@ export function isTestEventData(data: {
   }
 
   // 3. Adresses email de test
-  if (email.includes("test") || email.includes("example.com")) {
+  if (isTestEmail) {
     return true;
   }
 
@@ -89,13 +93,13 @@ export interface MetaCapiEventOptions {
   test_event_code?: string;
   user_data?: {
     phone?: string;
-    email?: string;
+    email?: string | string[];
     first_name?: string;
     last_name?: string;
     city?: string;
     st?: string;
     country?: string;
-    external_id?: string;
+    external_id?: string | string[];
     client_ip_address?: string;
     client_user_agent?: string;
     fbc?: string;
@@ -157,13 +161,21 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
   const clientIp = (uData.client_ip_address || "").replace(/::ffff:/, "").trim();
   const rawUserData: Record<string, any> = {
     ph: uData.phone ? [hashPhone(uData.phone)] : undefined,
-    em: uData.email ? [hashSha256(uData.email)] : undefined,
+    em: uData.email
+      ? (Array.isArray(uData.email)
+          ? uData.email.map((e) => hashSha256(e)).filter((x): x is string => Boolean(x))
+          : [hashSha256(uData.email)].filter((x): x is string => Boolean(x)))
+      : undefined,
     fn: uData.first_name ? [hashSha256(uData.first_name)] : undefined,
     ln: uData.last_name ? [hashSha256(uData.last_name)] : undefined,
     ct: uData.city ? [hashSha256(uData.city)] : [hashSha256("cotonou")],
     st: [hashSha256(uData.st || getStateFromCity(uData.city))],
     country: [hashSha256(uData.country || "bj")],
-    external_id: uData.external_id ? [hashSha256(uData.external_id)] : undefined,
+    external_id: uData.external_id
+      ? (Array.isArray(uData.external_id)
+          ? uData.external_id.map((id) => hashSha256(id)).filter((x): x is string => Boolean(x))
+          : [hashSha256(uData.external_id)].filter((x): x is string => Boolean(x)))
+      : undefined,
     client_ip_address: clientIp || undefined,
     client_user_agent: uData.client_user_agent || undefined,
     fbc: uData.fbc || undefined,

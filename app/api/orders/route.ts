@@ -65,6 +65,10 @@ export async function POST(req: NextRequest) {
     const rawName = String(body.customer_name || body.name || "Client").trim();
     const customerName = (rawName.slice(0, 100) || "Client").replace(/[<>]/g, "");
 
+    const rawEmail = String(body.customer_email || body.email || "").trim().toLowerCase();
+    const customerEmail = rawEmail.includes("@") && rawEmail.length <= 120 ? rawEmail : "";
+    const visitorExternalId = String(body.external_id || body.visitor_id || "").trim();
+
     const rawAddress = String(body.address || body.shipping_address || body.delivery_address || "").trim();
     const address = rawAddress.slice(0, 250).replace(/[<>]/g, "");
 
@@ -116,9 +120,10 @@ export async function POST(req: NextRequest) {
       total_amount: totalAmount,
       quantity: quantity,
       status: status,
-      admin_notes: cityDetection.requiresPrepayment
-        ? `[EXPÉDITION ${city.toUpperCase()} - PAIEMENT AVANT DÉPART PAR COMPAGNIE]`
-        : null,
+      admin_notes: [
+        cityDetection.requiresPrepayment ? `[EXPÉDITION ${city.toUpperCase()} - PAIEMENT AVANT DÉPART PAR COMPAGNIE]` : null,
+        customerEmail ? `[EMAIL: ${customerEmail}]` : null,
+      ].filter(Boolean).join(" - ") || null,
       created_at: createdAt,
       utm_source: body.utm_source || null,
       utm_medium: body.utm_medium || null,
@@ -210,6 +215,7 @@ export async function POST(req: NextRequest) {
     const nameParts = customerName.trim().split(/\s+/);
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "";
+    const externalIds = [visitorExternalId, orderNumberStr].filter(Boolean);
 
     await Promise.allSettled([
       sendMetaConversionApiEvent({
@@ -218,12 +224,13 @@ export async function POST(req: NextRequest) {
         event_source_url: req.headers.get("referer") || undefined,
         user_data: {
           phone: cleanPhone,
+          email: customerEmail || undefined,
           first_name: firstName,
           last_name: lastName,
           city: city,
           st: department,
           country: "bj",
-          external_id: orderNumberStr,
+          external_id: externalIds.length === 1 ? externalIds[0] : (externalIds.length > 1 ? externalIds : orderNumberStr),
           client_ip_address: clientIp,
           client_user_agent: userAgent,
           fbp,
@@ -238,7 +245,10 @@ export async function POST(req: NextRequest) {
           num_items: quantity,
         },
       }).catch((e) => console.error("Meta CAPI Purchase error:", e?.message)),
-      sendOrderNotification(savedOrder).catch((e) =>
+      sendOrderNotification({
+        ...savedOrder,
+        customer_email: customerEmail || undefined,
+      }).catch((e) =>
         console.error("Server notify error:", e?.message)
       ),
     ]);

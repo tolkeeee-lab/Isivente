@@ -239,17 +239,19 @@ export function trackAddToCart(params: {
   num_items?: number;
   customer_phone?: string;
   customer_name?: string;
+  customer_email?: string;
   city?: string;
 }) {
   if (isAdminContext()) return;
   const fbp = getOrCreateFbp();
   const fbc = getOrCreateFbc();
 
-  if (params.customer_phone || params.customer_name) {
+  if (params.customer_phone || params.customer_name || params.customer_email) {
     saveUserContactInfo({
       phone: params.customer_phone,
       name: params.customer_name,
       city: params.city,
+      email: params.customer_email,
     });
   }
 
@@ -290,17 +292,19 @@ export function trackInitiateCheckout(params: {
   num_items?: number;
   customer_phone?: string;
   customer_name?: string;
+  customer_email?: string;
   city?: string;
 }) {
   if (isAdminContext()) return;
   const fbp = getOrCreateFbp();
   const fbc = getOrCreateFbc();
 
-  if (params.customer_phone || params.customer_name) {
+  if (params.customer_phone || params.customer_name || params.customer_email) {
     saveUserContactInfo({
       phone: params.customer_phone,
       name: params.customer_name,
       city: params.city,
+      email: params.customer_email,
     });
   }
 
@@ -481,15 +485,21 @@ export function trackPurchase(params: {
 
   const fbq = getFbq();
   if (fbq) {
-    if (cleanPhone || firstName) {
+    const uData = getUserDataFromStorage();
+    const visitorId = getOrCreateExternalId();
+    const effectiveEmail = (params.customer_email || uData.email || "").trim().toLowerCase();
+    const effectiveExternalId = visitorId || eventId;
+
+    if (cleanPhone || firstName || effectiveEmail || effectiveExternalId) {
       try {
         fbq("init", FB_PIXEL_ID, {
           ph: cleanPhone || undefined,
+          em: effectiveEmail || undefined,
           fn: firstName || undefined,
           ln: lastName || undefined,
           ct: city.toLowerCase(),
           country: "bj",
-          external_id: eventId,
+          external_id: effectiveExternalId,
         });
       } catch {}
     }

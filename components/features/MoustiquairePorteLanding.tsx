@@ -818,3 +818,4 @@ export default function MoustiquairePorteLanding({ slug = "moustiquaire-porte" }
     </div>
   );
 }
+

@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { getOrCreateFbp, getOrCreateFbc } from './userTracking';
+import { getOrCreateFbp, getOrCreateFbc, getOrCreateExternalId } from './userTracking';
 
 export interface Order {
   id?: string;
@@ -79,6 +79,8 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
     utm_content: orderData.utm_content || (typeof window !== 'undefined' ? (() => { try { return JSON.parse(sessionStorage.getItem('isivente_utm') || localStorage.getItem('isivente_utm') || '{}').utm_content; } catch { return undefined; } })() : undefined),
     fbc: typeof window !== 'undefined' ? (getOrCreateFbc() || localStorage.getItem('isivente_fbc') || undefined) : undefined,
     fbp: typeof window !== 'undefined' ? (getOrCreateFbp() || localStorage.getItem('isivente_fbp') || undefined) : undefined,
+    customer_email: orderData.customer_email || (typeof window !== 'undefined' ? (localStorage.getItem('isivente_customer_email') || undefined) : undefined),
+    external_id: typeof window !== 'undefined' ? (getOrCreateExternalId() || undefined) : undefined,
     status: orderData.status || 'pending',
     created_at: orderData.created_at || new Date().toISOString(),
   };

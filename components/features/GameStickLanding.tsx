@@ -172,6 +172,7 @@ export default function GameStickLanding({ slug = "game-stick-4k" }: { slug?: st
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -256,6 +257,7 @@ export default function GameStickLanding({ slug = "game-stick-4k" }: { slug?: st
         customer_name: customerName.trim(),
         customer_phone: customerPhone.trim(),
         customer_phone2: customerPhone2.trim() || undefined,
+        customer_email: customerEmail.trim() || undefined,
         city: cityDetect.detectedCity,
         address: address.trim(),
         product_title: "Game Stick 4K Pro™ - Console Rétro HDMI + 2 Manettes Sans Fil",
@@ -270,7 +272,7 @@ export default function GameStickLanding({ slug = "game-stick-4k" }: { slug?: st
 
       markLeadConverted(customerPhone.trim(), slug);
 
-      const successUrl = `/p/${slug}/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${selectedBundle.price}`;
+      const successUrl = `/p/${slug}/success?order=${encodeURIComponent(order.order_number || "")}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&email=${encodeURIComponent(customerEmail.trim())}&total=${selectedBundle.price}`;
       router.push(successUrl);
     } catch (err: any) {
       console.error("Erreur commande :", err);
@@ -452,6 +454,8 @@ export default function GameStickLanding({ slug = "game-stick-4k" }: { slug?: st
             setCustomerPhone={setCustomerPhone}
             customerPhone2={customerPhone2}
             setCustomerPhone2={setCustomerPhone2}
+            customerEmail={customerEmail}
+            setCustomerEmail={setCustomerEmail}
             city={city}
             setCity={setCity}
             address={address}

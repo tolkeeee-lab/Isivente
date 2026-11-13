@@ -23,6 +23,7 @@ function SuccessContent() {
   const phone = searchParams.get("phone") || "";
   const orderRef = searchParams.get("order") || "";
   const name = searchParams.get("name") || "";
+  const email = searchParams.get("email") || "";
   const total = Number(searchParams.get("total") || 0);
 
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
@@ -62,6 +63,7 @@ function SuccessContent() {
           order_id: orderRef || undefined,
           customer_phone: phone || undefined,
           customer_name: name || undefined,
+          customer_email: email || parsed?.customer_email || parsed?.email || undefined,
         });
       } catch {}
     }

@@ -14,6 +14,7 @@ import {
   Clock,
   ArrowRight,
   Bookmark,
+  Mail,
 } from "lucide-react";
 import { playOrderSound } from "@/lib/soundEffects";
 import { trackAddToCart, trackInitiateCheckout, trackLead } from "@/lib/metaPixel";
@@ -51,6 +52,8 @@ interface UmeiStyleOrderSectionProps {
   setCustomerPhone: (val: string) => void;
   customerPhone2?: string;
   setCustomerPhone2?: (val: string) => void;
+  customerEmail?: string;
+  setCustomerEmail?: (val: string) => void;
   city: string;
   setCity: (val: string) => void;
   address: string;
@@ -113,6 +116,8 @@ export default function UmeiStyleOrderSection({
   setCustomerPhone,
   customerPhone2,
   setCustomerPhone2,
+  customerEmail,
+  setCustomerEmail,
   city,
   setCity,
   address,
@@ -133,6 +138,13 @@ export default function UmeiStyleOrderSection({
   const handleReservationChange = (val: string) => {
     setInternalReservationDate(val);
     if (setReservationDate) setReservationDate(val);
+  };
+
+  const [internalCustomerEmail, setInternalCustomerEmail] = useState("");
+  const currentCustomerEmail = customerEmail !== undefined ? customerEmail : internalCustomerEmail;
+  const handleEmailChange = (val: string) => {
+    setInternalCustomerEmail(val);
+    if (setCustomerEmail) setCustomerEmail(val);
   };
 
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
@@ -201,6 +213,7 @@ export default function UmeiStyleOrderSection({
         num_items: currentBundle.quantity || 1,
         customer_phone: customerPhone || undefined,
         customer_name: customerName || undefined,
+        customer_email: currentCustomerEmail || undefined,
         city: city || undefined,
       });
       trackInitiateCheckout({
@@ -211,6 +224,7 @@ export default function UmeiStyleOrderSection({
         num_items: currentBundle.quantity || 1,
         customer_phone: customerPhone || undefined,
         customer_name: customerName || undefined,
+        customer_email: currentCustomerEmail || undefined,
         city: city || undefined,
       });
     }
@@ -228,6 +242,7 @@ export default function UmeiStyleOrderSection({
         phone: digits,
         name: customerName,
         city: city || "Cotonou",
+        email: currentCustomerEmail ? currentCustomerEmail.trim().toLowerCase() : undefined,
       });
 
       // Mettre à jour InitiateCheckout avec le numéro de téléphone pour maximiser l'Event Match Quality
@@ -239,6 +254,7 @@ export default function UmeiStyleOrderSection({
         num_items: currentBundle.quantity || 1,
         customer_phone: digits,
         customer_name: customerName || undefined,
+        customer_email: currentCustomerEmail || undefined,
         city: city || undefined,
       });
 
@@ -246,6 +262,7 @@ export default function UmeiStyleOrderSection({
         customer_name: customerName,
         customer_phone: digits,
         customer_phone2: customerPhone2,
+        customer_email: currentCustomerEmail ? currentCustomerEmail.trim().toLowerCase() : undefined,
         city: city || "Cotonou",
         address: address || "",
         product_slug: normalizedSlug || productSlug,
@@ -287,7 +304,7 @@ export default function UmeiStyleOrderSection({
     return () => {
       if (captureTimeoutRef.current) clearTimeout(captureTimeoutRef.current);
     };
-  }, [customerPhone, customerName, city, address, currentBundle, totalPrice]);
+  }, [customerPhone, customerName, currentCustomerEmail, city, address, currentBundle, totalPrice]);
 
   // Redirection WhatsApp automatique après succès & Conversion du lead
   useEffect(() => {
@@ -611,6 +628,36 @@ export default function UmeiStyleOrderSection({
                 </div>
               )
             )}
+
+            {/* Champ 4 : Adresse Email Facultative (Reçu & Suivi) */}
+            <div className="space-y-1 text-left pt-1">
+              <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Adresse email</span>
+                  <span className="text-[11px] text-slate-400 font-normal">(Facultatif - pour recevoir le reçu)</span>
+                </span>
+              </label>
+              <input
+                id="customer-email-input"
+                type="email"
+                value={currentCustomerEmail}
+                onFocus={handleInteractionTrigger}
+                onBlur={() => {
+                  if (currentCustomerEmail && currentCustomerEmail.includes("@")) {
+                    saveUserContactInfo({
+                      email: currentCustomerEmail.trim().toLowerCase(),
+                      phone: customerPhone,
+                      name: customerName,
+                      city: city,
+                    });
+                  }
+                }}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                placeholder="Ex: dossou@gmail.com"
+                className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
+              />
+            </div>
 
             {/* OPTION DE LIVRAISON OU RÉSERVATION */}
             <div className="pt-2 border-t border-slate-100">

@@ -1,3 +1,5 @@
+
+
 /**
  * userTracking.ts - Gestion unifiée des identifiants d'attribution Meta Pixel & CAPI
  * Garantit un score de correspondance Meta EMQ maximal (> 9.0/10) :
@@ -28,7 +30,7 @@ export function setCookie(name: string, value: string, days = 90) {
   try {
     const maxAge = days * 24 * 60 * 60;
     document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax`;
-  } catch {}
+  } catch { }
 }
 
 /**
@@ -44,7 +46,7 @@ export function getOrCreateFbp(): string {
   if (cookieFbp && /^fb\.\d+\.\d+\.\d+$/.test(cookieFbp)) {
     try {
       localStorage.setItem("isivente_fbp", cookieFbp);
-    } catch {}
+    } catch { }
     return cookieFbp;
   }
 
@@ -55,7 +57,7 @@ export function getOrCreateFbp(): string {
       setCookie("_fbp", localFbp);
       return localFbp;
     }
-  } catch {}
+  } catch { }
 
   // 3. Générer un fbp 100% conforme à la spécification Meta CAPI
   const timestamp = Date.now();
@@ -65,7 +67,7 @@ export function getOrCreateFbp(): string {
   setCookie("_fbp", newFbp);
   try {
     localStorage.setItem("isivente_fbp", newFbp);
-  } catch {}
+  } catch { }
 
   return newFbp;
 }
@@ -89,17 +91,17 @@ export function getOrCreateFbc(): string | undefined {
       try {
         localStorage.setItem("isivente_fbc", newFbc);
         sessionStorage.setItem("isivente_fbclid", fbclid.trim());
-      } catch {}
+      } catch { }
       return newFbc;
     }
-  } catch {}
+  } catch { }
 
   // 2. Lire depuis document.cookie (cookie natif Meta _fbc)
   const cookieFbc = getCookie("_fbc");
   if (cookieFbc && /^fb\.\d+\.\d+\..+$/.test(cookieFbc)) {
     try {
       localStorage.setItem("isivente_fbc", cookieFbc);
-    } catch {}
+    } catch { }
     return cookieFbc;
   }
 
@@ -110,7 +112,7 @@ export function getOrCreateFbc(): string | undefined {
       setCookie("_fbc", localFbc);
       return localFbc;
     }
-  } catch {}
+  } catch { }
 
   return undefined;
 }
@@ -135,7 +137,7 @@ export function getOrCreateExternalId(): string {
 /**
  * Enregistre les coordonnées client dès qu'elles sont saisies pour les attacher à tous les événements suivants
  */
-export function saveUserContactInfo(data: { phone?: string; name?: string; city?: string }) {
+export function saveUserContactInfo(data: { phone?: string; name?: string; city?: string; email?: string }) {
   if (typeof window === "undefined") return;
   try {
     let cleanPh: string | undefined = undefined;
@@ -155,19 +157,34 @@ export function saveUserContactInfo(data: { phone?: string; name?: string; city?
     if (data.city) {
       localStorage.setItem("isivente_customer_city", data.city.trim());
     }
-    // Mise à jour immédiate du Pixel Meta Advanced Matching côté client
-    if (typeof (window as any).fbq === "function" && (cleanPh || data.name)) {
-      const parts = (data.name || "").trim().split(/\s+/);
-      const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686";
-      (window as any).fbq("init", pixelId, {
-        ph: cleanPh || undefined,
-        fn: parts[0] || undefined,
-        ln: parts.slice(1).join(" ") || undefined,
-        ct: (data.city || "cotonou").toLowerCase(),
-        country: "bj",
-      });
+    if (data.email) {
+      const cleanEmail = data.email.trim().toLowerCase();
+      if (cleanEmail && cleanEmail.includes("@")) {
+        localStorage.setItem("isivente_customer_email", cleanEmail);
+      }
     }
-  } catch {}
+    // Mise à jour immédiate du Pixel Meta Advanced Matching côté client
+    if (typeof (window as any).fbq === "function") {
+      const savedEmail = data.email ? data.email.trim().toLowerCase() : (localStorage.getItem("isivente_customer_email") || undefined);
+      const nameVal = data.name || localStorage.getItem("isivente_customer_name") || "";
+      const parts = nameVal.trim().split(/\s+/);
+      const cityVal = data.city || localStorage.getItem("isivente_customer_city") || "cotonou";
+      const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686";
+      const extId = getOrCreateExternalId();
+
+      if (cleanPh || nameVal || savedEmail || extId) {
+        (window as any).fbq("init", pixelId, {
+          ph: cleanPh || undefined,
+          em: savedEmail || undefined,
+          fn: parts[0] || undefined,
+          ln: parts.slice(1).join(" ") || undefined,
+          ct: cityVal.toLowerCase(),
+          country: "bj",
+          external_id: extId || undefined,
+        });
+      }
+    }
+  } catch { }
 }
 
 /**
@@ -195,7 +212,9 @@ export function getUserDataFromStorage(): Record<string, any> {
     const savedPhone = localStorage.getItem("isivente_customer_phone");
     const savedName = localStorage.getItem("isivente_customer_name");
     const savedCity = localStorage.getItem("isivente_customer_city");
+    const savedEmail = localStorage.getItem("isivente_customer_email");
 
+    if (savedEmail) result.email = savedEmail;
     if (savedPhone) result.phone = savedPhone;
     if (savedName) {
       const parts = savedName.split(/\s+/);
@@ -220,11 +239,14 @@ export function getUserDataFromStorage(): Record<string, any> {
             result.first_name = result.first_name || nameParts[0] || undefined;
             result.last_name = result.last_name || nameParts.slice(1).join(" ") || undefined;
             result.city = result.city || recent.city || "Cotonou";
+            if (recent.customer_email && !result.email) {
+              result.email = recent.customer_email;
+            }
           }
         }
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return result;
 }

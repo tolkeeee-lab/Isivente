@@ -65,6 +65,9 @@ export async function POST(req: NextRequest) {
       lastName = parts.slice(1).join(" ") || undefined;
     }
 
+    const rawEmail = String(reqUserData.email || reqUserData.customer_email || "").trim().toLowerCase();
+    const customerEmail = rawEmail.includes("@") ? rawEmail : undefined;
+
     // 4. Relais serveur Meta CAPI ATTENDU (await indispensable sur Vercel Serverless pour éviter la coupure du processus)
     const result = await sendMetaConversionApiEvent({
       event_name: eventName,
@@ -73,6 +76,7 @@ export async function POST(req: NextRequest) {
       test_event_code: testEventCode,
       user_data: {
         phone: cleanPhone,
+        email: customerEmail,
         first_name: firstName,
         last_name: lastName,
         city: reqUserData.city || "Cotonou",

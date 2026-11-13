@@ -5,6 +5,7 @@ export interface NotificationOrderData {
   order_number?: string | number;
   customer_name?: string;
   customer_phone?: string;
+  customer_email?: string;
   city?: string;
   shipping_city?: string;
   address?: string;
@@ -118,6 +119,7 @@ export async function sendOrderNotification(order: NotificationOrderData) {
         `🏷️ *Pack / Colis :* ${order.bundle_name || "Offre standard"}\n` +
         `💰 *Nouveau Total :* \`${formattedAmount}\`\n` +
         `👤 *Client :* ${order.customer_name || "Client"}\n` +
+        (order.customer_email ? `✉️ *Email :* \`${order.customer_email}\`\n` : "") +
         `📞 *Téléphone :* \`${order.customer_phone || "Non renseigné"}\`\n` +
         `📍 *Destination :* ${city} (${address})\n` +
         `🆔 *Réf :* \`${orderRef}\`\n` +
