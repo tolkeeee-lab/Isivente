@@ -107,6 +107,60 @@ Chaque landing page doit être construite avec la hiérarchie et les sections ex
   3. Champ libre si la question du client n'est pas dans la liste.
   4. Redirection automatique vers WhatsApp (`wa.me`) avec le produit et la question pré-remplis pour engager la vente en direct.
 
+### 🚀 Pilier 8 : Performance Mobile 90+ & Vitesse Instantanée (Anti-Perte 95%)
+Sur les réseaux mobiles d'Afrique de l'Ouest (MTN / Moov 3G/4G), toute seconde de latence fait fuir 90%+ des acheteurs avant même que le Pixel ne s'allume.
+Chaque landing page et chaque composant DOIT impérativement respecter les règles de vitesse suivantes :
+1. **Poids Max des Images (< 100 Ko par image, < 800 Ko pour toute la page)** :
+   - Toujours compresser avec MozJPEG progressif (`sharp`) à `quality: 78`, redimensionné à max 960x960.
+   - Activer nativement `formats: ['image/avif', 'image/webp']` dans `next.config.mjs`.
+2. **Chargement Différé des Visuels Secondaires (`loading="lazy"`)** :
+   - Seule l'image Hero principale au-dessus de la ligne de flottaison est en `priority`.
+   - Toutes les miniatures de carrousel et images des sections éditoriales DOIVENT porter `loading="lazy"`.
+3. **Exécution Instantanée du Pixel Meta dans le `<head>`** :
+   - Ne JAMAIS charger le Pixel Meta en `afterInteractive`.
+   - Le script de base du Pixel est injecté directement dans le `<head>` avec balise `<noscript>`.
+   - Toujours pré-connecter les serveurs Meta dès le premier octet (`preconnect` et `dns-prefetch` vers `connect.facebook.net`).
+   - Le signal `PageView` part ainsi vers Meta **en moins de 200 ms**, garantissant un taux de rétention clics ➔ visites > 85%.
+4. **Code-Splitting Modulaire (`next/dynamic`)** :
+   - Dans `app/p/[slug]/page.tsx`, chaque landing page produit est importée dynamiquement via `dynamic(() => import(...))` pour ne JAMAIS embarquer le code des autres produits dans le bundle du produit visité.
+5. **Délestage des Outils Tiers (Clarity en `lazyOnload`)** :
+   - Microsoft Clarity ou tout script lourd doit être chargé en `strategy="lazyOnload"` pour ne pas voler un seul cycle de processeur mobile au moment de l'affichage.
+
+### 👁️ Pilier 9 : Raccordement Obligatoire des Visites (`usePagePresence`) & Capture Silencieuse de Prospects
+**Interdiction absolue de publier une landing page sans brancher le tracking de présence et la capture de prospect :**
+1. **Raccordement de présence obligatoire** :
+   - Chaque composant de landing page (`components/features/<Produit>Landing.tsx`) DOIT importer et exécuter le hook :
+     ```typescript
+     import { usePagePresence } from "@/hooks/usePagePresence";
+     
+     export default function ProduitLanding({ slug = "mon-produit" }: { slug?: string }) {
+       const { recordInteraction } = usePagePresence(slug);
+       ...
+     ```
+   - Lier `recordInteraction()` sur chaque clic de CTA ou bouton scrollant vers le formulaire.
+2. **Capture Silencieuse des Prospects (`saveOrUpdateLead`)** :
+   - Dès que le prospect saisit au moins 8 chiffres dans le champ téléphone du formulaire (avant même de cliquer sur "Commander"), ses informations partielles DOIVENT être sauvegardées silencieusement pour permettre la relance WhatsApp :
+     ```typescript
+     import { saveOrUpdateLead } from "@/lib/leadsStorage";
+
+     useEffect(() => {
+       const cleanPhone = customerPhone.replace(/\D/g, "");
+       if (cleanPhone.length >= 8) {
+         saveOrUpdateLead({
+           customer_name: customerName,
+           customer_phone: cleanPhone,
+           customer_phone2: customerPhone2,
+           city: city,
+           address: address,
+           product_slug: slug,
+           product_title: "Titre Officiel du Produit",
+           bundle_name: selectedBundle.name,
+           total_amount: selectedBundle.price,
+         });
+       }
+     }, [customerPhone, customerName, customerPhone2, city, address, selectedBundle]);
+     ```
+
 ---
 
 ## 🛡️ 4. Règle Absolue d'Ingénierie : Zéro Doublon & Blindage Anti-Régression (Ironclad Standard)
