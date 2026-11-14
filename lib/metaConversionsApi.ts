@@ -144,8 +144,10 @@ export async function sendMetaConversionApiEvent(options: MetaCapiEventOptions):
   const uData = options.user_data || {};
   const cData = options.custom_data || {};
 
-  // Si c'est un événement de test interne (nom "test", "admin", "essaie" ou numéro factice), ignorer l'envoi pour ne pas polluer Meta Events Manager
+  // Si c'est un événement de test interne (nom "test", "admin", "essaie" ou numéro factice), ignorer l'envoi SAUF si un test_event_code explicite est fourni
+  const hasTestCode = Boolean(options.test_event_code || process.env.META_TEST_EVENT_CODE);
   if (
+    !hasTestCode &&
     isTestEventData({
       phone: uData.phone,
       first_name: uData.first_name,

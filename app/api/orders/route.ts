@@ -217,11 +217,14 @@ export async function POST(req: NextRequest) {
     const lastName = nameParts.slice(1).join(" ") || "";
     const externalIds = [visitorExternalId, orderNumberStr].filter(Boolean);
 
+    const testEventCode = body.test_event_code || req.nextUrl.searchParams.get("test_event_code") || undefined;
+
     await Promise.allSettled([
       sendMetaConversionApiEvent({
         event_name: "Purchase",
         event_id: orderNumberStr,
         event_source_url: req.headers.get("referer") || undefined,
+        test_event_code: testEventCode,
         user_data: {
           phone: cleanPhone,
           email: customerEmail || undefined,

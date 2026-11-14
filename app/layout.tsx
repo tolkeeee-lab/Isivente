@@ -47,9 +47,12 @@ export default function RootLayout({
                 f._fbq_initialized=true;
                 f.fbq('init', '2150878529184686');
               }
-              var isAdm = f.location.pathname.indexOf('/admin') === 0 || 
+              var s = f.location.search || '';
+              var isExplicitTest = s.indexOf('test_event_code') !== -1 || s.indexOf('meta_test') !== -1 || s.indexOf('test=') !== -1;
+              var isAdm = !isExplicitTest && (
+                          f.location.pathname.indexOf('/admin') === 0 || 
                           f.location.pathname.indexOf('/api') === 0 ||
-                          f.localStorage.getItem('isivente_is_admin') === 'true';
+                          f.localStorage.getItem('isivente_is_admin') === 'true');
               if (!isAdm) {
                 var cleanPath = (f.location.pathname || 'home').toLowerCase().replace(/[^a-z0-9_-]/g, '');
                 var lockKey = 'isivente_px_lock_pv_' + cleanPath;

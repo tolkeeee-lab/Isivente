@@ -81,6 +81,7 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
     fbp: typeof window !== 'undefined' ? (getOrCreateFbp() || localStorage.getItem('isivente_fbp') || undefined) : undefined,
     customer_email: orderData.customer_email || (typeof window !== 'undefined' ? (localStorage.getItem('isivente_customer_email') || undefined) : undefined),
     external_id: typeof window !== 'undefined' ? (getOrCreateExternalId() || undefined) : undefined,
+    test_event_code: typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('test_event_code') || sessionStorage.getItem('isivente_test_event_code') || undefined) : undefined,
     status: orderData.status || 'pending',
     created_at: orderData.created_at || new Date().toISOString(),
   };

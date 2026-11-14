@@ -76,6 +76,18 @@ function getFbq(): ((...args: any[]) => void) | null {
 function isAdminContext(): boolean {
   if (typeof window === "undefined") return false;
   try {
+    // Si l'utilisateur effectue un test explicite (test_event_code, meta_test ou test= dans l'URL), on ne bloque PAS
+    const search = window.location.search || "";
+    if (
+      search.includes("test_event_code") ||
+      search.includes("meta_test") ||
+      search.includes("test=1") ||
+      search.includes("test=true") ||
+      sessionStorage.getItem("isivente_test_mode") === "true"
+    ) {
+      return false;
+    }
+
     if (
       window.location.pathname.startsWith("/admin") ||
       window.location.pathname.startsWith("/api") ||
@@ -142,6 +154,21 @@ async function sendServerBridge(
     ...(externalId ? { external_id: externalId } : {}),
   };
 
+  let testEventCode: string | undefined;
+  if (typeof window !== "undefined") {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const urlCode = sp.get("test_event_code");
+      if (urlCode) {
+        testEventCode = urlCode;
+        sessionStorage.setItem("isivente_test_event_code", urlCode);
+        sessionStorage.setItem("isivente_test_mode", "true");
+      } else {
+        testEventCode = sessionStorage.getItem("isivente_test_event_code") || undefined;
+      }
+    } catch {}
+  }
+
   try {
     fetch("/api/pixel/event", {
       method: "POST",
@@ -152,6 +179,7 @@ async function sendServerBridge(
         custom_data: customData,
         user_data: userData,
         event_source_url: window.location.href,
+        test_event_code: testEventCode,
       }),
       keepalive: true,
     }).catch(() => {});
