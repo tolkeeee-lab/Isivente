@@ -339,6 +339,35 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     ]
   },
   {
+    id: "masseur-vibrant-default",
+    title: "Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres (Abdomen, Dos & Corps)",
+    shortTitle: "Masseur Vibrant 2-en-1",
+    slug: "masseur-vibrant",
+    price: 16900,
+    accentColor: "#7C3AED",
+    keywords: [
+      "masseur",
+      "masseur vibrant",
+      "massage",
+      "abdomen",
+      "dos",
+      "ventre",
+      "sangle",
+      "mains libres",
+      "relaxation",
+      "tensions",
+      "courbatures",
+      "muscles",
+      "bien-être",
+    ],
+    image_url: "/images/masseur-vibrant/carousel-1-hero.jpg",
+    image: "/images/masseur-vibrant/carousel-1-hero.jpg",
+    headline: "Soulagez vos tensions et détendez vos muscles en 15 minutes : masseur vibrant portable 2-en-1 (mode manuel ou sangle mains libres), 5 intensités, écran LED et batterie 1200 mAh.",
+    bundles: [
+      { name: "Coffret Masseur Vibrant Portable 2-en-1 + Sangle 140cm + Câble Type-C", price: 16900 }
+    ]
+  },
+  {
     id: "peeler-default",
     title: "Mandoline & Essoreuse Coupe-Légumes Multifonction (Duo Cuisine Malin)",
     shortTitle: "Mandoline & Duo Cuisine Malin",

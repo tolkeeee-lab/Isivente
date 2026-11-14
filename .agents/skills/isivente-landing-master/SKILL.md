@@ -56,7 +56,9 @@ Avant d'écrire une seule ligne de code pour une landing page produit :
 ---
 
 ### 🔄 Pilier 3 : Carrousels à Défilement Automatique (Auto-Advancing)
-1. **Galerie Hero Principale** :
+1. **Galerie Hero Principale (Règle Stricte des 5 Images Max)** :
+   - **Nombre de slides :** Toujours EXACTEMENT 5 visuels ordonnés selon une narration de vente (1. Accroche/Hero ➔ 2. Polyvalence/Multi-zones ➔ 3. Mode d'utilisation 2-en-1 ➔ 4. Niveaux de puissance ➔ 5. Technologie & Batterie).
+   - Les autres images fournies sont obligatoirement distribuées dans les sections éditoriales ("Comment ça fonctionne ?", "Dimensions & Contenu du Coffret", etc.).
    - Défilement automatique toutes les ~3,8 secondes.
    - Pause immédiate au survol (`onMouseEnter={() => setIsHeroHovered(true)}`).
    - Boutons de navigation manuelle discrets gauche / droite (`ChevronLeft` / `ChevronRight`).

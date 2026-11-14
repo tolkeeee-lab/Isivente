@@ -21,13 +21,22 @@ Lorsque l'utilisateur fournit plusieurs images pour un produit :
 
 ---
 
-## 📐 2. Répartition Intelligente des Visuels par Section
+## 📐 2. Règle Stricte du Carrousel Hero (Exactement 5 Images) & Répartition des Visuels
 
-Au lieu de mettre toutes les images au hasard au même endroit :
-- **Carrousel Hero (Haut de page)** : 4 à 5 visuels esthétiques montrant le produit sous ses meilleurs angles et ambiances.
-- **Section Bénéfices Comparatifs (`Classique vs Produit Isivente`)** : Utiliser le visuel comparatif **Avant / Après** s'il est fourni.
-- **Section Guide Visuel / Infographie** : Utiliser le visuel technique détaillant l'autonomie, les dimensions ou les caractéristiques.
-- **Section Avis Clients** : Si les avis sont des captures ou des photos avec texte intégré, **ne jamais dupliquer ce texte en légende HTML en dessous**.
+Lorsque l'utilisateur fournit un lot d'images pour un produit :
+1. **Carrousel Hero (Haut de page) = EXACTEMENT 5 VISUELS MAX :**
+   Ne jamais saturer le carrousel avec 7, 8 ou 10 images. Sélectionner les 5 images les plus percutantes et les ordonner selon une logique de conversion narrative :
+   * **Slide 1 :** L'Accroche Hero (produit sous son meilleur angle, mis en situation réelle).
+   * **Slide 2 :** Polyvalence / Multi-zones / Bénéfice majeur pour l'utilisateur.
+   * **Slide 3 :** Mode d'utilisation (mains libres, 2-en-1 ou manipulation concrète).
+   * **Slide 4 :** Puissance / Modes / Personnalisation des réglages.
+   * **Slide 5 :** Technologie, Batterie / Autonomie, Portabilité.
+2. **Le reste des images fournies DOIT impérativement être distribué dans les sections éditoriales :**
+   * **Section "Comment ça fonctionne ?" (Guide d'utilisation) :** Visuel montrant les étapes d'allumage ou les commandes.
+   * **Section "Dimensions & Contenu du Coffret Officiel" :** Visuel montrant les mensurations précises et la liste des accessoires fournis dans la boîte.
+   * **Section Bénéfices Comparatifs (`Classique vs Produit Isivente`) :** Visuel comparatif **Avant / Après** ou Différence de qualité.
+   * **Section Guide Visuel / Infographie :** Visuel technique détaillant l'autonomie, les composants internes ou les certifications.
+   * **Section Avis Clients :** Si les avis sont des captures ou des photos clients, **ne jamais dupliquer ce texte en légende HTML en dessous**.
 
 ---
 

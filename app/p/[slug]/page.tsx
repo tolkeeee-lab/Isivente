@@ -36,6 +36,7 @@ import The5TresorsLanding from "@/components/features/The5TresorsLanding";
 import GameStickLanding from "@/components/features/GameStickLanding";
 import R36SLanding from "@/components/features/R36SLanding";
 import MoustiquairePorteLanding from "@/components/features/MoustiquairePorteLanding";
+import MasseurVibrantLanding from "@/components/features/MasseurVibrantLanding";
 import ProductLanding from "@/components/features/ProductLanding";
 import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
 import ExitIntentModal from "@/components/features/ExitIntentModal";
@@ -170,6 +171,9 @@ export function generateStaticParams() {
     { slug: "moustiquaire" },
     { slug: "moustiquaire-magnetique" },
     { slug: "moustiquaire-aimantee" },
+    { slug: "masseur-vibrant" },
+    { slug: "masseur-abdomen-dos" },
+    { slug: "masseur-2en1" },
   ];
 }
 
@@ -357,6 +361,10 @@ export default async function ProductPage({ params }: PageProps) {
       case "moustiquaire-magnetique":
       case "moustiquaire-aimantee":
         return <MoustiquairePorteLanding slug="moustiquaire-porte" />;
+      case "masseur-vibrant":
+      case "masseur-abdomen-dos":
+      case "masseur-2en1":
+        return <MasseurVibrantLanding slug="masseur-vibrant" />;
       default:
         // If the slug exists in our catalog or database, render universal ProductLanding
         if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
