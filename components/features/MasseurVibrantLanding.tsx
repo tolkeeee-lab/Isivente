@@ -492,45 +492,6 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
           </div>
         </section>
 
-        {/* ── 8.5 DÉMONSTRATION VIDÉO EN ACTION (Pilier 4) ── */}
-        <section className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-md space-y-4">
-          <div className="text-center space-y-1.5">
-            <span className="text-[11px] font-bold text-purple-700 tracking-wider uppercase bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
-              Démonstration Vidéo Réelle
-            </span>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-              Découvrez le Coffret et Son Fonctionnement en Vidéo
-            </h2>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Déballage réel : appareil ergonomique, sangle de fixation 1,4 m et câble Type-C prêts à l'emploi.
-            </p>
-          </div>
-
-          <div className="relative max-w-xs sm:max-w-sm mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
-            <video
-              src="/videos/masseur-crea-voix-off.mp4"
-              poster="/images/masseur-vibrant/carousel-5-technologie.jpg"
-              autoPlay
-              muted
-              playsInline
-              loop
-              controls
-              preload="auto"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          <div className="pt-2 text-center">
-            <button
-              onClick={() => scrollToSection("commander")}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-all active:scale-[0.98]"
-            >
-              Commander Mon Coffret (16 900 F)
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </section>
-
         {/* ── 9. SECTION ÉDITORIALE : COMMENT ÇA FONCTIONNE (VISUEL DÉDIÉ N°6) ── */}
         <section className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-md space-y-4">
           <div className="text-center space-y-1.5">
