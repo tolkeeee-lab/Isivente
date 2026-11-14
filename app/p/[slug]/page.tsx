@@ -1,47 +1,53 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import UmeiLanding from "@/components/features/UmeiLanding";
-import PeelerLanding from "@/components/features/PeelerLanding";
-import EyeMassagerLanding from "@/components/features/EyeMassagerLanding";
-import MicroscopeLanding from "@/components/features/MicroscopeLanding";
-import CameraLanding from "@/components/features/CameraLanding";
-import TrozkLanding from "@/components/features/TrozkLanding";
-import StabilisateurLanding from "@/components/features/StabilisateurLanding";
-import EraCleanLanding from "@/components/features/EraCleanLanding";
-import TurboFanLanding from "@/components/features/TurboFanLanding";
-import VeilleuseLanding from "@/components/features/VeilleuseLanding";
-import MiniLaveLingeLanding from "@/components/features/MiniLaveLingeLanding";
-import MatelasLanding from "@/components/features/MatelasLanding";
-import VoitureCameraLanding from "@/components/features/VoitureCameraLanding";
-import SavonRepousseLanding from "@/components/features/SavonRepousseLanding";
-import SourireEclatantLanding from "@/components/features/SourireEclatantLanding";
-import ProjecteurNoelLanding from "@/components/features/ProjecteurNoelLanding";
-import ProbioticGummiesLanding from "@/components/features/ProbioticGummiesLanding";
-import BraceletMainLanding from "@/components/features/BraceletMainLanding";
-import Stylo3DLanding from "@/components/features/Stylo3DLanding";
-import CarteDuMondeLanding from "@/components/features/CarteDuMondeLanding";
-import CapsaCareLanding from "@/components/features/CapsaCareLanding";
-import OdorAwayLanding from "@/components/features/OdorAwayLanding";
-import DuoBraceletsCoeurLanding from "@/components/features/DuoBraceletsCoeurLanding";
-import ParesoleilLanding from "@/components/features/ParesoleilLanding";
-import ShilajitLanding from "@/components/features/ShilajitLanding";
-import FiltreEauLanding from "@/components/features/FiltreEauLanding";
-import CubiCraftLanding from "@/components/features/CubiCraftLanding";
-import TrousseBiometriqueLanding from "@/components/features/TrousseBiometriqueLanding";
-import DigestiGumLanding from "@/components/features/DigestiGumLanding";
-import Calendrier3DLanding from "@/components/features/Calendrier3DLanding";
-import LikelRiteLanding from "@/components/features/LikelRiteLanding";
-import StarlightLanding from "@/components/features/StarlightLanding";
-import The5TresorsLanding from "@/components/features/The5TresorsLanding";
-import GameStickLanding from "@/components/features/GameStickLanding";
-import R36SLanding from "@/components/features/R36SLanding";
-import MoustiquairePorteLanding from "@/components/features/MoustiquairePorteLanding";
-import MasseurVibrantLanding from "@/components/features/MasseurVibrantLanding";
-import ProductLanding from "@/components/features/ProductLanding";
-import ShoppingAgentWidget from "@/components/features/ShoppingAgentWidget";
-import ExitIntentModal from "@/components/features/ExitIntentModal";
-import DynamicIsland from "@/components/features/DynamicIsland";
+import dynamic from "next/dynamic";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
+
+// ── CODE-SPLITTING INTELLIGENT : Chaque landing page est un chunk indépendant ──
+// Évite de charger les 35 produits dans le bundle mobile du Masseur Vibrant
+const UmeiLanding = dynamic(() => import("@/components/features/UmeiLanding"));
+const PeelerLanding = dynamic(() => import("@/components/features/PeelerLanding"));
+const EyeMassagerLanding = dynamic(() => import("@/components/features/EyeMassagerLanding"));
+const MicroscopeLanding = dynamic(() => import("@/components/features/MicroscopeLanding"));
+const CameraLanding = dynamic(() => import("@/components/features/CameraLanding"));
+const TrozkLanding = dynamic(() => import("@/components/features/TrozkLanding"));
+const StabilisateurLanding = dynamic(() => import("@/components/features/StabilisateurLanding"));
+const EraCleanLanding = dynamic(() => import("@/components/features/EraCleanLanding"));
+const TurboFanLanding = dynamic(() => import("@/components/features/TurboFanLanding"));
+const VeilleuseLanding = dynamic(() => import("@/components/features/VeilleuseLanding"));
+const MiniLaveLingeLanding = dynamic(() => import("@/components/features/MiniLaveLingeLanding"));
+const MatelasLanding = dynamic(() => import("@/components/features/MatelasLanding"));
+const VoitureCameraLanding = dynamic(() => import("@/components/features/VoitureCameraLanding"));
+const SavonRepousseLanding = dynamic(() => import("@/components/features/SavonRepousseLanding"));
+const SourireEclatantLanding = dynamic(() => import("@/components/features/SourireEclatantLanding"));
+const ProjecteurNoelLanding = dynamic(() => import("@/components/features/ProjecteurNoelLanding"));
+const ProbioticGummiesLanding = dynamic(() => import("@/components/features/ProbioticGummiesLanding"));
+const BraceletMainLanding = dynamic(() => import("@/components/features/BraceletMainLanding"));
+const Stylo3DLanding = dynamic(() => import("@/components/features/Stylo3DLanding"));
+const CarteDuMondeLanding = dynamic(() => import("@/components/features/CarteDuMondeLanding"));
+const CapsaCareLanding = dynamic(() => import("@/components/features/CapsaCareLanding"));
+const OdorAwayLanding = dynamic(() => import("@/components/features/OdorAwayLanding"));
+const DuoBraceletsCoeurLanding = dynamic(() => import("@/components/features/DuoBraceletsCoeurLanding"));
+const ParesoleilLanding = dynamic(() => import("@/components/features/ParesoleilLanding"));
+const ShilajitLanding = dynamic(() => import("@/components/features/ShilajitLanding"));
+const FiltreEauLanding = dynamic(() => import("@/components/features/FiltreEauLanding"));
+const CubiCraftLanding = dynamic(() => import("@/components/features/CubiCraftLanding"));
+const TrousseBiometriqueLanding = dynamic(() => import("@/components/features/TrousseBiometriqueLanding"));
+const DigestiGumLanding = dynamic(() => import("@/components/features/DigestiGumLanding"));
+const Calendrier3DLanding = dynamic(() => import("@/components/features/Calendrier3DLanding"));
+const LikelRiteLanding = dynamic(() => import("@/components/features/LikelRiteLanding"));
+const StarlightLanding = dynamic(() => import("@/components/features/StarlightLanding"));
+const The5TresorsLanding = dynamic(() => import("@/components/features/The5TresorsLanding"));
+const GameStickLanding = dynamic(() => import("@/components/features/GameStickLanding"));
+const R36SLanding = dynamic(() => import("@/components/features/R36SLanding"));
+const MoustiquairePorteLanding = dynamic(() => import("@/components/features/MoustiquairePorteLanding"));
+const MasseurVibrantLanding = dynamic(() => import("@/components/features/MasseurVibrantLanding"));
+const ProductLanding = dynamic(() => import("@/components/features/ProductLanding"));
+
+// Widgets hors du chemin critique mobile (chargés côté client sans bloquer le rendu)
+const ShoppingAgentWidget = dynamic(() => import("@/components/features/ShoppingAgentWidget"));
+const ExitIntentModal = dynamic(() => import("@/components/features/ExitIntentModal"));
+const DynamicIsland = dynamic(() => import("@/components/features/DynamicIsland"));
 
 export function generateStaticParams() {
   return [
