@@ -46,6 +46,11 @@ const BUNDLES: BundleOption[] = [
 // ── RÈGLE DU CARROUSEL : EXACTEMENT 5 VISUELS NARRATIFS ──
 const HERO_IMAGES = [
   {
+    src: "/images/masseur-vibrant/carousel-5-technologie.jpg",
+    alt: "Batterie 1200 mAh Grande Autonomie, Recharge Type-C et Arrêt Auto 15 Minutes",
+    badge: "Batterie 1200 mAh",
+  },
+  {
     src: "/images/masseur-vibrant/carousel-1-hero.jpg",
     alt: "Masseur Réglable Abdomen et Dos - Détente et Bien-Être au Quotidien",
     badge: "Abdomen & Dos",
@@ -64,11 +69,6 @@ const HERO_IMAGES = [
     src: "/images/masseur-vibrant/carousel-4-modes-intensite.jpg",
     alt: "5 Niveaux d'Intensité L1-L5 et 3 Modes de Fréquence Intelligents",
     badge: "5 Intensités LED",
-  },
-  {
-    src: "/images/masseur-vibrant/carousel-5-technologie.jpg",
-    alt: "Batterie 1200 mAh Grande Autonomie, Recharge Type-C et Arrêt Auto 15 Minutes",
-    badge: "Batterie 1200 mAh",
   },
 ];
 
@@ -410,7 +410,7 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
           <UmeiStyleOrderSection
             productSlug="masseur-vibrant"
             productTitle="Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™"
-            productImage="/images/masseur-vibrant/carousel-1-hero.jpg"
+            productImage="/images/masseur-vibrant/carousel-5-technologie.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => setSelectedBundle(b)}
