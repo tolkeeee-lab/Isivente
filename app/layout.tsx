@@ -27,9 +27,14 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
-        {/* Meta Pixel Code */}
-        <Script id="meta-pixel" strategy="afterInteractive">
-          {`
+        {/* Preconnect & DNS-Prefetch vers les serveurs Meta pour init immédiate */}
+        <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        {/* Meta Pixel Code (Exécution immédiate dans le <head> sans attendre l'hydratation) */}
+        <script
+          id="meta-pixel"
+          dangerouslySetInnerHTML={{
+            __html: `
             (function(f,b,e,v){
               if(!f.fbq){
                 var n=f.fbq=function(){n.callMethod?
@@ -75,8 +80,18 @@ export default function RootLayout({
                 }
               }
             })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-          `}
-        </Script>
+          `,
+          }}
+        />
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            src="https://www.facebook.com/tr?id=2150878529184686&ev=PageView&noscript=1"
+            alt=""
+          />
+        </noscript>
         {/* Microsoft Clarity (Heatmaps & Session Recording) */}
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`

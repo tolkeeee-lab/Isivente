@@ -396,7 +396,7 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
                     : "border-slate-200 opacity-60 hover:opacity-100"
                 }`}
               >
-                <Image src={img.src} alt={img.alt} fill className="object-cover" sizes="120px" />
+                <Image src={img.src} alt={img.alt} fill loading="lazy" className="object-cover" sizes="120px" />
               </button>
             ))}
           </div>
@@ -529,6 +529,7 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
               src="/images/masseur-vibrant/section-fonctionnement.jpg"
               alt="Guide d'utilisation et commandes du Masseur Vibrant Portable"
               fill
+              loading="lazy"
               className="object-contain"
               sizes="(max-width: 768px) 100vw, 800px"
             />
@@ -643,6 +644,7 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
               src="/images/masseur-vibrant/section-dimensions-contenu.jpg"
               alt="Dimensions et contenu du coffret Masseur 2-en-1"
               fill
+              loading="lazy"
               className="object-contain"
               sizes="(max-width: 768px) 100vw, 800px"
             />
