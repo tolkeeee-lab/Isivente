@@ -92,8 +92,8 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
-        {/* Microsoft Clarity (Heatmaps & Session Recording) */}
-        <Script id="microsoft-clarity" strategy="afterInteractive">
+        {/* Microsoft Clarity (Heatmaps & Session Recording - Chargement différé pour ne jamais ralentir le mobile) */}
+        <Script id="microsoft-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
               if (typeof window !== 'undefined') {
