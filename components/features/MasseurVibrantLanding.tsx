@@ -27,7 +27,8 @@ import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiS
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 import { saveNewOrder } from "@/lib/ordersStorage";
-import { markLeadConverted } from "@/lib/leadsStorage";
+import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
+import { usePagePresence } from "@/hooks/usePagePresence";
 
 // ── PILIER 1 : OFFRE UNIQUE HARMONISÉE (16 900 FCFA) ──
 const BUNDLES: BundleOption[] = [
@@ -138,6 +139,7 @@ const FAQS = [
 
 export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { slug?: string }) {
   const router = useRouter();
+  const { recordInteraction } = usePagePresence(slug);
   const orderSectionRef = useRef<HTMLDivElement>(null);
 
   // États Carrousel Hero (5 images)
@@ -193,7 +195,26 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
     });
   }, []);
 
+  // Capture silencieuse du prospect dès 8 chiffres
+  useEffect(() => {
+    const cleanPhone = customerPhone.replace(/\D/g, "");
+    if (cleanPhone.length >= 8) {
+      saveOrUpdateLead({
+        customer_name: customerName,
+        customer_phone: cleanPhone,
+        customer_phone2: customerPhone2,
+        city: city,
+        address: address,
+        product_slug: "masseur-vibrant",
+        product_title: "Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™",
+        bundle_name: selectedBundle.name,
+        total_amount: selectedBundle.price,
+      });
+    }
+  }, [customerPhone, customerName, customerPhone2, city, address, selectedBundle]);
+
   const scrollToOrder = () => {
+    recordInteraction();
     trackAddToCart({
       content_name: "Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™",
       content_ids: ["masseur-vibrant"],
