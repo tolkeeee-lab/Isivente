@@ -65,18 +65,25 @@ export default function RootLayout({
                   var pvId = 'pv_' + cleanPath + '_' + Math.floor(Date.now() / (6 * 3600 * 1000));
                   f.sessionStorage.setItem(lockKey, pvId);
                   f.fbq('track', 'PageView', {}, { eventID: pvId });
-                  try {
-                    fetch('/api/pixel/event', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        event_name: 'PageView',
-                        event_id: pvId,
-                        event_source_url: f.location.href
-                      }),
-                      keepalive: true
-                    }).catch(function(){});
-                  } catch(err) {}
+                  var sendCapi = function() {
+                    try {
+                      fetch('/api/pixel/event', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          event_name: 'PageView',
+                          event_id: pvId,
+                          event_source_url: f.location.href
+                        }),
+                        keepalive: true
+                      }).catch(function(){});
+                    } catch(err) {}
+                  };
+                  if (typeof f.requestIdleCallback === 'function') {
+                    f.requestIdleCallback(sendCapi);
+                  } else {
+                    setTimeout(sendCapi, 1500);
+                  }
                 }
               }
             })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
@@ -92,7 +99,11 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
-        {/* Microsoft Clarity (Heatmaps & Session Recording - Chargement différé pour ne jamais ralentir le mobile) */}
+      </head>
+      <body className="antialiased">
+        {children}
+        <Analytics />
+        {/* Microsoft Clarity chargé en différé complet pour ne jamais bloquer le rendu mobile */}
         <Script id="microsoft-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
@@ -108,19 +119,6 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "z2fg8kxx85");
           `}
         </Script>
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src="https://www.facebook.com/tr?id=2150878529184686&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
-      </head>
-      <body className="antialiased">
-        {children}
-        <Analytics />
       </body>
     </html>
   );

@@ -61,11 +61,6 @@ const DISCOUNTED_BUNDLES: BundleOption[] = [
 // ── RÈGLE DU CARROUSEL : EXACTEMENT 5 VISUELS NARRATIFS ──
 const HERO_IMAGES = [
   {
-    src: "/images/masseur-vibrant/carousel-5-technologie.jpg",
-    alt: "Batterie 1200 mAh Grande Autonomie, Recharge Type-C et Arrêt Auto 15 Minutes",
-    badge: "Batterie 1200 mAh",
-  },
-  {
     src: "/images/masseur-vibrant/carousel-1-hero.jpg",
     alt: "Masseur Réglable Abdomen et Dos - Détente et Bien-Être au Quotidien",
     badge: "Abdomen & Dos",
@@ -84,6 +79,11 @@ const HERO_IMAGES = [
     src: "/images/masseur-vibrant/carousel-4-modes-intensite.jpg",
     alt: "5 Niveaux d'Intensité L1-L5 et 3 Modes de Fréquence Intelligents",
     badge: "5 Intensités LED",
+  },
+  {
+    src: "/images/masseur-vibrant/carousel-5-technologie.jpg",
+    alt: "Batterie 1200 mAh Grande Autonomie, Recharge Type-C et Arrêt Auto 15 Minutes",
+    badge: "Batterie 1200 mAh",
   },
 ];
 
@@ -369,8 +369,9 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
               alt={HERO_IMAGES[currentSlide].alt}
               fill
               priority
+              quality={80}
               className="object-contain transition-all duration-700 ease-out"
-              sizes="(max-width: 768px) 100vw, 800px"
+              sizes="(max-width: 640px) 100vw, 500px"
             />
 
             {/* Badge contextuel sur chaque slide */}

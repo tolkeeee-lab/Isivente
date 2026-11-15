@@ -380,12 +380,20 @@ export default async function ProductPage({ params }: PageProps) {
     }
   };
 
+  const isDedicatedLanding = [
+    "masseur-vibrant",
+    "likel-rite",
+    "umei",
+    "trousse-biometrique",
+    "r36s",
+  ].includes(normalizedSlug);
+
   return (
     <>
-      <DynamicIsland slug={normalizedSlug} />
+      {!isDedicatedLanding && <DynamicIsland slug={normalizedSlug} />}
       {renderContent()}
-      <ShoppingAgentWidget slug={normalizedSlug} />
-      <ExitIntentModal slug={normalizedSlug} />
+      {!isDedicatedLanding && <ShoppingAgentWidget slug={normalizedSlug} />}
+      {!isDedicatedLanding && <ExitIntentModal slug={normalizedSlug} />}
     </>
   );
 }
