@@ -376,7 +376,13 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
                     : "border-slate-200 opacity-55 hover:opacity-90"
                 }`}
               >
-                <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
               </button>
             ))}
           </div>
@@ -529,7 +535,7 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
               playsInline
               loop
               controls={false}
-              preload="auto"
+              preload="metadata"
               className="w-full h-full object-cover pointer-events-none"
             />
           </div>
@@ -565,6 +571,8 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
               <img
                 src="/images/likel-rite/avant-apres.jpg"
                 alt="Comparaison Avant et Après dans une chambre avec le diffuseur LIKEL RITE"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -677,6 +685,8 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
             <img
               src="/images/likel-rite/autonomie-90j.jpg"
               alt="Rechargez moins et profitez plus longtemps avec le diffuseur 500 ml"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
             />
           </div>
@@ -684,6 +694,8 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
             <img
               src="/images/likel-rite/atmosphere-3lumieres.jpg"
               alt="Une atmosphère agréable chez vous avec 3 ambiances lumineuses"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
             />
           </div>
