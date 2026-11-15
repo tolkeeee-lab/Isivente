@@ -25,6 +25,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import UmeiStyleOrderSection, { BundleOption } from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
+import SpinToWinModal from "@/components/features/SpinToWinModal";
 import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/metaPixel";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
@@ -39,6 +40,19 @@ const BUNDLES: BundleOption[] = [
     price: 16900,
     originalPrice: 29000,
     savings: 12100,
+    quantity: 1,
+    popular: true,
+  },
+];
+
+const DISCOUNTED_BUNDLES: BundleOption[] = [
+  {
+    id: "solo-roulette",
+    name: "Masseur Vibrant 2-en-1 (Gagnant Roulette -12%)",
+    subtitle: "Coffret complet : masseur écran LED + sangle mains libres 1,4 m + câble Type-C + garantie test",
+    price: 14900,
+    originalPrice: 29000,
+    savings: 14100,
     quantity: 1,
     popular: true,
   },
@@ -148,6 +162,8 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
 
   // État Formulaire & Commande
   const [selectedBundle, setSelectedBundle] = useState<BundleOption>(BUNDLES[0]);
+  const [hasRouletteDiscount, setHasRouletteDiscount] = useState(false);
+  const [discountSecondsLeft, setDiscountSecondsLeft] = useState(600);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerPhone2, setCustomerPhone2] = useState("");
@@ -184,6 +200,15 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
     }, 3800);
     return () => clearInterval(interval);
   }, [isHeroHovered]);
+
+  // Compte à rebours de l'offre spéciale roulette (10 minutes)
+  useEffect(() => {
+    if (!hasRouletteDiscount) return;
+    const timer = setInterval(() => {
+      setDiscountSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [hasRouletteDiscount]);
 
   // Tracking ViewContent au chargement
   useEffect(() => {
@@ -305,10 +330,12 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
           </div>
           <button
             onClick={scrollToOrder}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-200 transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-200 transition-all active:scale-95 cursor-pointer"
           >
             <span>Commander</span>
-            <span className="text-purple-200 font-semibold">(16 900 F)</span>
+            <span className="text-purple-200 font-semibold">
+              ({hasRouletteDiscount ? "14 900 F 🎉" : "16 900 F"})
+            </span>
           </button>
         </div>
       </header>
@@ -428,11 +455,37 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
               {orderError}
             </div>
           )}
+
+          {hasRouletteDiscount && (
+            <div className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-purple-700 to-indigo-800 text-white shadow-lg border border-purple-400 flex flex-col sm:flex-row items-center justify-between gap-3 animate-fade-in">
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 font-black flex items-center justify-center text-sm shrink-0 shadow-md">
+                  -12%
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm sm:text-base flex items-center gap-1.5 justify-center sm:justify-start">
+                    <span>🎉 Offre Spéciale Roulette Activée !</span>
+                  </h4>
+                  <p className="text-xs text-purple-100">
+                    Votre Masseur passe à <strong className="text-amber-300 font-extrabold text-sm">14 900 FCFA</strong> (au lieu de 16 900 FCFA).
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-xl text-xs font-mono font-bold text-amber-300 shrink-0 border border-white/10">
+                <Clock className="w-3.5 h-3.5" />
+                <span>
+                  {Math.floor(discountSecondsLeft / 60).toString().padStart(2, "0")}:
+                  {(discountSecondsLeft % 60).toString().padStart(2, "0")}
+                </span>
+              </div>
+            </div>
+          )}
+
           <UmeiStyleOrderSection
             productSlug="masseur-vibrant"
             productTitle="Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™"
             productImage="/images/masseur-vibrant/carousel-5-technologie.jpg"
-            bundles={BUNDLES}
+            bundles={hasRouletteDiscount ? DISCOUNTED_BUNDLES : BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => setSelectedBundle(b)}
             customerName={customerName}
@@ -795,11 +848,23 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
 
       {/* ── 16. BARRE MOBILE STICKY CTA ── */}
       <StickyMobileCtaBar
-        price={16900}
+        price={hasRouletteDiscount ? 14900 : 16900}
         accentColor="#7C3AED"
         targetSectionId="commander"
-        buttonText="Commander"
+        buttonText={hasRouletteDiscount ? "Commander à 14 900 F" : "Commander"}
         whatsappMessage="Bonjour Isivente, j'ai une question concernant le Masseur Vibrant 2-en-1 Abdomen & Dos."
+      />
+
+      {/* ── 17. ROULETTE INTERACTIVE D'ABANDON (SPIN TO WIN) ── */}
+      <SpinToWinModal
+        productTitle="Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™"
+        originalPrice={16900}
+        discountPrice={14900}
+        discountPercentage={12}
+        onApplyDiscount={() => {
+          setHasRouletteDiscount(true);
+          setSelectedBundle(DISCOUNTED_BUNDLES[0]);
+        }}
       />
     </div>
   );
