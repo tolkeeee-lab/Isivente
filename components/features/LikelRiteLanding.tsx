@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
@@ -47,28 +48,20 @@ const CAROUSEL_IMAGES = [
     alt: "LIKEL RITE Diffuseur d'Arômes 500 ml Design Flacon de Parfum",
   },
   {
-    src: "/images/likel-rite/avant-apres.jpg",
-    alt: "Même chambre, autre ambiance : Avant et Après avec LIKEL RITE",
-  },
-  {
-    src: "/images/likel-rite/autonomie-90j.jpg",
-    alt: "Rechargez moins, profitez plus longtemps : capacité 500 ml et 3 ambiances lumineuses",
-  },
-  {
-    src: "/images/likel-rite/atmosphere-3lumieres.jpg",
-    alt: "Une atmosphère agréable chez vous avec 3 modes de veilleuse intégrée",
-  },
-  {
     src: "/images/likel-rite/interieur-agreable.jpg",
     alt: "LIKEL RITE Diffuseur d'arôme pour un intérieur agréable",
+  },
+  {
+    src: "/images/likel-rite/autre-atmosphere.jpg",
+    alt: "Votre intérieur mérite une autre atmosphère",
   },
   {
     src: "/images/likel-rite/maison-accueillante.jpg",
     alt: "Une maison plus accueillante chaque jour",
   },
   {
-    src: "/images/likel-rite/autre-atmosphere.jpg",
-    alt: "Votre intérieur mérite une autre atmosphère",
+    src: "/images/likel-rite/autonomie-90j.jpg",
+    alt: "Rechargez moins, profitez plus longtemps : capacité 500 ml",
   },
 ];
 
@@ -330,12 +323,13 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
           className="max-w-[500px] mx-auto rounded-3xl bg-white border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.06)] p-3 sm:p-4 space-y-3"
         >
           <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-200/60 shadow-inner flex items-center justify-center">
-            <img
+            <Image
               src={CAROUSEL_IMAGES[activeImgIndex]?.src}
               alt={CAROUSEL_IMAGES[activeImgIndex]?.alt}
-              loading="eager"
-              decoding="async"
-              className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.01]"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 500px"
+              className="object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.01]"
             />
 
             {/* Boutons navigation discrets */}
@@ -364,24 +358,25 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
           </div>
 
           {/* Miniatures */}
-          <div className="grid grid-cols-7 gap-1.5 pt-1">
+          <div className="grid grid-cols-5 gap-2 pt-1">
             {CAROUSEL_IMAGES.map((img, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => setActiveImgIndex(idx)}
-                className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                   activeImgIndex === idx
-                    ? "border-amber-700 ring-2 ring-amber-700/20"
-                    : "border-slate-200 opacity-55 hover:opacity-90"
+                    ? "border-amber-700 ring-2 ring-amber-700/20 shadow-sm"
+                    : "border-slate-200 opacity-60 hover:opacity-100"
                 }`}
               >
-                <img
+                <Image
                   src={img.src}
                   alt={img.alt}
+                  fill
                   loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
+                  sizes="100px"
+                  className="object-cover"
                 />
               </button>
             ))}
@@ -567,13 +562,14 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div className="rounded-2xl overflow-hidden border border-slate-100 bg-slate-50">
-              <img
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-slate-100 bg-slate-50">
+              <Image
                 src="/images/likel-rite/avant-apres.jpg"
                 alt="Comparaison Avant et Après dans une chambre avec le diffuseur LIKEL RITE"
+                fill
                 loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover"
+                sizes="(max-width: 768px) 100vw, 500px"
+                className="object-cover"
               />
             </div>
 
@@ -681,22 +677,24 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
 
         {/* ── 11. INFOGRAPHIE / GUIDE VISUEL SUPPLÉMENTAIRE ── */}
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-2xs">
-            <img
+          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-2xs">
+            <Image
               src="/images/likel-rite/autonomie-90j.jpg"
               alt="Rechargez moins et profitez plus longtemps avec le diffuseur 500 ml"
+              fill
               loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover"
+              sizes="(max-width: 768px) 100vw, 450px"
+              className="object-cover"
             />
           </div>
-          <div className="rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-2xs">
-            <img
+          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-slate-200/90 bg-white shadow-2xs">
+            <Image
               src="/images/likel-rite/atmosphere-3lumieres.jpg"
               alt="Une atmosphère agréable chez vous avec 3 ambiances lumineuses"
+              fill
               loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover"
+              sizes="(max-width: 768px) 100vw, 450px"
+              className="object-cover"
             />
           </div>
         </section>
