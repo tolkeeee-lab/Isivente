@@ -199,10 +199,9 @@ export default function SpinToWinModal({
       navigator.vibrate([30, 50, 30]);
     }
 
-    // 6 tours complets + arrêt sur le segment 0 (-12%)
+    // 6 tours complets + arrêt pile au centre du segment 0 (-12%)
     const totalSpins = 6;
-    const winningOffset = 0;
-    const targetDegrees = 360 * totalSpins + (360 - winningOffset);
+    const targetDegrees = 360 * totalSpins;
 
     setRotationDegrees(targetDegrees);
 
@@ -287,8 +286,8 @@ export default function SpinToWinModal({
             {/* Roue interactive */}
             <div className="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto my-2 flex items-center justify-center">
               {/* Pointeur fixe en haut */}
-              <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 z-30 drop-shadow-md">
-                <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[18px] border-t-amber-500" />
+              <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-30 drop-shadow-md pointer-events-none">
+                <div className="w-0 h-0 border-l-[11px] border-l-transparent border-r-[11px] border-r-transparent border-t-[20px] border-t-amber-500" />
               </div>
 
               {/* Roue animée */}
@@ -303,8 +302,9 @@ export default function SpinToWinModal({
               >
                 <svg viewBox="0 0 200 200" className="w-full h-full">
                   {SEGMENTS.map((seg, idx) => {
-                    const startAngle = idx * anglePerSegment - 90;
-                    const endAngle = (idx + 1) * anglePerSegment - 90;
+                    // Centrer le segment 0 exactement au sommet (-90°) sous la flèche
+                    const startAngle = idx * anglePerSegment - 90 - anglePerSegment / 2;
+                    const endAngle = (idx + 1) * anglePerSegment - 90 - anglePerSegment / 2;
                     const startRad = (startAngle * Math.PI) / 180;
                     const endRad = (endAngle * Math.PI) / 180;
 
