@@ -328,7 +328,8 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
               alt={CAROUSEL_IMAGES[activeImgIndex]?.alt}
               fill
               priority
-              sizes="(max-width: 768px) 100vw, 500px"
+              quality={80}
+              sizes="(max-width: 640px) 100vw, 500px"
               className="object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.01]"
             />
 
@@ -421,6 +422,7 @@ export default function LikelRiteLanding({ slug = "likel-rite" }: { slug?: strin
               {orderError}
             </div>
           )}
+
           <UmeiStyleOrderSection
             productSlug="likel-rite"
             productTitle="Diffuseur d'Arômes & Veilleuse Cristal LIKEL RITE™ (500 ml)"
