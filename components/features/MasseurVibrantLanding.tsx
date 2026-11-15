@@ -30,15 +30,15 @@ import { saveNewOrder } from "@/lib/ordersStorage";
 import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
 
-// ── PILIER 1 : OFFRE UNIQUE HARMONISÉE (14 900 FCFA) ──
+// ── PILIER 1 : OFFRE UNIQUE HARMONISÉE (16 900 FCFA) ──
 const BUNDLES: BundleOption[] = [
   {
     id: "solo",
     name: "Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™",
     subtitle: "Coffret complet : appareil masseur écran LED + sangle réglable 1,4 m + câble Type-C + garantie test",
-    price: 14900,
-    originalPrice: 25000,
-    savings: 10100,
+    price: 16900,
+    originalPrice: 29000,
+    savings: 12100,
     quantity: 1,
     popular: true,
   },
@@ -108,7 +108,7 @@ const REVIEWS = [
     rating: 5,
     title: "J'ai testé devant le livreur avant de payer, 100% conforme",
     comment:
-      "Colis reçu rapidement à Parakou. Le livreur a attendu que j'ouvre le carton et que j'allume l'appareil pour vérifier qu'il vibrait bien avant que je ne paye les 14 900 F. Vraiment très sérieux !",
+      "Colis reçu rapidement à Parakou. Le livreur a attendu que j'ouvre le carton et que j'allume l'appareil pour vérifier qu'il vibrait bien avant que je ne paye les 16 900 F. Vraiment très sérieux !",
     verified: true,
   },
 ];
@@ -133,7 +133,7 @@ const FAQS = [
   },
   {
     q: "Comment se déroule la livraison et le paiement au Bénin ?",
-    a: "La livraison est effectuée en 24h à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous ne payez rien à l'avance : vous testez l'appareil en allumant l'écran devant le livreur pour vérifier son parfait état de marche avant de lui remettre les 14 900 FCFA.",
+    a: "La livraison est effectuée en 24h à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous ne payez rien à l'avance : vous testez l'appareil en allumant l'écran devant le livreur pour vérifier son parfait état de marche avant de lui remettre les 16 900 FCFA.",
   },
 ];
 
@@ -185,12 +185,12 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
     return () => clearInterval(interval);
   }, [isHeroHovered]);
 
-  // Tracking ViewContent au chargement (14 900 FCFA)
+  // Tracking ViewContent au chargement (16 900 FCFA)
   useEffect(() => {
     trackViewContent({
       content_name: "Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™",
       content_ids: ["masseur-vibrant"],
-      value: 14900,
+      value: 16900,
       currency: "XOF",
     });
   }, []);
@@ -218,14 +218,14 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
     trackAddToCart({
       content_name: "Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™",
       content_ids: ["masseur-vibrant"],
-      value: 14900,
+      value: 16900,
       currency: "XOF",
       num_items: 1,
     });
     trackInitiateCheckout({
       content_name: "Masseur Vibrant Portable 2-en-1 avec Sangle Mains Libres™",
       content_ids: ["masseur-vibrant"],
-      value: 14900,
+      value: 16900,
       currency: "XOF",
     });
     const el = document.getElementById("commander");
@@ -308,7 +308,7 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-200 transition-all active:scale-95 cursor-pointer"
           >
             <span>Commander</span>
-            <span className="text-purple-200 font-semibold">(14 900 F)</span>
+            <span className="text-purple-200 font-semibold">(16 900 F)</span>
           </button>
         </div>
       </header>
@@ -434,10 +434,10 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
           <div className="mb-4 p-4 rounded-2xl bg-amber-50/95 border border-amber-300 text-amber-950 shadow-xs space-y-1.5">
             <div className="flex items-center gap-2 font-bold text-amber-900 text-xs sm:text-sm">
               <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 stroke-[2]" />
-              <span>Engagement ferme de livraison en espèces (14 900 FCFA)</span>
+              <span>Engagement ferme de livraison en espèces (16 900 FCFA)</span>
             </div>
             <p className="text-[11px] sm:text-xs text-amber-800 leading-relaxed">
-              Un livreur se déplace physiquement à moto jusqu'à votre domicile ou lieu de travail. Merci de ne valider ce formulaire que si vous êtes <strong>présent(e)</strong> et avez la somme exacte de <strong>14 900 FCFA en espèces</strong> prête pour régler le livreur à la réception après test de votre appareil.
+              Un livreur se déplace physiquement à moto jusqu'à votre domicile ou lieu de travail. Merci de ne valider ce formulaire que si vous êtes <strong>présent(e)</strong> et avez la somme exacte de <strong>16 900 FCFA en espèces</strong> prête pour régler le livreur à la réception après test de votre appareil.
             </p>
           </div>
 
@@ -705,8 +705,8 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
           </div>
 
           <div className="flex items-center justify-center gap-3">
-            <span className="text-3xl sm:text-4xl font-black text-amber-300">14 900 FCFA</span>
-            <span className="text-lg text-purple-200/70 line-through">25 000 FCFA</span>
+            <span className="text-3xl sm:text-4xl font-black text-amber-300">16 900 FCFA</span>
+            <span className="text-lg text-purple-200/70 line-through">29 000 FCFA</span>
           </div>
 
           <button
@@ -808,11 +808,11 @@ export default function MasseurVibrantLanding({ slug = "masseur-vibrant" }: { sl
 
       {/* ── 16. BARRE MOBILE STICKY CTA ── */}
       <StickyMobileCtaBar
-        price={14900}
+        price={16900}
         accentColor="#7C3AED"
         targetSectionId="commander"
-        buttonText="Commander (14 900 F)"
-        whatsappMessage="Bonjour Isivente, je souhaite commander le Masseur Vibrant 2-en-1 Abdomen & Dos à 14 900 FCFA."
+        buttonText="Commander (16 900 F)"
+        whatsappMessage="Bonjour Isivente, je souhaite commander le Masseur Vibrant 2-en-1 Abdomen & Dos à 16 900 FCFA."
       />
     </div>
   );
