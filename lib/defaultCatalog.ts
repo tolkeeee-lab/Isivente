@@ -369,17 +369,30 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
   },
   {
     id: "peeler-default",
-    title: "Mandoline & Essoreuse Coupe-Légumes Multifonction (Duo Cuisine Malin)",
-    shortTitle: "Mandoline & Duo Cuisine Malin",
+    title: "Coupe-Légumes Multifonction 14-en-1 avec Panier Égouttoir à Anses™",
+    shortTitle: "Coupe-Légumes Panier Égouttoir",
     slug: "peeler",
-    price: 17900,
-    accentColor: "#059669",
-    keywords: ["mandoline", "peeler", "coupe-legumes", "coupe légumes", "eplucheur", "éplucheur"],
-    image_url: "/images/mandoline-hero-avant-apres.jpg",
-    image: "/images/mandoline-hero-avant-apres.jpg",
+    price: 14900,
+    accentColor: "#16A34A",
+    keywords: [
+      "coupe-legumes",
+      "coupe legumes",
+      "mandoline",
+      "panier egouttoir",
+      "passoire",
+      "spaghetti",
+      "oignon",
+      "tomate",
+      "cuisine",
+      "peeler",
+      "râpe",
+      "frites"
+    ],
+    image_url: "/images/peeler/carousel-1-hero-africaine.jpg",
+    image: "/images/peeler/carousel-1-hero-africaine.jpg",
+    headline: "Vos oignons, tomates et légumes coupés en dés parfaits en 1 seconde sans verser une larme ! Panier égouttoir amovible à anses pour rincer et égoutter vos spaghettis et pâtes sans vous brûler.",
     bundles: [
-      { name: "Pack Duo Cuisine Malin (Mandoline + Plateau Conservation)", price: 17900 },
-      { name: "Mandoline Essoreuse Seule", price: 14900 }
+      { name: "Coffret Intégral Coupe-Légumes 14-en-1 + Panier Égouttoir à Anses + 9 Lames Inox + Éplucheur Offert", price: 14900 }
     ]
   },
   {
