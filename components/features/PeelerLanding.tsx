@@ -394,7 +394,7 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
           <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col items-center justify-center gap-1">
             <Truck className="w-5 h-5 text-emerald-600 stroke-[1.75]" />
             <span className="text-[11px] font-bold text-slate-900 leading-tight">Livraison Express 24h</span>
-            <span className="text-[10px] text-slate-500">Cotonou & tout le Bénin</span>
+            <span className="text-[10px] text-slate-500">Cotonou & Calavi</span>
           </div>
 
           <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col items-center justify-center gap-1">
@@ -417,19 +417,6 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
               {orderError}
             </div>
           )}
-
-          {/* Anti-touriste : Engagement ferme de livraison en espèces */}
-          <div className="mb-4 p-4 rounded-2xl bg-amber-50/95 border border-amber-300 text-amber-950 shadow-xs space-y-1.5">
-            <div className="flex items-center gap-2 font-bold text-amber-900 text-xs sm:text-sm">
-              <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 stroke-[2]" />
-              <span>Engagement ferme de livraison en espèces (14 900 FCFA)</span>
-            </div>
-            <p className="text-[11px] sm:text-xs text-amber-800 leading-relaxed">
-              Un livreur se déplace physiquement à moto jusqu&apos;à votre domicile ou lieu de travail. Merci de ne valider ce
-              formulaire que si vous êtes <strong>présent(e)</strong> et avez la somme exacte de <strong>14 900 FCFA en espèces</strong> prête
-              pour régler le livreur à la réception après contrôle de votre coffret.
-            </p>
-          </div>
 
           <UmeiStyleOrderSection
             productSlug="peeler"
