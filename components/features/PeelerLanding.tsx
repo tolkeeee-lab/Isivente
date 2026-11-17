@@ -92,7 +92,7 @@ const REVIEWS = [
   },
   {
     name: "Sébastien A.",
-    city: "Porto-Novo",
+    city: "Cotonou (Cadjehoun)",
     rating: 5,
     title: "Reçu en 24h, testé devant le coursier avant de payer",
     comment:
@@ -130,7 +130,7 @@ const FAQS = [
   },
   {
     q: "Quels sont les délais et conditions de livraison au Bénin ?",
-    a: "La livraison est effectuée sous 24h à Cotonou, Calavi, Porto-Novo et partout au Bénin. Vous ne payez rien à l'avance : le livreur arrive chez vous, vous ouvrez le carton, vous inspectez votre coffret et ses accessoires, et vous lui réglez les 14 900 FCFA en espèces après vérification.",
+    a: "La livraison est effectuée sous 24h à Cotonou et Abomey-Calavi. Vous ne payez rien à l'avance : le livreur arrive chez vous, vous ouvrez le carton, vous inspectez votre coffret et ses accessoires, et vous lui réglez les 14 900 FCFA en espèces après vérification.",
   },
 ];
 
@@ -717,7 +717,7 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
           <p className="font-bold text-slate-800">ISIVENTE BÉNIN — Boutique Officielle</p>
           <p>© {new Date().getFullYear()} Isivente. Tous droits réservés. Service client : +229 01 92 90 18 17</p>
           <p className="text-[11px] text-slate-400">
-            Livraison express à Cotonou, Abomey-Calavi, Porto-Novo, Parakou et partout au Bénin.
+            Livraison express en moins de 24h à Cotonou et Abomey-Calavi.
           </p>
         </footer>
       </main>
