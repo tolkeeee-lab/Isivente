@@ -304,18 +304,17 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-8">
         {/* ── 4. EN-TÊTE TITRE & ACCROCHE ── */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Innovation Cuisine 3-en-1 • Gain de Temps Immédiat</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-xs font-semibold uppercase tracking-wider">
+            <Zap className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Le Secret des Cuisines Sans Fatigue</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Coupe-Légumes Multifonction 14-en-1 avec Panier Égouttoir à Anses™
+            Préparez vos repas en 5 minutes : oignons coupés sans pleurer & spaghettis égouttés sans vous brûler !
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Vos oignons, tomates et légumes coupés en dés parfaits en 1 seconde sans verser une larme ! Le panier passoire
-            amovible vous permet également de rincer vos légumes et d&apos;égoutter vos spaghettis et pâtes sans vous brûler les mains.
+            L&apos;assistant 3-en-1 indispensable qui découpe vos oignons et légumes en dés parfaits d&apos;un coup sec, et vous sert de vraie passoire résistante à anses pour rincer et égoutter vos spaghettis sans vous brûler les mains.
           </p>
         </div>
 
