@@ -17,14 +17,17 @@ Ce standard formalise la stratégie, le paramétrage et la conduite des campagne
 
 Dans l'écosystème publicitaire moderne de Meta (Andromeda / Advantage+), le ciblage par "centres d'intérêt" manuels est devenu secondaire. Meta analyse directement les **pixels de la vidéo**, **l'OCR des textes affichés** et **la transcription audio de la voix-off** pour décider à qui diffuser.
 
-### La Règle du Filtre Qualifiant dès la Frame 0 :
-Si l'on laisse Facebook en Advantage+ avec une pub floue ou sensationnaliste, l'algorithme optimise vers le coût par clic le moins cher (adolescents, curieux sur Facebook Lite).
-Pour forcer l'algorithme à ne chercher **QUE des acheteurs sérieux et solvables**, chaque créa DOIT comporter :
+### La Règle du Filtre Qualifiant dès la Frame 0 (Matrice Cible Idéale Obligatoire) :
+Avant de produire une seule créa vidéo ou voix-off pour un produit, il est **OBLIGATOIRE** de remplir la **Fiche Cible Idéale** et d'injecter ses signaux directement dans la vidéo :
 
-1. **Un Hook Éliminatoire (0 à 3s)** : Interpeller le rôle responsable du prospect (ex: *« Vous cuisinez tous les soirs pour votre famille après le boulot ? »*). Les personnes hors cible décrochent immédiatement.
-2. **Le Prix Ferme Incrusté en Continu** : Afficher en permanence le montant officiel (ex: `14 900 FCFA`) dans un bandeau à fort contraste. L'internaute qui regarde et clique a validé le prix dans sa tête.
-3. **La Zone de Livraison Délimitée** : Écrire clairement `LIVRAISON 24H COTONOU & CALAVI`. Les résidents des villes éloignées ne cliquent pas inutilement.
-4. **La Réassurance COD** : Mentionner `PAIEMENT EN ESPÈCES APRÈS TEST` pour convertir les acheteurs hésitants.
+1. **Définition de la Cible Idéale (Avatar Solvable)** :
+   - **Qui paie réellement à Cotonou/Calavi ?** (ex: Hommes actifs 28–55 ans, mamans salariées, cadres, commerçants — jamais les 18–24 ans sans budget).
+   - **Situation quotidienne exacte** : Le moment précis où le problème frappe (ex: *« Rentrer fatigué du travail à 19h à Cotonou »*).
+2. **Call-Out Direct (0 à 3s)** : Nommer explicitement la cible idéale et son problème dès les 3 premières secondes à l'oral ET en gros texte à l'écran. Les hors-cibles (curieux, ados) décrochent en 0,5s ➔ Meta reçoit un signal pur et verrouille l'audience sur les vrais acheteurs.
+3. **Le Prix Ferme Incrusté en Continu** : Afficher en permanence le montant officiel (ex: `14 900 FCFA`) dans un bandeau à fort contraste. L'internaute qui regarde et clique a validé le prix dans sa tête.
+4. **La Zone de Livraison Délimitée** : Écrire clairement `LIVRAISON 24H COTONOU & CALAVI`. Les résidents des villes éloignées ne cliquent pas inutilement.
+5. **La Réassurance COD** : Mentionner `PAIEMENT EN ESPÈCES APRÈS TEST` pour convertir les acheteurs hésitants.
+6. **Validation Unit Economics Réels** : Avant de fixer le prix, vérifier que `Prix de vente − (Coût achat + 1 500 F livreur + 2 500 F pub + 500 F frais/retours) ≥ 4 000 FCFA net`.
 
 ---
 
@@ -47,7 +50,7 @@ L'IA de Facebook est surpuissante, mais elle est aveugle aux contraintes physiqu
 └───────────────────────┴─────────────────────────────────────────────────┘
 ```
 
-* **Placements** : Laisser en **Advantage+ Placements** (recommandé). Le filtre de la créative et le plancher d'âge suffisent à assainir l'audience sans provoquer l'explosion artificielle du CPM que causent les placements manuels forcés.
+* **Placements** : **Décocher impérativement `Audience Network`** (source n°1 des faux clics accidentels dans les jeux mobiles au Bénin à 0,01 $ sans aucune intention d'achat). Garder uniquement **Fil Facebook, Reels Facebook, Stories Facebook, Fil & Reels Instagram**.
 
 ---
 
@@ -106,3 +109,20 @@ Le système Isivente capture automatiquement ces coordonnées dès 8 chiffres sa
 1. **Relevé Quotidien Obligatoire** : Vérifier chaque matin à 08h30 les prospects enregistrés dans Supabase (`leads`).
 2. **Prise de Contact Ultra-Personnalisée** : Ne jamais attendre que le prospect revienne sur le site. Lui envoyer un message WhatsApp mentionnant son nom, son quartier et le produit.
 3. **Confirmation avant Envoi Coursier** : Le livreur ne démarre sa moto que lorsque le client a répondu et confirmé être présent avec le montant exact en espèces.
+
+---
+
+## 🏦 6. Protocole « Zéro Visiteur Perdu » (Capitalisation & Retargeting)
+
+Chaque visiteur amené sur `isivente.com` a été payé en budget publicitaire : il constitue un actif financier à conserver à 100 %.
+
+1. **Coffre-fort Meta Pixel & CAPI (Conservation 180 jours)** :
+   - Tous les visiteurs sont automatiquement enregistrés par le Pixel (`2150878529184686`) + CAPI dès l'arrivée sur la page.
+   - Créer et maintenir dans Ads Manager les 3 Audiences Personnalisées permanentes :
+     - `Visiteurs isivente.com (180 jours)`
+     - `Vues Produit / ViewContent (30 jours)`
+     - `Paniers / AddToCart & InitiateCheckout (30 jours)`
+   - Utiliser ces audiences pour des campagnes de **Retargeting** (re-présenter l'offre ou lancer un nouveau produit à moindre coût).
+2. **Coffre-fort WhatsApp (Actif 100% Propriétaire & Gratuit à Vie)** :
+   - Sur le site : proposer une capture WhatsApp active (bouton d'assistance directe + pop-up d'abandon `<ExitIntentModal />` + capture de prospects dans Supabase `leads`).
+   - Enregistrer systématiquement dans son répertoire téléphone chaque prospect qui écrit ou laisse son numéro (`Client_Cotonou_XXX`) pour que tous les futurs **Statuts WhatsApp** génèrent des ventes organiques à **0 FCFA de pub**.

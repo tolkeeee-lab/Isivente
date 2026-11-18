@@ -147,6 +147,10 @@ export default function UmeiStyleOrderSection({
     if (setCustomerEmail) setCustomerEmail(val);
   };
 
+  // Qualification Anti-Plaisantins (micro-engagement doux avant validation)
+  const [isEngagementConfirmed, setIsEngagementConfirmed] = useState(false);
+  const [engagementWarning, setEngagementWarning] = useState(false);
+
   const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
   const normalizedSlug = (productSlug || "").toLowerCase();
 
@@ -466,6 +470,12 @@ export default function UmeiStyleOrderSection({
 
         <form
           onSubmit={(e) => {
+            if (!isEngagementConfirmed) {
+              e.preventDefault();
+              setEngagementWarning(true);
+              return;
+            }
+            setEngagementWarning(false);
             markCurrentSessionClicked(normalizedSlug || productSlug);
             onSubmit(e);
           }}
@@ -708,7 +718,7 @@ export default function UmeiStyleOrderSection({
             </div>
           </div>
 
-          {/* 3. RÉCAPITULATIF DU TOTAL & BOUTON COMMANDE */}
+          {/* 3. RÉCAPITULATIF DU TOTAL, QUALIFICATION DOUCE & BOUTON COMMANDE */}
           <div className="pt-3 border-t border-slate-100 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-slate-600">
@@ -721,6 +731,36 @@ export default function UmeiStyleOrderSection({
                 {fmt(totalPrice)} FCFA
               </span>
             </div>
+
+            {/* Case de qualification douce (Anti-Plaisantins) */}
+            <label
+              className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-all select-none ${
+                engagementWarning && !isEngagementConfirmed
+                  ? "bg-rose-50/70 border-rose-300 ring-2 ring-rose-100"
+                  : isEngagementConfirmed
+                  ? "bg-emerald-50/50 border-emerald-200"
+                  : "bg-slate-50/80 border-slate-200/80 hover:border-slate-300"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={isEngagementConfirmed}
+                onChange={(e) => {
+                  setIsEngagementConfirmed(e.target.checked);
+                  if (e.target.checked) setEngagementWarning(false);
+                }}
+                className="mt-0.5 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 shrink-0 cursor-pointer accent-emerald-600"
+              />
+              <span className="text-[11.5px] leading-snug text-slate-700 font-medium">
+                Je confirme être disponible pour réceptionner le colis et avoir les{" "}
+                <strong className="text-slate-900">{fmt(totalPrice)} FCFA</strong> prêts à la livraison.
+              </span>
+            </label>
+            {engagementWarning && !isEngagementConfirmed && (
+              <p className="text-[11px] font-semibold text-rose-600 text-center">
+                Veuillez cocher la case ci-dessus pour confirmer votre disponibilité.
+              </p>
+            )}
 
             <button
               type="submit"
@@ -756,6 +796,27 @@ export default function UmeiStyleOrderSection({
             </div>
           </div>
         </form>
+
+        {/* 4. FILET ZÉRO VISITEUR PERDU : COMMANDE OU QUESTION DIRECTE WHATSAPP 1-CLIC */}
+        <div className="mt-5 pt-4 border-t border-slate-100 text-center space-y-2.5">
+          <p className="text-[11.5px] text-slate-500 font-medium">
+            Vous préférez poser une question ou commander directement sur WhatsApp ?
+          </p>
+          <a
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+              `Bonjour Isivente ! Je suis intéressé(e) par : ${productTitle} (${fmt(
+                totalPrice
+              )} FCFA). J'aimerais poser une question ou commander directement sur WhatsApp.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => handleInteractionTrigger()}
+            className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100/90 border border-emerald-200/90 text-emerald-800 font-bold text-xs sm:text-[13px] flex items-center justify-center gap-2 transition-colors"
+          >
+            <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Discuter ou Commander sur WhatsApp</span>
+          </a>
+        </div>
       </div>
     </section>
   );
