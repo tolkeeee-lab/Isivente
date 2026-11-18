@@ -174,6 +174,7 @@ Consulter et appliquer obligatoirement :
 - `.agents/skills/isivente-clean-visual-assets/SKILL.md`
 - `.agents/skills/isivente-whatsapp-cod-closing/SKILL.md`
 - `.agents/skills/isivente-irresistible-offer-master/SKILL.md`
+- `.agents/skills/isivente-advantage-campaign-master/SKILL.md`
 
 0. **Blindage Absolu & Interdiction du Code à l'Aveugle** :
    - Tout ce qui fonctionne (Zone Rouge : tunnel de commande, CAPI, capture de leads, lecture vidéo) est sanctuarisé.
