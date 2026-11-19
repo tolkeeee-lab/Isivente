@@ -42,6 +42,8 @@ import {
   removeExpense,
   addSale,
   removeSale,
+  updateStartingCapital,
+  clearAllLocalFinances,
 } from "@/lib/financesStorage";
 import { getAllOrders, OrderItem } from "@/lib/ordersStorage";
 import { getAdminDashboardProducts, DEFAULT_CATALOG } from "@/lib/defaultCatalog";
@@ -53,10 +55,13 @@ export default function AdminFinancesPage() {
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [manualSales, setManualSales] = useState<SaleItem[]>([]);
   const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [includeDeliveredOrders, setIncludeDeliveredOrders] = useState<boolean>(true);
+  const [includeDeliveredOrders, setIncludeDeliveredOrders] = useState<boolean>(false);
+  const [startingCapital, setStartingCapital] = useState<number>(0);
+  const [isEditingCapital, setIsEditingCapital] = useState<boolean>(false);
+  const [capitalInput, setCapitalInput] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [period, setPeriod] = useState<PeriodFilter>("month");
+  const [period, setPeriod] = useState<PeriodFilter>("all");
   const [activeTab, setActiveTab] = useState<TabView>("overview");
 
   // Modales d'ajout
@@ -115,6 +120,7 @@ export default function AdminFinancesPage() {
       ]);
       setExpenses(financesData.expenses);
       setManualSales(financesData.sales);
+      setStartingCapital(financesData.startingCapital || 0);
       setOrders(allOrders);
     } catch (e) {
       console.error("Erreur chargement finances:", e);
@@ -122,6 +128,31 @@ export default function AdminFinancesPage() {
       setLoading(false);
       setIsRefreshing(false);
     }
+  };
+
+  const handleSaveCapital = async (customAmount?: number) => {
+    const val = customAmount !== undefined ? customAmount : Number(capitalInput.replace(/\s+/g, ""));
+    if (Number.isNaN(val) || val < 0) return;
+    const saved = await updateStartingCapital(val);
+    setStartingCapital(saved);
+    setIsEditingCapital(false);
+    setCapitalInput("");
+  };
+
+  const handleResetAllFinances = () => {
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(
+        "Remettre toutes les dépenses, ventes manuelles et le capital à zéro pour repartir 100% vierge ?"
+      )
+    ) {
+      return;
+    }
+    clearAllLocalFinances();
+    setExpenses([]);
+    setManualSales([]);
+    setStartingCapital(0);
+    setIncludeDeliveredOrders(false);
   };
 
   useEffect(() => {
@@ -219,6 +250,18 @@ export default function AdminFinancesPage() {
 
   const netProfit = totalRevenue - totalExpenses;
   const netMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
+
+  // Trésorerie cumulée réelle (ce qu'il reste physiquement dans la poche depuis le capital de départ)
+  const allTimeExpenses = useMemo(() => {
+    return expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+  }, [expenses]);
+
+  const allTimeSales = useMemo(() => {
+    return allSalesCombined.reduce((acc, s) => acc + (Number(s.amount) || 0), 0);
+  }, [allSalesCombined]);
+
+  const cashInPocket = startingCapital - allTimeExpenses + allTimeSales;
+  const pocketDelta = allTimeSales - allTimeExpenses;
 
   // Dépenses Pub Meta/TikTok
   const adsExpenses = useMemo(() => {
@@ -461,6 +504,152 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
           >
             <Download className="w-4 h-4" />
           </button>
+
+          <button
+            onClick={handleResetAllFinances}
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 text-xs font-semibold shadow-2xs transition-all active:scale-95 cursor-pointer"
+            title="Remettre tout à zéro pour repartir vierge"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Vierge</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── MA CAISSE & CAPITAL DE DÉPART (CE QU'IL RESTE DANS TA POCHE) ── */}
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 sm:p-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold uppercase tracking-wider mb-1.5">
+              <Wallet className="w-3.5 h-3.5 text-emerald-600" />
+              Suivi de Ma Caisse (Argent en Poche)
+            </span>
+            <h2 className="text-base sm:text-lg font-extrabold text-slate-900">
+              Capital de départ − Achats/Dépenses + Ventes encaissées = Ce qu&apos;il te reste en poche
+            </h2>
+          </div>
+
+          {!isEditingCapital ? (
+            <button
+              onClick={() => {
+                setCapitalInput(startingCapital > 0 ? String(startingCapital) : "100000");
+                setIsEditingCapital(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all cursor-pointer self-start md:self-auto"
+            >
+              <DollarSign className="w-3.5 h-3.5" />
+              <span>{startingCapital > 0 ? "Modifier mon capital" : "Définir mon capital de départ"}</span>
+            </button>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                step={1000}
+                value={capitalInput}
+                onChange={(e) => setCapitalInput(e.target.value)}
+                placeholder="Ex: 100000"
+                className="w-36 px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
+              />
+              <button
+                onClick={() => handleSaveCapital()}
+                className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer"
+              >
+                Valider
+              </button>
+              <button
+                onClick={() => setIsEditingCapital(false)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
+                title="Annuler"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                {[50000, 100000, 200000].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => handleSaveCapital(preset)}
+                    className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold cursor-pointer"
+                  >
+                    {fmt(preset)} F
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+          {/* 1. Capital de départ */}
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              1. Capital de Départ
+            </div>
+            <div className="mt-1.5 text-2xl font-black font-mono text-slate-900">
+              {fmt(startingCapital)} <span className="text-xs font-bold text-slate-500">FCFA</span>
+            </div>
+            <div className="text-[11px] text-slate-500 mt-1">
+              Argent mis au départ dans ta caisse
+            </div>
+          </div>
+
+          {/* 2. Total Achats & Dépenses */}
+          <div className="p-4 rounded-2xl bg-rose-50/50 border border-rose-200/70">
+            <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wider">
+              2. Sorties (Achats &amp; Frais)
+            </div>
+            <div className="mt-1.5 text-2xl font-black font-mono text-rose-600">
+              − {fmt(allTimeExpenses)} <span className="text-xs font-bold text-rose-400">FCFA</span>
+            </div>
+            <div className="text-[11px] text-slate-500 mt-1">
+              Stock, pub, livreurs, appels
+            </div>
+          </div>
+
+          {/* 3. Total Ventes Encaissées */}
+          <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/70">
+            <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
+              3. Entrées (Ventes Encaissées)
+            </div>
+            <div className="mt-1.5 text-2xl font-black font-mono text-emerald-600">
+              + {fmt(allTimeSales)} <span className="text-xs font-bold text-emerald-500">FCFA</span>
+            </div>
+            <div className="text-[11px] text-slate-500 mt-1">
+              Cash &amp; MoMo réellement reçus
+            </div>
+          </div>
+
+          {/* 4. CE QU'IL RESTE DANS TA POCHE */}
+          <div
+            className={`p-4 rounded-2xl border-2 ${
+              cashInPocket >= startingCapital
+                ? "bg-emerald-50/80 border-emerald-400"
+                : "bg-amber-50/70 border-amber-300"
+            }`}
+          >
+            <div className="text-[11px] font-extrabold text-slate-800 uppercase tracking-wider">
+              4. Reste dans ta Poche
+            </div>
+            <div
+              className={`mt-1.5 text-2xl sm:text-3xl font-black font-mono ${
+                cashInPocket >= startingCapital ? "text-emerald-700" : "text-amber-800"
+              }`}
+            >
+              {fmt(cashInPocket)} <span className="text-xs font-bold">FCFA</span>
+            </div>
+            <div className="text-[11px] font-bold mt-1 flex items-center gap-1">
+              {pocketDelta >= 0 ? (
+                <span className="text-emerald-700">
+                  Différence : +{fmt(pocketDelta)} F de bénéfice net
+                </span>
+              ) : (
+                <span className="text-rose-600">
+                  Différence : {fmt(pocketDelta)} F vs capital initial
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

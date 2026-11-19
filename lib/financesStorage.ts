@@ -118,8 +118,36 @@ export interface DailyFinanceBreakdown {
 
 const EXPENSES_STORAGE_KEY = "isivente_cached_expenses";
 const SALES_STORAGE_KEY = "isivente_cached_manual_sales";
+const CAPITAL_STORAGE_KEY = "isivente_starting_capital";
 
 /* ── Gestion Locale Sécurisée ── */
+export function getLocalStartingCapital(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = localStorage.getItem(CAPITAL_STORAGE_KEY);
+    if (raw !== null) {
+      const n = Number(raw);
+      if (!Number.isNaN(n) && n >= 0) return Math.round(n);
+    }
+  } catch {}
+  return 0;
+}
+
+export function saveLocalStartingCapital(amount: number) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(CAPITAL_STORAGE_KEY, String(Math.max(0, Math.round(Number(amount) || 0))));
+  } catch {}
+}
+
+export function clearAllLocalFinances() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(EXPENSES_STORAGE_KEY, "[]");
+    localStorage.setItem(SALES_STORAGE_KEY, "[]");
+    localStorage.setItem(CAPITAL_STORAGE_KEY, "0");
+  } catch {}
+}
 export function getLocalExpenses(): ExpenseItem[] {
   if (typeof window === "undefined") return [];
   try {
@@ -162,21 +190,27 @@ export function saveLocalSales(sales: SaleItem[]) {
 export async function fetchAllFinances(): Promise<{
   expenses: ExpenseItem[];
   sales: SaleItem[];
+  startingCapital: number;
 }> {
   try {
     const res = await fetch("/api/finances", { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
-      if (data && Array.isArray(data.expenses)) {
-        saveLocalExpenses(data.expenses);
+      if (data && data.hasTable) {
+        if (Array.isArray(data.expenses)) saveLocalExpenses(data.expenses);
+        if (Array.isArray(data.sales)) saveLocalSales(data.sales);
+        if (typeof data.startingCapital === "number") {
+          saveLocalStartingCapital(data.startingCapital);
+        }
+        return {
+          expenses: data.expenses || [],
+          sales: data.sales || [],
+          startingCapital:
+            typeof data.startingCapital === "number"
+              ? data.startingCapital
+              : getLocalStartingCapital(),
+        };
       }
-      if (data && Array.isArray(data.sales)) {
-        saveLocalSales(data.sales);
-      }
-      return {
-        expenses: data.expenses || getLocalExpenses(),
-        sales: data.sales || getLocalSales(),
-      };
     }
   } catch (e) {
     console.warn("API finances inaccessible, repli sur le cache local:", e);
@@ -184,7 +218,31 @@ export async function fetchAllFinances(): Promise<{
   return {
     expenses: getLocalExpenses(),
     sales: getLocalSales(),
+    startingCapital: getLocalStartingCapital(),
   };
+}
+
+export async function updateStartingCapital(amount: number): Promise<number> {
+  const cleanAmount = Math.max(0, Math.round(Number(amount) || 0));
+  saveLocalStartingCapital(cleanAmount);
+
+  try {
+    fetch("/api/finances", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "capital",
+        item: {
+          id: "capital_initial",
+          amount: cleanAmount,
+          date: new Date().toISOString().slice(0, 10),
+          description: "Capital de départ en caisse",
+        },
+      }),
+    }).catch(() => {});
+  } catch {}
+
+  return cleanAmount;
 }
 
 export async function addExpense(expense: Omit<ExpenseItem, "id" | "created_at">): Promise<ExpenseItem> {

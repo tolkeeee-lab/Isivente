@@ -18,18 +18,21 @@ export async function GET() {
         hasTable: false,
         expenses: [],
         sales: [],
+        startingCapital: null,
         message: "Table finances non trouvée dans Supabase. Le mode cache local est actif.",
       });
     }
 
     const expenses = (data || []).filter((item: any) => item.type === "expense");
     const sales = (data || []).filter((item: any) => item.type === "sale");
+    const capitalRow = (data || []).find((item: any) => item.id === "capital_initial" || item.type === "capital");
 
     return NextResponse.json({
       success: true,
       hasTable: true,
       expenses,
       sales,
+      startingCapital: capitalRow ? Number(capitalRow.amount) || 0 : null,
     });
   } catch (err: any) {
     return NextResponse.json({
@@ -37,6 +40,7 @@ export async function GET() {
       hasTable: false,
       expenses: [],
       sales: [],
+      startingCapital: null,
       error: err?.message,
     });
   }
@@ -52,11 +56,12 @@ export async function POST(req: NextRequest) {
     const { type, item } = body;
     const supabase = getSupabase();
 
+    const normalizedType = type === "sale" ? "sale" : type === "capital" ? "capital" : "expense";
     const payload = {
-      id: String(item.id),
-      type: type === "sale" ? "sale" : "expense",
+      id: normalizedType === "capital" ? "capital_initial" : String(item.id),
+      type: normalizedType,
       date: item.date || new Date().toISOString().slice(0, 10),
-      category: item.category || (type === "sale" ? "sale" : "other"),
+      category: item.category || (normalizedType === "sale" ? "sale" : normalizedType === "capital" ? "capital" : "other"),
       amount: Math.round(Number(item.amount) || 0),
       product_slug: item.product_slug || null,
       description: item.description || item.notes || null,
