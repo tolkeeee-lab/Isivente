@@ -11,6 +11,7 @@ import {
   Store,
   ExternalLink,
   Wallet,
+  Settings,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -110,8 +111,20 @@ export default function AdminLayout({
               })}
             </nav>
 
-            {/* Lien boutique */}
+            {/* Réglages SaaS & Lien boutique */}
             <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href="/admin/settings"
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-xl border transition-all shadow-2xs ${
+                  pathname.startsWith("/admin/settings")
+                    ? "bg-slate-900 text-white border-slate-900"
+                    : "text-slate-600 hover:text-slate-900 border-slate-200 hover:bg-slate-50"
+                }`}
+                title="Réglages de ma boutique & compte vendeur"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Ma Boutique</span>
+              </Link>
               <Link
                 href="/p/voiture-camera"
                 target="_blank"
