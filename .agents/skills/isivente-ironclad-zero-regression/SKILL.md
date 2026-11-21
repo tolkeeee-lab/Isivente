@@ -121,3 +121,19 @@ node .agents/skills/isivente-ironclad-zero-regression/scripts/verify-integrity.j
 ```
 Tout déploiement ou validation de tâche est conditionné au passage au vert de ce script.
 
+---
+
+## 🔒 5. Audit de Sécurité Obligatoire Avant Installation de Tout Skill Externe (NVIDIA SkillSpector)
+
+**Règle absolue** : Avant d'installer, copier ou exécuter n'importe quel skill externe (dépôt GitHub, archive ZIP, dossier local ou serveur MCP), l'agent DOIT obligatoirement exécuter un scan statique avec **NVIDIA SkillSpector** :
+
+```powershell
+& "$env:USERPROFILE\.local\bin\skillspector.exe" scan <URL_OU_DOSSIER> --no-llm
+```
+
+### Protocole de décision :
+- **`LOW` / `SAFE` (0 finding `CRITICAL` ou `HIGH`)** : Installation autorisée (signaler les éventuels `MEDIUM` à l'utilisateur).
+- **`HIGH` ou `CRITICAL` (prompt injection, exfiltration de données, script malveillant, vol de clés)** : **BLOCAGE IMMÉDIAT** — ne jamais installer ni exécuter le skill, afficher le rapport complet à l'utilisateur et attendre sa décision explicite.
+- Toujours utiliser `--no-llm` par défaut pour garder le scan 100 % local, rapide et gratuit.
+
+
