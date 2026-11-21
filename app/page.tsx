@@ -1,293 +1,243 @@
 import React from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Check,
-  Zap,
-  ShieldCheck,
-  Wallet,
-  Activity,
-  Smartphone,
-  Globe,
-  MessageCircle,
-  Sparkles,
-  Lock,
-} from "lucide-react";
+import { ArrowRight, Check, MessageCircle } from "lucide-react";
 import StoreMetaPixel from "@/components/tracking/StoreMetaPixel";
 import SaasThemePreview from "@/components/features/SaasThemePreview";
 
 const FOUNDER_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686";
 
 export const metadata = {
-  title: "Isivente | Créez votre boutique Paiement à la Livraison (COD) en Afrique",
+  title: "Isivente | Boutique Paiement à la Livraison (COD) pour l'Afrique francophone",
   description:
-    "La plateforme e-commerce pensée pour le Cash-on-Delivery au Bénin, Côte d'Ivoire, Togo, Sénégal et Cameroun. Pages ultra-rapides, formulaire anti-plaisantins, Pixel Meta isolé et suivi de caisse.",
+    "Créez votre boutique Cash-on-Delivery au Bénin, Côte d'Ivoire, Togo, Sénégal et Cameroun. Pages rapides sur 3G/4G, filtre anti-plaisantins, Pixel Meta isolé et suivi de caisse.",
 };
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white text-slate-950 font-sans antialiased selection:bg-emerald-100 selection:text-emerald-950">
+    <div className="min-h-screen bg-[#f7f4ee] text-[#1f1b16] font-sans antialiased">
       <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
 
-      {/* ── HEADER MINIMALISTE VERRE DÉPOLI ── */}
-      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/70">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      {/* Navigation silencieuse */}
+      <header className="sticky top-0 z-40 bg-[#f7f4ee]/95 backdrop-blur-sm border-b border-black/[0.08]">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-xl bg-slate-950 text-white flex items-center justify-center font-black text-sm shadow-xs">
+            <span className="w-7 h-7 rounded-[6px] bg-[#1f1b16] text-[#fdfbf7] flex items-center justify-center font-medium text-[12px]">
               IS
             </span>
-            <span className="font-display font-extrabold text-lg tracking-tight text-slate-950">
+            <span className="font-medium text-[16px] text-[#1f1b16] leading-none">
               Isivente
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-7 text-xs font-bold text-slate-600">
-            <a href="#themes" className="hover:text-slate-950 transition-colors">
-              Thèmes COD
+          <nav className="hidden md:flex items-center gap-7 text-[14px] font-normal text-[#5e554a]">
+            <a href="#fonctionnalites" className="hover:text-[#1f1b16] transition-colors duration-150">
+              Outils COD
             </a>
-            <a href="#fonctionnalites" className="hover:text-slate-950 transition-colors">
-              Fonctionnalités
-            </a>
-            <a href="#comparatif" className="hover:text-slate-950 transition-colors">
+            <a href="#comparatif" className="hover:text-[#1f1b16] transition-colors duration-150">
               Comparatif
             </a>
-            <a href="#tarifs" className="hover:text-slate-950 transition-colors">
+            <a href="#tarifs" className="hover:text-[#1f1b16] transition-colors duration-150">
               Tarifs
+            </a>
+            <a href="#faq" className="hover:text-[#1f1b16] transition-colors duration-150">
+              Questions
             </a>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Link
               href="/login"
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-950 hover:bg-slate-100 transition-colors"
+              className="text-[14px] font-normal text-[#5e554a] hover:text-[#1f1b16] transition-colors duration-150"
             >
               Connexion
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all active:scale-[0.98]"
+              className="h-9 px-4 rounded-[8px] bg-[#1f1b16] hover:bg-[#332c24] text-[#fdfbf7] text-[13px] font-medium inline-flex items-center gap-1.5 transition-colors duration-150"
             >
               <span>Essai gratuit</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-4 h-4 stroke-[1.5]" />
             </Link>
           </div>
         </div>
       </header>
 
-      {/* ── HERO CINÉMATIQUE (HALO LUMINEUX SUBTIL FAÇON STRIPE / VERCEL) ── */}
-      <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.11),_#ffffff_65%)] border-b border-slate-200/70">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-20 sm:pt-24 sm:pb-24 text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-xs text-xs font-bold text-slate-700">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Bénin • Côte d&apos;Ivoire • Togo • Sénégal • Cameroun</span>
-          </div>
-
-          <div className="space-y-5 max-w-3xl mx-auto">
-            <h1 className="font-display font-extrabold text-4xl sm:text-6xl text-slate-950 tracking-[-0.035em] leading-[1.05]">
-              Vendez en Paiement à la Livraison{" "}
-              <span className="text-emerald-600">sans perdre vos clients.</span>
-            </h1>
-            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium">
-              Créez votre boutique COD en 2 minutes depuis votre téléphone. Pages ultra-rapides
-              sur 3G/4G, filtre anti-plaisantins, Pixel Meta isolé et suivi exact de votre caisse.
+      {/* Hero en split asymétrique : texte calme à gauche, vrai aperçu COD interactif à droite */}
+      <section className="border-b border-black/[0.08]">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-14 sm:py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+          <div className="lg:col-span-7 space-y-6">
+            <p className="text-[13px] font-normal text-[#7b7266]">
+              Bénin · Côte d&apos;Ivoire · Togo · Sénégal · Cameroun
             </p>
+
+            <h1 className="text-[38px] sm:text-[52px] lg:text-[58px] leading-[1.05] font-medium text-[#1f1b16] tracking-[-0.03em]">
+              Vendez en paiement à la livraison sans perdre vos commandes
+            </h1>
+
+            <p className="text-[17px] sm:text-[19px] leading-[1.5] font-normal text-[#5e554a] max-w-[34rem]">
+              Publiez vos pages produits depuis votre téléphone, filtrez les faux numéros avant l&apos;envoi du livreur et suivez votre caisse réelle en FCFA.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                href="/register"
+                className="h-12 px-6 rounded-[10px] bg-[#1f1b16] hover:bg-[#332c24] text-[#fdfbf7] text-[15px] font-medium inline-flex items-center gap-2 transition-colors duration-150"
+              >
+                <span>Créer ma boutique</span>
+                <ArrowRight className="w-4 h-4 stroke-[1.5]" />
+              </Link>
+              <a
+                href="#tarifs"
+                className="h-12 px-5 rounded-[10px] bg-[#efe9df] hover:bg-[#e5ddd0] border border-black/[0.08] text-[#1f1b16] text-[15px] font-medium inline-flex items-center transition-colors duration-150"
+              >
+                Voir les tarifs
+              </a>
+            </div>
+
+            <div className="pt-6 border-t border-black/[0.08] grid grid-cols-3 gap-6 max-w-lg">
+              <div>
+                <div className="text-[22px] font-medium font-mono tabular-nums text-[#1f1b16]">
+                  0%
+                </div>
+                <div className="text-[13px] text-[#7b7266] mt-0.5">
+                  Commission sur ventes
+                </div>
+              </div>
+              <div>
+                <div className="text-[22px] font-medium font-mono tabular-nums text-[#1f1b16]">
+                  &lt; 100 Ko
+                </div>
+                <div className="text-[13px] text-[#7b7266] mt-0.5">
+                  Photos compressées 3G
+                </div>
+              </div>
+              <div>
+                <div className="text-[22px] font-medium font-mono tabular-nums text-[#15803d]">
+                  7 jours
+                </div>
+                <div className="text-[13px] text-[#7b7266] mt-0.5">
+                  Essai sans carte Visa
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
-            <Link
-              href="/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-sm sm:text-base shadow-[0_12px_32px_-8px_rgba(9,9,11,0.4)] transition-all active:scale-[0.98]"
-            >
-              <span>Créer ma boutique gratuitement</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a
-              href="#themes"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-900 font-bold text-sm sm:text-base shadow-xs transition-colors"
-            >
-              <span>Tester le thème en direct</span>
-            </a>
-          </div>
-
-          {/* Barre de métriques de preuve */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-8 max-w-3xl mx-auto">
-            <div className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 shadow-xs">
-              <div className="text-xl sm:text-2xl font-black font-mono text-slate-950">&lt; 1s</div>
-              <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Vitesse mobile 3G/4G</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 shadow-xs">
-              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-600">0 %</div>
-              <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Commission sur ventes</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 shadow-xs">
-              <div className="text-xl sm:text-2xl font-black font-mono text-slate-950">8 pays</div>
-              <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Afrique francophone</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-white/90 border border-slate-200/80 shadow-xs">
-              <div className="text-xl sm:text-2xl font-black font-mono text-slate-950">7 jours</div>
-              <div className="text-[11px] font-semibold text-slate-500 mt-0.5">Essai gratuit complet</div>
-            </div>
+          <div className="lg:col-span-5">
+            <SaasThemePreview />
           </div>
         </div>
       </section>
 
-      {/* ── DÉMO INTERACTIVE DES THÈMES COD ── */}
-      <section id="themes" className="bg-white border-b border-slate-200/70">
-        <SaasThemePreview />
-      </section>
-
-      {/* ── BENTO GRID ASYMÉTRIQUE (APPLE / VERCEL STYLE) ── */}
-      <section id="fonctionnalites" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 space-y-12">
-        <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-            Ingénierie Cash-on-Delivery
-          </span>
-          <h2 className="font-display font-extrabold text-2xl sm:text-4xl text-slate-950 tracking-[-0.025em] leading-tight">
-            Chaque outil pensé pour transformer vos clics en billets encaissés
+      {/* Outils terrain COD */}
+      <section id="fonctionnalites" className="max-w-6xl mx-auto px-5 sm:px-8 py-20 space-y-12">
+        <div className="max-w-2xl space-y-2">
+          <p className="text-[13px] text-[#7b7266]">Conçu pour le terrain COD</p>
+          <h2 className="text-[28px] sm:text-[36px] leading-[1.15] font-medium text-[#1f1b16] tracking-[-0.02em]">
+            Quatre outils qui protègent votre marge entre le clic publicitaire et l&apos;encaissement
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-          {/* Grande carte 1 (7 colonnes) */}
-          <div className="md:col-span-7 p-7 sm:p-8 rounded-3xl bg-[#F8FAFC] border border-slate-200/80 flex flex-col justify-between space-y-6">
-            <div className="space-y-3">
-              <div className="w-11 h-11 rounded-2xl bg-slate-950 text-white flex items-center justify-center">
-                <Zap className="w-5 h-5 stroke-[1.75]" />
-              </div>
-              <h3 className="text-xl font-extrabold text-slate-950 tracking-tight">
-                Publiez une page produit en 60 secondes depuis votre téléphone
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Sélectionnez vos photos depuis la galerie de votre smartphone : Isivente les
-                compresse automatiquement sous 100 Ko pour qu&apos;elles s&apos;affichent instantanément
-                sur MTN, Moov et Orange.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold text-slate-700">
-                Compression auto &lt; 100 Ko
-              </span>
-              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold text-slate-700">
-                Zéro code requis
-              </span>
-              <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold text-slate-700">
-                Suppression définitive en 1 clic
-              </span>
-            </div>
-          </div>
-
-          {/* Carte 2 (5 colonnes — Obsidian Contrast) */}
-          <div className="md:col-span-5 p-7 sm:p-8 rounded-3xl bg-slate-950 text-white flex flex-col justify-between space-y-6 shadow-[0_24px_60px_-20px_rgba(9,9,11,0.45)]">
-            <div className="space-y-3">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-                <ShieldCheck className="w-5 h-5 stroke-[1.75]" />
-              </div>
-              <h3 className="text-xl font-extrabold tracking-tight">
-                Filtre Anti-Plaisantins &amp; WhatsApp 1-Clic
-              </h3>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                Case de confirmation de disponibilité obligatoire avant de valider + bouton de
-                commande directe sur votre WhatsApp pour ne perdre aucun visiteur hésitant.
-              </p>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs text-emerald-300 font-semibold flex items-center gap-2">
-              <Check className="w-4 h-4 shrink-0" />
-              <span>Moins de refus livreurs, plus de cash encaissé</span>
-            </div>
-          </div>
-
-          {/* Carte 3 (5 colonnes) */}
-          <div className="md:col-span-5 p-7 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center">
-              <Activity className="w-5 h-5 stroke-[1.75]" />
-            </div>
-            <h3 className="text-lg font-extrabold text-slate-950 tracking-tight">
-              Pixel Meta &amp; Données 100 % Isolés
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-3">
+            <div className="text-[12px] font-mono text-[#7b7266]">01 · Pages mobiles</div>
+            <h3 className="text-[18px] font-medium text-[#1f1b16]">
+              Publication en 2 minutes depuis la galerie photo
             </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Collez votre Pixel Meta ID dans vos réglages : vos événements PageView, ViewContent
-              et InitiateCheckout sont strictement isolés sur votre compte publicitaire.
+            <p className="text-[14px] leading-relaxed text-[#5e554a]">
+              Ajoutez vos photos directement depuis votre téléphone. Isivente les compresse automatiquement sous 100 Ko pour un affichage immédiat sur les réseaux MTN, Moov et Orange.
             </p>
           </div>
 
-          {/* Grande carte 4 (7 colonnes) */}
-          <div className="md:col-span-7 p-7 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between space-y-5">
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-3">
+            <div className="text-[12px] font-mono text-[#7b7266]">02 · Anti-retours</div>
+            <h3 className="text-[18px] font-medium text-[#1f1b16]">
+              Confirmation d&apos;engagement et commande WhatsApp
+            </h3>
+            <p className="text-[14px] leading-relaxed text-[#5e554a]">
+              Chaque client coche sa disponibilité et le montant prêt avant de valider. S&apos;il hésite, un bouton WhatsApp pré-rempli vous permet de conclure la vente en direct.
+            </p>
+          </div>
+
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-3">
+            <div className="text-[12px] font-mono text-[#7b7266]">03 · Publicité</div>
+            <h3 className="text-[18px] font-medium text-[#1f1b16]">
+              Pixel Meta et données isolés par boutique
+            </h3>
+            <p className="text-[14px] leading-relaxed text-[#5e554a]">
+              Renseignez votre identifiant Pixel Meta dans vos réglages. Vos événements de visite et de commande remontent uniquement vers votre compte publicitaire, sans mélange avec d&apos;autres vendeurs.
+            </p>
+          </div>
+
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-4">
             <div className="space-y-3">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center">
-                <Wallet className="w-5 h-5 stroke-[1.75]" />
-              </div>
-              <h3 className="text-lg font-extrabold text-slate-950 tracking-tight">
-                Suivi de Caisse Réelle : sachez exactement ce qu&apos;il reste en poche
+              <div className="text-[12px] font-mono text-[#7b7266]">04 · Trésorerie</div>
+              <h3 className="text-[18px] font-medium text-[#1f1b16]">
+                Calcul exact de votre argent réel en poche
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Renseignez votre capital de départ, notez vos achats stock, budgets pub et frais
-                livreurs : Isivente calcule en temps réel votre trésorerie nette et votre vrai
-                bénéfice.
+              <p className="text-[14px] leading-relaxed text-[#5e554a]">
+                Saisissez votre capital de départ, vos achats de stock, budgets pub et frais livreurs pour connaître à tout moment votre bénéfice net réel.
               </p>
             </div>
-            <div className="grid grid-cols-3 gap-2.5 text-center">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                <div className="text-[10px] font-bold text-slate-400 uppercase">Capital</div>
-                <div className="text-sm font-black font-mono text-slate-900">100 000 F</div>
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-black/[0.08] text-[12px]">
+              <div>
+                <div className="text-[#7b7266]">Capital</div>
+                <div className="font-mono tabular-nums font-medium text-[#1f1b16] mt-0.5">100 000 F</div>
               </div>
-              <div className="p-3 rounded-2xl bg-rose-50/60 border border-rose-200/60">
-                <div className="text-[10px] font-bold text-rose-500 uppercase">Sorties</div>
-                <div className="text-sm font-black font-mono text-rose-600">-35 000 F</div>
+              <div>
+                <div className="text-[#7b7266]">Dépenses</div>
+                <div className="font-mono tabular-nums font-medium text-[#5e554a] mt-0.5">-35 000 F</div>
               </div>
-              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
-                <div className="text-[10px] font-bold text-emerald-700 uppercase">En poche</div>
-                <div className="text-sm font-black font-mono text-emerald-700">145 000 F</div>
+              <div>
+                <div className="text-[#7b7266]">En poche</div>
+                <div className="font-mono tabular-nums font-medium text-[#15803d] mt-0.5">145 000 F</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── COMPARATIF ISIVENTE VS SHOPIFY ── */}
-      <section id="comparatif" className="max-w-5xl mx-auto px-4 sm:px-6 pb-20">
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
-          <div className="p-6 sm:p-8 border-b border-slate-100 text-center space-y-1.5">
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-              Comparatif honnête
-            </span>
-            <h2 className="font-display font-extrabold text-xl sm:text-3xl text-slate-950 tracking-[-0.02em]">
-              Isivente vs Plateformes Occidentales
+      {/* Comparatif factuel */}
+      <section id="comparatif" className="max-w-5xl mx-auto px-5 sm:px-8 pb-20">
+        <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] overflow-hidden">
+          <div className="px-6 py-5 border-b border-black/[0.08]">
+            <h2 className="text-[20px] font-medium text-[#1f1b16]">
+              Isivente face aux plateformes classiques
             </h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] uppercase tracking-wider text-slate-500">
-                <tr>
-                  <th className="py-3.5 px-5 font-bold">Critère terrain COD</th>
-                  <th className="py-3.5 px-5 font-extrabold text-emerald-700">Isivente</th>
-                  <th className="py-3.5 px-5 font-bold text-slate-400">Shopify / Classique</th>
+            <table className="w-full text-left text-[14px] border-collapse min-w-[540px]">
+              <thead>
+                <tr className="border-b border-black/[0.08] bg-[#f7f4ee]/60 text-[12px] text-[#7b7266]">
+                  <th className="py-3 px-6 font-normal">Critère</th>
+                  <th className="py-3 px-6 font-medium text-[#1f1b16]">Isivente</th>
+                  <th className="py-3 px-6 font-normal">Shopify et équivalents</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-black/[0.06]">
                 <tr>
-                  <td className="py-3.5 px-5 font-semibold text-slate-800">Thème COD Haute-Conversion</td>
-                  <td className="py-3.5 px-5 font-bold text-emerald-700">Inclus gratuit (1 clic)</td>
-                  <td className="py-3.5 px-5 text-slate-500">100 $ à 250 $ à acheter</td>
+                  <td className="py-3.5 px-6 text-[#1f1b16]">Thème COD prêt à vendre</td>
+                  <td className="py-3.5 px-6 font-medium text-[#15803d]">Inclus gratuitement</td>
+                  <td className="py-3.5 px-6 text-[#7b7266]">100 à 250 $ à acheter</td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-5 font-semibold text-slate-800">Vitesse mobile 3G/4G Afrique</td>
-                  <td className="py-3.5 px-5 font-bold text-emerald-700">&lt; 1s (photos auto-compressées)</td>
-                  <td className="py-3.5 px-5 text-slate-500">5 à 8s (perte de 70% du trafic)</td>
+                  <td className="py-3.5 px-6 text-[#1f1b16]">Chargement mobile 3G/4G</td>
+                  <td className="py-3.5 px-6 font-medium text-[#1f1b16]">Images compressées sous 100 Ko</td>
+                  <td className="py-3.5 px-6 text-[#7b7266]">Thèmes lourds et lents</td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-5 font-semibold text-slate-800">Filtre Anti-Plaisantins + WhatsApp</td>
-                  <td className="py-3.5 px-5 font-bold text-emerald-700">Intégré nativement</td>
-                  <td className="py-3.5 px-5 text-slate-500">Plugins payants complexes</td>
+                  <td className="py-3.5 px-6 text-[#1f1b16]">Filtre anti-plaisantins et WhatsApp</td>
+                  <td className="py-3.5 px-6 font-medium text-[#1f1b16]">Intégré d&apos;origine</td>
+                  <td className="py-3.5 px-6 text-[#7b7266]">Applications payantes à empiler</td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-5 font-semibold text-slate-800">Suivi de Caisse Réelle (en Poche)</td>
-                  <td className="py-3.5 px-5 font-bold text-emerald-700">Capital + Dépenses + Cash inclus</td>
-                  <td className="py-3.5 px-5 text-slate-500">Non inclus (Excel manuel)</td>
+                  <td className="py-3.5 px-6 text-[#1f1b16]">Suivi caisse et bénéfice net</td>
+                  <td className="py-3.5 px-6 font-medium text-[#1f1b16]">Inclus dans l&apos;espace vendeur</td>
+                  <td className="py-3.5 px-6 text-[#7b7266]">Tableur externe manuel</td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-5 font-semibold text-slate-800">Paiement abonnement</td>
-                  <td className="py-3.5 px-5 font-bold text-emerald-700">9 900 FCFA (Mobile Money)</td>
-                  <td className="py-3.5 px-5 text-slate-500">Carte Visa internationale requise</td>
+                  <td className="py-3.5 px-6 text-[#1f1b16]">Règlement de l&apos;abonnement</td>
+                  <td className="py-3.5 px-6 font-medium text-[#15803d]">Mobile Money en FCFA</td>
+                  <td className="py-3.5 px-6 text-[#7b7266]">Carte Visa internationale exigée</td>
                 </tr>
               </tbody>
             </table>
@@ -295,186 +245,193 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── TARIFS TRANSPARENTS ── */}
-      <section id="tarifs" className="bg-[#F8FAFC] border-y border-slate-200/80 py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
-          <div className="text-center max-w-xl mx-auto space-y-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
-              Tarifs simples en FCFA
-            </span>
-            <h2 className="font-display font-extrabold text-2xl sm:text-4xl text-slate-950 tracking-[-0.025em]">
-              Démarrez gratuitement, payez quand vous vendez
+      {/* Tarifs */}
+      <section id="tarifs" className="border-y border-black/[0.08] bg-[#fdfbf7] py-20">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 space-y-12">
+          <div className="max-w-xl space-y-2">
+            <p className="text-[13px] text-[#7b7266]">Tarifs en FCFA</p>
+            <h2 className="text-[28px] sm:text-[36px] leading-[1.15] font-medium text-[#1f1b16] tracking-[-0.02em]">
+              Commencez gratuitement pendant 7 jours
             </h2>
-            <p className="text-sm text-slate-600">
-              0 % de commission sur vos ventes. Paiement par Mobile Money (MTN, Moov, Orange, Wave).
+            <p className="text-[14px] text-[#5e554a]">
+              Aucune commission sur vos ventes. Règlement mensuel par MTN, Moov, Orange Money ou Wave.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Essai */}
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-7 flex flex-col justify-between space-y-6">
+            <div className="bg-[#f7f4ee]/60 rounded-[14px] border border-black/[0.08] p-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Découverte
+                <div className="text-[14px] font-medium text-[#1f1b16]">Découverte</div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[32px] leading-none font-medium font-mono tabular-nums text-[#1f1b16]">
+                    0 F
+                  </span>
+                  <span className="text-[13px] text-[#7b7266]">/ 7 jours</span>
                 </div>
-                <div>
-                  <span className="text-3xl font-black font-mono text-slate-950">0</span>
-                  <span className="text-xs font-bold text-slate-500"> FCFA / 7 jours</span>
-                </div>
-                <ul className="space-y-2.5 text-xs text-slate-600">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Création de votre boutique en 2 min
+                <ul className="space-y-2.5 text-[13px] text-[#5e554a] pt-2">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Boutique configurée en 2 minutes</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Pages produits illimitées pendant l&apos;essai
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Pages produits illimitées durant l&apos;essai</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Formulaire COD + WhatsApp + Pixel Meta
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Formulaire COD, WhatsApp et Pixel Meta</span>
                   </li>
                 </ul>
               </div>
               <Link
                 href="/register"
-                className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs text-center transition-colors"
+                className="h-10 rounded-[8px] bg-white hover:bg-[#efe9df] border border-black/[0.08] text-[#1f1b16] font-medium text-[13px] inline-flex items-center justify-center transition-colors duration-150"
               >
-                Démarrer gratuitement
+                Démarrer l&apos;essai
               </Link>
             </div>
 
-            {/* Starter */}
-            <div className="bg-slate-950 text-white rounded-3xl p-7 flex flex-col justify-between space-y-6 shadow-[0_24px_60px_-20px_rgba(9,9,11,0.45)] relative">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider inline-flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Populaire
-              </span>
+            {/* Starter (recommandé par bordure et accent sobre) */}
+            <div className="bg-white rounded-[14px] border-2 border-[#1f1b16] p-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                  Plan Starter
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] font-medium text-[#1f1b16]">Starter</span>
+                  <span className="text-[12px] font-medium text-[#15803d]">Recommandé</span>
                 </div>
-                <div>
-                  <span className="text-3xl font-black font-mono text-white">9 900</span>
-                  <span className="text-xs font-bold text-slate-400"> FCFA / mois</span>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[32px] leading-none font-medium font-mono tabular-nums text-[#1f1b16]">
+                    9 900 F
+                  </span>
+                  <span className="text-[13px] text-[#7b7266]">/ mois</span>
                 </div>
-                <ul className="space-y-2.5 text-xs text-slate-300">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Jusqu&apos;à 10 pages produits COD actives
+                <ul className="space-y-2.5 text-[13px] text-[#5e554a] pt-2">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Jusqu&apos;à 10 pages produits actives</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Commandes illimitées • 0 % commission
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Commandes illimitées, 0% de commission</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Suivi de caisse &amp; bénéfices nets inclus
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Suivi de caisse réelle et bénéfice net</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                    Upload photos compressées intégré
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Compression photo mobile intégrée</span>
                   </li>
                 </ul>
               </div>
               <Link
                 href="/register"
-                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs text-center transition-colors"
+                className="h-10 rounded-[8px] bg-[#1f1b16] hover:bg-[#332c24] text-[#fdfbf7] font-medium text-[13px] inline-flex items-center justify-center transition-colors duration-150"
               >
                 Essayer 7 jours gratuitement
               </Link>
             </div>
 
             {/* Pro */}
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-7 flex flex-col justify-between space-y-6">
+            <div className="bg-[#f7f4ee]/60 rounded-[14px] border border-black/[0.08] p-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="text-xs font-bold uppercase tracking-wider text-indigo-600">
-                  Plan Pro Scale
+                <div className="text-[14px] font-medium text-[#1f1b16]">Pro Scale</div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[32px] leading-none font-medium font-mono tabular-nums text-[#1f1b16]">
+                    19 900 F
+                  </span>
+                  <span className="text-[13px] text-[#7b7266]">/ mois</span>
                 </div>
-                <div>
-                  <span className="text-3xl font-black font-mono text-slate-950">19 900</span>
-                  <span className="text-xs font-bold text-slate-500"> FCFA / mois</span>
-                </div>
-                <ul className="space-y-2.5 text-xs text-slate-600">
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Pages produits illimitées
+                <ul className="space-y-2.5 text-[13px] text-[#5e554a] pt-2">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Pages produits illimitées</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Relances paniers abandonnés WhatsApp
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Relances paniers abandonnés WhatsApp</span>
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                    Support prioritaire WhatsApp 7j/7
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 stroke-[1.5] text-[#15803d] shrink-0 mt-0.5" />
+                    <span>Support prioritaire WhatsApp 7j/7</span>
                   </li>
                 </ul>
               </div>
               <Link
                 href="/register"
-                className="w-full py-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs text-center transition-colors"
+                className="h-10 rounded-[8px] bg-white hover:bg-[#efe9df] border border-black/[0.08] text-[#1f1b16] font-medium text-[13px] inline-flex items-center justify-center transition-colors duration-150"
               >
-                Choisir le Plan Pro
+                Choisir le plan Pro
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── FAQ SAAS RAPIDE ── */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20 space-y-8">
-        <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-950 text-center tracking-[-0.02em]">
-          Questions fréquentes des vendeurs
+      {/* Questions fréquentes */}
+      <section id="faq" className="max-w-5xl mx-auto px-5 sm:px-8 py-20 space-y-10">
+        <h2 className="text-[24px] sm:text-[28px] font-medium text-[#1f1b16] tracking-[-0.02em]">
+          Questions fréquentes
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="p-6 rounded-3xl bg-[#F8FAFC] border border-slate-200/80 space-y-2">
-            <h3 className="font-bold text-sm text-slate-950">Faut-il une carte bancaire pour essayer ?</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Non. Vous créez votre compte en 30 secondes avec votre e-mail et vous profitez de 7 jours gratuits. Ensuite, vous réglez par Mobile Money.
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-2">
+            <h3 className="text-[15px] font-medium text-[#1f1b16]">
+              Faut-il une carte bancaire pour démarrer ?
+            </h3>
+            <p className="text-[14px] text-[#5e554a] leading-relaxed">
+              Non. Vous créez votre compte avec votre adresse e-mail et testez gratuitement pendant 7 jours. L&apos;abonnement se règle ensuite par Mobile Money.
             </p>
           </div>
-          <div className="p-6 rounded-3xl bg-[#F8FAFC] border border-slate-200/80 space-y-2">
-            <h3 className="font-bold text-sm text-slate-950">Est-ce que mes données et mon Pixel sont privés ?</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Oui à 100 %. Chaque boutique est isolée par identifiant unique : vos commandes, prospects, finances et votre Pixel Meta n&apos;appartiennent qu&apos;à vous.
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-2">
+            <h3 className="text-[15px] font-medium text-[#1f1b16]">
+              Mes données et mon Pixel Meta restent-ils privés ?
+            </h3>
+            <p className="text-[14px] text-[#5e554a] leading-relaxed">
+              Oui. Chaque boutique dispose de son propre identifiant isolé : commandes, prospects, trésorerie et Pixel Meta appartiennent exclusivement à votre compte.
             </p>
           </div>
-          <div className="p-6 rounded-3xl bg-[#F8FAFC] border border-slate-200/80 space-y-2">
-            <h3 className="font-bold text-sm text-slate-950">Dois-je acheter un thème en plus ?</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Jamais. Le thème haute-conversion COD est inclus gratuitement et s&apos;adapte automatiquement à la couleur de votre marque et à votre pays.
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-2">
+            <h3 className="text-[15px] font-medium text-[#1f1b16]">
+              Dois-je payer un thème supplémentaire ?
+            </h3>
+            <p className="text-[14px] text-[#5e554a] leading-relaxed">
+              Non. Le thème COD est inclus et s&apos;adapte automatiquement à la couleur de votre marque et à votre devise.
             </p>
           </div>
-          <div className="p-6 rounded-3xl bg-[#F8FAFC] border border-slate-200/80 space-y-2">
-            <h3 className="font-bold text-sm text-slate-950">Puis-je gérer ma boutique depuis mon téléphone ?</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Oui : création de pages produits, import de photos depuis votre galerie, suivi des commandes et caisse sont 100 % optimisés mobile.
+          <div className="bg-[#fdfbf7] rounded-[14px] border border-black/[0.08] p-6 space-y-2">
+            <h3 className="text-[15px] font-medium text-[#1f1b16]">
+              Peut-on tout gérer depuis un smartphone ?
+            </h3>
+            <p className="text-[14px] text-[#5e554a] leading-relaxed">
+              Oui. Création de pages produits, import de photos depuis votre galerie, validation des commandes et suivi de caisse fonctionnent directement sur mobile.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer className="max-w-6xl mx-auto px-4 sm:px-6 py-10 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <div className="flex items-center gap-2 font-bold text-slate-900">
-          <Lock className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Isivente — Plateforme E-commerce COD Afrique</span>
-        </div>
-        <div className="flex items-center gap-5">
-          <Link href="/login" className="hover:text-slate-950">
-            Connexion
-          </Link>
-          <Link href="/register" className="hover:text-slate-950">
-            Inscription
-          </Link>
-          <a
-            href="https://wa.me/2290192901817"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-emerald-700 font-bold hover:underline"
-          >
-            <MessageCircle className="w-3.5 h-3.5" />
-            Support WhatsApp
-          </a>
+      {/* Footer sobre */}
+      <footer className="border-t border-black/[0.08]">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-[#7b7266]">
+          <div className="text-[#1f1b16] font-medium">
+            Isivente · E-commerce Paiement à la Livraison
+          </div>
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="hover:text-[#1f1b16] transition-colors duration-150">
+              Connexion
+            </Link>
+            <Link href="/register" className="hover:text-[#1f1b16] transition-colors duration-150">
+              Créer un compte
+            </Link>
+            <a
+              href="https://wa.me/2290192901817"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[#15803d] font-medium hover:underline"
+            >
+              <MessageCircle className="w-4 h-4 stroke-[1.5]" />
+              <span>Support WhatsApp</span>
+            </a>
+          </div>
         </div>
       </footer>
     </div>
