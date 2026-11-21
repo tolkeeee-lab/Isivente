@@ -102,6 +102,7 @@ GRANT EXECUTE ON FUNCTION public.update_delivery_order(text, text, text) TO anon
 -- 3. Optimisation performance RLS : `(select auth.uid())` sur `stores` et `finances`
 DROP POLICY IF EXISTS "store_owner_select" ON public.stores;
 DROP POLICY IF EXISTS "founder_select_all_stores" ON public.stores;
+DROP POLICY IF EXISTS "stores_select_policy" ON public.stores;
 CREATE POLICY "stores_select_policy"
   ON public.stores FOR SELECT
   TO authenticated
@@ -118,6 +119,7 @@ CREATE POLICY "store_owner_insert"
 
 DROP POLICY IF EXISTS "store_owner_update" ON public.stores;
 DROP POLICY IF EXISTS "founder_update_all_stores" ON public.stores;
+DROP POLICY IF EXISTS "stores_update_policy" ON public.stores;
 CREATE POLICY "stores_update_policy"
   ON public.stores FOR UPDATE
   TO authenticated
