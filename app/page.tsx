@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import StoreMetaPixel from "@/components/tracking/StoreMetaPixel";
+import SaasThemePreview from "@/components/features/SaasThemePreview";
 
 const FOUNDER_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686";
 
@@ -119,6 +120,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── APERÇU INTERACTIF DU THÈME COD ── */}
+      <section className="bg-white border-b border-slate-200/70">
+        <SaasThemePreview />
+      </section>
+
       {/* ── 4 PILIERS FONCTIONNELS ── */}
       <section id="fonctionnalites" className="max-w-6xl mx-auto px-4 sm:px-6 py-20 space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -188,6 +194,58 @@ export default function HomePage() {
               pubs et livreurs ainsi que vos ventes encaissées : sachez à tout instant combien il
               reste exactement dans votre poche.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── COMPARATIF ISIVENTE VS SHOPIFY / YOUCAN ── */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-20">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
+          <div className="p-6 sm:p-8 border-b border-slate-100 text-center space-y-1.5">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">
+              Pourquoi les vendeurs quittent Shopify
+            </span>
+            <h2 className="font-display font-black text-xl sm:text-3xl text-slate-950 tracking-tight">
+              Isivente vs Plateformes Classiques
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs sm:text-sm">
+              <thead className="bg-slate-50 border-b border-slate-200/80 text-[11px] uppercase tracking-wider text-slate-500">
+                <tr>
+                  <th className="py-3.5 px-5 font-bold">Critère terrain COD</th>
+                  <th className="py-3.5 px-5 font-extrabold text-emerald-700">Isivente</th>
+                  <th className="py-3.5 px-5 font-bold text-slate-400">Shopify / Classique</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                <tr>
+                  <td className="py-3.5 px-5 font-semibold text-slate-800">Thème COD Haute-Conversion</td>
+                  <td className="py-3.5 px-5 font-bold text-emerald-700">Inclus gratuit (1 clic)</td>
+                  <td className="py-3.5 px-5 text-slate-500">100 $ à 250 $ à acheter</td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 px-5 font-semibold text-slate-800">Vitesse mobile 3G/4G Afrique</td>
+                  <td className="py-3.5 px-5 font-bold text-emerald-700">&lt; 1s (photos auto-compressées)</td>
+                  <td className="py-3.5 px-5 text-slate-500">5 à 8s (perte de 70% du trafic)</td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 px-5 font-semibold text-slate-800">Filtre Anti-Plaisantins + WhatsApp</td>
+                  <td className="py-3.5 px-5 font-bold text-emerald-700">Intégré nativement</td>
+                  <td className="py-3.5 px-5 text-slate-500">Plugins payants complexes</td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 px-5 font-semibold text-slate-800">Suivi de Caisse Réelle (en Poche)</td>
+                  <td className="py-3.5 px-5 font-bold text-emerald-700">Capital + Dépenses + Cash inclus</td>
+                  <td className="py-3.5 px-5 text-slate-500">Non inclus (Excel manuel)</td>
+                </tr>
+                <tr>
+                  <td className="py-3.5 px-5 font-semibold text-slate-800">Paiement abonnement</td>
+                  <td className="py-3.5 px-5 font-bold text-emerald-700">9 900 FCFA (Mobile Money)</td>
+                  <td className="py-3.5 px-5 text-slate-500">Carte Visa internationale requise</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>

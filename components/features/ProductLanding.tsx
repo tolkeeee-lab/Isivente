@@ -371,6 +371,19 @@ export default function ProductLanding({
 
   return (
     <div className="min-h-screen bg-[#FAFBFC] text-slate-900 font-sans antialiased overflow-x-hidden pb-28 md:pb-12">
+      {/* ── BANDEAU TOP BAR ANNONCE ── */}
+      <div
+        className="text-white text-[11px] font-bold py-2 px-4 text-center tracking-wide"
+        style={{ backgroundColor: brandAccent }}
+      >
+        <div className="max-w-5xl mx-auto flex items-center justify-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <span>
+            LIVRAISON EXPRESS 24H {defaultCity.toUpperCase()} • PAIEMENT À LA RÉCEPTION APRÈS TEST
+          </span>
+        </div>
+      </div>
+
       {/* ── STICKY TOP NAV ── */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -413,6 +426,30 @@ export default function ProductLanding({
                 {product.headline}
               </p>
             )}
+            <div className="flex items-center justify-center gap-2.5 pt-1">
+              <span
+                className="text-2xl sm:text-3xl font-black font-mono tracking-tight"
+                style={{ color: brandAccent }}
+              >
+                {fmt(selectedBundle?.price || product.price)} {brandCurrency}
+              </span>
+              {product.original_price && product.original_price > (selectedBundle?.price || product.price) && (
+                <>
+                  <span className="text-sm sm:text-base text-slate-400 line-through font-mono">
+                    {fmt(product.original_price)} {brandCurrency}
+                  </span>
+                  <span className="text-xs font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    -
+                    {Math.round(
+                      ((product.original_price - (selectedBundle?.price || product.price)) /
+                        product.original_price) *
+                        100
+                    )}
+                    %
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
           {/* GALERIE PHOTOS HERO */}
