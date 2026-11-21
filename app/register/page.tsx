@@ -89,13 +89,12 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col items-center justify-center p-4 font-sans antialiased">
       <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200/90 shadow-[0_20px_50px_-24px_rgba(15,23,42,0.12)] p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2 justify-center">
-            <span className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm">
-              IS
-            </span>
-            <span className="font-display font-extrabold text-xl tracking-tight text-slate-900">
-              Isivente
-            </span>
+          <Link href="/" className="inline-flex items-center justify-center">
+            <img
+              src="/brand/isivente-logo-couleur.svg"
+              alt="Isivente"
+              className="h-8 w-auto"
+            />
           </Link>
           <h1 className="text-xl font-black text-slate-900 tracking-tight pt-2">
             Lancez votre boutique COD en 2 minutes

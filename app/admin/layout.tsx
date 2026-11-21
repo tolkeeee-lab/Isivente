@@ -220,9 +220,17 @@ export default function AdminLayout({
       {/* En-tête Boutique */}
       <div className="h-16 px-4 flex items-center justify-between border-b border-black/[0.08] shrink-0">
         <Link href="/admin" className="flex items-center gap-2.5 min-w-0">
-          <span className="w-7 h-7 rounded-[6px] bg-[#171717] text-white flex items-center justify-center font-medium text-[12px] shrink-0">
-            {displayBrand.slice(0, 2).toUpperCase()}
-          </span>
+          {tenantCtx?.isFounder || displayBrand.toLowerCase() === "isivente" ? (
+            <img
+              src="/brand/isivente-icone-app.svg"
+              alt="Isivente"
+              className="w-7 h-7 rounded-[6px] shrink-0"
+            />
+          ) : (
+            <span className="w-7 h-7 rounded-[6px] bg-[#171717] text-white flex items-center justify-center font-medium text-[12px] shrink-0">
+              {displayBrand.slice(0, 2).toUpperCase()}
+            </span>
+          )}
           <div className="min-w-0">
             <span className="font-medium text-[15px] text-[#171717] truncate block leading-none">
               {displayBrand}
@@ -363,9 +371,17 @@ export default function AdminLayout({
                 <Menu className="w-4 h-4 stroke-[1.5]" />
               </button>
               <Link href="/admin" className="flex items-center gap-2 min-w-0">
-                <span className="w-6 h-6 rounded-[6px] bg-[#171717] text-white flex items-center justify-center font-medium text-[11px] shrink-0">
-                  {displayBrand.slice(0, 2).toUpperCase()}
-                </span>
+                {tenantCtx?.isFounder || displayBrand.toLowerCase() === "isivente" ? (
+                  <img
+                    src="/brand/isivente-icone-app.svg"
+                    alt="Isivente"
+                    className="w-6 h-6 rounded-[6px] shrink-0"
+                  />
+                ) : (
+                  <span className="w-6 h-6 rounded-[6px] bg-[#171717] text-white flex items-center justify-center font-medium text-[11px] shrink-0">
+                    {displayBrand.slice(0, 2).toUpperCase()}
+                  </span>
+                )}
                 <span className="font-medium text-[15px] text-[#171717] truncate max-w-[150px]">
                   {displayBrand}
                 </span>

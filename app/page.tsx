@@ -20,13 +20,12 @@ export default function HomePage() {
       {/* Navigation silencieuse */}
       <header className="sticky top-0 z-40 bg-[#f7f4ee]/95 backdrop-blur-sm border-b border-black/[0.08]">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-7 h-7 rounded-[6px] bg-[#1f1b16] text-[#fdfbf7] flex items-center justify-center font-medium text-[12px]">
-              IS
-            </span>
-            <span className="font-medium text-[16px] text-[#1f1b16] leading-none">
-              Isivente
-            </span>
+          <Link href="/" className="flex items-center">
+            <img
+              src="/brand/isivente-logo-couleur.svg"
+              alt="Isivente"
+              className="h-7 w-auto"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-7 text-[14px] font-normal text-[#5e554a]">
@@ -412,8 +411,13 @@ export default function HomePage() {
       {/* Footer sobre */}
       <footer className="border-t border-black/[0.08]">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-[#7b7266]">
-          <div className="text-[#1f1b16] font-medium">
-            Isivente · E-commerce Paiement à la Livraison
+          <div className="flex items-center gap-2.5 text-[#1f1b16] font-medium">
+            <img
+              src="/brand/isivente-logo-couleur.svg"
+              alt="Isivente"
+              className="h-5 w-auto"
+            />
+            <span className="text-[#7b7266] font-normal">· E-commerce Paiement à la Livraison</span>
           </div>
           <div className="flex items-center gap-6">
             <Link href="/login" className="hover:text-[#1f1b16] transition-colors duration-150">
