@@ -371,13 +371,13 @@ export default function ProductLanding({
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-10 animate-pulse">
-          <div className="lg:col-span-6 aspect-square bg-slate-100 rounded-3xl" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-6 aspect-square bg-[#f4f4f5] rounded-[16px]" />
           <div className="lg:col-span-6 space-y-4">
-            <div className="h-5 w-40 bg-slate-100 rounded-full" />
-            <div className="h-9 w-3/4 bg-slate-200 rounded-xl" />
-            <div className="h-7 w-1/3 bg-slate-100 rounded-xl" />
-            <div className="h-72 bg-slate-100 rounded-3xl mt-6" />
+            <div className="h-5 w-40 bg-[#f4f4f5] rounded-[6px]" />
+            <div className="h-9 w-3/4 bg-[#f4f4f5] rounded-[8px]" />
+            <div className="h-7 w-1/3 bg-[#f4f4f5] rounded-[8px]" />
+            <div className="h-72 bg-[#f4f4f5] rounded-[14px] mt-6" />
           </div>
         </div>
       </div>
@@ -387,15 +387,15 @@ export default function ProductLanding({
   /* ─── ERROR / NOT FOUND ─── */
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
-        <div className="text-center max-w-md space-y-4">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-            <Package className="w-7 h-7 text-slate-400" />
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center px-4">
+        <div className="text-center max-w-md space-y-3">
+          <div className="w-12 h-12 mx-auto rounded-[12px] bg-white border border-black/[0.08] flex items-center justify-center">
+            <Package className="w-5 h-5 stroke-[1.5] text-[#737373]" />
           </div>
-          <h1 className="font-display font-bold text-2xl text-slate-950 tracking-tight">
+          <h1 className="text-[20px] font-medium text-[#171717]">
             Produit non disponible
           </h1>
-          <p className="text-slate-500 text-sm">
+          <p className="text-[14px] text-[#737373]">
             Ce produit n&apos;est pas disponible actuellement ou l&apos;adresse est incorrecte.
           </p>
         </div>
@@ -404,31 +404,28 @@ export default function ProductLanding({
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-950 font-sans antialiased overflow-x-hidden pb-28 md:pb-16">
-      {/* ── 1. BANDEAU TOP BAR ÉPURÉ ── */}
+    <div className="min-h-screen bg-white text-[#171717] font-sans antialiased overflow-x-hidden pb-28 md:pb-16">
+      {/* ── 1. BANDEAU LIVRAISON ÉPURÉ ── */}
       <div
-        className="text-white text-[11px] font-semibold py-2 px-4 text-center tracking-wide"
+        className="text-white text-[12px] font-normal py-2 px-4 text-center"
         style={{ backgroundColor: brandAccent }}
       >
-        <div className="max-w-6xl mx-auto flex items-center justify-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-white/90 animate-pulse" />
-          <span>
-            Livraison Express 24h {defaultCity} • Paiement en espèces après vérification
-          </span>
+        <div className="max-w-6xl mx-auto">
+          Livraison 24h {defaultCity} · Paiement en espèces après vérification
         </div>
       </div>
 
-      {/* ── 2. HEADER MINIMALISTE PRESTIGE ── */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b border-slate-200/70">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-4">
+      {/* ── 2. HEADER SILENCIEUX ── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-black/[0.08]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 min-w-0">
             <span
-              className="w-8 h-8 rounded-xl text-white flex items-center justify-center font-black text-xs shrink-0 shadow-xs"
+              className="w-7 h-7 rounded-[6px] text-white flex items-center justify-center font-medium text-[12px] shrink-0"
               style={{ backgroundColor: brandAccent }}
             >
               {brandName.slice(0, 2).toUpperCase()}
             </span>
-            <span className="font-display font-extrabold text-slate-950 text-base tracking-tight truncate">
+            <span className="font-medium text-[#171717] text-[16px] truncate">
               {brandName}
             </span>
           </div>
@@ -436,30 +433,29 @@ export default function ProductLanding({
           <button
             onClick={() => scrollToSection("commander")}
             style={{ backgroundColor: brandAccent }}
-            className="text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-sm hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer shrink-0"
+            className="h-9 px-4 rounded-[8px] text-white text-[13px] font-medium font-mono tabular-nums hover:opacity-90 active:scale-[0.98] transition-[opacity,transform] duration-150 cursor-pointer shrink-0"
           >
-            Commander • {fmt(currentPrice)} {brandCurrency === "FCFA" ? "F" : brandCurrency}
+            Commander · {fmt(currentPrice)} {brandCurrency === "FCFA" ? "F" : brandCurrency}
           </button>
         </div>
       </header>
 
-      {/* ── 3. HERO SPLIT-SCREEN PRESTIGE (2 COLONNES DESKTOP / BORD-À-BORD MOBILE) ── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-0 sm:pt-8 lg:pt-12 space-y-16 sm:space-y-24">
+      {/* ── 3. HERO SPLIT-SCREEN (GALERIE STICKY GAUCHE / IDENTITÉ & FORMULAIRE COD DROITE) ── */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-0 sm:pt-8 lg:pt-12 space-y-16 sm:space-y-20">
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* COLONNE GAUCHE : GALERIE IMMERSIVE (STICKY SUR DESKTOP, EDGE-TO-EDGE SUR MOBILE) */}
+          {/* Galerie */}
           <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-3">
             <div
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
-              className="relative -mx-4 sm:mx-0 aspect-square sm:aspect-[4/3] lg:aspect-square bg-[#F7F7F8] sm:rounded-3xl overflow-hidden sm:border sm:border-slate-200/80 shadow-[0_20px_50px_-28px_rgba(15,23,42,0.18)] group"
+              className="relative -mx-4 sm:mx-0 aspect-square sm:aspect-[4/3] lg:aspect-square bg-[#f4f4f5] sm:rounded-[16px] overflow-hidden sm:border sm:border-black/[0.08]"
             >
               <img
                 src={imagesList[activeImgIdx] || product.image_url}
                 alt={product.title}
-                className="w-full h-full object-cover transition-all duration-500"
+                className="w-full h-full object-cover"
               />
 
-              {/* Flèches discrètes si plusieurs images */}
               {imagesList.length > 1 && (
                 <>
                   <button
@@ -467,27 +463,26 @@ export default function ProductLanding({
                     onClick={() =>
                       setActiveImgIdx((prev) => (prev - 1 + imagesList.length) % imagesList.length)
                     }
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 text-slate-800 flex items-center justify-center shadow-sm hover:bg-white transition-all cursor-pointer"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-[8px] bg-white/95 border border-black/[0.08] text-[#171717] flex items-center justify-center hover:bg-white transition-colors duration-150 cursor-pointer"
                     aria-label="Photo précédente"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-4 h-4 stroke-[1.5]" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveImgIdx((prev) => (prev + 1) % imagesList.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 text-slate-800 flex items-center justify-center shadow-sm hover:bg-white transition-all cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-[8px] bg-white/95 border border-black/[0.08] text-[#171717] flex items-center justify-center hover:bg-white transition-colors duration-150 cursor-pointer"
                     aria-label="Photo suivante"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-4 h-4 stroke-[1.5]" />
                   </button>
-                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-slate-950/75 backdrop-blur-md text-white text-[11px] font-mono font-bold">
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-[6px] bg-[#171717]/80 text-white text-[12px] font-mono tabular-nums">
                     {activeImgIdx + 1} / {imagesList.length}
                   </div>
                 </>
               )}
             </div>
 
-            {/* Pastilles & Miniatures */}
             {imagesList.length > 1 && (
               <div className="flex items-center justify-center sm:justify-start gap-2 overflow-x-auto py-1">
                 {imagesList.map((img: string, idx: number) => (
@@ -495,10 +490,10 @@ export default function ProductLanding({
                     key={idx}
                     type="button"
                     onClick={() => setActiveImgIdx(idx)}
-                    className={`relative w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
+                    className={`relative w-16 h-16 rounded-[10px] overflow-hidden border transition-opacity duration-150 shrink-0 cursor-pointer ${
                       activeImgIdx === idx
-                        ? "border-slate-950 shadow-xs"
-                        : "border-transparent opacity-60 hover:opacity-100"
+                        ? "border-[#171717] opacity-100"
+                        : "border-black/[0.08] opacity-60 hover:opacity-100"
                     }`}
                   >
                     <img src={img} alt="" loading="lazy" className="w-full h-full object-cover" />
@@ -508,78 +503,75 @@ export default function ProductLanding({
             )}
           </div>
 
-          {/* COLONNE DROITE : IDENTITÉ, PREUVE SOCIALE, PRIX & FORMULAIRE COD DIRECT */}
+          {/* Identité, prix, réassurance & formulaire COD */}
           <div className="lg:col-span-6 space-y-6">
-            {/* Titre + Note + Prix */}
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600">
-                <div className="flex items-center text-amber-400">
+              <div className="inline-flex items-center gap-2 text-[13px] text-[#525252]">
+                <div className="flex items-center text-[#b45309]">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-3.5 h-3.5 fill-current" />
                   ))}
                 </div>
-                <span className="font-bold text-slate-900">4.9</span>
-                <span className="text-slate-400">•</span>
-                <span>Avis vérifiés • En stock à {defaultCity}</span>
+                <span className="font-mono tabular-nums font-medium text-[#171717]">4,9</span>
+                <span className="text-[#737373]">· En stock à {defaultCity}</span>
               </div>
 
-              <h1 className="font-display font-extrabold text-2xl sm:text-4xl text-slate-950 tracking-[-0.025em] leading-[1.12]">
+              <h1 className="text-[28px] sm:text-[36px] leading-[1.15] font-medium text-[#171717] tracking-[-0.02em]">
                 {product.title}
               </h1>
 
               {product.headline && (
-                <p className="text-sm sm:text-[15px] text-slate-600 leading-relaxed">
+                <p className="text-[15px] text-[#525252] leading-relaxed">
                   {product.headline}
                 </p>
               )}
 
-              {/* Prix & Économie */}
               <div className="flex flex-wrap items-baseline gap-3 pt-1">
                 <span
-                  className="text-3xl font-black font-mono tracking-tight"
+                  className="text-[28px] sm:text-[32px] leading-none font-medium font-mono tabular-nums"
                   style={{ color: brandAccent }}
                 >
                   {fmt(currentPrice)} {brandCurrency}
                 </span>
                 {originalPrice > currentPrice && (
                   <>
-                    <span className="text-base text-slate-400 line-through font-mono">
+                    <span className="text-[15px] text-[#737373] line-through font-mono tabular-nums">
                       {fmt(originalPrice)} {brandCurrency}
                     </span>
-                    <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      -{discountPct}% • Économisez {fmt(savings)} {brandCurrency}
+                    <span className="text-[12px] font-mono tabular-nums text-[#15803d]">
+                      -{discountPct}% (économie {fmt(savings)} {brandCurrency})
                     </span>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Barre de réassurance épurée (Zéro boîte lourde) */}
-            <div className="grid grid-cols-3 gap-2 py-3.5 border-y border-slate-100">
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-1.5 text-center sm:text-left">
-                <Truck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5 stroke-[1.75]" />
+            {/* 3 repères de réassurance sobres */}
+            <div className="grid grid-cols-3 gap-3 py-4 border-y border-black/[0.08]">
+              <div className="flex items-start gap-2">
+                <Truck className="w-4 h-4 stroke-[1.5] text-[#525252] shrink-0 mt-0.5" />
                 <div>
-                  <div className="text-[11px] font-bold text-slate-900">Livraison 24h</div>
-                  <div className="text-[10px] text-slate-500">{defaultCity}</div>
+                  <div className="text-[13px] font-medium text-[#171717]">Livraison 24h</div>
+                  <div className="text-[12px] text-[#737373]">{defaultCity}</div>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-1.5 text-center sm:text-left">
-                <ShieldCheck className="w-4 h-4 text-slate-900 shrink-0 mt-0.5 stroke-[1.75]" />
+              <div className="flex items-start gap-2">
+                <ShieldCheck className="w-4 h-4 stroke-[1.5] text-[#525252] shrink-0 mt-0.5" />
                 <div>
-                  <div className="text-[11px] font-bold text-slate-900">Test avant paiement</div>
-                  <div className="text-[10px] text-slate-500">0 risque</div>
+                  <div className="text-[13px] font-medium text-[#171717]">Test avant paiement</div>
+                  <div className="text-[12px] text-[#737373]">Aucun risque</div>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-1.5 text-center sm:text-left">
-                <Zap className="w-4 h-4 text-amber-600 shrink-0 mt-0.5 stroke-[1.75]" />
+              <div className="flex items-start gap-2">
+                <Zap className="w-4 h-4 stroke-[1.5] text-[#525252] shrink-0 mt-0.5" />
                 <div>
-                  <div className="text-[11px] font-bold text-slate-900">100% Neuf</div>
-                  <div className="text-[10px] text-slate-500">Garanti</div>
+                  <div className="text-[13px] font-medium text-[#171717]">Produit neuf</div>
+                  <div className="text-[12px] text-[#737373]">Garanti</div>
                 </div>
               </div>
             </div>
 
-            {/* FORMULAIRE DE COMMANDE COD IMMÉDIAT */}
+            {/* Formulaire de commande COD immédiat */}
             <div id="commander" className="scroll-mt-20">
               <UmeiStyleOrderSection
                 productSlug={slug}
@@ -618,34 +610,30 @@ export default function ProductLanding({
           </div>
         </section>
 
-        {/* ── 4. BÉNÉFICES MAJEURS (STYLE ÉDITORIAL PROPRE) ── */}
+        {/* ── 4. POINTS FORTS ── */}
         {product.features && product.features.length > 0 && (
-          <section className="space-y-8 pt-6 border-t border-slate-100">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                Points forts
-              </span>
-              <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-950 tracking-[-0.02em]">
-                Conçu pour votre quotidien
+          <section className="space-y-8 pt-10 border-t border-black/[0.08]">
+            <div className="max-w-2xl space-y-1">
+              <p className="text-[13px] text-[#737373]">Points forts</p>
+              <h2 className="text-[24px] sm:text-[28px] font-medium text-[#171717] tracking-[-0.02em]">
+                Conçu pour un usage quotidien
               </h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {product.features.map((feat, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#FAFBFC] border border-slate-200/70 rounded-3xl p-6 space-y-3 hover:bg-white hover:shadow-md transition-all"
+                  className="bg-[#fafafa] border border-black/[0.08] rounded-[14px] p-5 space-y-2.5"
                 >
-                  <div
-                    className="w-10 h-10 rounded-2xl text-white flex items-center justify-center shadow-xs"
-                    style={{ backgroundColor: brandAccent }}
-                  >
-                    <Check className="w-5 h-5 stroke-[2.25]" />
-                  </div>
-                  <h3 className="font-bold text-sm sm:text-base text-slate-950 leading-snug">
+                  <Check
+                    className="w-4 h-4 stroke-[1.75]"
+                    style={{ color: brandAccent }}
+                  />
+                  <h3 className="font-medium text-[15px] text-[#171717] leading-snug">
                     {feat.title}
                   </h3>
                   {feat.description && (
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    <p className="text-[13px] text-[#525252] leading-relaxed">
                       {feat.description}
                     </p>
                   )}
@@ -655,19 +643,14 @@ export default function ProductLanding({
           </section>
         )}
 
-        {/* ── 5. AVIS CLIENTS VÉRIFIÉS ── */}
-        <section className="space-y-8 pt-6 border-t border-slate-100">
-          <div className="text-center max-w-xl mx-auto space-y-2">
-            <div className="inline-flex items-center gap-1.5 text-amber-400">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-current" />
-              ))}
-            </div>
-            <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-950 tracking-[-0.02em]">
-              Ce que disent nos clients
+        {/* ── 5. AVIS CLIENTS ── */}
+        <section className="space-y-8 pt-10 border-t border-black/[0.08]">
+          <div className="max-w-xl space-y-1">
+            <h2 className="text-[24px] sm:text-[28px] font-medium text-[#171717] tracking-[-0.02em]">
+              Retours clients à {defaultCity}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Note moyenne de 4,9/5 sur les livraisons effectuées à {defaultCity}.
+            <p className="text-[14px] text-[#737373]">
+              Note moyenne de 4,9/5 sur les livraisons effectuées
             </p>
           </div>
 
@@ -675,21 +658,21 @@ export default function ProductLanding({
             {displayedReviews.map((rev, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] flex flex-col justify-between space-y-4"
+                className="bg-[#fafafa] border border-black/[0.08] rounded-[14px] p-5 flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
-                  <div className="flex items-center gap-1 text-amber-400">
+                  <div className="flex items-center gap-0.5 text-[#b45309]">
                     {[...Array(rev.rating || 5)].map((_, i) => (
                       <Star key={i} className="w-3.5 h-3.5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-sm text-slate-700 leading-relaxed">&ldquo;{rev.comment}&rdquo;</p>
+                  <p className="text-[14px] text-[#171717] leading-relaxed">{rev.comment}</p>
                 </div>
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                  <span className="font-bold text-slate-900">{rev.author}</span>
-                  <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
-                    <BadgeCheck className="w-3.5 h-3.5" />
-                    {rev.city || defaultCity}
+                <div className="flex items-center justify-between pt-3 border-t border-black/[0.06] text-[12px]">
+                  <span className="font-medium text-[#171717]">{rev.author}</span>
+                  <span className="inline-flex items-center gap-1 text-[#525252]">
+                    <BadgeCheck className="w-3.5 h-3.5 stroke-[1.5] text-[#15803d]" />
+                    <span>{rev.city || defaultCity}</span>
                   </span>
                 </div>
               </div>
@@ -697,29 +680,29 @@ export default function ProductLanding({
           </div>
         </section>
 
-        {/* ── 6. FAQ ACCORDÉON ÉPURÉE ── */}
+        {/* ── 6. QUESTIONS FRÉQUENTES ── */}
         {product.faq && product.faq.length > 0 && (
-          <section className="max-w-3xl mx-auto space-y-6 pt-6 border-t border-slate-100">
-            <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-950 text-center tracking-[-0.02em]">
+          <section className="max-w-3xl space-y-6 pt-10 border-t border-black/[0.08]">
+            <h2 className="text-[24px] sm:text-[28px] font-medium text-[#171717] tracking-[-0.02em]">
               Questions fréquentes
             </h2>
-            <div className="divide-y divide-slate-200/80 border-y border-slate-200/80">
+            <div className="divide-y divide-black/[0.08] border-y border-black/[0.08]">
               {product.faq.map((item, idx) => (
-                <div key={idx} className="py-1">
+                <div key={idx}>
                   <button
                     type="button"
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full py-4 text-left flex items-center justify-between gap-4 text-sm sm:text-base font-bold text-slate-900 hover:text-slate-600 transition-colors cursor-pointer"
+                    className="w-full py-4 text-left flex items-center justify-between gap-4 text-[15px] font-medium text-[#171717] hover:text-[#525252] transition-colors duration-150 cursor-pointer"
                   >
                     <span>{item.q}</span>
                     <ChevronDown
-                      className={`w-4 h-4 shrink-0 transition-transform duration-200 text-slate-400 ${
-                        openFaq === idx ? "rotate-180 text-slate-900" : ""
+                      className={`w-4 h-4 shrink-0 stroke-[1.5] transition-transform duration-150 text-[#737373] ${
+                        openFaq === idx ? "rotate-180 text-[#171717]" : ""
                       }`}
                     />
                   </button>
                   {openFaq === idx && (
-                    <div className="pb-4 text-sm text-slate-600 leading-relaxed">
+                    <div className="pb-4 text-[14px] text-[#525252] leading-relaxed">
                       {item.a}
                     </div>
                   )}
@@ -730,10 +713,10 @@ export default function ProductLanding({
         )}
       </main>
 
-      {/* ── FOOTER PROPRE ── */}
-      <footer className="max-w-6xl mx-auto px-4 sm:px-6 mt-20 pt-8 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-        <span className="font-bold text-slate-800">{brandName}</span>
-        <span>© {new Date().getFullYear()} {brandName} • Paiement à la livraison après vérification.</span>
+      {/* ── FOOTER ── */}
+      <footer className="max-w-6xl mx-auto px-4 sm:px-6 mt-20 pt-8 border-t border-black/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 text-[13px] text-[#737373]">
+        <span className="font-medium text-[#171717]">{brandName}</span>
+        <span>© {new Date().getFullYear()} {brandName} · Paiement à la livraison après vérification</span>
       </footer>
 
       {/* ── STICKY MOBILE CTA BAR ── */}
@@ -742,7 +725,7 @@ export default function ProductLanding({
         targetSectionId="commander"
         accentColor={brandAccent}
         whatsappNumber={brandWhatsapp}
-        whatsappMessage={`Bonjour ${brandName} ! Je souhaite commander ${product.title} à ${fmt(
+        whatsappMessage={`Bonjour ${brandName}, je souhaite commander ${product.title} à ${fmt(
           currentPrice
         )} ${brandCurrency} avec livraison à domicile.`}
       />
