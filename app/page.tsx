@@ -14,11 +14,11 @@ export const metadata = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#f7f4ee] text-[#1f1b16] font-sans antialiased">
+    <div className="min-h-screen bg-[#F8F5EE] text-[#14281D] font-sans antialiased">
       <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
 
       {/* Navigation silencieuse */}
-      <header className="sticky top-0 z-40 bg-[#f7f4ee]/95 backdrop-blur-sm border-b border-black/[0.08]">
+      <header className="sticky top-0 z-40 bg-[#F8F5EE]/95 backdrop-blur-sm border-b border-black/[0.08]">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-6">
           <Link href="/" className="flex items-center">
             <img
@@ -52,7 +52,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/register"
-              className="h-9 px-4 rounded-[8px] bg-[#1f1b16] hover:bg-[#332c24] text-[#fdfbf7] text-[13px] font-medium inline-flex items-center gap-1.5 transition-colors duration-150"
+              className="h-9 px-4 rounded-[8px] bg-[#14281D] hover:bg-[#1E3A2B] text-[#FDFBF7] text-[13px] font-medium inline-flex items-center gap-1.5 transition-colors duration-150"
             >
               <span>Essai gratuit</span>
               <ArrowRight className="w-4 h-4 stroke-[1.5]" />
@@ -80,14 +80,14 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 href="/register"
-                className="h-12 px-6 rounded-[10px] bg-[#1f1b16] hover:bg-[#332c24] text-[#fdfbf7] text-[15px] font-medium inline-flex items-center gap-2 transition-colors duration-150"
+                className="h-12 px-6 rounded-[10px] bg-[#14281D] hover:bg-[#1E3A2B] text-[#FDFBF7] text-[15px] font-medium inline-flex items-center gap-2 transition-colors duration-150"
               >
                 <span>Créer ma boutique</span>
                 <ArrowRight className="w-4 h-4 stroke-[1.5]" />
               </Link>
               <a
                 href="#tarifs"
-                className="h-12 px-5 rounded-[10px] bg-[#efe9df] hover:bg-[#e5ddd0] border border-black/[0.08] text-[#1f1b16] text-[15px] font-medium inline-flex items-center transition-colors duration-150"
+                className="h-12 px-5 rounded-[10px] bg-[#EFE9DF] hover:bg-[#E5DDD0] border border-black/[0.08] text-[#14281D] text-[15px] font-medium inline-flex items-center transition-colors duration-150"
               >
                 Voir les tarifs
               </a>

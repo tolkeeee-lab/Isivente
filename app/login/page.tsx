@@ -50,8 +50,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col items-center justify-center p-4 font-sans antialiased">
-      <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200/90 shadow-[0_20px_50px_-24px_rgba(15,23,42,0.12)] p-6 sm:p-8 space-y-6">
+    <div className="min-h-screen bg-[#F8F5EE] text-[#14281D] flex flex-col items-center justify-center p-4 font-sans antialiased">
+      <div className="w-full max-w-md bg-[#FDFBF7] rounded-[16px] border border-black/[0.08] shadow-[0_12px_32px_rgba(20,40,29,0.08)] p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center justify-center">
             <img
@@ -60,52 +60,52 @@ export default function LoginPage() {
               className="h-8 w-auto"
             />
           </Link>
-          <h1 className="text-xl font-black text-slate-900 tracking-tight pt-2">
+          <h1 className="text-[22px] font-medium text-[#14281D] tracking-[-0.02em] pt-2">
             Connexion à votre espace vendeur
           </h1>
-          <p className="text-xs text-slate-500">
-            Accédez à vos commandes, vos finances et votre boutique COD.
+          <p className="text-[13px] text-[#7B7266]">
+            Accédez à vos commandes, vos finances et votre boutique COD
           </p>
         </div>
 
         {errorMsg && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded-[10px] bg-white border border-[#DC2626]/30 text-[#DC2626] text-[13px] flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 stroke-[1.5] shrink-0 mt-0.5" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 block">
+            <label className="text-[13px] font-medium text-[#14281D] block">
               Adresse e-mail
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 stroke-[1.5] text-[#7B7266] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="vous@exemple.com"
-                className="w-full pl-10 pr-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 transition-colors"
+                className="w-full h-11 pl-10 pr-3.5 rounded-[8px] border border-black/[0.1] bg-white text-[14px] text-[#14281D] focus:outline-none focus:border-[#14281D] transition-colors duration-150"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 block">
+            <label className="text-[13px] font-medium text-[#14281D] block">
               Mot de passe
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 stroke-[1.5] text-[#7B7266] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900 transition-colors"
+                className="w-full h-11 pl-10 pr-3.5 rounded-[8px] border border-black/[0.1] bg-white text-[14px] text-[#14281D] focus:outline-none focus:border-[#14281D] transition-colors duration-150"
               />
             </div>
           </div>
@@ -113,29 +113,29 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-60 cursor-pointer"
+            className="w-full h-11 px-5 rounded-[8px] bg-[#14281D] hover:bg-[#1E3A2B] text-[#FDFBF7] font-medium text-[14px] flex items-center justify-center gap-2 transition-colors duration-150 disabled:opacity-60 cursor-pointer"
           >
             {loading ? (
-              <span>Connexion en cours...</span>
+              <span>Connexion en cours</span>
             ) : (
               <>
                 <span>Se connecter</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 stroke-[1.5]" />
               </>
             )}
           </button>
         </form>
 
-        <div className="pt-4 border-t border-slate-100 text-center space-y-3">
-          <p className="text-xs text-slate-600">
+        <div className="pt-4 border-t border-black/[0.08] text-center space-y-3">
+          <p className="text-[13px] text-[#5E554A]">
             Pas encore de boutique sur Isivente ?{" "}
-            <Link href="/register" className="font-bold text-slate-900 underline hover:text-indigo-600">
-              Créer mon compte gratuit
+            <Link href="/register" className="font-medium text-[#14281D] underline hover:text-[#E8643C] transition-colors duration-150">
+              Créer un compte
             </Link>
           </p>
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Données isolées et sécurisées par boutique</span>
+          <div className="flex items-center justify-center gap-1.5 text-[12px] text-[#7B7266]">
+            <ShieldCheck className="w-4 h-4 stroke-[1.5] text-[#15803D]" />
+            <span>Données isolées par boutique</span>
           </div>
         </div>
       </div>

@@ -240,40 +240,35 @@ export default function AdminStoreSettingsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto py-16 text-center text-sm text-slate-500">
-        Chargement de votre espace boutique...
+      <div className="max-w-3xl mx-auto py-16 text-center text-[13px] text-[#737373]">
+        Chargement des réglages de votre boutique
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-16">
-      {/* ── EN-TÊTE ── */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-            <Store className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
-              Ma Boutique &amp; Réglages SaaS
-            </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Configurez votre identité, WhatsApp, pays et Meta Pixel pour votre boutique COD.
-            </p>
-          </div>
+    <div className="max-w-3xl mx-auto space-y-6 pb-12">
+      {/* En-tête épuré */}
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-[28px] leading-[1.15] font-medium text-[#171717] tracking-[-0.02em]">
+            Ma boutique
+          </h1>
+          <p className="text-[14px] text-[#737373] mt-1">
+            Identité, WhatsApp, devise et Pixel Meta de votre espace vendeur
+          </p>
         </div>
 
         {userEmail ? (
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl truncate max-w-[180px]">
+            <span className="text-[12px] font-mono text-[#525252] bg-white border border-black/[0.08] px-3 py-1.5 rounded-[8px] truncate max-w-[200px]">
               {userEmail}
             </span>
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-xs font-bold text-slate-600 transition-colors cursor-pointer"
+              className="h-8 inline-flex items-center gap-1.5 px-3 rounded-[8px] border border-black/[0.08] bg-white hover:bg-[#f4f4f5] hover:text-[#dc2626] text-[13px] font-medium text-[#525252] transition-colors duration-150 cursor-pointer"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-4 h-4 stroke-[1.5]" />
               <span>Sortir</span>
             </button>
           </div>
@@ -281,96 +276,90 @@ export default function AdminStoreSettingsPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors"
+              className="h-9 inline-flex items-center gap-1.5 px-3.5 rounded-[8px] bg-[#14281D] hover:bg-[#1E3A2B] text-white text-[13px] font-medium transition-colors duration-150"
             >
-              <LogIn className="w-3.5 h-3.5" />
-              <span>Se connecter</span>
+              <LogIn className="w-4 h-4 stroke-[1.5]" />
+              <span>Connexion</span>
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors"
+              className="h-9 inline-flex items-center px-3.5 rounded-[8px] bg-white border border-black/[0.08] hover:bg-[#f4f4f5] text-[#171717] text-[13px] font-medium transition-colors duration-150"
             >
-              <span>Créer un compte</span>
+              Créer un compte
             </Link>
           </div>
         )}
-      </div>
+      </header>
 
-      {/* ── SI NON CONNECTÉ ── */}
+      {/* Si non connecté */}
       {!userEmail && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 text-center space-y-4 shadow-xs">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center mx-auto">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
-          <div className="space-y-1 max-w-md mx-auto">
-            <h2 className="text-base font-extrabold text-slate-900">
-              Connectez votre compte vendeur pour activer le mode Multi-Boutiques
-            </h2>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Vos pages existantes sur <code>/p/[slug]</code> continuent de fonctionner normalement. Créez votre compte vendeur ci-dessus pour associer votre boutique, votre WhatsApp et votre Pixel en toute sécurité.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* ── ALERTE MIGRATION SQL SI TABLE `stores` NON CRÉÉE ── */}
-      {userEmail && tableMissing && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-2 text-xs text-amber-900">
-          <div className="font-bold flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>Action requise dans Supabase (1 seule fois)</span>
-          </div>
-          <p className="leading-relaxed">
-            La table <code>public.stores</code> n&apos;est pas encore créée dans votre base Supabase. Ouvrez{" "}
-            <strong>Supabase ➔ SQL Editor</strong> et exécutez le fichier{" "}
-            <code>supabase/migrations/001_multi_tenant_stores.sql</code>, puis rechargez cette page.
+        <div className="bg-white rounded-[14px] border border-black/[0.08] p-8 text-center space-y-3 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+          <ShieldCheck className="w-5 h-5 stroke-[1.5] text-[#737373] mx-auto" />
+          <h2 className="text-[16px] font-medium text-[#171717]">
+            Connectez votre compte vendeur
+          </h2>
+          <p className="text-[13px] text-[#737373] max-w-md mx-auto leading-relaxed">
+            Créez votre compte ci-dessus pour associer votre boutique, votre WhatsApp et votre Pixel Meta en toute sécurité.
           </p>
         </div>
       )}
 
-      {/* ── FORMULAIRE DE CONFIGURATION BOUTIQUE ── */}
+      {/* Alerte migration si table stores absente */}
+      {userEmail && tableMissing && (
+        <div className="bg-white border border-[#d97706]/30 rounded-[14px] p-4 space-y-1.5 text-[13px] text-[#525252]">
+          <div className="font-medium text-[#171717] flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 stroke-[1.5] text-[#d97706] shrink-0" />
+            <span>Action requise dans Supabase</span>
+          </div>
+          <p>
+            Exécutez <code>supabase/migrations/001_multi_tenant_stores.sql</code> dans Supabase SQL Editor puis rechargez cette page.
+          </p>
+        </div>
+      )}
+
+      {/* Formulaire de configuration boutique */}
       {userEmail && !tableMissing && (
-        <form onSubmit={handleSave} className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-8 shadow-xs space-y-6">
+        <form onSubmit={handleSave} className="bg-white rounded-[14px] border border-black/[0.08] p-6 sm:p-7 shadow-[0_1px_2px_rgba(0,0,0,0.05)] space-y-6">
           {feedback && (
             <div
-              className={`p-3.5 rounded-2xl border text-xs font-semibold flex items-center gap-2 ${
+              className={`p-3.5 rounded-[10px] border text-[13px] flex items-center gap-2 ${
                 feedback.type === "success"
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                  : "bg-rose-50 border-rose-200 text-rose-700"
+                  ? "bg-[#fafafa] border-[#15803d]/30 text-[#15803d]"
+                  : "bg-[#fafafa] border-[#dc2626]/30 text-[#dc2626]"
               }`}
             >
               {feedback.type === "success" ? (
-                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 stroke-[1.5] shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 shrink-0" />
+                <AlertCircle className="w-4 h-4 stroke-[1.5] shrink-0" />
               )}
               <span>{feedback.text}</span>
             </div>
           )}
 
-          {/* Identité */}
+          {/* 1. Identité */}
           <div className="space-y-4">
-            <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <Store className="w-4 h-4 text-slate-500" />
-              1. Identité de la boutique
+            <h2 className="text-[14px] font-medium text-[#171717] flex items-center gap-2">
+              <Store className="w-4 h-4 stroke-[1.5] text-[#737373]" />
+              <span>Identité de la boutique</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Nom officiel de la boutique *</label>
+                <label className="text-[13px] text-[#525252] block">Nom de la boutique</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  placeholder="Ex: Isivente Cotonou"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                  placeholder="Isivente Cotonou"
+                  className="w-full h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Lien unique (slug) *</label>
-                <div className="flex items-center gap-1.5">
+                <label className="text-[13px] text-[#525252] block">Identifiant (slug)</label>
+                <div className="flex items-center gap-2">
                   <input
                     type="text"
                     required
@@ -380,36 +369,36 @@ export default function AdminStoreSettingsPage() {
                       setSlug(slugifyStoreName(e.target.value));
                     }}
                     placeholder="isivente"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-mono text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                    className="w-full h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] font-mono text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                   />
                   <button
                     type="button"
                     onClick={copyStoreUrl}
-                    className="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 cursor-pointer shrink-0"
-                    title="Copier le lien de ma boutique"
+                    className="h-10 w-10 rounded-[8px] border border-black/[0.08] hover:bg-[#f4f4f5] text-[#525252] inline-flex items-center justify-center cursor-pointer shrink-0 transition-colors duration-150"
+                    title="Copier le lien"
                   >
-                    {copiedUrl ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                    {copiedUrl ? <Check className="w-4 h-4 stroke-[1.5] text-[#15803d]" /> : <Copy className="w-4 h-4 stroke-[1.5]" />}
                   </button>
                 </div>
-                <p className="text-[11px] text-slate-400 font-mono truncate">{storePublicUrl}</p>
+                <p className="text-[12px] text-[#737373] font-mono truncate">{storePublicUrl}</p>
               </div>
             </div>
           </div>
 
-          {/* Localisation & WhatsApp */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-slate-500" />
-              2. Pays, Livraison &amp; WhatsApp
+          {/* 2. Localisation & WhatsApp */}
+          <div className="space-y-4 pt-5 border-t border-black/[0.08]">
+            <h2 className="text-[14px] font-medium text-[#171717] flex items-center gap-2">
+              <Globe className="w-4 h-4 stroke-[1.5] text-[#737373]" />
+              <span>Pays, livraison et WhatsApp</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Pays principal</label>
+                <label className="text-[13px] text-[#525252] block">Pays principal</label>
                 <select
                   value={country}
                   onChange={(e) => handleCountryChange(e.target.value as AfricanCountryCode)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                  className="w-full h-10 px-3 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                 >
                   {AFRICAN_COUNTRIES.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -420,245 +409,236 @@ export default function AdminStoreSettingsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Ville principale</label>
+                <label className="text-[13px] text-[#525252] block">Ville principale</label>
                 <input
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Cotonou"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                  className="w-full h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Devise</label>
+                <label className="text-[13px] text-[#525252] block">Devise</label>
                 <input
                   type="text"
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
                   placeholder="FCFA"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-bold text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                  className="w-full h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] font-mono text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                  Numéro WhatsApp (avec indicatif pays) *
+                <label className="text-[13px] text-[#525252] flex items-center gap-1.5">
+                  <Phone className="w-4 h-4 stroke-[1.5] text-[#737373]" />
+                  <span>Numéro WhatsApp (avec indicatif)</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
-                  placeholder="Ex: 2290192901817"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-mono text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                  placeholder="2290192901817"
+                  className="w-full h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] font-mono text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Palette className="w-3.5 h-3.5 text-indigo-600" />
-                  Couleur principale de marque
+                <label className="text-[13px] text-[#525252] flex items-center gap-1.5">
+                  <Palette className="w-4 h-4 stroke-[1.5] text-[#737373]" />
+                  <span>Couleur de marque</span>
                 </label>
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2">
                   <input
                     type="color"
                     value={accentColor}
                     onChange={(e) => setAccentColor(e.target.value)}
-                    className="w-11 h-10 rounded-xl border border-slate-200 cursor-pointer p-1 bg-white"
+                    className="w-10 h-10 rounded-[8px] border border-black/[0.1] cursor-pointer p-1 bg-white"
                   />
                   <input
                     type="text"
                     value={accentColor}
                     onChange={(e) => setAccentColor(e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-mono text-slate-900"
+                    className="flex-1 h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] font-mono text-[#171717]"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Meta Pixel & CAPI */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h2 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <Activity className="w-4 h-4 text-slate-500" />
-              3. Attribution Publicitaire (Meta Pixel &amp; CAPI)
+          {/* 3. Attribution Meta */}
+          <div className="space-y-4 pt-5 border-t border-black/[0.08]">
+            <h2 className="text-[14px] font-medium text-[#171717] flex items-center gap-2">
+              <Activity className="w-4 h-4 stroke-[1.5] text-[#737373]" />
+              <span>Attribution Meta Pixel et CAPI</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 block">Meta Pixel ID (optionnel)</label>
+                <label className="text-[13px] text-[#525252] block">Meta Pixel ID (optionnel)</label>
                 <input
                   type="text"
                   value={metaPixelId}
                   onChange={(e) => setMetaPixelId(e.target.value)}
-                  placeholder="Ex: 2150878529184686"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-mono text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                  placeholder="2150878529184686"
+                  className="w-full h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] font-mono text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-slate-500" />
-                  Token Conversions API (CAPI)
+                <label className="text-[13px] text-[#525252] flex items-center gap-1.5">
+                  <KeyRound className="w-4 h-4 stroke-[1.5] text-[#737373]" />
+                  <span>Token Conversions API</span>
                 </label>
                 <input
                   type="password"
                   value={metaCapiToken}
                   onChange={(e) => setMetaCapiToken(e.target.value)}
                   placeholder="EAA..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-mono text-slate-900 focus:bg-white focus:outline-none focus:border-slate-900"
+                  className="w-full h-10 px-3.5 rounded-[8px] border border-black/[0.1] bg-[#fafafa] text-[14px] font-mono text-[#171717] focus:bg-white focus:outline-none focus:border-[#171717] transition-colors duration-150"
                 />
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex justify-end">
+          <div className="pt-5 border-t border-black/[0.08] flex justify-end">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition-all disabled:opacity-60 cursor-pointer"
+              className="h-10 inline-flex items-center gap-2 px-5 rounded-[8px] bg-[#14281D] hover:bg-[#1E3A2B] text-white font-medium text-[14px] transition-colors duration-150 disabled:opacity-60 cursor-pointer"
             >
-              <Save className="w-4 h-4" />
-              <span>{saving ? "Enregistrement..." : "Enregistrer ma boutique"}</span>
+              <Save className="w-4 h-4 stroke-[1.5]" />
+              <span>{saving ? "Enregistrement" : "Enregistrer ma boutique"}</span>
             </button>
           </div>
         </form>
       )}
 
-      {/* ── PANNEAU SUPER-ADMIN FONDATEUR : CONTRÔLE DES VENDEURS (PAUSE / RÉACTIVATION) ── */}
+      {/* Panneau Fondateur : contrôle des boutiques inscrites */}
       {userEmail && isFounderEmail(userEmail) && !tableMissing && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+        <section className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] overflow-hidden">
+          <div className="px-6 py-4 border-b border-black/[0.08] flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center">
-                <Users className="w-4 h-4" />
-              </div>
+              <Users className="w-4 h-4 stroke-[1.5] text-[#737373]" />
               <div>
-                <h2 className="text-base font-black text-slate-900">
-                  Contrôle Fondateur — Boutiques Inscrites ({allStores.length})
+                <h2 className="text-[15px] font-medium text-[#171717]">
+                  Boutiques inscrites · <span className="font-mono tabular-nums text-[#737373]">{allStores.length}</span>
                 </h2>
-                <p className="text-xs text-slate-500">
-                  Mettez n&apos;importe quel vendeur en pause tant qu&apos;il n&apos;a pas payé son abonnement, ou réactivez-le en 1 clic.
+                <p className="text-[12px] text-[#737373]">
+                  Mettez un compte en pause en attente de paiement ou réactivez-le en un clic
                 </p>
               </div>
             </div>
           </div>
 
-          {founderError && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-              {founderError}
-            </div>
-          )}
+          <div className="p-4 space-y-3">
+            {founderError && (
+              <div className="p-3 rounded-[8px] bg-[#fafafa] border border-[#dc2626]/30 text-[#dc2626] text-[13px]">
+                {founderError}
+              </div>
+            )}
 
-          {allStores.length === 0 ? (
-            <p className="text-xs text-slate-500 py-4 text-center">
-              Aucune boutique inscrite pour le moment.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {allStores.map((st) => {
-                const isOwnStore = store?.id === st.id;
-                const isPaused = st.is_active === false;
-                return (
-                  <div
-                    key={st.id}
-                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                      isPaused
-                        ? "bg-rose-50/40 border-rose-200"
-                        : "bg-slate-50/60 border-slate-200/80"
-                    }`}
-                  >
-                    <div className="space-y-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-bold text-sm text-slate-900">{st.name}</span>
-                        <span className="text-[11px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">
-                          {st.slug}
-                        </span>
-                        <span
-                          className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                            isPaused
-                              ? "bg-rose-100 text-rose-700 border border-rose-200"
-                              : "bg-emerald-100 text-emerald-700 border border-emerald-200"
-                          }`}
-                        >
-                          {isPaused ? "En Pause" : "Actif"}
-                        </span>
-                        {isOwnStore && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
-                            Ma Boutique
+            {allStores.length === 0 ? (
+              <p className="text-[13px] text-[#737373] py-6 text-center">
+                Aucune boutique inscrite pour le moment
+              </p>
+            ) : (
+              <div className="divide-y divide-black/[0.06]">
+                {allStores.map((st) => {
+                  const isOwnStore = store?.id === st.id;
+                  const isPaused = st.is_active === false;
+                  return (
+                    <div
+                      key={st.id}
+                      className="py-3.5 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <span className="font-medium text-[14px] text-[#171717]">{st.name}</span>
+                          <span className="text-[12px] font-mono text-[#737373]">{st.slug}</span>
+                          <span className="inline-flex items-center gap-1.5 text-[12px] text-[#525252]">
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isPaused ? "bg-[#dc2626]" : "bg-[#15803d]"
+                              }`}
+                            />
+                            <span>{isPaused ? "En pause" : "Actif"}</span>
                           </span>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500">
-                        <span>
-                          {st.city} ({st.country})
-                        </span>
-                        {st.whatsapp_number && (
-                          <a
-                            href={`https://wa.me/${st.whatsapp_number}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-emerald-700 font-semibold hover:underline"
-                          >
-                            <MessageCircle className="w-3 h-3" />
-                            +{st.whatsapp_number}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 shrink-0">
-                      <select
-                        value={st.plan || "trial"}
-                        disabled={togglingStoreId === st.id}
-                        onChange={(e) =>
-                          handleChangeStorePlan(
-                            st,
-                            e.target.value as "trial" | "starter" | "pro"
-                          )
-                        }
-                        className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 cursor-pointer"
-                      >
-                        <option value="trial">Essai 7j</option>
-                        <option value="starter">Starter (9 900 F)</option>
-                        <option value="pro">Pro (19 900 F)</option>
-                      </select>
-
-                      {!isOwnStore && (
-                        <button
-                          type="button"
-                          disabled={togglingStoreId === st.id}
-                          onClick={() => handleToggleStorePause(st)}
-                          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 ${
-                            isPaused
-                              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                              : "bg-rose-600 hover:bg-rose-700 text-white"
-                          }`}
-                        >
-                          {isPaused ? (
-                            <>
-                              <PlayCircle className="w-3.5 h-3.5" />
-                              <span>Réactiver</span>
-                            </>
-                          ) : (
-                            <>
-                              <PauseCircle className="w-3.5 h-3.5" />
-                              <span>Mettre en pause</span>
-                            </>
+                          {isOwnStore && (
+                            <span className="text-[12px] text-[#737373]">· Fondateur</span>
                           )}
-                        </button>
-                      )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 text-[12px] text-[#737373]">
+                          <span>
+                            {st.city} ({st.country})
+                          </span>
+                          {st.whatsapp_number && (
+                            <a
+                              href={`https://wa.me/${st.whatsapp_number}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[#15803d] hover:underline font-mono"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 stroke-[1.5]" />
+                              +{st.whatsapp_number}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <select
+                          value={st.plan || "trial"}
+                          disabled={togglingStoreId === st.id}
+                          onChange={(e) =>
+                            handleChangeStorePlan(
+                              st,
+                              e.target.value as "trial" | "starter" | "pro"
+                            )
+                          }
+                          className="h-8 px-2.5 rounded-[8px] border border-black/[0.1] bg-white text-[12px] font-medium text-[#171717] cursor-pointer"
+                        >
+                          <option value="trial">Essai 7j</option>
+                          <option value="starter">Starter (9 900 F)</option>
+                          <option value="pro">Pro (19 900 F)</option>
+                        </select>
+
+                        {!isOwnStore && (
+                          <button
+                            type="button"
+                            disabled={togglingStoreId === st.id}
+                            onClick={() => handleToggleStorePause(st)}
+                            className={`h-8 inline-flex items-center gap-1.5 px-3 rounded-[8px] text-[12px] font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 ${
+                              isPaused
+                                ? "bg-[#15803d] hover:bg-[#166534] text-white"
+                                : "bg-white hover:bg-[#fef2f2] text-[#dc2626] border border-[#dc2626]/30"
+                            }`}
+                          >
+                            {isPaused ? (
+                              <>
+                                <PlayCircle className="w-3.5 h-3.5 stroke-[1.5]" />
+                                <span>Réactiver</span>
+                              </>
+                            ) : (
+                              <>
+                                <PauseCircle className="w-3.5 h-3.5 stroke-[1.5]" />
+                                <span>Mettre en pause</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
       )}
     </div>
   );
