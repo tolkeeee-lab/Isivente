@@ -149,7 +149,7 @@ export default function AdminWhatsAppPage() {
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="font-display font-extrabold text-xl sm:text-2xl text-slate-900">
+              <h1 className="font-display font-semibold text-xl sm:text-2xl text-slate-900">
                 Agent & Répondeur WhatsApp 24/7
               </h1>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -191,11 +191,11 @@ export default function AdminWhatsAppPage() {
 
             {baileysStatus.running && baileysStatus.status === "connected" ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 Connecté ({baileysStatus.connectedPhone})
               </span>
             ) : baileysStatus.running ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#f4f4f5] text-[#525252]">
                 <QrCode className="w-3.5 h-3.5" />
                 Prêt à scanner
               </span>
@@ -209,7 +209,7 @@ export default function AdminWhatsAppPage() {
           {/* QR CODE EN DIRECT SI DISPONIBLE */}
           {baileysStatus.running && baileysStatus.qrCodeBase64 && (
             <div className="p-5 rounded-2xl bg-emerald-50/50 border-2 border-emerald-500 text-center space-y-3">
-              <div className="text-xs font-extrabold text-emerald-950 uppercase tracking-wider">
+              <div className="text-xs font-semibold text-emerald-950 uppercase tracking-wider">
                 📱 Scanne ce QR Code avec ton WhatsApp (Appareils connectés)
               </div>
               <img

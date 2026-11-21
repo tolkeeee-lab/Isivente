@@ -616,10 +616,10 @@ export default function TrackerPage() {
           className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white text-xs sm:text-sm font-bold border transition-all animate-bounce ${
             liveToast.type === "order"
               ? "bg-emerald-600 border-emerald-400"
-              : "bg-amber-600 border-amber-400"
+              : "bg-[#171717] border-black/[0.08]"
           }`}
         >
-          <Bell className="w-5 h-5 text-white animate-pulse" />
+          <Bell className="w-5 h-5 text-white" />
           <span>{liveToast.text}</span>
         </div>
       )}
@@ -631,7 +631,7 @@ export default function TrackerPage() {
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Pixel CAPI + Auto-Capture fbclid / _fbc Actifs</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
             Tracker Publicitaire & Diagnostic Conversion (Objectif 20+ Ventes)
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
@@ -666,7 +666,7 @@ export default function TrackerPage() {
             className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
               metaConnected
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                : "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white shadow-xs"
+                : "bg-[#14281D] hover:bg-[#14281D] border-blue-600 text-white shadow-xs"
             }`}
           >
             <KeyRound className="w-3.5 h-3.5" />
@@ -709,7 +709,7 @@ export default function TrackerPage() {
           </code>
           <button
             onClick={copyUtmTemplate}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-indigo-950 hover:bg-indigo-50 text-xs font-extrabold cursor-pointer shrink-0"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-indigo-950 hover:bg-[#f4f4f5] text-xs font-semibold cursor-pointer shrink-0"
           >
             {copiedUrlParams ? (
               <>
@@ -730,8 +730,8 @@ export default function TrackerPage() {
       <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
-              <Flame className="w-5 h-5 text-amber-500" />
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900 flex items-center gap-2">
+              <Flame className="w-5 h-5 text-[#525252]" />
               <span>
                 Diagnostic Réel par Produit (Cliquez sur un produit pour filtrer l'entonnoir)
               </span>
@@ -743,7 +743,7 @@ export default function TrackerPage() {
           {selectedSlug !== "all" && (
             <button
               onClick={() => setSelectedSlug("all")}
-              className="text-xs font-bold text-indigo-600 hover:underline cursor-pointer"
+              className="text-xs font-bold text-[#171717] hover:underline cursor-pointer"
             >
               Afficher tous les produits ({orders.length} commandes)
             </button>
@@ -777,7 +777,7 @@ export default function TrackerPage() {
                 } else if (p.conversionRate >= 2.5 && p.orders >= 1) {
                   badge = {
                     text: "🟢 RENTABLE (Relancer les abandonnés)",
-                    cls: "bg-blue-100 text-blue-800",
+                    cls: "bg-[#f4f4f5] text-[#171717]",
                   };
                 } else if (p.visitors >= 40 && p.orders === 0) {
                   badge = {
@@ -795,7 +795,7 @@ export default function TrackerPage() {
                     }
                     className={`cursor-pointer transition-colors ${
                       isSelected
-                        ? "bg-indigo-50/70 font-semibold"
+                        ? "bg-[#fafafa] font-semibold"
                         : "hover:bg-slate-50"
                     }`}
                   >
@@ -810,23 +810,23 @@ export default function TrackerPage() {
                     </td>
                     <td className="p-3 font-mono">
                       {p.abandonedLeads > 0 ? (
-                        <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-bold">
+                        <span className="px-2 py-0.5 rounded-md bg-[#f4f4f5] text-[#525252] font-bold">
                           {p.abandonedLeads} à relancer
                         </span>
                       ) : (
                         <span className="text-slate-400">0</span>
                       )}
                     </td>
-                    <td className="p-3 font-mono font-extrabold text-slate-900">
+                    <td className="p-3 font-mono font-semibold text-slate-900">
                       {fmt(p.orders)}
                     </td>
-                    <td className="p-3 font-mono font-extrabold">
+                    <td className="p-3 font-mono font-semibold">
                       <span
                         className={
                           p.conversionRate >= 4
                             ? "text-emerald-600"
                             : p.conversionRate > 0
-                            ? "text-blue-600"
+                            ? "text-[#171717]"
                             : "text-rose-600"
                         }
                       >
@@ -838,7 +838,7 @@ export default function TrackerPage() {
                     </td>
                     <td className="p-3">
                       <span
-                        className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-extrabold ${badge.cls}`}
+                        className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-semibold ${badge.cls}`}
                       >
                         {badge.text}
                       </span>
@@ -853,10 +853,10 @@ export default function TrackerPage() {
 
       {/* ── PANNEAU DE CONNEXION DIRECTE API META (Affiché au clic) ── */}
       {showMetaModal && (
-        <div className="bg-white rounded-2xl border-2 border-blue-200 p-5 sm:p-6 shadow-md space-y-4">
+        <div className="bg-white rounded-2xl border-2 border-black/[0.08] p-5 sm:p-6 shadow-md space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-900">
                 Connexion directe à votre Compte Publicitaire Meta (Graph API)
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -921,7 +921,7 @@ export default function TrackerPage() {
             <button
               onClick={() => syncMetaAds()}
               disabled={metaLoading}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#14281D] hover:bg-[#14281D] text-white text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-3.5 h-3.5 ${metaLoading ? "animate-spin" : ""}`}
@@ -991,7 +991,7 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setManualSpendFcfa(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-extrabold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
@@ -1005,7 +1005,7 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setManualImpressions(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-extrabold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
@@ -1019,7 +1019,7 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setManualLinkClicks(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-extrabold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
@@ -1033,7 +1033,7 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setUnitProductCost(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-extrabold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
@@ -1047,7 +1047,7 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setUnitDeliveryCost(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-extrabold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
             />
           </div>
         </div>
@@ -1058,7 +1058,7 @@ export default function TrackerPage() {
               funnel.ctr < 1.5
                 ? "bg-rose-50/40 border-rose-300"
                 : funnel.ctr < 2.2
-                ? "bg-amber-50/40 border-amber-300"
+                ? "bg-[#fafafa] border-black/[0.08]"
                 : "bg-emerald-50/40 border-emerald-300"
             }`}
           >
@@ -1066,7 +1066,7 @@ export default function TrackerPage() {
               <span>1. Pub Meta (CTR)</span>
               <Eye className="w-4 h-4 text-slate-400" />
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900">
+            <div className="text-2xl font-semibold font-mono text-slate-900">
               {funnel.ctr.toFixed(2)}%
             </div>
             <p className="text-xs text-slate-600">
@@ -1089,7 +1089,7 @@ export default function TrackerPage() {
               <span>2. Visiteurs Réels</span>
               <Users className="w-4 h-4 text-slate-400" />
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900">
+            <div className="text-2xl font-semibold font-mono text-slate-900">
               {fmt(funnel.realVisitors)}
             </div>
             <p className="text-xs text-slate-600">
@@ -1106,7 +1106,7 @@ export default function TrackerPage() {
           <div
             className={`p-4 rounded-2xl border-2 space-y-2 ${
               funnel.pageIntentRate < 12
-                ? "bg-amber-50/40 border-amber-300"
+                ? "bg-[#fafafa] border-black/[0.08]"
                 : "bg-emerald-50/40 border-emerald-300"
             }`}
           >
@@ -1114,7 +1114,7 @@ export default function TrackerPage() {
               <span>3. Intention d'achat</span>
               <MousePointerClick className="w-4 h-4 text-slate-400" />
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900">
+            <div className="text-2xl font-semibold font-mono text-slate-900">
               {fmt(funnel.intentCount)}
             </div>
             <p className="text-xs text-slate-600">
@@ -1131,7 +1131,7 @@ export default function TrackerPage() {
           <div
             className={`p-4 rounded-2xl border-2 space-y-2 ${
               funnel.abandonedPhones > 0
-                ? "bg-amber-50/40 border-amber-300"
+                ? "bg-[#fafafa] border-black/[0.08]"
                 : "bg-slate-50 border-slate-200"
             }`}
           >
@@ -1139,7 +1139,7 @@ export default function TrackerPage() {
               <span>4. Paniers Abandonnés</span>
               <MessageCircle className="w-4 h-4 text-slate-400" />
             </div>
-            <div className="text-2xl font-black font-mono text-amber-700">
+            <div className="text-2xl font-semibold font-mono text-[#525252]">
               {fmt(funnel.abandonedPhones)}
             </div>
             <p className="text-xs text-slate-600">
@@ -1161,7 +1161,7 @@ export default function TrackerPage() {
               <span>5. Commandes Site</span>
               <ShoppingBag className="w-4 h-4 text-slate-400" />
             </div>
-            <div className="text-2xl font-black font-mono text-slate-900">
+            <div className="text-2xl font-semibold font-mono text-slate-900">
               {fmt(funnel.completedOrders)}
             </div>
             <p className="text-xs text-slate-600">

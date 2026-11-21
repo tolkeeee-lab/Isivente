@@ -155,7 +155,7 @@ function LivreurContent() {
       {/* ── TOP BAR LOGO & SERVICE LIVRAISON ── */}
       <header className="w-full max-w-md flex items-center justify-between py-3 mb-3 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-semibold text-sm shadow-md">
             ISV
           </div>
           <div>
@@ -190,7 +190,7 @@ function LivreurContent() {
               <span className="text-[10.5px] font-mono font-bold uppercase tracking-wider bg-emerald-900/90 text-emerald-300 px-3 py-1 rounded-full border border-emerald-700 inline-block mb-2">
                 Course Enregistrée avec Succès
               </span>
-              <h2 className="text-xl sm:text-2xl font-black text-white">
+              <h2 className="text-xl sm:text-2xl font-semibold text-white">
                 Colis Livré & Encaissé !
               </h2>
               <p className="text-xs text-emerald-200/90 mt-1.5 leading-relaxed">
@@ -227,7 +227,7 @@ function LivreurContent() {
         {/* ── ÉCRAN DE SIGNALEMENT RÉUSSI ── */}
         {!loading && issueSubmitted && order && (
           <div className="bg-amber-950/70 border-2 border-amber-500/80 rounded-3xl p-6 sm:p-8 text-center space-y-4 shadow-xl">
-            <div className="w-14 h-14 bg-amber-500 text-slate-950 rounded-2xl flex items-center justify-center mx-auto shadow-md">
+            <div className="w-14 h-14 bg-[#171717] text-slate-950 rounded-2xl flex items-center justify-center mx-auto shadow-md">
               <AlertTriangle className="w-8 h-8" />
             </div>
 
@@ -293,7 +293,7 @@ function LivreurContent() {
               <div className="flex items-center justify-between border-b border-slate-700/60 pb-2.5">
                 <div>
                   <span className="text-[10px] font-mono uppercase text-slate-400 block">N° Commande</span>
-                  <span className="font-mono font-black text-white text-base">#{order.order_number}</span>
+                  <span className="font-mono font-semibold text-white text-base">#{order.order_number}</span>
                 </div>
                 <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-sky-950 text-sky-400 border border-sky-800">
                   En livraison
@@ -311,7 +311,7 @@ function LivreurContent() {
                 {order.customer_phone && (
                   <a
                     href={`tel:${formatBeninPhoneForCall(order.customer_phone)}`}
-                    className="shrink-0 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
+                    className="shrink-0 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-3.5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
                   >
                     <Phone className="w-4 h-4 fill-current" />
                     <span>Appeler</span>
@@ -345,7 +345,7 @@ function LivreurContent() {
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-300 block mb-1">
                 Montant Exact à Encaisser au Client
               </span>
-              <div className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight tabular-nums">
+              <div className="font-display font-semibold text-3xl sm:text-4xl text-white tracking-tight tabular-nums">
                 {fmt(order.total_amount)} <span className="text-emerald-400 text-xl font-mono">FCFA</span>
               </div>
               <p className="text-[11px] text-emerald-300/80 mt-1">
@@ -387,7 +387,7 @@ function LivreurContent() {
               type="button"
               disabled={submitting}
               onClick={handleConfirmDelivered}
-              className="w-full bg-[#25D366] hover:bg-[#20BD5A] disabled:opacity-50 text-slate-950 font-black text-base sm:text-lg py-4 px-6 rounded-2xl shadow-[0_12px_30px_-5px_rgba(37,211,102,0.4)] transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98]"
+              className="w-full bg-[#25D366] hover:bg-[#20BD5A] disabled:opacity-50 text-slate-950 font-semibold text-base sm:text-lg py-4 px-6 rounded-2xl shadow-[0_12px_30px_-5px_rgba(37,211,102,0.4)] transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98]"
             >
               <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
               <span>{submitting ? "Validation en direct..." : "CONFIRMER COLIS LIVRÉ & ENCAISSÉ"}</span>
@@ -435,7 +435,7 @@ function LivreurContent() {
                         name="issueReason"
                         checked={issueReason === reason}
                         onChange={() => setIssueReason(reason)}
-                        className="text-amber-500 focus:ring-amber-500"
+                        className="text-[#525252] focus:ring-amber-500"
                       />
                       <span>{reason}</span>
                     </label>
@@ -455,7 +455,7 @@ function LivreurContent() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-[#171717] hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
                 >
                   {submitting ? "Enregistrement..." : "Transmettre le signalement"}
                 </button>

@@ -246,13 +246,13 @@ export default function MarketingStudioPage() {
       <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-pink-500 to-indigo-600 text-white flex items-center justify-center shadow-sm">
+            <div className="w-9 h-9 rounded-2xl bg-white text-white flex items-center justify-center shadow-sm">
               <Wand2 className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
                 <span>Studio Marketing AI</span>
-                <span className="text-[11px] font-mono font-bold bg-pink-50 text-pink-700 px-2 py-0.5 rounded-full border border-pink-200">
+                <span className="text-[11px] font-mono font-bold bg-[#f4f4f5] text-pink-700 px-2 py-0.5 rounded-full border border-black/[0.08]">
                   Higgsfield 4K
                 </span>
               </h1>
@@ -270,7 +270,7 @@ export default function MarketingStudioPage() {
             className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
               isKeyConfigured
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100"
-                : "bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100"
+                : "bg-[#f4f4f5] border-black/[0.08] text-[#525252] hover:bg-[#f4f4f5]"
             }`}
           >
             <Key className="w-3.5 h-3.5" />
@@ -285,7 +285,7 @@ export default function MarketingStudioPage() {
           <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200 p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                <Key className="w-4 h-4 text-indigo-600" />
+                <Key className="w-4 h-4 text-[#171717]" />
                 <span>Identifiants API Higgsfield</span>
               </h3>
               <button onClick={() => setShowKeyModal(false)} className="text-slate-400 hover:text-slate-600 text-sm">
@@ -340,7 +340,7 @@ export default function MarketingStudioPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                  <Layers className="w-3.5 h-3.5 text-[#171717]" />
                   <span>1. Sélectionner un produit Isivente</span>
                 </label>
                 <span className="text-[11px] text-slate-400">Préremplit la photo & le prompt</span>
@@ -356,7 +356,7 @@ export default function MarketingStudioPage() {
                       onClick={() => handleSelectProduct(prod.slug)}
                       className={`p-2 rounded-xl text-left border transition-all flex items-center gap-2 cursor-pointer ${
                         isSelected 
-                          ? "bg-indigo-50/70 border-indigo-500 shadow-xs ring-1 ring-indigo-500/20" 
+                          ? "bg-[#fafafa] border-indigo-500 shadow-xs ring-1 ring-indigo-500/20" 
                           : "bg-slate-50 hover:bg-slate-100/70 border-slate-200/80 text-slate-700"
                       }`}
                     >
@@ -397,7 +397,7 @@ export default function MarketingStudioPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-700 flex items-center gap-1">
-                  <ImageIcon className="w-3 h-3 text-indigo-500" />
+                  <ImageIcon className="w-3 h-3 text-[#171717]" />
                   <span>URL Photo du Produit</span>
                 </label>
                 <input
@@ -411,7 +411,7 @@ export default function MarketingStudioPage() {
 
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-700 flex items-center gap-1">
-                  <ImageIcon className="w-3 h-3 text-purple-500" />
+                  <ImageIcon className="w-3 h-3 text-[#171717]" />
                   <span>URL Référence Mannequin (Optionnel)</span>
                 </label>
                 <input
@@ -478,7 +478,7 @@ export default function MarketingStudioPage() {
             <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-indigo-600" />
+                  <Sliders className="w-4 h-4 text-[#171717]" />
                   <span className="text-xs font-bold text-slate-900">Mode Preset Ads (Higgsfield Studio)</span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -488,7 +488,7 @@ export default function MarketingStudioPage() {
                     onChange={(e) => setEnhancePrompt(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                  <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#14281D]"></div>
                 </label>
               </div>
 
@@ -499,7 +499,7 @@ export default function MarketingStudioPage() {
                     <button 
                       type="button" 
                       onClick={loadPresets} 
-                      className="text-indigo-600 hover:underline inline-flex items-center gap-1 font-semibold"
+                      className="text-[#171717] hover:underline inline-flex items-center gap-1 font-semibold"
                     >
                       <RefreshCw className={`w-3 h-3 ${isLoadingPresets ? "animate-spin" : ""}`} />
                       <span>Actualiser</span>
@@ -542,7 +542,7 @@ export default function MarketingStudioPage() {
             <button
               type="submit"
               disabled={isGenerating || !prompt.trim()}
-              className="w-full py-3.5 px-6 bg-gradient-to-r from-pink-600 via-rose-600 to-indigo-600 hover:from-pink-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg shadow-pink-900/15 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 px-6 bg-white hover:from-pink-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg shadow-pink-900/15 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
               {isGenerating ? (
                 <>
@@ -629,7 +629,7 @@ export default function MarketingStudioPage() {
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-[10px]">
                         <span className="font-bold text-slate-800">{item.product_title}</span>
-                        <span className="font-mono text-pink-700 bg-pink-50 px-1.5 py-0.5 rounded border border-pink-200">
+                        <span className="font-mono text-pink-700 bg-[#f4f4f5] px-1.5 py-0.5 rounded border border-black/[0.08]">
                           {item.resolution} • {item.aspect_ratio}
                         </span>
                       </div>
@@ -643,7 +643,7 @@ export default function MarketingStudioPage() {
                       <button
                         type="button"
                         onClick={() => copyUrl(item.id, item.url)}
-                        className="inline-flex items-center gap-1 font-semibold text-slate-700 hover:text-indigo-600 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1 font-semibold text-slate-700 hover:text-[#171717] transition-colors cursor-pointer"
                       >
                         {copiedId === item.id ? (
                           <>

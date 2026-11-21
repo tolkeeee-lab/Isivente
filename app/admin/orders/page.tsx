@@ -605,7 +605,7 @@ export default function OrdersPage() {
       <div className="card-figma p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="min-w-0 w-full sm:w-auto">
           <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 mb-1 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <Sparkles className="w-3.5 h-3.5 text-[#525252]" />
             <span>Pilotage Commercial & Dispatch</span>
           </div>
           <h1 className="font-display font-bold text-xl sm:text-2xl text-slate-900 flex items-center gap-2.5 flex-wrap">
@@ -710,7 +710,7 @@ export default function OrdersPage() {
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
                   <div className="text-[11px] font-bold uppercase tracking-wider text-[#171717] flex items-center gap-1.5 truncate">
-                    {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />}
+                    {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-[#14281D] shrink-0" />}
                     <Package className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Nouvelles Reçues</span>
                   </div>
@@ -1837,7 +1837,7 @@ export default function OrdersPage() {
                   {/* 4. PRODUIT */}
                   <td className="py-3 px-4">
                     <div className="font-medium text-slate-900 flex items-center gap-1">
-                      <Package className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                      <Package className="w-3.5 h-3.5 text-[#171717] shrink-0" />
                       <span className="max-w-[190px] truncate" title={order.product_title}>{order.product_title}</span>
                     </div>
                     <span className="text-[10px] text-slate-500 font-medium">
