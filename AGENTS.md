@@ -177,6 +177,7 @@ Consulter et appliquer obligatoirement :
 - `.agents/skills/isivente-advantage-campaign-master/SKILL.md`
 - `.agents/skills/isivente-cod-sales-playbook/SKILL.md` (Playbook scientifique mondial de vente COD adapté au Bénin)
 - `.agents/skills/unslop-ui/SKILL.md` (Standard de finition UI sans tics IA)
+- `DESIGN.md` (Système de design officiel Isivente : vert forêt `#14281D`, terracotta `#E8643C`, crème `#F8F5EE`, graphite `#FAFAFA`)
 
 0. **Blindage Absolu & Interdiction du Code à l'Aveugle** :
    - Tout ce qui fonctionne (Zone Rouge : tunnel de commande, CAPI, capture de leads, lecture vidéo) est sanctuarisé.
