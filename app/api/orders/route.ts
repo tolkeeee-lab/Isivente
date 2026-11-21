@@ -108,6 +108,8 @@ export async function POST(req: NextRequest) {
       ? new Date(body.created_at).toISOString()
       : new Date().toISOString();
 
+    const storeId = typeof body.store_id === "string" && body.store_id.trim() ? body.store_id.trim() : null;
+
     const payload: Record<string, any> = {
       order_number: orderNumberStr,
       customer_name: customerName,
@@ -120,6 +122,7 @@ export async function POST(req: NextRequest) {
       total_amount: totalAmount,
       quantity: quantity,
       status: status,
+      ...(storeId ? { store_id: storeId } : {}),
       admin_notes: [
         cityDetection.requiresPrepayment ? `[EXPÉDITION ${city.toUpperCase()} - PAIEMENT AVANT DÉPART PAR COMPAGNIE]` : null,
         customerEmail ? `[EMAIL: ${customerEmail}]` : null,
@@ -219,42 +222,46 @@ export async function POST(req: NextRequest) {
 
     const testEventCode = body.test_event_code || req.nextUrl.searchParams.get("test_event_code") || undefined;
 
-    await Promise.allSettled([
-      sendMetaConversionApiEvent({
-        event_name: "Purchase",
-        event_id: orderNumberStr,
-        event_source_url: req.headers.get("referer") || undefined,
-        test_event_code: testEventCode,
-        user_data: {
-          phone: cleanPhone,
-          email: customerEmail || undefined,
-          first_name: firstName,
-          last_name: lastName,
-          city: city,
-          st: department,
-          country: "bj",
-          external_id: externalIds.length === 1 ? externalIds[0] : (externalIds.length > 1 ? externalIds : orderNumberStr),
-          client_ip_address: clientIp,
-          client_user_agent: userAgent,
-          fbp,
-          fbc,
-        },
-        custom_data: {
-          currency: "XOF",
-          value: totalAmount,
-          content_name: productTitle || productSlug,
-          content_ids: [productSlug],
-          order_id: orderNumberStr,
-          num_items: quantity,
-        },
-      }).catch((e) => console.error("Meta CAPI Purchase error:", e?.message)),
-      sendOrderNotification({
-        ...savedOrder,
-        customer_email: customerEmail || undefined,
-      }).catch((e) =>
-        console.error("Server notify error:", e?.message)
-      ),
-    ]);
+    // Isolation stricte multi-boutiques : ne jamais déclencher le Pixel CAPI ou l'email du fondateur
+    // pour une commande appartenant à une autre boutique SaaS (store_id défini)
+    if (!storeId) {
+      await Promise.allSettled([
+        sendMetaConversionApiEvent({
+          event_name: "Purchase",
+          event_id: orderNumberStr,
+          event_source_url: req.headers.get("referer") || undefined,
+          test_event_code: testEventCode,
+          user_data: {
+            phone: cleanPhone,
+            email: customerEmail || undefined,
+            first_name: firstName,
+            last_name: lastName,
+            city: city,
+            st: department,
+            country: "bj",
+            external_id: externalIds.length === 1 ? externalIds[0] : (externalIds.length > 1 ? externalIds : orderNumberStr),
+            client_ip_address: clientIp,
+            client_user_agent: userAgent,
+            fbp,
+            fbc,
+          },
+          custom_data: {
+            currency: "XOF",
+            value: totalAmount,
+            content_name: productTitle || productSlug,
+            content_ids: [productSlug],
+            order_id: orderNumberStr,
+            num_items: quantity,
+          },
+        }).catch((e) => console.error("Meta CAPI Purchase error:", e?.message)),
+        sendOrderNotification({
+          ...savedOrder,
+          customer_email: customerEmail || undefined,
+        }).catch((e) =>
+          console.error("Server notify error:", e?.message)
+        ),
+      ]);
+    }
 
     const res = NextResponse.json({
       success: true,

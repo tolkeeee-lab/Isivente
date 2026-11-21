@@ -2,6 +2,10 @@ import React from "react";
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
+import { getSupabase } from "@/lib/supabase";
+import StoreMetaPixel from "@/components/tracking/StoreMetaPixel";
+
+const FOUNDER_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686";
 
 // ── CODE-SPLITTING INTELLIGENT : Chaque landing page est un chunk indépendant ──
 // Évite de charger les 35 produits dans le bundle mobile du Masseur Vibrant
@@ -372,13 +376,72 @@ export default async function ProductPage({ params }: PageProps) {
       case "masseur-2en1":
         return <MasseurVibrantLanding slug="masseur-vibrant" />;
       default:
-        // If the slug exists in our catalog or database, render universal ProductLanding
-        if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
-          return <ProductLanding slug={normalizedSlug} />;
-        }
-        return notFound();
+        return null;
     }
   };
+
+  const hardcodedNode = renderContent();
+
+  // Si ce n'est pas une landing dédiée du fondateur, chercher dans DEFAULT_CATALOG ou Supabase (Multi-Boutiques unifié)
+  if (!hardcodedNode) {
+    let dbProduct: any = null;
+    let storeConfig: any = null;
+
+    try {
+      const supabase = getSupabase();
+      const { data: prod } = await supabase
+        .from("products")
+        .select("*")
+        .eq("slug", normalizedSlug)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (prod) {
+        dbProduct = prod;
+        if (prod.store_id) {
+          const { data: store } = await supabase
+            .from("public_stores")
+            .select("id, name, slug, country, currency, city, whatsapp_number, meta_pixel_id, accent_color, is_active")
+            .eq("id", prod.store_id)
+            .maybeSingle();
+          if (store) {
+            storeConfig = store;
+          }
+        }
+      }
+    } catch {}
+
+    if (dbProduct) {
+      const resolvedPixelId = storeConfig
+        ? storeConfig.meta_pixel_id || null
+        : FOUNDER_PIXEL_ID;
+
+      return (
+        <>
+          <StoreMetaPixel pixelId={resolvedPixelId} />
+          <ProductLanding
+            slug={normalizedSlug}
+            initialProduct={dbProduct}
+            storeConfig={storeConfig}
+          />
+        </>
+      );
+    }
+
+    if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
+      return (
+        <>
+          <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
+          <DynamicIsland slug={normalizedSlug} />
+          <ProductLanding slug={normalizedSlug} />
+          <ShoppingAgentWidget slug={normalizedSlug} />
+          <ExitIntentModal slug={normalizedSlug} />
+        </>
+      );
+    }
+
+    return notFound();
+  }
 
   const isDedicatedLanding = [
     "masseur-vibrant",
@@ -390,8 +453,9 @@ export default async function ProductPage({ params }: PageProps) {
 
   return (
     <>
+      <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
       {!isDedicatedLanding && <DynamicIsland slug={normalizedSlug} />}
-      {renderContent()}
+      {hardcodedNode}
       {!isDedicatedLanding && <ShoppingAgentWidget slug={normalizedSlug} />}
       {!isDedicatedLanding && <ExitIntentModal slug={normalizedSlug} />}
     </>

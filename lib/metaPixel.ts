@@ -19,15 +19,34 @@ declare global {
     fbq?: any;
     _fbq?: any;
     _fbq_initialized?: boolean;
+    __ISIVENTE_ACTIVE_PIXEL_ID__?: string | null;
   }
 }
 
 /**
- * Assure que window.fbq existe, que fbq('init', FB_PIXEL_ID) est appelé en premier,
+ * Retourne le Pixel ID actif pour la page courante :
+ * - Si window.__ISIVENTE_ACTIVE_PIXEL_ID__ === null -> boutique SaaS sans Pixel (0 pollution)
+ * - Si string non vide -> Pixel de cette boutique
+ * - Si undefined -> fallback sur FB_PIXEL_ID (pages historiques du fondateur)
+ */
+export function getActivePixelId(): string | null {
+  if (typeof window !== "undefined") {
+    if (window.__ISIVENTE_ACTIVE_PIXEL_ID__ === null) return null;
+    if (typeof window.__ISIVENTE_ACTIVE_PIXEL_ID__ === "string" && window.__ISIVENTE_ACTIVE_PIXEL_ID__.trim()) {
+      return window.__ISIVENTE_ACTIVE_PIXEL_ID__.trim();
+    }
+  }
+  return FB_PIXEL_ID;
+}
+
+/**
+ * Assure que window.fbq existe, que fbq('init', activePixelId) est appelé en premier,
  * et que le script officiel fbevents.js est bien injecté dans le DOM.
  */
 function getFbq(): ((...args: any[]) => void) | null {
   if (typeof window === "undefined") return null;
+  const activePixelId = getActivePixelId();
+  if (!activePixelId) return null;
 
   if (!window.fbq) {
     const n: any = function (...args: any[]) {
@@ -47,7 +66,7 @@ function getFbq(): ((...args: any[]) => void) | null {
 
   if (!window._fbq_initialized) {
     window._fbq_initialized = true;
-    window.fbq("init", FB_PIXEL_ID);
+    window.fbq("init", activePixelId);
   }
 
   if (
@@ -140,6 +159,9 @@ async function sendServerBridge(
 ) {
   if (typeof window === "undefined") return;
   if (isAdminContext()) return;
+  // Isolation stricte multi-boutiques : ne jamais déclencher le CAPI fondateur si un autre vendeur est actif
+  const activePixelId = getActivePixelId();
+  if (!activePixelId || activePixelId !== FB_PIXEL_ID) return;
 
   const storageUserData = getUserDataFromStorage();
   const fbp = overrideUserData?.fbp || storageUserData.fbp || getOrCreateFbp();
