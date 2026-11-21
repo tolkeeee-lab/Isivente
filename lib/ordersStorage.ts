@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import { getOrCreateFbp, getOrCreateFbc, getOrCreateExternalId } from './userTracking';
 import { getStoredTenantContext } from './storesStorage';
+import { getAuthHeaders } from './apiAuth';
 
 export interface Order {
   id?: string;
@@ -164,13 +165,14 @@ export async function getOrders(): Promise<Order[]> {
   const isTenantScoped = tenantCtx !== null && !tenantCtx.isFounder;
   const scopedStoreId = isTenantScoped ? (tenantCtx.storeId || 'none') : null;
 
-  // 1. Tenter via /api/orders (contourne les bloqueurs de pub et problèmes CORS/WebSocket client)
+  // 1. Tenter via /api/orders (authentifié par Bearer JWT Supabase)
   if (typeof window !== 'undefined') {
     try {
+      const authHeaders = await getAuthHeaders();
       const url = scopedStoreId
         ? `/api/orders?store_id=${encodeURIComponent(scopedStoreId)}`
         : '/api/orders';
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetch(url, { cache: 'no-store', headers: authHeaders });
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.orders)) {
@@ -240,11 +242,12 @@ export async function updateOrderStatus(
       if (extraData.reservation_date !== undefined) updatePayload.reservation_date = extraData.reservation_date;
     }
 
-    // 1. Appel API serveur (déclenche notamment Meta CAPI Purchase si status === 'delivered')
+    // 1. Appel API serveur authentifié (déclenche notamment Meta CAPI Purchase si status === 'delivered')
     if (typeof window !== 'undefined') {
+      const authHeaders = await getAuthHeaders();
       fetch('/api/orders', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(updatePayload),
       }).catch(apiErr => {
         console.warn('API /api/orders PATCH échoué, repli sur Supabase direct:', apiErr);

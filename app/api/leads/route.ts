@@ -3,17 +3,24 @@ import { getSupabase } from "@/lib/supabase";
 import { sendAbandonedLeadNotification } from "@/lib/notifyHelper";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 import { detectBeninCity } from "@/lib/cityUtils";
+import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 export const dynamic = "force-dynamic";
 
 const ALLOWED_LEAD_STATUSES = new Set(["abandoned", "contacted", "converted"]);
 
-// ── GET : Récupérer les prospects (isolé par store_id pour le SaaS) ──
+// ── GET : Récupérer les prospects (AUTHENTIFIÉ & ISOLÉ PAR store_id CÔTÉ SERVEUR) ──
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const storeId = searchParams.get("store_id");
-    if (storeId === "none") {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json(
+        { success: false, error: auth.error, leads: [] },
+        { status: auth.status }
+      );
+    }
+
+    if (!auth.isFounder && !auth.storeId) {
       return NextResponse.json({ success: true, leads: [] });
     }
 
@@ -24,8 +31,8 @@ export async function GET(req: Request) {
       .order("updated_at", { ascending: false })
       .limit(1000);
 
-    if (storeId && storeId.trim()) {
-      query = query.eq("store_id", storeId.trim());
+    if (!auth.isFounder && auth.storeId) {
+      query = query.eq("store_id", auth.storeId);
     }
 
     const { data, error } = await query;
@@ -112,6 +119,20 @@ export async function POST(req: Request) {
     const safeBundle = String(bundle_name || "Formule standard").trim().slice(0, 150).replace(/[<>]/g, "");
     const safeAmount = !isNaN(Number(total_amount)) && Number(total_amount) >= 0 ? Math.round(Number(total_amount)) : 0;
 
+    // Résoudre le store_id depuis le corps ou depuis le produit en base
+    let resolvedStoreId: string | null =
+      typeof body.store_id === "string" && body.store_id.trim() ? body.store_id.trim() : null;
+    if (!resolvedStoreId) {
+      try {
+        const { data: prodRow } = await supabase
+          .from("products")
+          .select("store_id")
+          .eq("slug", cleanSlug)
+          .maybeSingle();
+        if (prodRow?.store_id) resolvedStoreId = String(prodRow.store_id);
+      } catch {}
+    }
+
     const payload = {
       id: leadId,
       customer_name: safeName,
@@ -124,6 +145,7 @@ export async function POST(req: Request) {
       bundle_name: safeBundle,
       total_amount: safeAmount,
       status: currentStatus,
+      ...(resolvedStoreId ? { store_id: resolvedStoreId } : {}),
       created_at: createdAt,
       updated_at: now,
     };
@@ -137,8 +159,8 @@ export async function POST(req: Request) {
       console.warn("Supabase lead upsert warning:", error?.message);
     }
 
-    // Si c'est un nouveau prospect détecté, envoyer l'alerte email immédiatement
-    if (!existing && currentStatus === "abandoned") {
+    // Alerte email fondateur uniquement pour les produits fondateur (sans store_id SaaS)
+    if (!existing && currentStatus === "abandoned" && !resolvedStoreId) {
       sendAbandonedLeadNotification(payload).catch((err) =>
         console.error("Lead notification error:", err?.message)
       );
@@ -151,9 +173,17 @@ export async function POST(req: Request) {
   }
 }
 
-// ── PATCH : Mise à jour du statut (ex: 'contacted', 'converted') ──
+// ── PATCH : Mise à jour du statut (AUTHENTIFIÉ & ISOLÉ PAR store_id) ──
 export async function PATCH(req: Request) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    if (!auth.isFounder && !auth.storeId) {
+      return NextResponse.json({ error: "Boutique introuvable" }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json({ error: "Corps de requête invalide" }, { status: 400 });
@@ -168,10 +198,16 @@ export async function PATCH(req: Request) {
     }
 
     const supabase = getSupabase();
-    const { error } = await supabase
+    let patchQuery = supabase
       .from("leads")
       .update({ status: safeStatus, updated_at: new Date().toISOString() })
       .eq("id", safeId);
+
+    if (!auth.isFounder && auth.storeId) {
+      patchQuery = patchQuery.eq("store_id", auth.storeId);
+    }
+
+    const { error } = await patchQuery;
 
     if (error) {
       console.error("Leads PATCH error:", error?.message);
@@ -185,9 +221,17 @@ export async function PATCH(req: Request) {
   }
 }
 
-// ── DELETE : Supprimer un prospect ──
+// ── DELETE : Supprimer un prospect (AUTHENTIFIÉ & ISOLÉ PAR store_id) ──
 export async function DELETE(req: Request) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    if (!auth.isFounder && !auth.storeId) {
+      return NextResponse.json({ error: "Boutique introuvable" }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id")?.trim();
 
@@ -196,7 +240,11 @@ export async function DELETE(req: Request) {
     }
 
     const supabase = getSupabase();
-    await supabase.from("leads").delete().eq("id", id);
+    let delQuery = supabase.from("leads").delete().eq("id", id);
+    if (!auth.isFounder && auth.storeId) {
+      delQuery = delQuery.eq("store_id", auth.storeId);
+    }
+    await delQuery;
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error("Leads DELETE catch:", err?.message);

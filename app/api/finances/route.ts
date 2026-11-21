@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const storeId = req.nextUrl.searchParams.get("store_id");
-    if (storeId === "none") {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json(
+        { success: false, error: auth.error, hasTable: true, expenses: [], sales: [], startingCapital: 0 },
+        { status: auth.status }
+      );
+    }
+
+    if (!auth.isFounder && !auth.storeId) {
       return NextResponse.json({
         success: true,
         hasTable: true,
@@ -22,8 +30,8 @@ export async function GET(req: NextRequest) {
       .select("*")
       .order("date", { ascending: false });
 
-    if (storeId && storeId.trim()) {
-      query = query.eq("store_id", storeId.trim());
+    if (!auth.isFounder && auth.storeId) {
+      query = query.eq("store_id", auth.storeId);
     }
 
     const { data, error } = await query;
@@ -65,6 +73,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    if (!auth.isFounder && !auth.storeId) {
+      return NextResponse.json({ error: "Boutique introuvable" }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => null);
     if (!body || !body.item) {
       return NextResponse.json({ error: "Données invalides" }, { status: 400 });
@@ -74,7 +90,7 @@ export async function POST(req: NextRequest) {
     const supabase = getSupabase();
 
     const normalizedType = type === "sale" ? "sale" : type === "capital" ? "capital" : "expense";
-    const storeId = typeof item.store_id === "string" && item.store_id.trim() ? item.store_id.trim() : null;
+    const storeId = auth.isFounder ? null : auth.storeId;
     const payload = {
       id:
         normalizedType === "capital"
@@ -121,6 +137,14 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    if (!auth.isFounder && !auth.storeId) {
+      return NextResponse.json({ error: "Boutique introuvable" }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -129,7 +153,11 @@ export async function DELETE(req: NextRequest) {
     }
 
     const supabase = getSupabase();
-    await supabase.from("finances").delete().eq("id", id);
+    let delQuery = supabase.from("finances").delete().eq("id", id);
+    if (!auth.isFounder && auth.storeId) {
+      delQuery = delQuery.eq("store_id", auth.storeId);
+    }
+    await delQuery;
 
     return NextResponse.json({ success: true, deleted: id });
   } catch (err: any) {

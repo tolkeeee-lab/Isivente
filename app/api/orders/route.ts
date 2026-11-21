@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 import { sendOrderNotification } from "@/lib/notifyHelper";
 import { sendMetaConversionApiEvent } from "@/lib/metaConversionsApi";
 import { detectBeninCity } from "@/lib/cityUtils";
+import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 const ALLOWED_STATUSES = new Set([
   "pending",
@@ -15,11 +16,18 @@ const ALLOWED_STATUSES = new Set([
   "returned",
 ]);
 
-// 1. GET ALL ORDERS DIRECTEMENT DEPUIS SUPABASE (ISOLÉ PAR store_id POUR LE SAAS)
+// 1. GET ALL ORDERS DIRECTEMENT DEPUIS SUPABASE (AUTHENTIFIÉ & ISOLÉ PAR store_id CÔTÉ SERVEUR)
 export async function GET(req: NextRequest) {
   try {
-    const storeId = req.nextUrl.searchParams.get("store_id");
-    if (storeId === "none") {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json(
+        { success: false, error: auth.error, orders: [] },
+        { status: auth.status }
+      );
+    }
+
+    if (!auth.isFounder && !auth.storeId) {
       return NextResponse.json({ success: true, orders: [], count: 0 });
     }
 
@@ -30,8 +38,8 @@ export async function GET(req: NextRequest) {
       .order("created_at", { ascending: false })
       .limit(1000);
 
-    if (storeId && storeId.trim()) {
-      query = query.eq("store_id", storeId.trim());
+    if (!auth.isFounder && auth.storeId) {
+      query = query.eq("store_id", auth.storeId);
     }
 
     const { data, error } = await query;
@@ -106,8 +114,8 @@ export async function POST(req: NextRequest) {
     const rawQuantity = Number(body.quantity);
     const quantity = !isNaN(rawQuantity) && rawQuantity >= 1 && rawQuantity <= 100 ? Math.floor(rawQuantity) : 1;
 
-    // Statut autorisé
-    const status = ALLOWED_STATUSES.has(body.status) ? body.status : "pending";
+    // Statut toujours forcé à "pending" côté serveur sur une création publique
+    const status = "pending";
 
     // Numéro de commande sécurisé
     const rawOrderNum = String(body.order_number || "").trim();
@@ -185,7 +193,7 @@ export async function POST(req: NextRequest) {
     if (phoneDigits.length >= 8) {
       const last8 = phoneDigits.slice(-8);
       try {
-        await supabase
+        let leadConvertQuery = supabase
           .from("leads")
           .update({
             status: "converted",
@@ -193,6 +201,12 @@ export async function POST(req: NextRequest) {
           })
           .ilike("customer_phone", `%${last8}`)
           .eq("product_slug", productSlug);
+
+        if (storeId) {
+          leadConvertQuery = leadConvertQuery.eq("store_id", storeId);
+        }
+
+        await leadConvertQuery;
       } catch (err: any) {
         console.warn("Auto-convert lead warning:", err?.message);
       }
@@ -297,9 +311,17 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// 3. UPDATE ORDER STATUS
+// 3. UPDATE ORDER STATUS (AUTHENTIFIÉ & ISOLÉ PAR store_id)
 export async function PATCH(req: NextRequest) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
+    }
+    if (!auth.isFounder && !auth.storeId) {
+      return NextResponse.json({ success: false, error: "Boutique introuvable" }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json({ success: false, error: "Corps de requête invalide" }, { status: 400 });
@@ -326,6 +348,9 @@ export async function PATCH(req: NextRequest) {
     } else {
       query = query.eq("order_number", rawId);
     }
+    if (!auth.isFounder && auth.storeId) {
+      query = query.eq("store_id", auth.storeId);
+    }
 
     const { data: updatedData, error } = await query.select();
     if (error) {
@@ -333,8 +358,8 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Erreur lors de la mise à jour du statut" }, { status: 500 });
     }
 
-    // Si la commande est passée à "delivered" (Livrée & Encaissée), déclencher l'événement Offline CAPI "Purchase_Delivered"
-    if (rawStatus === "delivered" && updatedData && updatedData[0]) {
+    // Si la commande du fondateur (sans store_id SaaS) est livrée, déclencher l'événement Offline CAPI "Purchase_Delivered"
+    if (rawStatus === "delivered" && updatedData && updatedData[0] && !updatedData[0].store_id) {
       const order = updatedData[0];
       const cleanPhone = (order.customer_phone || "").replace(/\D/g, "");
       const nameParts = (order.customer_name || "").trim().split(/\s+/);
@@ -372,20 +397,25 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// 4. DELETE ORDER (PROTÉGÉ CONTRE LA SUPPRESSION TOTALE NON AUTORISÉE)
+// 4. DELETE ORDER (AUTHENTIFIÉ & ISOLÉ PAR store_id)
 export async function DELETE(req: NextRequest) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
+    }
+
     const url = new URL(req.url);
     const id = url.searchParams.get("id")?.trim();
     const clearAll = url.searchParams.get("clearAll");
     const supabase = getSupabase();
 
-    // Protection critique : interdire la suppression totale sans jeton d'administration
+    // Protection critique : interdire la suppression totale sans être fondateur + secret d'administration
     if (clearAll === "true") {
       const adminSecretHeader = req.headers.get("x-admin-secret");
       const configuredSecret = process.env.ADMIN_API_SECRET;
 
-      if (!configuredSecret || adminSecretHeader !== configuredSecret) {
+      if (!auth.isFounder || !configuredSecret || adminSecretHeader !== configuredSecret) {
         return NextResponse.json(
           { success: false, error: "Action non autorisée. La suppression totale nécessite un secret d'administration valide." },
           { status: 403 }
@@ -397,12 +427,16 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (id && /^[a-zA-Z0-9_\-]+$/.test(id)) {
-      const isUuid = id.includes("-") && id.length > 30;
-      if (isUuid) {
-        await supabase.from("orders").delete().eq("id", id);
-      } else {
-        await supabase.from("orders").delete().eq("order_number", id);
+      if (!auth.isFounder && !auth.storeId) {
+        return NextResponse.json({ success: false, error: "Boutique introuvable" }, { status: 403 });
       }
+      const isUuid = id.includes("-") && id.length > 30;
+      let delQuery = supabase.from("orders").delete();
+      delQuery = isUuid ? delQuery.eq("id", id) : delQuery.eq("order_number", id);
+      if (!auth.isFounder && auth.storeId) {
+        delQuery = delQuery.eq("store_id", auth.storeId);
+      }
+      await delQuery;
       return NextResponse.json({ success: true, id });
     }
 

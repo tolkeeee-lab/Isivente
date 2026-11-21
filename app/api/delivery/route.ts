@@ -108,36 +108,38 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "Impossible de valider la livraison" }, { status: 500 });
       }
 
-      // Envoi de la conversion Offline à Meta CAPI (Purchase_Delivered)
-      try {
-        const cleanPhone = (order.customer_phone || "").replace(/\D/g, "");
-        const nameParts = (order.customer_name || "").trim().split(/\s+/);
-        const firstName = nameParts[0] || "";
-        const lastName = nameParts.slice(1).join(" ") || "";
+      // Envoi de la conversion Offline à Meta CAPI (uniquement pour les commandes fondateur sans store_id SaaS)
+      if (!order.store_id) {
+        try {
+          const cleanPhone = (order.customer_phone || "").replace(/\D/g, "");
+          const nameParts = (order.customer_name || "").trim().split(/\s+/);
+          const firstName = nameParts[0] || "";
+          const lastName = nameParts.slice(1).join(" ") || "";
 
-        sendMetaConversionApiEvent({
-          event_name: "Purchase_Delivered",
-          event_id: "deliv_" + cmd,
-          event_source_url: `https://isivente.vercel.app/livreur?cmd=${cmd}`,
-          user_data: {
-            phone: cleanPhone,
-            first_name: firstName,
-            last_name: lastName,
-            city: order.city || "Cotonou",
-            country: "bj",
-            external_id: cmd,
-          },
-          custom_data: {
-            currency: "XOF",
-            value: Number(order.total_amount) || 0,
-            content_name: order.product_title || order.product_slug,
-            content_ids: [order.product_slug || "product"],
-            order_id: cmd,
-            num_items: order.quantity || 1,
-          },
-        }).catch((e) => console.error("Meta CAPI delivery hook error:", e?.message));
-      } catch (capiErr: any) {
-        console.warn("CAPI delivery event error:", capiErr?.message);
+          sendMetaConversionApiEvent({
+            event_name: "Purchase_Delivered",
+            event_id: "deliv_" + cmd,
+            event_source_url: `https://isivente.vercel.app/livreur?cmd=${cmd}`,
+            user_data: {
+              phone: cleanPhone,
+              first_name: firstName,
+              last_name: lastName,
+              city: order.city || "Cotonou",
+              country: "bj",
+              external_id: cmd,
+            },
+            custom_data: {
+              currency: "XOF",
+              value: Number(order.total_amount) || 0,
+              content_name: order.product_title || order.product_slug,
+              content_ids: [order.product_slug || "product"],
+              order_id: cmd,
+              num_items: order.quantity || 1,
+            },
+          }).catch((e) => console.error("Meta CAPI delivery hook error:", e?.message));
+        } catch (capiErr: any) {
+          console.warn("CAPI delivery event error:", capiErr?.message);
+        }
       }
 
       return NextResponse.json({

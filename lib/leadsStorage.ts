@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 import { saveUserContactInfo } from "@/lib/userTracking";
 import { getStoredTenantContext } from "@/lib/storesStorage";
+import { getAuthHeaders } from "@/lib/apiAuth";
 
 export interface LeadRecord {
   id: string;
@@ -222,13 +223,14 @@ export async function getAllLeads(): Promise<LeadRecord[]> {
 
   let dbLeads: LeadRecord[] = [];
 
-  // 1. Tenter via l'API serveur /api/leads
+  // 1. Tenter via l'API serveur /api/leads (authentifié par Bearer JWT Supabase)
   if (typeof window !== "undefined") {
     try {
+      const authHeaders = await getAuthHeaders();
       const url = scopedStoreId
         ? `/api/leads?store_id=${encodeURIComponent(scopedStoreId)}`
         : "/api/leads";
-      const res = await fetch(url, { cache: "no-store" });
+      const res = await fetch(url, { cache: "no-store", headers: authHeaders });
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.leads)) {

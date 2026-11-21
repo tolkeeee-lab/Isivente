@@ -4,6 +4,7 @@
  */
 
 import { getStoredTenantContext } from "./storesStorage";
+import { getAuthHeaders } from "./apiAuth";
 
 export type ExpenseCategory =
   | "ads"        // Publicités (Meta Ads, TikTok Ads)
@@ -199,10 +200,11 @@ export async function fetchAllFinances(): Promise<{
   const scopedStoreId = isTenantScoped ? (tenantCtx.storeId || "none") : null;
 
   try {
+    const authHeaders = await getAuthHeaders();
     const url = scopedStoreId
       ? `/api/finances?store_id=${encodeURIComponent(scopedStoreId)}`
       : "/api/finances";
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, { cache: "no-store", headers: authHeaders });
     if (res.ok) {
       const data = await res.json();
       if (data && data.hasTable) {
@@ -245,9 +247,10 @@ export async function updateStartingCapital(amount: number): Promise<number> {
   if (!storeId) saveLocalStartingCapital(cleanAmount);
 
   try {
+    const authHeaders = await getAuthHeaders();
     fetch("/api/finances", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({
         type: "capital",
         item: {
@@ -282,9 +285,10 @@ export async function addExpense(expense: Omit<ExpenseItem, "id" | "created_at">
 
   // Synchroniser avec l'API
   try {
+    const authHeaders = await getAuthHeaders();
     fetch("/api/finances", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({
         type: "expense",
         item: { ...newExpense, ...(storeId ? { store_id: storeId } : {}) },
@@ -301,8 +305,10 @@ export async function removeExpense(id: string): Promise<boolean> {
   saveLocalExpenses(updated);
 
   try {
+    const authHeaders = await getAuthHeaders();
     fetch(`/api/finances?id=${encodeURIComponent(id)}&type=expense`, {
       method: "DELETE",
+      headers: authHeaders,
     }).catch(() => {});
   } catch {}
 
@@ -327,9 +333,10 @@ export async function addSale(sale: Omit<SaleItem, "id" | "created_at">): Promis
   }
 
   try {
+    const authHeaders = await getAuthHeaders();
     fetch("/api/finances", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({
         type: "sale",
         item: { ...newSale, ...(storeId ? { store_id: storeId } : {}) },
@@ -346,8 +353,10 @@ export async function removeSale(id: string): Promise<boolean> {
   saveLocalSales(updated);
 
   try {
+    const authHeaders = await getAuthHeaders();
     fetch(`/api/finances?id=${encodeURIComponent(id)}&type=sale`, {
       method: "DELETE",
+      headers: authHeaders,
     }).catch(() => {});
   } catch {}
 
