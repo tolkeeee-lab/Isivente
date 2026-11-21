@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { META_PIXEL_ID } from "@/lib/metaConversionsApi";
+import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok || !auth.isFounder) {
+      return NextResponse.json(
+        { success: false, error: "Accès réservé au fondateur", data: null },
+        { status: auth.ok ? 403 : auth.status }
+      );
+    }
+
     const token = process.env.META_CONVERSIONS_API_TOKEN;
     const pixelId = META_PIXEL_ID;
 

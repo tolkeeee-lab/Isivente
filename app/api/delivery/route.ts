@@ -12,11 +12,21 @@ export async function GET(req: NextRequest) {
     }
 
     const supabase = getSupabase();
-    const { data: order, error } = await supabase
-      .from("orders")
-      .select("id, order_number, customer_name, customer_phone, city, shipping_city, address, shipping_address, product_title, product_slug, bundle_name, quantity, total_amount, status, created_at, notes")
-      .eq("order_number", cmd)
-      .maybeSingle();
+    let order: any = null;
+    let error: any = null;
+
+    const rpcRes = await supabase.rpc("get_delivery_order", { p_order_number: cmd });
+    if (!rpcRes.error && Array.isArray(rpcRes.data)) {
+      order = rpcRes.data[0] || null;
+    } else {
+      const fallback = await supabase
+        .from("orders")
+        .select("id, order_number, customer_name, customer_phone, city, shipping_city, address, shipping_address, product_title, product_slug, bundle_name, quantity, total_amount, status, created_at, notes")
+        .eq("order_number", cmd)
+        .maybeSingle();
+      order = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) {
       console.error("Delivery GET error:", error.message);
@@ -70,12 +80,21 @@ export async function POST(req: NextRequest) {
 
     const supabase = getSupabase();
 
-    // 1. Récupération de la commande
-    const { data: order, error: fetchErr } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("order_number", cmd)
-      .maybeSingle();
+    // 1. Récupération de la commande (via RPC cloisonnée ou fallback table)
+    let order: any = null;
+    let fetchErr: any = null;
+    const rpcFetch = await supabase.rpc("get_delivery_order", { p_order_number: cmd });
+    if (!rpcFetch.error && Array.isArray(rpcFetch.data)) {
+      order = rpcFetch.data[0] || null;
+    } else {
+      const fb = await supabase
+        .from("orders")
+        .select("*")
+        .eq("order_number", cmd)
+        .maybeSingle();
+      order = fb.data;
+      fetchErr = fb.error;
+    }
 
     if (fetchErr || !order) {
       return NextResponse.json({ success: false, error: "Commande introuvable" }, { status: 404 });
@@ -93,15 +112,22 @@ export async function POST(req: NextRequest) {
         ? `${order.notes} | ✅ Livré le ${now} (${paymentMethod})`
         : `✅ Livré le ${now} (${paymentMethod})`;
 
-      const { data: updated, error: updateErr } = await supabase
-        .from("orders")
-        .update({
-          status: "delivered",
-          notes: updatedNotes,
-        })
-        .eq("order_number", cmd)
-        .select()
-        .single();
+      const rpcUpd = await supabase.rpc("update_delivery_order", {
+        p_order_number: cmd,
+        p_status: "delivered",
+        p_notes: updatedNotes,
+      });
+      let updateErr = rpcUpd.error;
+      if (updateErr) {
+        const fbUpd = await supabase
+          .from("orders")
+          .update({
+            status: "delivered",
+            notes: updatedNotes,
+          })
+          .eq("order_number", cmd);
+        updateErr = fbUpd.error;
+      }
 
       if (updateErr) {
         console.error("Delivery update delivered error:", updateErr.message);
@@ -155,13 +181,22 @@ export async function POST(req: NextRequest) {
         ? `${order.notes} | ⚠️ Livreur (${now}) : ${reasonLabel}`
         : `⚠️ Livreur (${now}) : ${reasonLabel}`;
 
-      const { error: updateErr } = await supabase
-        .from("orders")
-        .update({
-          status: "postponed",
-          notes: updatedNotes,
-        })
-        .eq("order_number", cmd);
+      const rpcIssue = await supabase.rpc("update_delivery_order", {
+        p_order_number: cmd,
+        p_status: "postponed",
+        p_notes: updatedNotes,
+      });
+      let updateErr = rpcIssue.error;
+      if (updateErr) {
+        const fbIssue = await supabase
+          .from("orders")
+          .update({
+            status: "postponed",
+            notes: updatedNotes,
+          })
+          .eq("order_number", cmd);
+        updateErr = fbIssue.error;
+      }
 
       if (updateErr) {
         console.error("Delivery update issue error:", updateErr.message);

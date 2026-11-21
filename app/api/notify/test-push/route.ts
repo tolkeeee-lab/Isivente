@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuthenticatedTenant(req);
+  if (!auth.ok || !auth.isFounder) {
+    return NextResponse.json({ success: false, error: "Accès réservé au fondateur" }, { status: auth.ok ? 403 : auth.status });
+  }
+
   const ntfyTopic = (process.env.NTFY_TOPIC || "isivente-commandes-tolkeeee").trim();
 
   try {

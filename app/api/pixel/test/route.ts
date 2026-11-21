@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendMetaConversionApiEvent, META_PIXEL_ID } from "@/lib/metaConversionsApi";
+import { META_PIXEL_ID } from "@/lib/metaConversionsApi";
+import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireAuthenticatedTenant(req);
+    if (!auth.ok) {
+      return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
+    }
+
     const body = await req.json().catch(() => ({}));
     const pixelId = body.pixel_id || META_PIXEL_ID;
     const token = body.token || process.env.META_CONVERSIONS_API_TOKEN || "";

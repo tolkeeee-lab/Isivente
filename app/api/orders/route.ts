@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, orders: [], count: 0 });
     }
 
-    const supabase = getSupabase();
+    const supabase = auth.authedClient;
     let query = supabase
       .from("orders")
       .select("*")
@@ -153,14 +153,14 @@ export async function POST(req: NextRequest) {
       utm_content: body.utm_content || null,
     };
 
-    let { data, error } = await supabase
+    // Insertion publique sans .select() pour rester 100% compatible avec un RLS INSERT-only pour anon
+    let { error } = await supabase
       .from("orders")
-      .insert([payload])
-      .select();
+      .insert([payload]);
 
     // Protection anti-rejet : si le slug produit viole la contrainte de clé étrangère
     if (error && (error.message?.includes("orders_product_slug_fkey") || error.code === "23503")) {
-      console.warn("Slug produit non trouvé dans la table products, repli de sécurité sur 'umei':", productSlug);
+      console.warn("Slug produit non trouvé dans la table products, création auto du produit:", productSlug);
       await supabase.from("products").upsert(
         [
           {
@@ -175,8 +175,7 @@ export async function POST(req: NextRequest) {
         ],
         { onConflict: "slug" }
       );
-      const retry = await supabase.from("orders").insert([payload]).select();
-      data = retry.data;
+      const retry = await supabase.from("orders").insert([payload]);
       error = retry.error;
     }
 
@@ -185,7 +184,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Erreur lors de l'enregistrement de la commande" }, { status: 500 });
     }
 
-    const savedOrder = data?.[0] || payload;
+    const savedOrder = payload;
 
     // Auto-conversion du lead dans la table `leads` côté serveur
     // Utilise les 8 derniers chiffres pour matcher quel que soit le préfixe saisi (01, 229, 00229)
@@ -327,7 +326,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Corps de requête invalide" }, { status: 400 });
     }
 
-    const supabase = getSupabase();
+    const supabase = auth.authedClient;
 
     const rawId = String(body.id || "").trim();
     const rawStatus = String(body.status || "").trim();
@@ -408,7 +407,7 @@ export async function DELETE(req: NextRequest) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id")?.trim();
     const clearAll = url.searchParams.get("clearAll");
-    const supabase = getSupabase();
+    const supabase = auth.authedClient;
 
     // Protection critique : interdire la suppression totale sans être fondateur + secret d'administration
     if (clearAll === "true") {
