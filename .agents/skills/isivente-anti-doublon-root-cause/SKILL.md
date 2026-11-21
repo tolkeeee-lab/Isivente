@@ -46,13 +46,21 @@ Chaque responsabilité dans Isivente possède **un seul point d'entrée officiel
   - Ne jamais remplacer un `product_slug` par `"umei"` en cas de produit manquant dans la table SQL `products` : toujours faire un `upsert` du vrai `product_slug` dans `products` avant d'insérer la commande.
 - **Paniers Abandonnés** : Uniquement via `saveOrUpdateLead()` (`lib/leadsStorage.ts`) avec l'identifiant déterministe `lead_{telephone8chiffres}_{slug}` pour qu'un même client sur un même produit mette à jour sa fiche au lieu de créer 5 lignes.
 
+### 🔀 D. Routes Unifiées & Isolation Multi-Utilisateurs (Interdiction des Routes Parallèles)
+- **Ne JAMAIS créer une nouvelle route (page ou API) lorsqu'une route remplissant le même rôle existe déjà** — sauf impossibilité technique avérée et validée.
+- **Unifier et isoler par `store_id` au maximum** :
+  - **Pages produits** : Une seule route publique unifiée (`/p/[slug]` et `/p/[slug]/success`) pour tous les utilisateurs (fondateur ET vendeurs SaaS). Pas de route parallèle `/s/...` en doublon.
+  - **APIs** : Les mêmes routes uniques (`/api/orders`, `/api/leads`, `/api/analytics`, `/api/finances`) servent toutes les boutiques, avec isolation stricte via `store_id` et RLS Supabase.
+  - **Isolation Pixel Meta & WhatsApp** : Ne jamais laisser le Pixel ou le numéro WhatsApp du fondateur s'exécuter globalement sur les pages d'autres vendeurs. Chaque page produit charge dynamiquement **uniquement** le `meta_pixel_id`, le `meta_capi_token` et le `whatsapp_number` de la boutique propriétaire (`store_id`) — zéro pollution croisée.
+
 ---
 
 ## ✅ 3. Checklist de Vérification Avant Chaque Commit
 
 Avant de valider et pousser une modification :
-1. **Ai-je créé un doublon d'appel réseau ou d'événement ?** (Vérifier qu'aucun événement n'est tiré à la fois dans l'enfant et dans le parent).
-2. **Ai-je supprimé l'ancien code défectueux au lieu de le laisser tourner à côté ?**
-3. **Toutes les promesses serveur sur Vercel (`sendMetaConversionApiEvent`, `sendOrderNotification`, `supabase`) ont-elles bien `await` avant le `return NextResponse.json()` ?**
-4. **Le build TypeScript (`npx tsc --noEmit`) passe-t-il avec 0 erreur ?**
+1. **Ai-je créé une nouvelle route parallèle alors qu'une route existante pouvait être unifiée et isolée par `store_id` ?** (Si oui ➔ STOP, unifier dans la route existante).
+2. **Ai-je créé un doublon d'appel réseau ou d'événement ?** (Vérifier qu'aucun événement n'est tiré à la fois dans l'enfant et dans le parent).
+3. **Ai-je supprimé l'ancien code défectueux au lieu de le laisser tourner à côté ?**
+4. **Toutes les promesses serveur sur Vercel (`sendMetaConversionApiEvent`, `sendOrderNotification`, `supabase`) ont-elles bien `await` avant le `return NextResponse.json()` ?**
+5. **Le build TypeScript (`npx tsc --noEmit`) passe-t-il avec 0 erreur ?**
 

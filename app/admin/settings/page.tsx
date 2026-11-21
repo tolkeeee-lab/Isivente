@@ -162,7 +162,7 @@ export default function AdminStoreSettingsPage() {
     router.refresh();
   };
 
-  const storePublicUrl = `https://isivente.com/s/${slug || "ma-boutique"}`;
+  const storePublicUrl = `https://isivente.com/p/${slug || "ma-boutique"}`;
 
   const copyStoreUrl = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
