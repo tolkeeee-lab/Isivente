@@ -60,6 +60,8 @@ export default function AdminClicksPage() {
   const [hasAnalyticsTable, setHasAnalyticsTable] = useState<boolean>(true);
   const [copiedSql, setCopiedSql] = useState<boolean>(false);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [onlyWithTraffic, setOnlyWithTraffic] = useState<boolean>(true);
+  const [visibleCount, setVisibleCount] = useState<number>(8);
 
   const handleCopyLink = (slug: string) => {
     const origin = typeof window !== "undefined" ? window.location.origin : "https://isivente.vercel.app";
@@ -469,151 +471,273 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
         })()}
       </div>
 
-      {/* TABLEAU FIGMA-GRADE PAR PRODUIT */}
-      <div className="card-figma overflow-hidden">
-        <div className="p-5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40">
-          <div>
-            <h2 className="font-display font-bold text-base text-slate-900">Performance par Page Produit</h2>
-            <p className="text-xs text-slate-500">Détail des clics, taux de clic et commandes par landing page.</p>
-          </div>
-          <Link
-            href="/admin/prospects"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#171717] hover:text-[#171717] transition-colors"
-          >
-            <PhoneCall className="w-3.5 h-3.5" />
-            <span>Voir les paniers abandonnés</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+      {/* PERFORMANCE PAR PAGE PRODUIT (TRIÉ PAR TRAFIC + CARTES MOBILES + PAGINATION ANTI-SCROLL INFINI) */}
+      {(() => {
+        const enrichedRows = productsList
+          .map((prod) => {
+            const pa = productAnalytics.find((p) => p.slug === prod.slug);
+            const orders = orderCountsBySlug[prod.slug] || 0;
+            const leads = leadsCountBySlug[prod.slug] || 0;
+            const views = pa?.totalViews || 0;
+            const clicks = pa?.totalClicks || 0;
+            const ctr = pa?.ctr ?? 0;
+            const avgTime = pa?.formattedAvgTime || "—";
+            return { ...prod, orders, leads, views, clicks, ctr, avgTime };
+          })
+          .sort((a, b) => {
+            if (b.views !== a.views) return b.views - a.views;
+            if (b.clicks !== a.clicks) return b.clicks - a.clicks;
+            return b.orders - a.orders;
+          });
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-black/[0.08] bg-slate-50/70 text-[11px] font-semibold text-slate-400">
-                <th className="py-3 px-4">Produit</th>
-                <th className="py-3 px-4 text-center">Vues</th>
-                <th className="py-3 px-4 text-center">Clics</th>
-                <th className="py-3 px-4 text-center">CTR (Taux de Clic)</th>
-                <th className="py-3 px-4 text-center">Temps Moyen</th>
-                <th className="py-3 px-4 text-center">Paniers Cités</th>
-                <th className="py-3 px-4 text-center">Commandes</th>
-                <th className="py-3 px-4 text-right">Lien Direct</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-black/[0.06] font-sans">
-              {productsList.map((prod) => {
-                const pa = productAnalytics.find((p) => p.slug === prod.slug);
-                const orders = orderCountsBySlug[prod.slug] || 0;
-                const leads = leadsCountBySlug[prod.slug] || 0;
-                const views = pa?.totalViews || 0;
-                const clicks = pa?.totalClicks || 0;
-                const ctr = pa?.ctr ?? 0;
-                const avgTime = pa?.formattedAvgTime || "—";
+        const activeRows = enrichedRows.filter((r) => r.views > 0 || r.clicks > 0 || r.orders > 0 || r.leads > 0);
+        const filteredRows = onlyWithTraffic && activeRows.length > 0 ? activeRows : enrichedRows;
+        const displayedRows = filteredRows.slice(0, visibleCount);
+        const remainingCount = Math.max(0, filteredRows.length - displayedRows.length);
 
-                return (
-                  <tr key={prod.slug} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-4">
+        return (
+          <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-[16px] font-medium text-[#171717]">
+                  Performance par page produit
+                </h2>
+                <p className="text-[13px] text-[#737373] mt-0.5">
+                  Trié du plus visité au moins visité · {filteredRows.length} page{filteredRows.length > 1 ? "s" : ""}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {activeRows.length > 0 && activeRows.length < enrichedRows.length && (
+                  <div className="inline-flex p-0.5 rounded-[8px] bg-[#f4f4f5] text-[12px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOnlyWithTraffic(true);
+                        setVisibleCount(8);
+                      }}
+                      className={`h-7 px-2.5 rounded-[6px] transition-colors duration-150 cursor-pointer ${
+                        onlyWithTraffic
+                          ? "bg-white text-[#171717] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+                          : "text-[#737373] hover:text-[#171717]"
+                      }`}
+                    >
+                      Actifs ({activeRows.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOnlyWithTraffic(false);
+                        setVisibleCount(8);
+                      }}
+                      className={`h-7 px-2.5 rounded-[6px] transition-colors duration-150 cursor-pointer ${
+                        !onlyWithTraffic
+                          ? "bg-white text-[#171717] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+                          : "text-[#737373] hover:text-[#171717]"
+                      }`}
+                    >
+                      Tous ({enrichedRows.length})
+                    </button>
+                  </div>
+                )}
+
+                <Link
+                  href="/admin/prospects"
+                  className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#525252] hover:text-[#171717] transition-colors"
+                >
+                  <PhoneCall className="w-3.5 h-3.5 stroke-[1.5]" />
+                  <span>Paniers abandonnés</span>
+                  <ChevronRight className="w-3.5 h-3.5 stroke-[1.5]" />
+                </Link>
+              </div>
+            </div>
+
+            {displayedRows.length === 0 ? (
+              <div className="py-10 px-4 text-center text-[13px] text-[#737373]">
+                Aucune page produit enregistrée pour le moment
+              </div>
+            ) : (
+              <>
+                {/* Vue Mobile : Cartes 100% lisibles sans scroll horizontal */}
+                <div className="md:hidden divide-y divide-black/[0.06]">
+                  {displayedRows.map((prod) => (
+                    <div key={prod.slug} className="p-4 space-y-3">
                       <div className="flex items-center gap-3">
                         <img
                           src={prod.image}
                           alt={prod.title}
-                          className="w-10 h-10 rounded-lg object-cover border border-black/[0.08] shrink-0 bg-white"
+                          className="w-11 h-11 rounded-[8px] object-cover border border-black/[0.08] shrink-0 bg-[#f4f4f5]"
                         />
-                        <div className="min-w-0">
-                          <div className="font-bold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]">{prod.title}</div>
-                          <div className="text-[11px] font-mono text-slate-400">/p/{prod.slug}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[14px] font-medium text-[#171717] line-clamp-1">
+                            {prod.title}
+                          </div>
+                          <div className="text-[12px] font-mono text-[#737373] truncate">
+                            /p/{prod.slug}
+                          </div>
                         </div>
                       </div>
-                    </td>
 
-                    <td className="py-3.5 px-4 text-center font-mono font-semibold text-slate-700 tabular-nums">
-                      {views}
-                    </td>
-
-                    <td className="py-3.5 px-4 text-center font-mono font-bold text-[#171717] tabular-nums">
-                      {clicks}
-                    </td>
-
-                    <td className="py-3.5 px-4 text-center">
-                      <div className="inline-flex items-center gap-1.5 font-mono font-bold text-xs">
-                        <span className={`px-2 py-0.5 rounded-full ${
-                          ctr >= 15 
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200" 
-                            : ctr > 0 
-                            ? "bg-[#f4f4f5] text-[#171717] border border-black/[0.08]" 
-                            : "bg-slate-100 text-slate-500"
-                        }`}>
-                          {ctr}%
-                        </span>
+                      <div className="grid grid-cols-4 gap-2 bg-[#fafafa] border border-black/[0.06] rounded-[8px] p-2.5 text-center">
+                        <div>
+                          <div className="text-[11px] text-[#737373]">Vues</div>
+                          <div className="text-[14px] font-mono tabular-nums font-medium text-[#171717] mt-0.5">
+                            {prod.views}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[11px] text-[#737373]">Clics</div>
+                          <div className="text-[14px] font-mono tabular-nums font-medium text-[#525252] mt-0.5">
+                            {prod.clicks}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[11px] text-[#737373]">CTR</div>
+                          <div className="text-[14px] font-mono tabular-nums font-medium text-[#171717] mt-0.5">
+                            {prod.ctr}%
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[11px] text-[#737373]">Ventes</div>
+                          <div className="text-[14px] font-mono tabular-nums font-medium text-[#15803d] mt-0.5">
+                            {prod.orders}
+                          </div>
+                        </div>
                       </div>
-                    </td>
 
-                    <td className="py-3.5 px-4 text-center font-mono text-slate-600 tabular-nums">
-                      {avgTime}
-                    </td>
-
-                    <td className="py-3.5 px-4 text-center">
-                      {leads > 0 ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#f4f4f5] text-[#525252] border border-black/[0.08]">
-                          {leads} prospect{leads > 1 ? "s" : ""}
-                        </span>
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
-
-                    <td className="py-3.5 px-4 text-center">
-                      {orders > 0 ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                          {orders} vente{orders > 1 ? "s" : ""}
-                        </span>
-                      ) : (
-                        <span className="text-slate-300">0</span>
-                      )}
-                    </td>
-
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="inline-flex items-center gap-1.5 justify-end">
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => handleCopyLink(prod.slug)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors duration-150 cursor-pointer ${
+                          className={`flex-1 h-9 rounded-[8px] text-[13px] font-medium inline-flex items-center justify-center gap-1.5 border transition-colors duration-150 cursor-pointer ${
                             copiedSlug === prod.slug
-                              ? "bg-emerald-600 text-white shadow-xs"
-                              : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                              ? "bg-[#15803d] text-white border-[#15803d]"
+                              : "bg-white hover:bg-[#f4f4f5] text-[#171717] border-black/[0.08]"
                           }`}
                         >
                           {copiedSlug === prod.slug ? (
                             <>
-                              <Check className="w-3 h-3 stroke-[2.5]" />
-                              <span>Copié !</span>
+                              <Check className="w-3.5 h-3.5 stroke-[1.5]" />
+                              <span>Copié</span>
                             </>
                           ) : (
                             <>
-                              <Copy className="w-3 h-3" />
-                              <span>Copier</span>
+                              <Copy className="w-3.5 h-3.5 stroke-[1.5] text-[#737373]" />
+                              <span>Copier lien</span>
                             </>
                           )}
                         </button>
-
                         <a
                           href={`/p/${prod.slug}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                          className="h-9 px-3.5 rounded-[8px] border border-black/[0.08] text-[13px] font-medium text-[#525252] hover:text-[#171717] inline-flex items-center gap-1.5"
                         >
-                          <span>Visiter</span>
-                          <ExternalLink className="w-3 h-3" />
+                          <span>Ouvrir</span>
+                          <ExternalLink className="w-3.5 h-3.5 stroke-[1.5]" />
                         </a>
                       </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Vue Desktop : Tableau complet trié */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-[13px]">
+                    <thead>
+                      <tr className="border-b border-black/[0.08] bg-[#fafafa] text-[12px] font-normal text-[#737373]">
+                        <th className="py-3 px-4 font-normal">Produit</th>
+                        <th className="py-3 px-4 text-right font-normal">Vues</th>
+                        <th className="py-3 px-4 text-right font-normal">Clics</th>
+                        <th className="py-3 px-4 text-right font-normal">CTR</th>
+                        <th className="py-3 px-4 text-right font-normal">Temps moyen</th>
+                        <th className="py-3 px-4 text-right font-normal">Paniers</th>
+                        <th className="py-3 px-4 text-right font-normal">Commandes</th>
+                        <th className="py-3 px-4 text-right font-normal">Lien</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/[0.06] font-sans">
+                      {displayedRows.map((prod) => (
+                        <tr key={prod.slug} className="hover:bg-[#fafafa] transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={prod.image}
+                                alt={prod.title}
+                                className="w-9 h-9 rounded-[8px] object-cover border border-black/[0.08] shrink-0 bg-white"
+                              />
+                              <div className="min-w-0">
+                                <div className="font-medium text-[#171717] truncate max-w-[240px]">{prod.title}</div>
+                                <div className="text-[12px] font-mono text-[#737373]">/p/{prod.slug}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 text-right font-mono tabular-nums text-[#171717]">
+                            {prod.views}
+                          </td>
+                          <td className="py-3 px-4 text-right font-mono tabular-nums text-[#525252]">
+                            {prod.clicks}
+                          </td>
+                          <td className="py-3 px-4 text-right font-mono tabular-nums text-[#525252]">
+                            {prod.ctr}%
+                          </td>
+                          <td className="py-3 px-4 text-right font-mono tabular-nums text-[#737373]">
+                            {prod.avgTime}
+                          </td>
+                          <td className="py-3 px-4 text-right font-mono tabular-nums text-[#525252]">
+                            {prod.leads > 0 ? prod.leads : "—"}
+                          </td>
+                          <td className="py-3 px-4 text-right font-mono tabular-nums font-medium text-[#15803d]">
+                            {prod.orders}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <div className="inline-flex items-center gap-1.5 justify-end">
+                              <button
+                                type="button"
+                                onClick={() => handleCopyLink(prod.slug)}
+                                className={`h-7 px-2.5 rounded-[6px] text-[12px] font-medium inline-flex items-center gap-1 border transition-colors duration-150 cursor-pointer ${
+                                  copiedSlug === prod.slug
+                                    ? "bg-[#15803d] text-white border-[#15803d]"
+                                    : "bg-white hover:bg-[#f4f4f5] text-[#171717] border-black/[0.08]"
+                                }`}
+                              >
+                                {copiedSlug === prod.slug ? <Check className="w-3.5 h-3.5 stroke-[1.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[1.5] text-[#737373]" />}
+                                <span>{copiedSlug === prod.slug ? "Copié" : "Copier"}</span>
+                              </button>
+                              <a
+                                href={`/p/${prod.slug}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="h-7 w-7 rounded-[6px] border border-black/[0.08] text-[#737373] hover:text-[#171717] hover:bg-[#f4f4f5] inline-flex items-center justify-center transition-colors"
+                                title="Ouvrir la page"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 stroke-[1.5]" />
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination propre (fini le scroll infini) */}
+                {remainingCount > 0 && (
+                  <div className="p-4 border-t border-black/[0.08] text-center bg-[#fafafa]/60">
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCount((prev) => prev + 8)}
+                      className="h-9 px-4 rounded-[8px] bg-white hover:bg-[#f4f4f5] border border-black/[0.08] text-[13px] font-medium text-[#171717] transition-colors duration-150 cursor-pointer"
+                    >
+                      Afficher {Math.min(8, remainingCount)} de plus ({remainingCount} restant{remainingCount > 1 ? "s" : ""})
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ENCART PÉDAGOGIQUE POUR LE COMMERÇANT */}
       <div className="p-5 rounded-2xl bg-[#fafafa] border border-black/[0.08] space-y-3">

@@ -967,7 +967,7 @@ export default function AdminOverviewPage() {
 
         {/* Onglet 1 : Produits et trafic */}
         {workspaceTab === "products" && (
-          <div className="overflow-x-auto">
+          <div>
             {top5Products.length === 0 ? (
               <div className="py-12 px-5 text-center space-y-3">
                 <p className="text-[15px] font-medium text-[#171717]">
@@ -978,125 +978,221 @@ export default function AdminOverviewPage() {
                 </p>
                 <Link
                   href="/admin/landings"
-                  className="h-9 px-4 rounded-[8px] bg-[#171717] hover:bg-[#262626] text-white text-[13px] font-medium inline-flex items-center gap-2 transition-colors duration-150"
+                  className="h-9 px-4 rounded-[8px] bg-[#14281D] hover:bg-[#1E3A2B] text-white text-[13px] font-medium inline-flex items-center gap-2 transition-colors duration-150"
                 >
                   <Store className="w-4 h-4 stroke-[1.5]" />
                   <span>Créer une page produit</span>
                 </Link>
               </div>
             ) : (
-              <table className="w-full text-left text-[13px] border-collapse min-w-[620px]">
-                <thead>
-                  <tr className="border-b border-black/[0.08] bg-[#fafafa] text-[#737373] font-normal text-[12px]">
-                    <th className="py-3 px-5 font-normal">Produit</th>
-                    <th className="py-3 px-3 text-right font-normal">Visites</th>
-                    <th className="py-3 px-3 text-right font-normal">Clics</th>
-                    <th className="py-3 px-3 text-right font-normal">Commandes</th>
-                    <th className="py-3 px-3 text-right font-normal">Conversion</th>
-                    <th className="py-3 px-5 text-right font-normal">Liens</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/[0.06]">
+              <>
+                {/* Vue Mobile : Cartes plein écran sans scroll horizontal */}
+                <div className="md:hidden divide-y divide-black/[0.06]">
                   {top5Products.map((prod) => {
                     const isCopied = copiedSlug === prod.slug;
                     const isCopiedUtm = copiedSlug === `${prod.slug}_utm`;
-
                     return (
-                      <tr
-                        key={prod.slug}
-                        className="hover:bg-[#fafafa] transition-colors duration-150"
-                      >
-                        <td className="py-3 px-5">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={prod.image}
-                              alt={prod.title}
-                              className="w-9 h-9 rounded-[8px] object-cover border border-black/[0.08] shrink-0 bg-[#f4f4f5]"
-                            />
-                            <div className="min-w-0">
-                              <div className="font-medium text-[#171717] truncate max-w-[240px]">
-                                {prod.title}
-                              </div>
-                              <div className="text-[12px] text-[#737373] font-mono tabular-nums">
-                                {fmt(prod.price)} F · /p/{prod.slug}
-                              </div>
+                      <div key={prod.slug} className="p-4 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={prod.image}
+                            alt={prod.title}
+                            className="w-11 h-11 rounded-[8px] object-cover border border-black/[0.08] shrink-0 bg-[#f4f4f5]"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[14px] font-medium text-[#171717] line-clamp-1">
+                              {prod.title}
+                            </div>
+                            <div className="text-[12px] text-[#737373] font-mono tabular-nums mt-0.5">
+                              {fmt(prod.price)} F · /p/{prod.slug}
                             </div>
                           </div>
-                        </td>
+                        </div>
 
-                        <td className="py-3 px-3 text-right font-mono tabular-nums text-[#171717]">
-                          <span>{fmt(prod.views)}</span>
-                          {prod.todayViews > 0 && (
-                            <span className="ml-1.5 text-[12px] text-[#15803d]">
-                              +{prod.todayViews}
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
-                          {fmt(prod.clicks)}
-                        </td>
-
-                        <td className="py-3 px-3 text-right font-mono tabular-nums font-medium text-[#171717]">
-                          {fmt(prod.ordersCount)}
-                        </td>
-
-                        <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
-                          {prod.convRate}%
-                        </td>
-
-                        <td className="py-3 px-5 text-right">
-                          <div className="inline-flex items-center justify-end gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => handleCopyLink(prod.slug, false)}
-                              className={`h-7 px-2.5 rounded-[6px] text-[12px] font-medium inline-flex items-center gap-1 border transition-colors duration-150 cursor-pointer ${
-                                isCopied
-                                  ? "bg-[#15803d] text-white border-[#15803d]"
-                                  : "bg-white hover:bg-[#f4f4f5] text-[#171717] border-black/[0.08]"
-                              }`}
-                            >
-                              {isCopied ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 stroke-[1.5]" />
-                                  <span>Copié</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3.5 h-3.5 stroke-[1.5] text-[#737373]" />
-                                  <span>Lien</span>
-                                </>
+                        <div className="grid grid-cols-4 gap-2 bg-[#fafafa] border border-black/[0.06] rounded-[8px] p-2.5 text-center">
+                          <div>
+                            <div className="text-[11px] text-[#737373]">Visites</div>
+                            <div className="text-[14px] font-mono tabular-nums font-medium text-[#171717] mt-0.5">
+                              {fmt(prod.views)}
+                              {prod.todayViews > 0 && (
+                                <span className="text-[11px] text-[#15803d] ml-0.5">+{prod.todayViews}</span>
                               )}
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleCopyLink(prod.slug, true)}
-                              title="Copier le lien avec UTM Meta Ads"
-                              className={`h-7 px-2 rounded-[6px] text-[12px] font-mono border transition-colors duration-150 cursor-pointer ${
-                                isCopiedUtm
-                                  ? "bg-[#f4f4f5] text-[#15803d] border-[#15803d]/40"
-                                  : "bg-[#fafafa] hover:bg-[#f4f4f5] text-[#525252] border-black/[0.08]"
-                              }`}
-                            >
-                              {isCopiedUtm ? "OK" : "UTM"}
-                            </button>
-
-                            <Link
-                              href={`/p/${prod.slug}`}
-                              target="_blank"
-                              title="Ouvrir la page"
-                              className="h-7 w-7 rounded-[6px] border border-black/[0.08] text-[#737373] hover:text-[#171717] hover:bg-[#f4f4f5] inline-flex items-center justify-center transition-colors duration-150"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5 stroke-[1.5]" />
-                            </Link>
+                            </div>
                           </div>
-                        </td>
-                      </tr>
+                          <div>
+                            <div className="text-[11px] text-[#737373]">Clics</div>
+                            <div className="text-[14px] font-mono tabular-nums font-medium text-[#525252] mt-0.5">
+                              {fmt(prod.clicks)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-[11px] text-[#737373]">Cmd</div>
+                            <div className="text-[14px] font-mono tabular-nums font-medium text-[#15803d] mt-0.5">
+                              {fmt(prod.ordersCount)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-[11px] text-[#737373]">Conv.</div>
+                            <div className="text-[14px] font-mono tabular-nums font-medium text-[#525252] mt-0.5">
+                              {prod.convRate}%
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleCopyLink(prod.slug, false)}
+                            className={`flex-1 h-9 rounded-[8px] text-[13px] font-medium inline-flex items-center justify-center gap-1.5 border transition-colors duration-150 cursor-pointer ${
+                              isCopied
+                                ? "bg-[#15803d] text-white border-[#15803d]"
+                                : "bg-white hover:bg-[#f4f4f5] text-[#171717] border-black/[0.08]"
+                            }`}
+                          >
+                            {isCopied ? <Check className="w-3.5 h-3.5 stroke-[1.5]" /> : <Copy className="w-3.5 h-3.5 stroke-[1.5] text-[#737373]" />}
+                            <span>{isCopied ? "Copié" : "Copier lien"}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyLink(prod.slug, true)}
+                            className={`h-9 px-3 rounded-[8px] text-[12px] font-mono border transition-colors duration-150 cursor-pointer ${
+                              isCopiedUtm
+                                ? "bg-[#f4f4f5] text-[#15803d] border-[#15803d]/40"
+                                : "bg-[#fafafa] text-[#525252] border-black/[0.08]"
+                            }`}
+                          >
+                            {isCopiedUtm ? "OK" : "UTM"}
+                          </button>
+                          <Link
+                            href={`/p/${prod.slug}`}
+                            target="_blank"
+                            className="h-9 px-3 rounded-[8px] border border-black/[0.08] text-[#525252] hover:text-[#171717] inline-flex items-center justify-center"
+                            title="Ouvrir la page"
+                          >
+                            <ExternalLink className="w-4 h-4 stroke-[1.5]" />
+                          </Link>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+
+                {/* Vue Desktop : Tableau aligné */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left text-[13px] border-collapse">
+                    <thead>
+                      <tr className="border-b border-black/[0.08] bg-[#fafafa] text-[#737373] font-normal text-[12px]">
+                        <th className="py-3 px-5 font-normal">Produit</th>
+                        <th className="py-3 px-3 text-right font-normal">Visites</th>
+                        <th className="py-3 px-3 text-right font-normal">Clics</th>
+                        <th className="py-3 px-3 text-right font-normal">Commandes</th>
+                        <th className="py-3 px-3 text-right font-normal">Conversion</th>
+                        <th className="py-3 px-5 text-right font-normal">Liens</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/[0.06]">
+                      {top5Products.map((prod) => {
+                        const isCopied = copiedSlug === prod.slug;
+                        const isCopiedUtm = copiedSlug === `${prod.slug}_utm`;
+
+                        return (
+                          <tr
+                            key={prod.slug}
+                            className="hover:bg-[#fafafa] transition-colors duration-150"
+                          >
+                            <td className="py-3 px-5">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={prod.image}
+                                  alt={prod.title}
+                                  className="w-9 h-9 rounded-[8px] object-cover border border-black/[0.08] shrink-0 bg-[#f4f4f5]"
+                                />
+                                <div className="min-w-0">
+                                  <div className="font-medium text-[#171717] truncate max-w-[240px]">
+                                    {prod.title}
+                                  </div>
+                                  <div className="text-[12px] text-[#737373] font-mono tabular-nums">
+                                    {fmt(prod.price)} F · /p/{prod.slug}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="py-3 px-3 text-right font-mono tabular-nums text-[#171717]">
+                              <span>{fmt(prod.views)}</span>
+                              {prod.todayViews > 0 && (
+                                <span className="ml-1.5 text-[12px] text-[#15803d]">
+                                  +{prod.todayViews}
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
+                              {fmt(prod.clicks)}
+                            </td>
+
+                            <td className="py-3 px-3 text-right font-mono tabular-nums font-medium text-[#171717]">
+                              {fmt(prod.ordersCount)}
+                            </td>
+
+                            <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
+                              {prod.convRate}%
+                            </td>
+
+                            <td className="py-3 px-5 text-right">
+                              <div className="inline-flex items-center justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyLink(prod.slug, false)}
+                                  className={`h-7 px-2.5 rounded-[6px] text-[12px] font-medium inline-flex items-center gap-1 border transition-colors duration-150 cursor-pointer ${
+                                    isCopied
+                                      ? "bg-[#15803d] text-white border-[#15803d]"
+                                      : "bg-white hover:bg-[#f4f4f5] text-[#171717] border-black/[0.08]"
+                                  }`}
+                                >
+                                  {isCopied ? (
+                                    <>
+                                      <Check className="w-3.5 h-3.5 stroke-[1.5]" />
+                                      <span>Copié</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3.5 h-3.5 stroke-[1.5] text-[#737373]" />
+                                      <span>Lien</span>
+                                    </>
+                                  )}
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopyLink(prod.slug, true)}
+                                  title="Copier le lien avec UTM Meta Ads"
+                                  className={`h-7 px-2 rounded-[6px] text-[12px] font-mono border transition-colors duration-150 cursor-pointer ${
+                                    isCopiedUtm
+                                      ? "bg-[#f4f4f5] text-[#15803d] border-[#15803d]/40"
+                                      : "bg-[#fafafa] hover:bg-[#f4f4f5] text-[#525252] border-black/[0.08]"
+                                  }`}
+                                >
+                                  {isCopiedUtm ? "OK" : "UTM"}
+                                </button>
+
+                                <Link
+                                  href={`/p/${prod.slug}`}
+                                  target="_blank"
+                                  title="Ouvrir la page"
+                                  className="h-7 w-7 rounded-[6px] border border-black/[0.08] text-[#737373] hover:text-[#171717] hover:bg-[#f4f4f5] inline-flex items-center justify-center transition-colors duration-150"
+                                >
+                                  <ExternalLink className="w-3.5 h-3.5 stroke-[1.5]" />
+                                </Link>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         )}
