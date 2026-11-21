@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import { isFounderEmail } from "./storesStorage";
 
@@ -32,6 +32,7 @@ export type AuthenticatedTenantResult =
       email: string | null;
       isFounder: boolean;
       storeId: string | null;
+      authedClient: SupabaseClient;
     }
   | {
       ok: false;
@@ -108,6 +109,7 @@ export async function requireAuthenticatedTenant(
       email: user.email || null,
       isFounder,
       storeId: store?.id || null,
+      authedClient,
     };
   } catch {
     return {

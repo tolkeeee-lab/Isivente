@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
 import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +23,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const supabase = getSupabase();
+    const supabase = auth.authedClient;
     let query = supabase
       .from("finances")
       .select("*")
@@ -87,7 +86,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { type, item } = body;
-    const supabase = getSupabase();
+    const supabase = auth.authedClient;
 
     const normalizedType = type === "sale" ? "sale" : type === "capital" ? "capital" : "expense";
     const storeId = auth.isFounder ? null : auth.storeId;
@@ -152,7 +151,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "ID manquant" }, { status: 400 });
     }
 
-    const supabase = getSupabase();
+    const supabase = auth.authedClient;
     let delQuery = supabase.from("finances").delete().eq("id", id);
     if (!auth.isFounder && auth.storeId) {
       delQuery = delQuery.eq("store_id", auth.storeId);
