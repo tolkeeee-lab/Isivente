@@ -23,7 +23,6 @@ import {
 import { supabase } from "@/lib/supabase";
 import { formatBeninPhoneForWhatsApp } from "@/lib/phoneUtils";
 import {
-  LayoutDashboard,
   TrendingUp,
   Package,
   MousePointerClick,
@@ -38,12 +37,22 @@ import {
   Check,
   BarChart3,
   Clock,
+  Wallet,
+  ArrowUpRight,
 } from "lucide-react";
 import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
 import { getStoredTenantContext } from "@/lib/storesStorage";
 
 type PeriodFilter = "today" | "7d" | "all";
 type OrderQuickFilter = "all" | "pending" | "confirmed";
+type WorkspaceTab = "products" | "cashflow";
+
+interface DashboardProductItem {
+  slug: string;
+  title: string;
+  price: number;
+  image: string;
+}
 
 export default function AdminOverviewPage() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
@@ -58,20 +67,35 @@ export default function AdminOverviewPage() {
     formattedAvgTime: "—",
   });
   const [productAnalytics, setProductAnalytics] = useState<ProductAnalyticsStats[]>([]);
+  const [tenantProducts, setTenantProducts] = useState<DashboardProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [period, setPeriod] = useState<PeriodFilter>("all");
   const [orderTab, setOrderTab] = useState<OrderQuickFilter>("all");
+  const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>("products");
 
   const tenantCtx = getStoredTenantContext();
   const isFounder = tenantCtx ? tenantCtx.isFounder : false;
-  const productsList = useMemo(() => (isFounder ? getAdminDashboardProducts() : []), [isFounder]);
+  const founderProducts = useMemo<DashboardProductItem[]>(
+    () => (isFounder ? getAdminDashboardProducts() : []),
+    [isFounder]
+  );
+
+  // Produits de la boutique courante (catalogue fondateur ou produits Supabase du vendeur)
+  const productsList = useMemo<DashboardProductItem[]>(() => {
+    if (isFounder) {
+      const seen = new Set(founderProducts.map((p) => p.slug));
+      const extras = tenantProducts.filter((p) => !seen.has(p.slug));
+      return [...extras, ...founderProducts];
+    }
+    return tenantProducts;
+  }, [isFounder, founderProducts, tenantProducts]);
+
   // ── Rapprochement Livraisons & CA Réel ──
   const [deliveredOverrides, setDeliveredOverrides] = useState<Record<string, number>>({});
   const [showOnlyWithOrders, setShowOnlyWithOrders] = useState<boolean>(true);
 
-  // Charger les ajustements enregistrés (uniquement pour le fondateur)
   useEffect(() => {
     if (!isFounder) return;
     try {
@@ -80,24 +104,58 @@ export default function AdminOverviewPage() {
     } catch {}
   }, [isFounder]);
 
+  // Charger les produits créés en base pour la boutique active
+  useEffect(() => {
+    let active = true;
+    async function loadStoreProducts() {
+      if (!tenantCtx?.storeId) return;
+      try {
+        const { data } = await supabase
+          .from("products")
+          .select("slug, title, price, images")
+          .eq("store_id", tenantCtx.storeId)
+          .order("created_at", { ascending: false });
+        if (!active || !data) return;
+        setTenantProducts(
+          data.map((row) => ({
+            slug: row.slug,
+            title: row.title,
+            price: Number(row.price) || 0,
+            image:
+              Array.isArray(row.images) && row.images.length > 0
+                ? String(row.images[0])
+                : "/icon.svg",
+          }))
+        );
+      } catch {}
+    }
+    loadStoreProducts();
+    return () => {
+      active = false;
+    };
+  }, [tenantCtx?.storeId]);
+
   const handleUpdateDeliveredCount = (slug: string, newCount: number) => {
     const safeCount = Math.max(0, Math.floor(newCount || 0));
     const updated = { ...deliveredOverrides, [slug]: safeCount };
     setDeliveredOverrides(updated);
-    try {
-      localStorage.setItem("isivente_delivered_counts", JSON.stringify(updated));
-    } catch {}
+    if (isFounder) {
+      try {
+        localStorage.setItem("isivente_delivered_counts", JSON.stringify(updated));
+      } catch {}
+    }
   };
 
   const handleResetToAutoDelivered = () => {
     setDeliveredOverrides({});
-    try {
-      localStorage.removeItem("isivente_delivered_counts");
-    } catch {}
+    if (isFounder) {
+      try {
+        localStorage.removeItem("isivente_delivered_counts");
+      } catch {}
+    }
   };
 
   const realDeliveryReport = useMemo(() => {
-    // 1. Décompte automatique par slug
     const ordersBySlug: Record<string, { totalOrders: number; autoDelivered: number }> = {};
     orders.forEach((o) => {
       const s = o.product_slug || "autre";
@@ -108,7 +166,6 @@ export default function AdminOverviewPage() {
       }
     });
 
-    // 2. Construction des données par produit
     const rows = productsList.map((p) => {
       const stat = ordersBySlug[p.slug] || { totalOrders: 0, autoDelivered: 0 };
       const isOverridden = deliveredOverrides[p.slug] !== undefined;
@@ -127,13 +184,11 @@ export default function AdminOverviewPage() {
       };
     });
 
-    // 3. Totaux globaux
     const totalDelivered = rows.reduce((sum, r) => sum + r.deliveredCount, 0);
     const totalRealRevenue = rows.reduce((sum, r) => sum + r.realRevenue, 0);
     const totalOrdersCount = rows.reduce((sum, r) => sum + r.totalOrders, 0);
     const globalDeliveryRate = totalOrdersCount > 0 ? (totalDelivered / totalOrdersCount) * 100 : 0;
 
-    // 4. Filtrage d'affichage (produits avec commandes/livraisons d'abord)
     const displayedRows = showOnlyWithOrders
       ? rows.filter((r) => r.totalOrders > 0 || r.deliveredCount > 0)
       : rows;
@@ -147,7 +202,6 @@ export default function AdminOverviewPage() {
       hasOverrides: Object.keys(deliveredOverrides).length > 0,
     };
   }, [orders, productsList, deliveredOverrides, showOnlyWithOrders]);
-
 
   const handleCopyLink = (slug: string, withUtm = false) => {
     const origin =
@@ -235,7 +289,6 @@ export default function AdminOverviewPage() {
     return `Il y a ${days}j`;
   };
 
-  // Filtrage temporel
   const isWithinPeriod = (isoDate?: string) => {
     if (period === "all" || !isoDate) return true;
     const d = new Date(isoDate);
@@ -264,7 +317,6 @@ export default function AdminOverviewPage() {
     [leads, period]
   );
 
-  // Calcul des métriques
   const metrics = useMemo(() => {
     const confirmedStatuses = new Set([
       "confirmed",
@@ -281,7 +333,6 @@ export default function AdminOverviewPage() {
       0
     );
 
-    // Les commandes "À confirmer" restent globales pour ne jamais rater une urgence
     const pendingOrders = orders.filter(
       (o) => o.status === "pending" || !o.status
     );
@@ -298,11 +349,6 @@ export default function AdminOverviewPage() {
       0
     );
 
-    const conversionRate =
-      filteredOrders.length > 0
-        ? (confirmedOrders.length / filteredOrders.length) * 100
-        : 0;
-
     return {
       confirmedRevenue,
       confirmedOrdersCount: confirmedOrders.length,
@@ -310,11 +356,9 @@ export default function AdminOverviewPage() {
       pendingRevenue,
       recoverableRevenue,
       abandonedLeadsCount: abandonedLeads.length,
-      conversionRate,
     };
   }, [filteredOrders, filteredLeads, orders]);
 
-  // Validation 1-clic d'une commande depuis la vue d'ensemble
   const handleQuickConfirmOrder = async (order: OrderItem) => {
     const targetId = order.id || order.order_number;
     if (!targetId) return;
@@ -328,21 +372,20 @@ export default function AdminOverviewPage() {
     await updateOrderStatus(String(targetId), "confirmed");
   };
 
-  // Message WhatsApp de confirmation commande
   const getOrderWhatsAppUrl = (order: OrderItem) => {
     const intlPhone = formatBeninPhoneForWhatsApp(order.customer_phone);
     const name = order.customer_name || "Client";
     const product = order.product_title || order.product_slug || "votre article";
     const total = fmt(order.total_amount || 0);
     const city = order.shipping_city || order.city || "Cotonou";
+    const brand = tenantCtx?.storeName || "Isivente";
     const msg =
-      `Bonjour ${name}, c'est le service client Isivente.\n\n` +
+      `Bonjour ${name}, c'est le service client ${brand}.\n\n` +
       `Nous avons bien reçu votre commande pour : *${product}* (${total} FCFA) vers *${city}*.\n\n` +
       `Pouvez-vous nous confirmer votre disponibilité aujourd'hui pour la livraison ?`;
     return `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}`;
   };
 
-  // Relance WhatsApp 1-clic pour un prospect
   const handleWhatsAppRelance = async (lead: LeadRecord) => {
     await updateLeadStatus(lead.id, "contacted");
     setLeads((prev) =>
@@ -354,9 +397,10 @@ export default function AdminOverviewPage() {
       lead.customer_name && lead.customer_name !== "Client intéressé"
         ? ` ${lead.customer_name}`
         : "";
+    const brand = tenantCtx?.storeName || "Isivente";
 
     const message =
-      `Bonjour${clientName}, c'est le service client Isivente.\n\n` +
+      `Bonjour${clientName}, c'est le service client ${brand}.\n\n` +
       `J'ai vu que vous aviez commencé à commander notre *${lead.product_title}* (${fmt(lead.total_amount)} FCFA) sur notre site.\n\n` +
       `Avez-vous rencontré un problème lors de votre commande ?\n` +
       `Si vous le souhaitez, je peux directement valider votre livraison à *${lead.city || "Cotonou"}* avec *paiement en espèces à la livraison*.`;
@@ -369,50 +413,49 @@ export default function AdminOverviewPage() {
     switch (status) {
       case "confirmed":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
             Validée
           </span>
         );
       case "shipped":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/80">
             En livraison
           </span>
         );
       case "delivered":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-50 text-violet-700 border border-violet-200/80">
             Livrée
           </span>
         );
       case "reserved":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
             Réservation
           </span>
         );
       case "postponed":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
             Reportée
           </span>
         );
       case "cancelled":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500">
             Annulée
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/80">
             À confirmer
           </span>
         );
     }
   };
 
-  // Commandes affichées dans le flux opérationnel
   const displayedOrders = useMemo(() => {
     const confirmedStatuses = new Set([
       "confirmed",
@@ -426,10 +469,9 @@ export default function AdminOverviewPage() {
         if (orderTab === "confirmed") return confirmedStatuses.has(o.status || "");
         return true;
       })
-      .slice(0, 7);
+      .slice(0, 6);
   }, [orders, orderTab]);
 
-  // Top 5 produits (triés par commandes puis par visites)
   const top5Products = useMemo(() => {
     const analyticsMap: Record<string, ProductAnalyticsStats> = {};
     productAnalytics.forEach((p) => {
@@ -444,7 +486,7 @@ export default function AdminOverviewPage() {
       "paid",
     ]);
     orders.forEach((o) => {
-      const slug = o.product_slug || "umei";
+      const slug = o.product_slug || "autre";
       if (!ordersBySlug[slug]) ordersBySlug[slug] = { count: 0, revenue: 0 };
       ordersBySlug[slug].count += 1;
       if (confirmedStatuses.has(o.status || "")) {
@@ -474,7 +516,7 @@ export default function AdminOverviewPage() {
         if (b.todayViews !== a.todayViews) return b.todayViews - a.todayViews;
         return b.views - a.views;
       })
-      .slice(0, 5);
+      .slice(0, 6);
   }, [productsList, productAnalytics, orders]);
 
   const urgentLeads = useMemo(
@@ -486,32 +528,27 @@ export default function AdminOverviewPage() {
   );
 
   return (
-    <div className="space-y-5 max-w-7xl mx-auto pb-10 animate-[staggerFadeUp_220ms_cubic-bezier(0.16,1,0.3,1)_both]">
-      {/* ── 1. HEADER COMPACT & FILTRE TEMPOREL ── */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 card-figma px-5 py-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shrink-0">
-            <LayoutDashboard className="w-5 h-5 stroke-[2]" />
+    <div className="space-y-6 pb-10">
+      {/* ── 1. EN-TÊTE ÉPURÉ (STYLE STRIPE / LINEAR) ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-950 tracking-tight">
+              Tableau de bord
+            </h1>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              En direct
+            </span>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-display font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight">
-                Cockpit Isivente
-              </h1>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                En direct
-              </span>
-            </div>
-            <p className="text-slate-500 text-xs">
-              Synthèse financière et actions prioritaires du jour
-            </p>
-          </div>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Vue synthétique de vos ventes, relances et performances.
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Sélecteur de période */}
-          <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200/80">
+          <div className="inline-flex p-1 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
             {(
               [
                 { id: "today", label: "Aujourd'hui" },
@@ -523,10 +560,10 @@ export default function AdminOverviewPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setPeriod(tab.id)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   period === tab.id
-                    ? "bg-white text-slate-900 shadow-2xs"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-slate-950 text-white"
+                    : "text-slate-500 hover:text-slate-900"
                 }`}
               >
                 {tab.label}
@@ -534,446 +571,197 @@ export default function AdminOverviewPage() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setIsRefreshing(true);
-                loadAllData();
-              }}
-              disabled={isRefreshing}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all cursor-pointer"
-              title="Actualiser les données"
-            >
-              <RefreshCw
-                className={`w-3.5 h-3.5 ${
-                  isRefreshing ? "animate-spin text-indigo-600" : "text-slate-500"
-                }`}
-              />
-              <span className="hidden sm:inline">Actualiser</span>
-            </button>
-
-            <Link
-              href="/admin/orders"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-2xs"
-            >
-              <Package className="w-3.5 h-3.5" />
-              <span>Commandes</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            </Link>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setIsRefreshing(true);
+              loadAllData();
+            }}
+            disabled={isRefreshing}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs"
+            title="Actualiser les données"
+          >
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${
+                isRefreshing ? "animate-spin text-slate-900" : "text-slate-500"
+              }`}
+            />
+            <span className="hidden sm:inline">Actualiser</span>
+          </button>
         </div>
       </div>
 
-      {/* ── 2. LES 4 CARTES KPI EN GRILLE DIRECTE (SANS SCROLL HORIZONTAL) ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* ── 2. LES 4 INDICATEURS CLÉS (GRILLE ÉPURÉE SANS BORDURES CRIARDES) ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* KPI 1 : CA Confirmé */}
-        <div className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-emerald-500">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500">
               CA Confirmé
             </span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
-            </div>
+            </span>
           </div>
           <div>
-            <div className="text-lg sm:text-2xl font-extrabold font-mono tabular-nums text-slate-900 truncate">
-              {loading ? "…" : fmt(metrics.confirmedRevenue)}{" "}
-              <span className="text-[11px] font-normal text-slate-400 font-sans">
-                FCFA
+            <div className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight truncate">
+              {loading ? "—" : fmt(metrics.confirmedRevenue)}
+              <span className="text-xs font-medium text-slate-400 font-sans ml-1">
+                F
               </span>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Encaissé Réel :</span>
-              <span className="font-bold text-emerald-700 font-mono">
-                {loading ? "…" : fmt(realDeliveryReport.totalRealRevenue)} F ({realDeliveryReport.totalDelivered} livrés)
+            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Encaissé réel</span>
+              <span className="font-semibold text-emerald-700 font-mono">
+                {loading ? "—" : fmt(realDeliveryReport.totalRealRevenue)} F
               </span>
             </div>
           </div>
         </div>
 
-        {/* KPI 2 : À Confirmer (Urgent) */}
+        {/* KPI 2 : À Confirmer */}
         <Link
           href="/admin/orders"
-          className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-amber-500 hover:border-amber-500 transition-all group"
+          className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 shadow-2xs flex flex-col justify-between transition-all group"
         >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
               {metrics.pendingOrdersCount > 0 && (
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
               )}
-              <span>À Confirmer</span>
+              <span>À confirmer</span>
             </span>
-            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <span className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
               <Package className="w-4 h-4" />
-            </div>
+            </span>
           </div>
           <div>
-            <div className="text-lg sm:text-2xl font-extrabold font-mono tabular-nums text-slate-900 truncate">
-              {loading ? "…" : metrics.pendingOrdersCount}{" "}
-              <span className="text-[11px] font-normal text-slate-400 font-sans">
-                en attente
+            <div className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight">
+              {loading ? "—" : metrics.pendingOrdersCount}
+              <span className="text-xs font-medium text-slate-400 font-sans ml-1.5">
+                commandes
               </span>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Potentiel :</span>
-              <span className="font-bold text-amber-700 font-mono">
+            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Potentiel</span>
+              <span className="font-semibold text-slate-900 font-mono">
                 {fmt(metrics.pendingRevenue)} F
               </span>
             </div>
           </div>
         </Link>
 
-        {/* KPI 3 : Paniers Abandonnés */}
+        {/* KPI 3 : Paniers à Relancer */}
         <Link
           href="/admin/prospects"
-          className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-rose-500 hover:border-rose-500 transition-all group"
+          className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 shadow-2xs flex flex-col justify-between transition-all group"
         >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700">
-              Paniers à Relancer
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500">
+              Paniers à relancer
             </span>
-            <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <span className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
               <AlertCircle className="w-4 h-4" />
-            </div>
+            </span>
           </div>
           <div>
-            <div className="text-lg sm:text-2xl font-extrabold font-mono tabular-nums text-slate-900 truncate">
-              {loading ? "…" : metrics.abandonedLeadsCount}{" "}
-              <span className="text-[11px] font-normal text-slate-400 font-sans">
+            <div className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight">
+              {loading ? "—" : metrics.abandonedLeadsCount}
+              <span className="text-xs font-medium text-slate-400 font-sans ml-1.5">
                 prospects
               </span>
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Récupérable :</span>
-              <span className="font-bold text-rose-600 font-mono">
+            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Récupérable</span>
+              <span className="font-semibold text-rose-600 font-mono">
                 {fmt(metrics.recoverableRevenue)} F
               </span>
             </div>
           </div>
         </Link>
 
-        {/* KPI 4 : Trafic & Clics Live */}
+        {/* KPI 4 : Trafic & Clics */}
         <Link
           href="/admin/clicks"
-          className="card-figma p-4 sm:p-5 flex flex-col justify-between border-l-4 border-l-purple-500 hover:border-purple-500 transition-all group"
+          className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 shadow-2xs flex flex-col justify-between transition-all group"
         >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500">
               Trafic & Clics
             </span>
-            <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <span className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:scale-105 transition-transform">
               <MousePointerClick className="w-4 h-4" />
-            </div>
+            </span>
           </div>
           <div>
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-lg sm:text-2xl font-extrabold font-mono tabular-nums text-slate-900">
+              <span className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight">
                 {loading
-                  ? "…"
+                  ? "—"
                   : period === "today"
                   ? analytics.todayViews
                   : analytics.totalViews}
               </span>
-              <span className="text-[11px] text-slate-400">visites</span>
+              <span className="text-xs font-medium text-slate-400">visites</span>
               {period !== "today" && analytics.todayViews > 0 && (
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded-full border border-emerald-200">
+                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full">
                   +{analytics.todayViews} auj.
                 </span>
               )}
             </div>
-            <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Clics CTA :</span>
-              <span className="font-bold text-purple-700 font-mono">
-                {period === "today" ? analytics.todayClicks : analytics.totalClicks} (
-                {analytics.ctr.toFixed(1)}%)
+            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Clics CTA</span>
+              <span className="font-semibold text-slate-900 font-mono">
+                {period === "today" ? analytics.todayClicks : analytics.totalClicks} ({analytics.ctr.toFixed(1)}%)
               </span>
             </div>
           </div>
         </Link>
       </div>
 
-
-      {/* ── 2.5 TABLEAU FINANCIER FIGMA-GRADE : CA RÉEL & BILAN LIVRAISONS PAR PRODUIT ── */}
-      <div className="card-figma p-5 space-y-4 border-2 border-emerald-500/30 shadow-xs bg-white">
-        
-        {/* En-tête du tableau & Totaux Clés */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-200/60">
-                💰
-              </span>
-              <h2 className="font-display font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">
-                CA Réel Encaissé & Bilan des Livraisons
-              </h2>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 font-mono">
-                Point de Caisse COD
-              </span>
-            </div>
-            <p className="text-xs text-slate-500">
-              Chiffre d’affaires calculé sur les colis réellement livrés. Vous pouvez ajuster le nombre livré directement dans chaque case.
-            </p>
-          </div>
-
-          {/* Synthèse Chiffres Réels */}
-          <div className="flex items-center gap-3 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-3 shrink-0">
-            <div className="text-right">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
-                Total CA Réel Encaissé
-              </span>
-              <span className="text-lg sm:text-xl font-black font-mono text-emerald-700 tabular-nums">
-                {fmt(realDeliveryReport.totalRealRevenue)} FCFA
-              </span>
-            </div>
-            <div className="h-8 w-px bg-emerald-200" />
-            <div className="text-left">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 block">
-                Colis Livrés
-              </span>
-              <span className="text-base sm:text-lg font-black font-mono text-slate-900 tabular-nums">
-                {realDeliveryReport.totalDelivered}{" "}
-                <span className="text-xs font-normal text-slate-500 font-sans">
-                  / {realDeliveryReport.totalOrdersCount} ({realDeliveryReport.globalDeliveryRate.toFixed(0)}%)
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Contrôles d'affichage & Réinitialisation */}
-        <div className="flex items-center justify-between gap-2 text-xs flex-wrap">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowOnlyWithOrders(!showOnlyWithOrders)}
-              className={`px-3 py-1.5 rounded-xl font-bold transition-all text-xs cursor-pointer ${
-                showOnlyWithOrders
-                  ? "bg-slate-900 text-white shadow-2xs"
-                  : "bg-slate-100 text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              {showOnlyWithOrders
-                ? `Produits commandés (${realDeliveryReport.rows.length})`
-                : `Tous les 31 produits (${productsList.length})`}
-            </button>
-            <span className="text-[11px] text-slate-400">
-              {showOnlyWithOrders ? "Affichage condensé des produits ayant des commandes" : "Affichage de tout le catalogue"}
-            </span>
-          </div>
-
-          {realDeliveryReport.hasOverrides && (
-            <button
-              type="button"
-              onClick={handleResetToAutoDelivered}
-              className="text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1"
-              title="Réinitialiser tous les chiffres saisis pour reprendre les commandes marquées livrées sur le site"
-            >
-              <RefreshCw className="w-3 h-3" />
-              <span>Rétablir livraisons automatiques du site</span>
-            </button>
-          )}
-        </div>
-
-        {/* Tableau Figma-Grade */}
-        <div className="overflow-x-auto -mx-5 sm:mx-0 px-5 sm:px-0">
-          <table className="w-full text-left text-xs border-collapse min-w-[620px]">
-            <thead>
-              <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10.5px]">
-                <th className="py-2.5 px-3">Produit</th>
-                <th className="py-2.5 px-3 text-center">Commandes Reçues</th>
-                <th className="py-2.5 px-3 text-center">Colis Livrés (Ajustable)</th>
-                <th className="py-2.5 px-3 text-center">Taux Livraison</th>
-                <th className="py-2.5 px-3 text-right">CA Réel Encaissé</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {realDeliveryReport.rows.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-400 text-xs">
-                    Aucune commande enregistrée pour le moment.
-                  </td>
-                </tr>
-              ) : (
-                realDeliveryReport.rows.map((prod) => (
-                  <tr key={prod.slug} className="hover:bg-slate-50/80 transition-colors">
-                    
-                    {/* Colonne Produit */}
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-2.5">
-                        <img
-                          src={prod.image}
-                          alt={prod.title}
-                          className="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-50"
-                        />
-                        <div className="min-w-0">
-                          <Link
-                            href={`/p/${prod.slug}`}
-                            target="_blank"
-                            className="font-bold text-slate-900 hover:text-indigo-600 transition-colors truncate max-w-[220px] block"
-                          >
-                            {prod.title}
-                          </Link>
-                          <span className="text-[10.5px] text-slate-500 font-mono">
-                            {fmt(prod.price)} FCFA / unité
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Colonne Commandes Totales */}
-                    <td className="py-3 px-3 text-center font-mono font-bold text-slate-700">
-                      {prod.totalOrders}
-                    </td>
-
-                    {/* Colonne Colis Livrés (Saisie interactive) */}
-                    <td className="py-3 px-3 text-center">
-                      <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl p-1 shadow-2xs">
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount - 1)}
-                          disabled={prod.deliveredCount <= 0}
-                          className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors disabled:opacity-30 cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <input
-                          type="number"
-                          min={0}
-                          value={prod.deliveredCount}
-                          onChange={(e) => handleUpdateDeliveredCount(prod.slug, parseInt(e.target.value) || 0)}
-                          className="w-12 text-center font-mono font-bold text-xs text-slate-900 bg-transparent focus:outline-none"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount + 1)}
-                          className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors cursor-pointer"
-                        >
-                          +
-                        </button>
-                      </div>
-                      {prod.isOverridden && (
-                        <span className="block text-[9.5px] text-amber-600 font-medium mt-0.5">
-                          Manuel
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Colonne Taux de Livraison */}
-                    <td className="py-3 px-3 text-center">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full font-mono font-bold text-[11px] ${
-                          prod.deliveryRate >= 70
-                            ? "bg-emerald-100 text-emerald-800"
-                            : prod.deliveryRate >= 40
-                            ? "bg-amber-100 text-amber-800"
-                            : prod.deliveryRate > 0
-                            ? "bg-rose-100 text-rose-800"
-                            : "bg-slate-100 text-slate-500"
-                        }`}
-                      >
-                        {prod.deliveryRate.toFixed(0)}%
-                      </span>
-                    </td>
-
-                    {/* Colonne CA Réel Encaissé */}
-                    <td className="py-3 px-3 text-right">
-                      <span className="font-mono font-black text-sm text-emerald-700 tabular-nums">
-                        {fmt(prod.realRevenue)} FCFA
-                      </span>
-                    </td>
-
-                  </tr>
-                ))
-              )}
-            </tbody>
-            {realDeliveryReport.rows.length > 0 && (
-              <tfoot>
-                <tr className="bg-slate-50/90 border-t-2 border-slate-200 font-bold text-xs text-slate-900">
-                  <td className="py-3 px-3">
-                    TOTAL BOUTIQUE
-                  </td>
-                  <td className="py-3 px-3 text-center font-mono">
-                    {realDeliveryReport.totalOrdersCount}
-                  </td>
-                  <td className="py-3 px-3 text-center font-mono text-emerald-800 font-black">
-                    {realDeliveryReport.totalDelivered} colis livrés
-                  </td>
-                  <td className="py-3 px-3 text-center">
-                    <span className="inline-block px-2.5 py-0.5 rounded-full font-mono bg-emerald-100 text-emerald-800">
-                      {realDeliveryReport.globalDeliveryRate.toFixed(0)}%
-                    </span>
-                  </td>
-                  <td className="py-3 px-3 text-right font-mono font-black text-base text-emerald-700 tabular-nums">
-                    {fmt(realDeliveryReport.totalRealRevenue)} FCFA
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
-
-      </div>
-
-      {/* ── 3. CŒUR OPÉRATIONNEL : COMMANDES À TRAITER (GAUCHE) & RELANCES WHATSAPP (DROITE) ── */}
+      {/* ── 3. ACTIONS PRIORITAIRES : COMMANDES (GAUCHE) & RELANCES (DROITE) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* COLONNE GAUCHE (7/12) : DERNIÈRES COMMANDES & VALIDATION 1-CLIC */}
-        <div className="lg:col-span-7 card-figma p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 pb-3">
+        {/* DERNIÈRES COMMANDES (7 cols) */}
+        <section className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Package className="w-4 h-4 text-indigo-600" />
-              <h2 className="font-bold text-sm sm:text-base text-slate-900">
-                Dernières Commandes
+              <h2 className="font-bold text-sm text-slate-950">
+                Dernières commandes
               </h2>
+              {metrics.pendingOrdersCount > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                  {metrics.pendingOrdersCount} à traiter
+                </span>
+              )}
             </div>
 
             <div className="flex items-center justify-between sm:justify-end gap-2">
-              {/* Filtre rapide interne */}
               <div className="inline-flex p-0.5 rounded-lg bg-slate-100 text-[11px]">
-                <button
-                  type="button"
-                  onClick={() => setOrderTab("all")}
-                  className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer ${
-                    orderTab === "all"
-                      ? "bg-white text-slate-900 shadow-2xs"
-                      : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  Toutes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOrderTab("pending")}
-                  className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                    orderTab === "pending"
-                      ? "bg-white text-amber-800 shadow-2xs"
-                      : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  <span>À confirmer</span>
-                  {metrics.pendingOrdersCount > 0 && (
-                    <span className="px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 text-[10px]">
-                      {metrics.pendingOrdersCount}
-                    </span>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOrderTab("confirmed")}
-                  className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer ${
-                    orderTab === "confirmed"
-                      ? "bg-white text-emerald-800 shadow-2xs"
-                      : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  Validées
-                </button>
+                {(
+                  [
+                    { id: "all", label: "Toutes" },
+                    { id: "pending", label: "À confirmer" },
+                    { id: "confirmed", label: "Validées" },
+                  ] as { id: OrderQuickFilter; label: string }[]
+                ).map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setOrderTab(t.id)}
+                    className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                      orderTab === t.id
+                        ? "bg-white text-slate-950 shadow-2xs"
+                        : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
               </div>
 
               <Link
                 href="/admin/orders"
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-800 inline-flex items-center gap-0.5 shrink-0"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-950 inline-flex items-center gap-0.5 shrink-0"
               >
                 <span>Tout voir</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -981,304 +769,519 @@ export default function AdminOverviewPage() {
             </div>
           </div>
 
-          {loading ? (
-            <div className="p-8 text-center text-xs text-slate-400">
-              Chargement des commandes…
-            </div>
-          ) : displayedOrders.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400">
-              Aucune commande dans cette catégorie.
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-100">
-              {displayedOrders.map((order) => {
-                const isPending = !order.status || order.status === "pending";
-                return (
-                  <div
-                    key={order.id || String(order.order_number)}
-                    className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/60 -mx-2 px-2 rounded-xl transition-colors"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-xs sm:text-sm text-slate-900 truncate">
-                          {order.customer_name || "Client"}
-                        </span>
-                        {statusBadge(order.status || "pending")}
-                        <span className="text-[11px] text-slate-400 font-medium">
-                          • {order.shipping_city || order.city || "Cotonou"}
-                        </span>
-                        {order.created_at && (
-                          <span className="text-[10px] text-slate-400 inline-flex items-center gap-0.5">
-                            <Clock className="w-2.5 h-2.5" />
-                            {formatRelativeTime(order.created_at)}
+          <div className="p-2 sm:p-3">
+            {loading ? (
+              <div className="py-10 text-center text-xs text-slate-400">
+                Chargement des commandes…
+              </div>
+            ) : displayedOrders.length === 0 ? (
+              <div className="py-10 text-center space-y-1">
+                <p className="text-xs font-semibold text-slate-600">
+                  Aucune commande dans cette vue
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  Les nouvelles commandes apparaîtront ici en temps réel.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {displayedOrders.map((order) => {
+                  const isPending = !order.status || order.status === "pending";
+                  return (
+                    <div
+                      key={order.id || String(order.order_number)}
+                      className="px-3 py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 rounded-xl transition-colors"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-xs sm:text-[13px] text-slate-950 truncate">
+                            {order.customer_name || "Client"}
                           </span>
+                          {statusBadge(order.status || "pending")}
+                          <span className="text-[11px] text-slate-400">
+                            {order.shipping_city || order.city || "Cotonou"}
+                          </span>
+                          {order.created_at && (
+                            <span className="text-[10px] text-slate-400 inline-flex items-center gap-0.5">
+                              <Clock className="w-2.5 h-2.5" />
+                              {formatRelativeTime(order.created_at)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1 truncate flex items-center gap-2">
+                          <span className="truncate text-slate-600">
+                            {order.product_title || order.product_slug}
+                          </span>
+                          <span className="text-slate-300">•</span>
+                          <span className="font-mono font-bold text-slate-900">
+                            {fmt(order.total_amount || 0)} F
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isPending && (
+                          <button
+                            type="button"
+                            onClick={() => handleQuickConfirmOrder(order)}
+                            className="px-2.5 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 text-white text-[11px] font-semibold inline-flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+                            title="Valider immédiatement cette commande"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Valider</span>
+                          </button>
                         )}
-                      </div>
-                      <div className="text-xs text-slate-500 mt-0.5 truncate flex items-center gap-2">
-                        <span className="truncate font-medium text-slate-700">
-                          {order.product_title || order.product_slug}
-                        </span>
-                        <span>•</span>
-                        <span className="font-mono font-bold text-slate-900">
-                          {fmt(order.total_amount || 0)} FCFA
-                        </span>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {isPending && (
-                        <button
-                          type="button"
-                          onClick={() => handleQuickConfirmOrder(order)}
-                          className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold inline-flex items-center gap-1 shadow-2xs active:scale-95 transition-all cursor-pointer"
-                          title="Valider immédiatement cette commande"
+                        <a
+                          href={getOrderWhatsAppUrl(order)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 text-[11px] font-semibold inline-flex items-center gap-1 transition-colors"
+                          title="Contacter le client sur WhatsApp"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">Valider</span>
-                        </button>
-                      )}
-
-                      <a
-                        href={getOrderWhatsAppUrl(order)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
-                        title="Contacter le client sur WhatsApp"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        <span className="hidden md:inline">WhatsApp</span>
-                      </a>
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span className="hidden md:inline">WhatsApp</span>
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </section>
 
-        {/* COLONNE DROITE (5/12) : RELANCES URGENTES WHATSAPP */}
-        <div className="lg:col-span-5 card-figma p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        {/* PANIERS À RELANCER (5 cols) */}
+        <section className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-500" />
-              <h2 className="font-bold text-sm sm:text-base text-slate-900">
-                Paniers à Relancer
+              <h2 className="font-bold text-sm text-slate-950">
+                Paniers à relancer
               </h2>
               {urgentLeads.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  {metrics.abandonedLeadsCount} en attente
+                  {metrics.abandonedLeadsCount}
                 </span>
               )}
             </div>
             <Link
               href="/admin/prospects"
-              className="text-xs font-bold text-rose-600 hover:text-rose-800 inline-flex items-center gap-0.5"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-950 inline-flex items-center gap-0.5"
             >
               <span>Tout voir</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {urgentLeads.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400">
-              Aucun panier abandonné en attente de relance.
-            </div>
-          ) : (
-            <div className="space-y-2.5">
-              {urgentLeads.map((lead) => (
-                <div
-                  key={lead.id}
-                  className="p-3 rounded-xl bg-slate-50/80 border border-slate-200/80 flex items-center justify-between gap-3"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs text-slate-900 truncate">
-                        {lead.customer_name || "Client intéressé"}
-                      </span>
-                      {lead.created_at && (
-                        <span className="text-[10px] text-slate-400">
-                          • {formatRelativeTime(lead.created_at)}
+          <div className="p-3">
+            {urgentLeads.length === 0 ? (
+              <div className="py-10 text-center space-y-1">
+                <p className="text-xs font-semibold text-slate-600">
+                  Aucun panier abandonné
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  Les numéros saisis sans validation finale apparaîtront ici.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {urgentLeads.map((lead) => (
+                  <div
+                    key={lead.id}
+                    className="p-3 rounded-xl bg-slate-50/70 hover:bg-slate-50 border border-slate-200/70 flex items-center justify-between gap-3 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-semibold text-xs text-slate-950 truncate">
+                          {lead.customer_name || "Client intéressé"}
                         </span>
-                      )}
+                        {lead.created_at && (
+                          <span className="text-[10px] text-slate-400 shrink-0">
+                            • {formatRelativeTime(lead.created_at)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-slate-500 truncate mt-0.5">
+                        {lead.product_title} •{" "}
+                        <span className="font-mono font-bold text-slate-800">
+                          {fmt(lead.total_amount)} F
+                        </span>
+                      </div>
                     </div>
-                    <div className="text-[11px] text-slate-500 truncate mt-0.5">
-                      {lead.product_title} •{" "}
-                      <span className="font-mono font-bold text-slate-800">
-                        {fmt(lead.total_amount)} F
-                      </span>
-                    </div>
-                  </div>
 
+                    <button
+                      type="button"
+                      onClick={() => handleWhatsAppRelance(lead)}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold inline-flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer shrink-0"
+                    >
+                      <MessageSquare className="w-3 h-3" />
+                      <span>Relancer</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+
+      {/* ── 4. ESPACE ANALYSE UNIFIÉ PAR ONGLETS (ZERO ENCOMBREMENT VERTICAL) ── */}
+      <section className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+        {/* Barre d'onglets */}
+        <div className="px-5 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="inline-flex p-1 rounded-xl bg-slate-100/90 self-start">
+            <button
+              type="button"
+              onClick={() => setWorkspaceTab("products")}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                workspaceTab === "products"
+                  ? "bg-white text-slate-950 shadow-2xs"
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span>Produits & Trafic</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setWorkspaceTab("cashflow")}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                workspaceTab === "cashflow"
+                  ? "bg-white text-slate-950 shadow-2xs"
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              <Wallet className="w-3.5 h-3.5" />
+              <span>Point de Caisse COD</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {workspaceTab === "products" ? (
+              <>
+                <Link
+                  href="/admin/landings"
+                  className="text-xs font-semibold text-slate-600 hover:text-slate-950 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 inline-flex items-center gap-1.5 transition-colors"
+                >
+                  <Store className="w-3.5 h-3.5" />
+                  <span>Gérer ({productsList.length})</span>
+                </Link>
+                <Link
+                  href="/admin/clicks"
+                  className="text-xs font-semibold text-slate-950 hover:bg-slate-100 px-3 py-1.5 rounded-xl bg-slate-100/80 inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>Tous les KPIs</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg font-mono">
+                  Encaissé : {fmt(realDeliveryReport.totalRealRevenue)} FCFA ({realDeliveryReport.totalDelivered} livrés)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowOnlyWithOrders(!showOnlyWithOrders)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200/80 text-slate-700 transition-colors cursor-pointer"
+                >
+                  {showOnlyWithOrders
+                    ? `Avec commandes (${realDeliveryReport.rows.length})`
+                    : `Tout (${productsList.length})`}
+                </button>
+                {realDeliveryReport.hasOverrides && (
                   <button
                     type="button"
-                    onClick={() => handleWhatsAppRelance(lead)}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold inline-flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all cursor-pointer shrink-0"
+                    onClick={handleResetToAutoDelivered}
+                    className="text-[11px] font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer inline-flex items-center gap-1"
                   >
-                    <MessageSquare className="w-3 h-3 fill-current" />
-                    <span>Relancer</span>
+                    <RefreshCw className="w-3 h-3" />
+                    <span>Réinitialiser</span>
                   </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── 4. TOP 5 PRODUITS ACTIFS (CONDENSÉ & LIENS RAPIDES) ── */}
-      <div className="card-figma p-5 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-purple-600" />
-            <h2 className="font-bold text-sm sm:text-base text-slate-900">
-              Top 5 Produits Actifs (Trafic & Conversions)
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/admin/landings"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 inline-flex items-center gap-1 transition-colors"
-            >
-              <Store className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Catalogue ({productsList.length})</span>
-            </Link>
-            <Link
-              href="/admin/clicks"
-              className="text-xs font-bold text-purple-700 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-3 py-1 rounded-lg border border-purple-200 inline-flex items-center gap-1 transition-colors"
-            >
-              <span>Tous les KPIs ({productsList.length} pages)</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="overflow-x-auto -mx-5 sm:mx-0 px-5 sm:px-0">
-          <table className="w-full text-left text-xs border-collapse min-w-[560px]">
-            <thead>
-              <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="py-2 px-2.5">Produit</th>
-                <th className="py-2 px-2.5 text-center">Visites</th>
-                <th className="py-2 px-2.5 text-center">Clics CTA</th>
-                <th className="py-2 px-2.5 text-center">Commandes</th>
-                <th className="py-2 px-2.5 text-center">Taux Conv.</th>
-                <th className="py-2 px-2.5 text-right">Lien Rapide</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {top5Products.map((prod) => {
-                const isCopied = copiedSlug === prod.slug;
-                const isCopiedUtm = copiedSlug === `${prod.slug}_utm`;
+        {/* Contenu Onglet 1 : Top Produits & Liens Rapides */}
+        {workspaceTab === "products" && (
+          <div className="overflow-x-auto">
+            {top5Products.length === 0 ? (
+              <div className="py-12 px-5 text-center space-y-3">
+                <p className="text-sm font-bold text-slate-800">
+                  Aucune page produit publiée pour le moment
+                </p>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Créez votre première page de vente en 2 minutes et commencez à encaisser vos commandes Cash-on-Delivery.
+                </p>
+                <Link
+                  href="/admin/landings"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold transition-colors"
+                >
+                  <Store className="w-3.5 h-3.5" />
+                  <span>Créer ma première page produit</span>
+                </Link>
+              </div>
+            ) : (
+              <table className="w-full text-left text-xs border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/60 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                    <th className="py-2.5 px-5">Produit</th>
+                    <th className="py-2.5 px-3 text-center">Visites</th>
+                    <th className="py-2.5 px-3 text-center">Clics CTA</th>
+                    <th className="py-2.5 px-3 text-center">Commandes</th>
+                    <th className="py-2.5 px-3 text-center">Conv.</th>
+                    <th className="py-2.5 px-5 text-right">Liens rapides</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {top5Products.map((prod) => {
+                    const isCopied = copiedSlug === prod.slug;
+                    const isCopiedUtm = copiedSlug === `${prod.slug}_utm`;
 
-                return (
-                  <tr
-                    key={prod.slug}
-                    className="hover:bg-slate-50/70 transition-colors"
-                  >
-                    <td className="py-2.5 px-2.5">
-                      <div className="flex items-center gap-2.5">
-                        <img
-                          src={prod.image}
-                          alt={prod.title}
-                          className="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0"
-                        />
-                        <div className="min-w-0">
-                          <div className="font-bold text-slate-900 truncate max-w-[200px]">
-                            {prod.title}
-                          </div>
-                          <div className="text-[10.5px] text-slate-400 font-mono">
-                            {fmt(prod.price)} F • /p/{prod.slug}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="py-2.5 px-2.5 text-center font-mono">
-                      <span className="font-bold text-slate-900">
-                        {prod.views}
-                      </span>
-                      {prod.todayViews > 0 && (
-                        <span className="ml-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200">
-                          +{prod.todayViews} auj.
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="py-2.5 px-2.5 text-center font-mono font-bold text-purple-700">
-                      {prod.clicks}
-                    </td>
-
-                    <td className="py-2.5 px-2.5 text-center font-mono font-bold text-emerald-700">
-                      {prod.ordersCount}
-                    </td>
-
-                    <td className="py-2.5 px-2.5 text-center">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded-md font-mono font-bold text-[11px] ${
-                          Number(prod.convRate) >= 5
-                            ? "bg-emerald-100 text-emerald-800"
-                            : Number(prod.convRate) > 0
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-slate-100 text-slate-500"
-                        }`}
+                    return (
+                      <tr
+                        key={prod.slug}
+                        className="hover:bg-slate-50/70 transition-colors"
                       >
-                        {prod.convRate}%
-                      </span>
-                    </td>
+                        <td className="py-3 px-5">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={prod.image}
+                              alt={prod.title}
+                              className="w-9 h-9 rounded-xl object-cover border border-slate-200/80 shrink-0 bg-slate-50"
+                            />
+                            <div className="min-w-0">
+                              <div className="font-semibold text-slate-950 truncate max-w-[220px]">
+                                {prod.title}
+                              </div>
+                              <div className="text-[11px] text-slate-400 font-mono">
+                                {fmt(prod.price)} F • /p/{prod.slug}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
 
-                    <td className="py-2.5 px-2.5 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleCopyLink(prod.slug, false)}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 border transition-colors cursor-pointer ${
-                            isCopied
-                              ? "bg-emerald-600 text-white border-emerald-600"
-                              : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200"
-                          }`}
-                        >
-                          {isCopied ? (
-                            <>
-                              <Check className="w-3 h-3" />
-                              <span>Copié</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3 h-3" />
-                              <span>Lien</span>
-                            </>
+                        <td className="py-3 px-3 text-center font-mono">
+                          <span className="font-bold text-slate-900">
+                            {prod.views}
+                          </span>
+                          {prod.todayViews > 0 && (
+                            <span className="ml-1.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                              +{prod.todayViews}
+                            </span>
                           )}
-                        </button>
+                        </td>
 
-                        <button
-                          type="button"
-                          onClick={() => handleCopyLink(prod.slug, true)}
-                          title="Copier le lien avec UTM Meta Ads"
-                          className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
-                            isCopiedUtm
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-300"
-                              : "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
-                          }`}
-                        >
-                          {isCopiedUtm ? "OK" : "UTM"}
-                        </button>
+                        <td className="py-3 px-3 text-center font-mono font-semibold text-slate-700">
+                          {prod.clicks}
+                        </td>
 
-                        <Link
-                          href={`/p/${prod.slug}`}
-                          target="_blank"
-                          title="Ouvrir la page"
-                          className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
+                        <td className="py-3 px-3 text-center font-mono font-bold text-emerald-700">
+                          {prod.ordersCount}
+                        </td>
+
+                        <td className="py-3 px-3 text-center">
+                          <span
+                            className={`inline-block px-2 py-0.5 rounded-md font-mono font-semibold text-[11px] ${
+                              Number(prod.convRate) >= 5
+                                ? "bg-emerald-50 text-emerald-700"
+                                : Number(prod.convRate) > 0
+                                ? "bg-sky-50 text-sky-700"
+                                : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
+                            {prod.convRate}%
+                          </span>
+                        </td>
+
+                        <td className="py-3 px-5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleCopyLink(prod.slug, false)}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 border transition-colors cursor-pointer ${
+                                isCopied
+                                  ? "bg-emerald-600 text-white border-emerald-600"
+                                  : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
+                              }`}
+                            >
+                              {isCopied ? (
+                                <>
+                                  <Check className="w-3 h-3" />
+                                  <span>Copié</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3 h-3" />
+                                  <span>Lien</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleCopyLink(prod.slug, true)}
+                              title="Copier le lien avec UTM Meta Ads"
+                              className={`px-2 py-1 rounded-lg text-[10px] font-mono font-semibold border transition-colors cursor-pointer ${
+                                isCopiedUtm
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                                  : "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
+                              }`}
+                            >
+                              {isCopiedUtm ? "OK" : "UTM"}
+                            </button>
+
+                            <Link
+                              href={`/p/${prod.slug}`}
+                              target="_blank"
+                              title="Ouvrir la page"
+                              className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-950 hover:bg-slate-50 transition-colors"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
+
+        {/* Contenu Onglet 2 : Point de Caisse & Livraisons par Produit */}
+        {workspaceTab === "cashflow" && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse min-w-[620px]">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50/60 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                  <th className="py-2.5 px-5">Produit</th>
+                  <th className="py-2.5 px-3 text-center">Commandes</th>
+                  <th className="py-2.5 px-3 text-center">Colis livrés (ajustable)</th>
+                  <th className="py-2.5 px-3 text-center">Taux livraison</th>
+                  <th className="py-2.5 px-5 text-right">CA réel encaissé</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {realDeliveryReport.rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-10 text-center text-slate-400 text-xs">
+                      Aucune commande enregistrée pour le moment.
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                ) : (
+                  realDeliveryReport.rows.map((prod) => (
+                    <tr key={prod.slug} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="py-3 px-5">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={prod.image}
+                            alt={prod.title}
+                            className="w-9 h-9 rounded-xl object-cover border border-slate-200/80 shrink-0 bg-slate-50"
+                          />
+                          <div className="min-w-0">
+                            <Link
+                              href={`/p/${prod.slug}`}
+                              target="_blank"
+                              className="font-semibold text-slate-950 hover:text-slate-700 transition-colors truncate max-w-[220px] block"
+                            >
+                              {prod.title}
+                            </Link>
+                            <span className="text-[11px] text-slate-400 font-mono">
+                              {fmt(prod.price)} F / unité
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="py-3 px-3 text-center font-mono font-semibold text-slate-700">
+                        {prod.totalOrders}
+                      </td>
+
+                      <td className="py-3 px-3 text-center">
+                        <div className="inline-flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1">
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount - 1)}
+                            disabled={prod.deliveredCount <= 0}
+                            className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors disabled:opacity-30 cursor-pointer"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min={0}
+                            value={prod.deliveredCount}
+                            onChange={(e) => handleUpdateDeliveredCount(prod.slug, parseInt(e.target.value) || 0)}
+                            className="w-11 text-center font-mono font-bold text-xs text-slate-950 bg-transparent focus:outline-none"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount + 1)}
+                            className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors cursor-pointer"
+                          >
+                            +
+                          </button>
+                        </div>
+                        {prod.isOverridden && (
+                          <span className="block text-[9.5px] text-amber-600 font-medium mt-0.5">
+                            Ajusté
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="py-3 px-3 text-center">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full font-mono font-semibold text-[11px] ${
+                            prod.deliveryRate >= 70
+                              ? "bg-emerald-50 text-emerald-700"
+                              : prod.deliveryRate >= 40
+                              ? "bg-amber-50 text-amber-700"
+                              : prod.deliveryRate > 0
+                              ? "bg-rose-50 text-rose-700"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
+                          {prod.deliveryRate.toFixed(0)}%
+                        </span>
+                      </td>
+
+                      <td className="py-3 px-5 text-right">
+                        <span className="font-mono font-bold text-sm text-emerald-700 tabular-nums">
+                          {fmt(prod.realRevenue)} FCFA
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+              {realDeliveryReport.rows.length > 0 && (
+                <tfoot>
+                  <tr className="bg-slate-50/90 border-t border-slate-200 font-bold text-xs text-slate-950">
+                    <td className="py-3 px-5">TOTAL BOUTIQUE</td>
+                    <td className="py-3 px-3 text-center font-mono">
+                      {realDeliveryReport.totalOrdersCount}
+                    </td>
+                    <td className="py-3 px-3 text-center font-mono text-emerald-800">
+                      {realDeliveryReport.totalDelivered} livrés
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <span className="inline-block px-2 py-0.5 rounded-full font-mono bg-emerald-50 text-emerald-700">
+                        {realDeliveryReport.globalDeliveryRate.toFixed(0)}%
+                      </span>
+                    </td>
+                    <td className="py-3 px-5 text-right font-mono font-extrabold text-sm text-emerald-700 tabular-nums">
+                      {fmt(realDeliveryReport.totalRealRevenue)} FCFA
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
