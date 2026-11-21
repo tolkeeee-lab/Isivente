@@ -15,15 +15,26 @@ const ALLOWED_STATUSES = new Set([
   "returned",
 ]);
 
-// 1. GET ALL ORDERS DIRECTEMENT DEPUIS SUPABASE (LIMITÉ À 1000 POUR ÉVITER DOS)
-export async function GET() {
+// 1. GET ALL ORDERS DIRECTEMENT DEPUIS SUPABASE (ISOLÉ PAR store_id POUR LE SAAS)
+export async function GET(req: NextRequest) {
   try {
+    const storeId = req.nextUrl.searchParams.get("store_id");
+    if (storeId === "none") {
+      return NextResponse.json({ success: true, orders: [], count: 0 });
+    }
+
     const supabase = getSupabase();
-    const { data, error } = await supabase
+    let query = supabase
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(1000);
+
+    if (storeId && storeId.trim()) {
+      query = query.eq("store_id", storeId.trim());
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Supabase GET error:", error?.message);

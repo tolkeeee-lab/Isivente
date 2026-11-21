@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { isBeninPhoneComplete } from "@/lib/phoneUtils";
 import { saveUserContactInfo } from "@/lib/userTracking";
+import { getStoredTenantContext } from "@/lib/storesStorage";
 
 export interface LeadRecord {
   id: string;
@@ -215,12 +216,19 @@ export async function markLeadConverted(phone: string, productSlug?: string) {
  * Récupère tous les prospects (fusion Supabase + localStorage)
  */
 export async function getAllLeads(): Promise<LeadRecord[]> {
+  const tenantCtx = getStoredTenantContext();
+  const isTenantScoped = tenantCtx !== null && !tenantCtx.isFounder;
+  const scopedStoreId = isTenantScoped ? (tenantCtx.storeId || "none") : null;
+
   let dbLeads: LeadRecord[] = [];
 
   // 1. Tenter via l'API serveur /api/leads
   if (typeof window !== "undefined") {
     try {
-      const res = await fetch("/api/leads", { cache: "no-store" });
+      const url = scopedStoreId
+        ? `/api/leads?store_id=${encodeURIComponent(scopedStoreId)}`
+        : "/api/leads";
+      const res = await fetch(url, { cache: "no-store" });
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.leads)) {
@@ -228,6 +236,11 @@ export async function getAllLeads(): Promise<LeadRecord[]> {
         }
       }
     } catch {}
+  }
+
+  // Isolation stricte : un vendeur SaaS ne fusionne JAMAIS le cache local du fondateur
+  if (isTenantScoped) {
+    return dbLeads;
   }
 
   // 2. Fallback Supabase direct si l'API n'a rien renvoyé

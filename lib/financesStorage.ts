@@ -3,6 +3,8 @@
  * Persistance résiliente : API Serverless + Table Supabase `finances` + Cache LocalStorage sécurisé
  */
 
+import { getStoredTenantContext } from "./storesStorage";
+
 export type ExpenseCategory =
   | "ads"        // Publicités (Meta Ads, TikTok Ads)
   | "cogs"       // Achat de marchandises / Stock
@@ -192,15 +194,24 @@ export async function fetchAllFinances(): Promise<{
   sales: SaleItem[];
   startingCapital: number;
 }> {
+  const tenantCtx = getStoredTenantContext();
+  const isTenantScoped = tenantCtx !== null && !tenantCtx.isFounder;
+  const scopedStoreId = isTenantScoped ? (tenantCtx.storeId || "none") : null;
+
   try {
-    const res = await fetch("/api/finances", { cache: "no-store" });
+    const url = scopedStoreId
+      ? `/api/finances?store_id=${encodeURIComponent(scopedStoreId)}`
+      : "/api/finances";
+    const res = await fetch(url, { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       if (data && data.hasTable) {
-        if (Array.isArray(data.expenses)) saveLocalExpenses(data.expenses);
-        if (Array.isArray(data.sales)) saveLocalSales(data.sales);
-        if (typeof data.startingCapital === "number") {
-          saveLocalStartingCapital(data.startingCapital);
+        if (!isTenantScoped) {
+          if (Array.isArray(data.expenses)) saveLocalExpenses(data.expenses);
+          if (Array.isArray(data.sales)) saveLocalSales(data.sales);
+          if (typeof data.startingCapital === "number") {
+            saveLocalStartingCapital(data.startingCapital);
+          }
         }
         return {
           expenses: data.expenses || [],
@@ -208,12 +219,17 @@ export async function fetchAllFinances(): Promise<{
           startingCapital:
             typeof data.startingCapital === "number"
               ? data.startingCapital
+              : isTenantScoped
+              ? 0
               : getLocalStartingCapital(),
         };
       }
     }
   } catch (e) {
     console.warn("API finances inaccessible, repli sur le cache local:", e);
+  }
+  if (isTenantScoped) {
+    return { expenses: [], sales: [], startingCapital: 0 };
   }
   return {
     expenses: getLocalExpenses(),
@@ -224,7 +240,9 @@ export async function fetchAllFinances(): Promise<{
 
 export async function updateStartingCapital(amount: number): Promise<number> {
   const cleanAmount = Math.max(0, Math.round(Number(amount) || 0));
-  saveLocalStartingCapital(cleanAmount);
+  const tenantCtx = getStoredTenantContext();
+  const storeId = tenantCtx && !tenantCtx.isFounder ? tenantCtx.storeId : null;
+  if (!storeId) saveLocalStartingCapital(cleanAmount);
 
   try {
     fetch("/api/finances", {
@@ -233,7 +251,8 @@ export async function updateStartingCapital(amount: number): Promise<number> {
       body: JSON.stringify({
         type: "capital",
         item: {
-          id: "capital_initial",
+          id: storeId ? `capital_${storeId}` : "capital_initial",
+          ...(storeId ? { store_id: storeId } : {}),
           amount: cleanAmount,
           date: new Date().toISOString().slice(0, 10),
           description: "Capital de départ en caisse",
@@ -246,6 +265,8 @@ export async function updateStartingCapital(amount: number): Promise<number> {
 }
 
 export async function addExpense(expense: Omit<ExpenseItem, "id" | "created_at">): Promise<ExpenseItem> {
+  const tenantCtx = getStoredTenantContext();
+  const storeId = tenantCtx && !tenantCtx.isFounder ? tenantCtx.storeId : null;
   const newExpense: ExpenseItem = {
     ...expense,
     id: `exp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
@@ -253,17 +274,21 @@ export async function addExpense(expense: Omit<ExpenseItem, "id" | "created_at">
     created_at: new Date().toISOString(),
   };
 
-  // Mettre à jour localement immédiatement
-  const current = getLocalExpenses();
-  const updated = [newExpense, ...current];
-  saveLocalExpenses(updated);
+  if (!storeId) {
+    const current = getLocalExpenses();
+    const updated = [newExpense, ...current];
+    saveLocalExpenses(updated);
+  }
 
   // Synchroniser avec l'API
   try {
     fetch("/api/finances", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "expense", item: newExpense }),
+      body: JSON.stringify({
+        type: "expense",
+        item: { ...newExpense, ...(storeId ? { store_id: storeId } : {}) },
+      }),
     }).catch(() => {});
   } catch {}
 
@@ -285,6 +310,8 @@ export async function removeExpense(id: string): Promise<boolean> {
 }
 
 export async function addSale(sale: Omit<SaleItem, "id" | "created_at">): Promise<SaleItem> {
+  const tenantCtx = getStoredTenantContext();
+  const storeId = tenantCtx && !tenantCtx.isFounder ? tenantCtx.storeId : null;
   const newSale: SaleItem = {
     ...sale,
     id: `sale_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
@@ -293,15 +320,20 @@ export async function addSale(sale: Omit<SaleItem, "id" | "created_at">): Promis
     created_at: new Date().toISOString(),
   };
 
-  const current = getLocalSales();
-  const updated = [newSale, ...current];
-  saveLocalSales(updated);
+  if (!storeId) {
+    const current = getLocalSales();
+    const updated = [newSale, ...current];
+    saveLocalSales(updated);
+  }
 
   try {
     fetch("/api/finances", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "sale", item: newSale }),
+      body: JSON.stringify({
+        type: "sale",
+        item: { ...newSale, ...(storeId ? { store_id: storeId } : {}) },
+      }),
     }).catch(() => {});
   } catch {}
 

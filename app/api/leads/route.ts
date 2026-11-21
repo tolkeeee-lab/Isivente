@@ -8,15 +8,27 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED_LEAD_STATUSES = new Set(["abandoned", "contacted", "converted"]);
 
-// ── GET : Récupérer tous les prospects (limité à 1000) ──
-export async function GET() {
+// ── GET : Récupérer les prospects (isolé par store_id pour le SaaS) ──
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const storeId = searchParams.get("store_id");
+    if (storeId === "none") {
+      return NextResponse.json({ success: true, leads: [] });
+    }
+
     const supabase = getSupabase();
-    const { data, error } = await supabase
+    let query = supabase
       .from("leads")
       .select("*")
       .order("updated_at", { ascending: false })
       .limit(1000);
+
+    if (storeId && storeId.trim()) {
+      query = query.eq("store_id", storeId.trim());
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Leads GET error:", error?.message);

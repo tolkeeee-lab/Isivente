@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { getStoredTenantContext } from './storesStorage';
 
 export interface UserSession {
   slug: string;
@@ -199,6 +200,12 @@ export function markCurrentSessionClicked(slug: string) {
  * Résout la limitation par défaut de PostgREST qui plafonne chaque requête brute à 1000 lignes.
  */
 async function fetchAllAnalyticsRows(slug?: string): Promise<{ data: any[] | null; error: any }> {
+  const tenantCtx = getStoredTenantContext();
+  const isTenantScoped = tenantCtx !== null && !tenantCtx.isFounder;
+  if (isTenantScoped && !tenantCtx?.storeId) {
+    return { data: [], error: null };
+  }
+
   try {
     const pageSize = 1000;
     let allRows: any[] = [];
@@ -211,6 +218,9 @@ async function fetchAllAnalyticsRows(slug?: string): Promise<{ data: any[] | nul
         .order('created_at', { ascending: false })
         .range(from, from + pageSize - 1);
 
+      if (isTenantScoped && tenantCtx?.storeId) {
+        query = query.eq('store_id', tenantCtx.storeId);
+      }
       if (slug) {
         query = query.eq('product_slug', slug);
       }
@@ -235,10 +245,12 @@ async function fetchAllAnalyticsRows(slug?: string): Promise<{ data: any[] | nul
 }
 
 export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> {
+  const tenantCtx = getStoredTenantContext();
+  const isTenantScoped = tenantCtx !== null && !tenantCtx.isFounder;
   try {
     let { data, error } = await fetchAllAnalyticsRows(slug);
 
-    if ((error || !data || data.length === 0) && typeof window !== 'undefined') {
+    if (!isTenantScoped && (error || !data || data.length === 0) && typeof window !== 'undefined') {
       try {
         const url = slug ? `/api/analytics?slug=${encodeURIComponent(slug)}` : '/api/analytics';
         const res = await fetch(url, { cache: 'no-store' });

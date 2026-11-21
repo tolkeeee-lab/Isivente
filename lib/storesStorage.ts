@@ -5,6 +5,50 @@
 
 import { supabase } from "./supabase";
 
+const FOUNDER_EMAILS = new Set(
+  [
+    "tolkeeee@gmail.com",
+    (process.env.NEXT_PUBLIC_FOUNDER_EMAIL || "").trim().toLowerCase(),
+  ].filter(Boolean)
+);
+
+export function isFounderEmail(email?: string | null): boolean {
+  if (!email) return false;
+  return FOUNDER_EMAILS.has(email.trim().toLowerCase());
+}
+
+export interface ActiveTenantContext {
+  isFounder: boolean;
+  storeId: string | null;
+  storeName: string | null;
+  email: string | null;
+}
+
+const TENANT_CTX_KEY = "isivente_active_tenant_ctx";
+
+export function setStoredTenantContext(ctx: ActiveTenantContext) {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(TENANT_CTX_KEY, JSON.stringify(ctx));
+  } catch {}
+}
+
+export function getStoredTenantContext(): ActiveTenantContext | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(TENANT_CTX_KEY);
+    if (raw) return JSON.parse(raw) as ActiveTenantContext;
+  } catch {}
+  return null;
+}
+
+export function clearStoredTenantContext() {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(TENANT_CTX_KEY);
+  } catch {}
+}
+
 export type AfricanCountryCode = "BJ" | "CI" | "TG" | "SN" | "CM" | "BF" | "ML" | "NE";
 
 export interface AfricanCountryConfig {

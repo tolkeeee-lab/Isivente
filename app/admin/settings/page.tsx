@@ -24,7 +24,10 @@ import {
   AFRICAN_COUNTRIES,
   AfricanCountryCode,
   StoreConfig,
+  clearStoredTenantContext,
   getCurrentUserStore,
+  isFounderEmail,
+  setStoredTenantContext,
   slugifyStoreName,
   upsertUserStore,
 } from "@/lib/storesStorage";
@@ -149,6 +152,12 @@ export default function AdminStoreSettingsPage() {
     setStore(saved);
     setSlug(saved.slug);
     setSlugTouched(true);
+    setStoredTenantContext({
+      isFounder: isFounderEmail(userEmail),
+      storeId: saved.id,
+      storeName: saved.name,
+      email: userEmail,
+    });
     setFeedback({
       type: "success",
       text: "Paramètres de votre boutique enregistrés avec succès !",
@@ -156,13 +165,16 @@ export default function AdminStoreSettingsPage() {
   };
 
   const handleLogout = async () => {
+    clearStoredTenantContext();
     await supabase.auth.signOut();
     setUserEmail(null);
     setStore(null);
-    router.refresh();
+    router.replace("/login");
   };
 
-  const storePublicUrl = `https://isivente.com/p/${slug || "ma-boutique"}`;
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "https://isivente.vercel.app";
+  const storePublicUrl = `${origin}/p/${slug || "ma-boutique"}`;
 
   const copyStoreUrl = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {

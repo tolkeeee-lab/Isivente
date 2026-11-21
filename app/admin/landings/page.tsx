@@ -22,7 +22,12 @@ import {
 } from "lucide-react";
 import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
 import { supabase } from "@/lib/supabase";
-import { getCurrentUserStore, slugifyStoreName, StoreConfig } from "@/lib/storesStorage";
+import {
+  getCurrentUserStore,
+  getStoredTenantContext,
+  slugifyStoreName,
+  StoreConfig,
+} from "@/lib/storesStorage";
 
 interface DbProductItem {
   id: string;
@@ -87,6 +92,9 @@ export default function AdminLandingsPage() {
   }, []);
 
   const combinedProducts = useMemo(() => {
+    const tenantCtx = getStoredTenantContext();
+    const isFounder = tenantCtx ? tenantCtx.isFounder : false;
+
     const customMapped = dbProducts.map((p) => {
       const firstImg =
         Array.isArray(p.images) && p.images[0]
@@ -105,6 +113,11 @@ export default function AdminLandingsPage() {
         isCustomDb: true,
       };
     });
+
+    // Isolation stricte : seul le fondateur voit son catalogue historique DEFAULT_CATALOG
+    if (!isFounder) {
+      return customMapped;
+    }
 
     const staticMapped = DEFAULT_CATALOG.map((p) => ({
       ...p,

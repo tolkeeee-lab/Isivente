@@ -3,13 +3,30 @@ import { getSupabase } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const storeId = req.nextUrl.searchParams.get("store_id");
+    if (storeId === "none") {
+      return NextResponse.json({
+        success: true,
+        hasTable: true,
+        expenses: [],
+        sales: [],
+        startingCapital: 0,
+      });
+    }
+
     const supabase = getSupabase();
-    const { data, error } = await supabase
+    let query = supabase
       .from("finances")
       .select("*")
       .order("date", { ascending: false });
+
+    if (storeId && storeId.trim()) {
+      query = query.eq("store_id", storeId.trim());
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       // Si la table n'a pas encore été créée dans Supabase
@@ -57,8 +74,15 @@ export async function POST(req: NextRequest) {
     const supabase = getSupabase();
 
     const normalizedType = type === "sale" ? "sale" : type === "capital" ? "capital" : "expense";
+    const storeId = typeof item.store_id === "string" && item.store_id.trim() ? item.store_id.trim() : null;
     const payload = {
-      id: normalizedType === "capital" ? "capital_initial" : String(item.id),
+      id:
+        normalizedType === "capital"
+          ? storeId
+            ? `capital_${storeId}`
+            : "capital_initial"
+          : String(item.id),
+      ...(storeId ? { store_id: storeId } : {}),
       type: normalizedType,
       date: item.date || new Date().toISOString().slice(0, 10),
       category: item.category || (normalizedType === "sale" ? "sale" : normalizedType === "capital" ? "capital" : "other"),

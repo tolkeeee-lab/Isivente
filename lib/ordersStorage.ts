@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { getOrCreateFbp, getOrCreateFbc, getOrCreateExternalId } from './userTracking';
+import { getStoredTenantContext } from './storesStorage';
 
 export interface Order {
   id?: string;
@@ -159,14 +160,21 @@ export async function saveNewOrder(orderData: Partial<Order>): Promise<Order> {
 }
 
 export async function getOrders(): Promise<Order[]> {
+  const tenantCtx = getStoredTenantContext();
+  const isTenantScoped = tenantCtx !== null && !tenantCtx.isFounder;
+  const scopedStoreId = isTenantScoped ? (tenantCtx.storeId || 'none') : null;
+
   // 1. Tenter via /api/orders (contourne les bloqueurs de pub et problèmes CORS/WebSocket client)
   if (typeof window !== 'undefined') {
     try {
-      const res = await fetch('/api/orders', { cache: 'no-store' });
+      const url = scopedStoreId
+        ? `/api/orders?store_id=${encodeURIComponent(scopedStoreId)}`
+        : '/api/orders';
+      const res = await fetch(url, { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.orders)) {
-          saveLocalOrders(json.orders);
+          if (!isTenantScoped) saveLocalOrders(json.orders);
           return json.orders;
         }
       }
@@ -175,23 +183,34 @@ export async function getOrders(): Promise<Order[]> {
     }
   }
 
+  // Un utilisateur SaaS sans boutique ne doit JAMAIS voir le cache local du fondateur
+  if (isTenantScoped && !tenantCtx?.storeId) {
+    return [];
+  }
+
   // 2. Fallback direct Supabase
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(1000);
 
+    if (isTenantScoped && tenantCtx?.storeId) {
+      query = query.eq('store_id', tenantCtx.storeId);
+    }
+
+    const { data, error } = await query;
+
     if (error) throw error;
-    if (data && data.length > 0) {
-      saveLocalOrders(data);
+    if (data) {
+      if (!isTenantScoped && data.length > 0) saveLocalOrders(data);
       return data;
     }
-    return getLocalOrders();
+    return isTenantScoped ? [] : getLocalOrders();
   } catch (err) {
     console.warn('Erreur récupération commandes distantes, chargement local:', err);
-    return getLocalOrders();
+    return isTenantScoped ? [] : getLocalOrders();
   }
 }
 
