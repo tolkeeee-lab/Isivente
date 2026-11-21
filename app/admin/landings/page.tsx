@@ -51,6 +51,8 @@ export default function AdminLandingsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [actionFeedback, setActionFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Formulaire créateur no-code
   const [title, setTitle] = useState("");
@@ -88,7 +90,7 @@ export default function AdminLandingsPage() {
       } else {
         setDbProducts([]);
       }
-    } catch {}
+    } catch { }
   };
 
   useEffect(() => {
@@ -349,11 +351,71 @@ export default function AdminLandingsPage() {
   };
 
   const handleDeleteCustomProduct = async (prodId: string, prodTitle: string) => {
-    if (typeof window !== "undefined" && !window.confirm(`Supprimer la page « ${prodTitle} » ?`)) {
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm(
+        `Supprimer DÉFINITIVEMENT la page « ${prodTitle} » ainsi que ses photos ?\n\nCette action est irréversible.`
+      )
+    ) {
       return;
     }
-    await supabase.from("products").delete().eq("id", prodId);
-    await loadStoreAndProducts();
+
+    setDeletingId(prodId);
+    setActionFeedback(null);
+
+    try {
+      // 1. Nettoyer les photos hébergées dans Supabase Storage `product-images`
+      const targetProd = dbProducts.find((p) => p.id === prodId);
+      if (targetProd && Array.isArray(targetProd.images)) {
+        const storagePaths: string[] = [];
+        const marker = "/storage/v1/object/public/product-images/";
+        for (const item of targetProd.images) {
+          const url = typeof item === "string" ? item : item?.url;
+          if (typeof url === "string" && url.includes(marker)) {
+            const path = decodeURIComponent(url.split(marker)[1] || "");
+            if (path) storagePaths.push(path);
+          }
+        }
+        if (storagePaths.length > 0) {
+          await supabase.storage.from("product-images").remove(storagePaths).catch(() => { });
+        }
+      }
+
+      // 2. Suppression définitive de la ligne produit en base (strictement scopée par store_id)
+      let delQuery = supabase.from("products").delete().eq("id", prodId);
+      if (userStore?.id) {
+        delQuery = delQuery.eq("store_id", userStore.id);
+      }
+      const { error } = await delQuery;
+
+      if (error) {
+        if (error.code === "23503") {
+          setActionFeedback({
+            type: "error",
+            text: `Impossible de supprimer « ${prodTitle} » tant que des commandes y sont rattachées. Désactivez-la ou supprimez d'abord les commandes de test.`,
+          });
+        } else {
+          setActionFeedback({
+            type: "error",
+            text: `Erreur de suppression : ${error.message}`,
+          });
+        }
+        return;
+      }
+
+      setDbProducts((prev) => prev.filter((p) => p.id !== prodId));
+      setActionFeedback({
+        type: "success",
+        text: `La page « ${prodTitle} » et ses photos ont été supprimées définitivement.`,
+      });
+    } catch (err: any) {
+      setActionFeedback({
+        type: "error",
+        text: err?.message || "Erreur lors de la suppression définitive.",
+      });
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -432,6 +494,25 @@ export default function AdminLandingsPage() {
         </Link>
       </div>
 
+      {/* ── FEEDBACK SUPPRESSION / ACTION ── */}
+      {actionFeedback && (
+        <div
+          className={`p-3.5 rounded-2xl border text-xs font-semibold flex items-center justify-between gap-2 ${actionFeedback.type === "success"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-700"
+            }`}
+        >
+          <span>{actionFeedback.text}</span>
+          <button
+            type="button"
+            onClick={() => setActionFeedback(null)}
+            className="p-1 rounded-lg hover:bg-black/5 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* ── GRILLE DES LANDING PAGES ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredProducts.map((prod) => {
@@ -461,11 +542,10 @@ export default function AdminLandingsPage() {
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center justify-between gap-2">
                       <div
-                        className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                          prod.isCustomDb
+                        className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${prod.isCustomDb
                             ? "text-indigo-700 bg-indigo-50 border-indigo-100"
                             : "text-emerald-700 bg-emerald-50 border-emerald-100"
-                        }`}
+                          }`}
                       >
                         <Sparkles className="w-3 h-3" />
                         {prod.isCustomDb ? userStore?.name || "Ma Boutique" : "Standard Master"}
@@ -523,11 +603,10 @@ export default function AdminLandingsPage() {
                   <button
                     type="button"
                     onClick={() => handleCopy(cleanUrl, `clean_${prod.slug}`)}
-                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                      isCopiedClean
+                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${isCopiedClean
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
                         : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200"
-                    }`}
+                      }`}
                   >
                     {isCopiedClean ? <Check className="w-3 h-3 stroke-[2.5]" /> : <Copy className="w-3 h-3" />}
                     <span>{isCopiedClean ? "Copié !" : "Direct"}</span>
@@ -536,11 +615,10 @@ export default function AdminLandingsPage() {
                   <button
                     type="button"
                     onClick={() => handleCopy(utmMetaUrl, `meta_${prod.slug}`)}
-                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                      isCopiedMeta
+                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${isCopiedMeta
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
                         : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200"
-                    }`}
+                      }`}
                   >
                     {isCopiedMeta ? <Check className="w-3 h-3 stroke-[2.5]" /> : <Share2 className="w-3 h-3" />}
                     <span>{isCopiedMeta ? "Copié !" : "Meta Ads"}</span>
@@ -549,16 +627,31 @@ export default function AdminLandingsPage() {
                   <button
                     type="button"
                     onClick={() => handleCopy(utmWaUrl, `wa_${prod.slug}`)}
-                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                      isCopiedWa
+                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${isCopiedWa
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
                         : "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
-                    }`}
+                      }`}
                   >
                     {isCopiedWa ? <Check className="w-3 h-3 stroke-[2.5]" /> : <Flame className="w-3 h-3" />}
                     <span>{isCopiedWa ? "Copié !" : "WhatsApp"}</span>
                   </button>
                 </div>
+
+                {prod.isCustomDb && (
+                  <button
+                    type="button"
+                    disabled={deletingId === prod.id}
+                    onClick={() => handleDeleteCustomProduct(prod.id, prod.title)}
+                    className="w-full py-1.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[11px] font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>
+                      {deletingId === prod.id
+                        ? "Suppression définitive..."
+                        : "Supprimer définitivement"}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           );
