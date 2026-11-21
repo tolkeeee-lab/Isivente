@@ -19,6 +19,8 @@ import {
   X,
   Trash2,
   AlertCircle,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
 import { supabase } from "@/lib/supabase";
@@ -57,6 +59,8 @@ export default function AdminLandingsPage() {
   const [price, setPrice] = useState("14900");
   const [originalPrice, setOriginalPrice] = useState("25000");
   const [headline, setHeadline] = useState("");
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [imageUrlsText, setImageUrlsText] = useState("");
   const [benefitsText, setBenefitsText] = useState(
     "Qualité supérieure vérifiée avant livraison\nLivraison express en moins de 24h à domicile\nPaiement uniquement à la réception après test\nGarantie échange gratuit en cas de défaut"
@@ -153,6 +157,86 @@ export default function AdminLandingsPage() {
     return "https://isivente.com";
   };
 
+  // Compression automatique sur le téléphone/PC du vendeur (max 960px, JPEG 80% < 100 Ko)
+  const compressImageFile = (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        img.src = String(ev.target?.result || "");
+      };
+      reader.onerror = reject;
+      img.onload = () => {
+        const maxDim = 960;
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return resolve(file);
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => (blob ? resolve(blob) : resolve(file)),
+          "image/jpeg",
+          0.8
+        );
+      };
+      img.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageFilesSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []).slice(0, 5 - uploadedImages.length);
+    if (files.length === 0) return;
+    if (!userStore) {
+      setCreateError("Configurez d'abord votre boutique dans « Ma Boutique » avant d'importer des photos.");
+      return;
+    }
+
+    setUploadingImages(true);
+    setCreateError("");
+    const newUrls: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const compressed = await compressImageFile(files[i]);
+        const filePath = `${userStore.id}/${Date.now()}-${i}.jpg`;
+        const { error: uploadErr } = await supabase.storage
+          .from("product-images")
+          .upload(filePath, compressed, { contentType: "image/jpeg", upsert: true });
+
+        if (uploadErr) {
+          throw new Error(
+            uploadErr.message.includes("Bucket not found")
+              ? "Exécutez d'abord supabase/migrations/002_storage_product_images.sql dans Supabase SQL Editor pour activer l'upload de photos."
+              : uploadErr.message
+          );
+        }
+
+        const { data: pub } = supabase.storage.from("product-images").getPublicUrl(filePath);
+        if (pub?.publicUrl) {
+          newUrls.push(pub.publicUrl);
+        }
+      }
+      setUploadedImages((prev) => [...prev, ...newUrls].slice(0, 5));
+    } catch (err: any) {
+      setCreateError(err?.message || "Erreur lors de l'import des photos.");
+    } finally {
+      setUploadingImages(false);
+      e.target.value = "";
+    }
+  };
+
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreateError("");
@@ -174,10 +258,13 @@ export default function AdminLandingsPage() {
       return;
     }
 
-    const images = imageUrlsText
+    const manualUrls = imageUrlsText
       .split("\n")
       .map((u) => u.trim())
-      .filter(Boolean)
+      .filter(Boolean);
+
+    const images = [...uploadedImages, ...manualUrls]
+      .slice(0, 5)
       .map((url) => ({ url, alt: cleanTitle }));
 
     const features = benefitsText
@@ -250,6 +337,7 @@ export default function AdminLandingsPage() {
       setSlug("");
       setSlugTouched(false);
       setHeadline("");
+      setUploadedImages([]);
       setImageUrlsText("");
       setShowCreateModal(false);
       await loadStoreAndProducts();
@@ -595,16 +683,58 @@ export default function AdminLandingsPage() {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 block">
-                  URL(s) des photos du produit (1 lien par ligne)
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-emerald-600" />
+                  Photos du produit (max 5 • compression auto ultra-rapide)
                 </label>
+
+                <label className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-2xl border-2 border-dashed border-slate-200 hover:border-emerald-400 bg-slate-50/70 hover:bg-emerald-50/30 transition-colors cursor-pointer">
+                  <Upload className="w-5 h-5 text-emerald-600" />
+                  <span className="text-xs font-bold text-slate-800">
+                    {uploadingImages
+                      ? "Compression et envoi en cours..."
+                      : "Choisir des photos depuis mon téléphone ou PC"}
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    JPG, PNG ou WebP • {uploadedImages.length}/5 photo(s) ajoutée(s)
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    disabled={uploadingImages || uploadedImages.length >= 5}
+                    onChange={handleImageFilesSelect}
+                    className="hidden"
+                  />
+                </label>
+
+                {uploadedImages.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {uploadedImages.map((url, idx) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200">
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setUploadedImages((prev) => prev.filter((_, i) => i !== idx))
+                          }
+                          className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-slate-900/80 text-white flex items-center justify-center cursor-pointer"
+                          title="Retirer cette photo"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <textarea
-                  rows={2}
+                  rows={1}
                   value={imageUrlsText}
                   onChange={(e) => setImageUrlsText(e.target.value)}
-                  placeholder="https://.../photo-1.jpg"
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                  placeholder="Ou coller un lien d'image externe (optionnel)..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-[11px] font-mono"
                 />
               </div>
 
