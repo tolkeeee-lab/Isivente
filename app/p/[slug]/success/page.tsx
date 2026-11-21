@@ -93,14 +93,14 @@ function SuccessContent() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 font-sans antialiased selection:bg-emerald-100">
-      <div className="bg-white border border-slate-200/90 max-w-lg w-full rounded-3xl p-6 sm:p-9 text-center shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] relative overflow-hidden">
+      <div className="bg-white border border-black/[0.08] max-w-lg w-full rounded-[14px] p-6 sm:p-9 text-center shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] relative overflow-hidden">
         
         {/* ICON CHECK FIGMA-GRADE */}
         <div className="w-16 h-16 bg-emerald-50 border-2 border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
           <CheckCircle2 className="w-9 h-9 text-emerald-600 stroke-[2.2]" />
         </div>
         
-        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-3.5 py-1 rounded-full border border-emerald-200 inline-block mb-3">
+        <span className="text-[11px] font-mono font-bold text-emerald-800 bg-emerald-100/70 px-3.5 py-1 rounded-full border border-emerald-200 inline-block mb-3">
           Commande Validée avec Succès
         </span>
 
@@ -113,11 +113,11 @@ function SuccessContent() {
         </p>
 
         {/* 🌟 ACTION PRINCIPALE UNIQUE : CONFIRMATION WHATSAPP */}
-        <div className="bg-emerald-50/80 border-2 border-emerald-500/30 rounded-2xl p-5 mb-6 text-left shadow-md relative overflow-hidden">
+        <div className="bg-emerald-50/80 border-2 border-emerald-500/30 rounded-2xl p-5 mb-6 text-left shadow-[0_1px_2px_rgba(0,0,0,0.05)] relative overflow-hidden">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-              <h3 className="font-bold text-xs sm:text-sm text-emerald-950 uppercase tracking-wide">
+              <h3 className="font-bold text-xs sm:text-sm text-emerald-950 tracking-wide">
                 Ouverture automatique de WhatsApp...
               </h3>
             </div>
@@ -133,7 +133,7 @@ function SuccessContent() {
 
           <a 
             href={whatsappUrl} 
-            className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-slate-950 font-black text-sm sm:text-base py-4 px-6 rounded-xl shadow-[0_10px_25px_-5px_rgba(37,211,102,0.4)] transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98] group"
+            className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-slate-950 font-black text-sm sm:text-base py-4 px-6 rounded-xl shadow-[0_10px_25px_-5px_rgba(37,211,102,0.4)] transition-colors duration-150 flex items-center justify-center gap-2.5 cursor-pointer active:scale-[0.98] group"
           >
             <MessageCircle className="w-5 h-5 fill-current" />
             <span>Ouvrir mon WhatsApp maintenant</span>
@@ -142,7 +142,7 @@ function SuccessContent() {
         </div>
 
         {/* 📋 RÉCAPITULATIF COMMANDE FIGMA-GRADE */}
-        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:p-5 mb-6 text-left space-y-2.5 text-xs sm:text-sm">
+        <div className="bg-slate-50 border border-black/[0.08] rounded-2xl p-4 sm:p-5 mb-6 text-left space-y-2.5 text-xs sm:text-sm">
           <div className="flex justify-between items-center text-slate-600">
             <span>N° de commande :</span>
             <span className="font-mono font-bold text-slate-900 tracking-wide">
@@ -165,7 +165,7 @@ function SuccessContent() {
           )}
 
           {total > 0 && (
-            <div className="pt-3 border-t border-slate-200 flex justify-between items-center text-sm font-bold text-slate-950">
+            <div className="pt-3 border-t border-black/[0.08] flex justify-between items-center text-sm font-bold text-slate-950">
               <span>Montant à régler à la livraison :</span>
               <span className="font-mono tabular-nums text-base sm:text-lg text-emerald-700">
                 {fmt(total)} FCFA
@@ -175,8 +175,8 @@ function SuccessContent() {
         </div>
 
         {/* 🚚 ÉTAPES SUIVANTES CLAIRES */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 mb-6 text-left space-y-3">
-          <h3 className="font-mono font-bold text-[11px] uppercase tracking-wider text-slate-500">
+        <div className="bg-white border border-black/[0.08] rounded-2xl p-4 sm:p-5 mb-6 text-left space-y-3">
+          <h3 className="font-mono font-bold text-[11px] text-slate-500">
             Comment se passe la livraison ?
           </h3>
           
@@ -206,7 +206,7 @@ function SuccessContent() {
         </div>
 
         {/* ACTIONS SECONDAIRES DISCRÈTES */}
-        <div className="space-y-2 pt-2 border-t border-slate-100">
+        <div className="space-y-2 pt-2 border-t border-black/[0.08]">
           <Link href={trackUrl} className="block">
             <span className="text-xs text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer py-1">
               <Truck className="w-3.5 h-3.5 text-slate-500" />
@@ -223,7 +223,7 @@ function SuccessContent() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-4 mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-500">
+        <div className="flex items-center justify-center gap-4 mt-6 pt-4 border-t border-black/[0.08] text-[11px] text-slate-500">
           <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Colis Garanti</span>
           <span className="flex items-center gap-1"><PackageCheck className="w-3.5 h-3.5 text-emerald-600" /> Paiement à la réception</span>
         </div>

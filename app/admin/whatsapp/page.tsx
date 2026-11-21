@@ -166,7 +166,7 @@ export default function AdminWhatsAppPage() {
           href="http://localhost:4040"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-2xs transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#14281D] hover:bg-[#1E3A2B] text-white shadow-2xs transition-colors duration-150"
         >
           <QrCode className="w-4 h-4 text-emerald-400" />
           <span>Ouvrir la Console QR Code (Port 4040)</span>
@@ -178,7 +178,7 @@ export default function AdminWhatsAppPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* COLONNE GAUCHE (6/12) : CONNEXION QR CODE ILLIMITÉE BAILEYS */}
         <div className="lg:col-span-6 card-figma p-5 sm:p-6 space-y-5">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex items-center justify-between border-b border-black/[0.08] pb-3">
             <div>
               <h2 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 <Zap className="w-4 h-4 text-emerald-600" />
@@ -209,7 +209,7 @@ export default function AdminWhatsAppPage() {
           {/* QR CODE EN DIRECT SI DISPONIBLE */}
           {baileysStatus.running && baileysStatus.qrCodeBase64 && (
             <div className="p-5 rounded-2xl bg-emerald-50/50 border-2 border-emerald-500 text-center space-y-3">
-              <div className="text-xs font-semibold text-emerald-950 uppercase tracking-wider">
+              <div className="text-xs font-semibold text-emerald-950">
                 📱 Scanne ce QR Code avec ton WhatsApp (Appareils connectés)
               </div>
               <img
@@ -252,7 +252,7 @@ export default function AdminWhatsAppPage() {
           )}
 
           {/* COMMANDE DE LANCEMENT */}
-          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-xs">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-black/[0.08] space-y-1.5 text-xs">
             <div className="font-bold text-slate-900">
               Comment lancer le Bot Illimité sur ton PC :
             </div>
@@ -264,7 +264,7 @@ export default function AdminWhatsAppPage() {
 
         {/* COLONNE DROITE (6/12) : SIMULATEUR EN DIRECT DU BOT AWA */}
         <div className="lg:col-span-6 card-figma p-5 sm:p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-black/[0.08] pb-3">
             <div>
               <h2 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-emerald-600" />
@@ -278,7 +278,7 @@ export default function AdminWhatsAppPage() {
             <select
               value={selectedSlug}
               onChange={(e) => setSelectedSlug(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white"
+              className="px-3 py-1.5 rounded-xl border border-black/[0.08] text-xs font-bold text-slate-800 bg-white"
             >
               {products.map((prod) => (
                 <option key={prod.slug} value={prod.slug}>
@@ -328,7 +328,7 @@ export default function AdminWhatsAppPage() {
           </div>
 
           {/* Fenêtre de chat style WhatsApp */}
-          <div className="h-[340px] overflow-y-auto rounded-2xl bg-[#efeae2] p-3.5 space-y-3 border border-slate-200">
+          <div className="h-[340px] overflow-y-auto rounded-2xl bg-[#efeae2] p-3.5 space-y-3 border border-black/[0.08]">
             {chatHistory.map((m) => (
               <div
                 key={m.id}
@@ -372,7 +372,7 @@ export default function AdminWhatsAppPage() {
               value={simInput}
               onChange={(e) => setSimInput(e.target.value)}
               placeholder="Écris un message client (ex: Cotonou Zogbo rue de l'école)..."
-              className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-emerald-500"
+              className="flex-1 px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-xs text-slate-900 focus:outline-none focus:border-emerald-500"
             />
             <button
               type="submit"

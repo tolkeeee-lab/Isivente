@@ -613,7 +613,7 @@ export default function TrackerPage() {
       {/* ── TOAST ALERT EN TEMPS RÉEL (FLOTTANT) ── */}
       {liveToast && (
         <div
-          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-white text-xs sm:text-sm font-bold border transition-all animate-bounce ${
+          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] text-white text-xs sm:text-sm font-bold border transition-colors duration-150 animate-bounce ${
             liveToast.type === "order"
               ? "bg-emerald-600 border-emerald-400"
               : "bg-[#171717] border-black/[0.08]"
@@ -625,9 +625,9 @@ export default function TrackerPage() {
       )}
 
       {/* ── 1. EN-TÊTE & SÉLECTEUR DE PÉRIODE ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-2xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-black/[0.08] p-5 sm:p-6 shadow-2xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Pixel CAPI + Auto-Capture fbclid / _fbc Actifs</span>
           </div>
@@ -640,7 +640,7 @@ export default function TrackerPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div className="inline-flex bg-slate-100 p-1 rounded-xl border border-black/[0.08]">
             {[
               { label: "Aujourd'hui", val: 1 },
               { label: "7 jours", val: 7 },
@@ -650,7 +650,7 @@ export default function TrackerPage() {
               <button
                 key={p.val}
                 onClick={() => setFilterDays(p.val)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer ${
                   filterDays === p.val
                     ? "bg-slate-900 text-white shadow-2xs"
                     : "text-slate-600 hover:text-slate-900"
@@ -663,7 +663,7 @@ export default function TrackerPage() {
 
           <button
             onClick={() => setShowMetaModal(!showMetaModal)}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors duration-150 cursor-pointer ${
               metaConnected
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                 : "bg-[#14281D] hover:bg-[#14281D] border-blue-600 text-white shadow-xs"
@@ -677,7 +677,7 @@ export default function TrackerPage() {
             </span>
           </button>
 
-          <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 cursor-pointer shadow-2xs">
+          <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-black/[0.08] cursor-pointer shadow-2xs">
             <Upload className="w-3.5 h-3.5 text-slate-500" />
             <span>Importer CSV Meta</span>
             <input
@@ -727,7 +727,7 @@ export default function TrackerPage() {
       </div>
 
       {/* ── 3. CLASSEMENT AUTOMATIQUE DE VOS PRODUITS (QUI CONVERTIT vs QUI BRÛLE LE BUDGET) ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-2xs space-y-4">
+      <div className="bg-white rounded-2xl border border-black/[0.08] p-5 sm:p-6 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-base sm:text-lg font-semibold text-slate-900 flex items-center gap-2">
@@ -752,7 +752,7 @@ export default function TrackerPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+            <thead className="bg-slate-50 border-b border-black/[0.08] text-slate-600 font-bold">
               <tr>
                 <th className="p-3">Produit</th>
                 <th className="p-3">Visiteurs Réels</th>
@@ -763,7 +763,7 @@ export default function TrackerPage() {
                 <th className="p-3">Verdict & Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-black/[0.06]">
               {productScorecard.map((p) => {
                 let badge = {
                   text: "🟡 EN TEST (Peu de trafic)",
@@ -853,7 +853,7 @@ export default function TrackerPage() {
 
       {/* ── PANNEAU DE CONNEXION DIRECTE API META (Affiché au clic) ── */}
       {showMetaModal && (
-        <div className="bg-white rounded-2xl border-2 border-black/[0.08] p-5 sm:p-6 shadow-md space-y-4">
+        <div className="bg-white rounded-2xl border-2 border-black/[0.08] p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.05)] space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="text-base font-semibold text-slate-900">
@@ -937,8 +937,8 @@ export default function TrackerPage() {
       )}
 
       {/* ── 4. SIMULATEUR & ENTONNOIR EN 5 ÉTAPES ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-2xs space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
+      <div className="bg-white rounded-2xl border border-black/[0.08] p-5 sm:p-6 shadow-2xs space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-black/[0.08] pb-4">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-slate-500" />
             <span className="text-xs font-bold text-slate-800">
@@ -947,7 +947,7 @@ export default function TrackerPage() {
             <select
               value={selectedSlug}
               onChange={(e) => setSelectedSlug(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+              className="px-3 py-1.5 rounded-xl border border-black/[0.08] bg-slate-50 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
             >
               <option value="all">
                 Tous les produits ({orders.length} commandes / {sessions.length} visites)
@@ -981,8 +981,8 @@ export default function TrackerPage() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-            <label className="block text-[10px] font-bold uppercase text-slate-500">
+          <div className="bg-slate-50 p-3 rounded-xl border border-black/[0.08]">
+            <label className="block text-[10px] font-bold text-slate-500">
               Budget Pub Dépensé (FCFA)
             </label>
             <input
@@ -991,12 +991,12 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setManualSpendFcfa(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-black/[0.08] font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
-          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-            <label className="block text-[10px] font-bold uppercase text-slate-500">
+          <div className="bg-slate-50 p-3 rounded-xl border border-black/[0.08]">
+            <label className="block text-[10px] font-bold text-slate-500">
               Impressions Meta
             </label>
             <input
@@ -1005,12 +1005,12 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setManualImpressions(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-black/[0.08] font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
-          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-            <label className="block text-[10px] font-bold uppercase text-slate-500">
+          <div className="bg-slate-50 p-3 rounded-xl border border-black/[0.08]">
+            <label className="block text-[10px] font-bold text-slate-500">
               Clics sur le lien (Meta)
             </label>
             <input
@@ -1019,12 +1019,12 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setManualLinkClicks(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-black/[0.08] font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
-          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-            <label className="block text-[10px] font-bold uppercase text-slate-500">
+          <div className="bg-slate-50 p-3 rounded-xl border border-black/[0.08]">
+            <label className="block text-[10px] font-bold text-slate-500">
               Coût Produit Unitaire (F)
             </label>
             <input
@@ -1033,12 +1033,12 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setUnitProductCost(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-black/[0.08] font-mono font-semibold text-sm text-slate-900"
             />
           </div>
 
-          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/80">
-            <label className="block text-[10px] font-bold uppercase text-slate-500">
+          <div className="bg-slate-50 p-3 rounded-xl border border-black/[0.08]">
+            <label className="block text-[10px] font-bold text-slate-500">
               Livraison Unitaire (F)
             </label>
             <input
@@ -1047,7 +1047,7 @@ export default function TrackerPage() {
               onChange={(e) =>
                 setUnitDeliveryCost(Math.max(0, Number(e.target.value)))
               }
-              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 font-mono font-semibold text-sm text-slate-900"
+              className="mt-1 w-full bg-white px-2.5 py-1.5 rounded-lg border border-black/[0.08] font-mono font-semibold text-sm text-slate-900"
             />
           </div>
         </div>
@@ -1062,7 +1062,7 @@ export default function TrackerPage() {
                 : "bg-emerald-50/40 border-emerald-300"
             }`}
           >
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase text-slate-500">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
               <span>1. Pub Meta (CTR)</span>
               <Eye className="w-4 h-4 text-slate-400" />
             </div>
@@ -1073,7 +1073,7 @@ export default function TrackerPage() {
               <strong>{fmt(funnel.linkClicks)} clics</strong> sur{" "}
               {fmt(funnel.impressions)} vues
             </p>
-            <div className="pt-1 border-t border-slate-200/60 text-[11px] font-semibold text-slate-500">
+            <div className="pt-1 border-t border-black/[0.08]/60 text-[11px] font-semibold text-slate-500">
               CPC : <strong className="text-slate-800">{fmt(funnel.cpcFcfa)} F</strong>
             </div>
           </div>
@@ -1085,7 +1085,7 @@ export default function TrackerPage() {
                 : "bg-emerald-50/40 border-emerald-300"
             }`}
           >
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase text-slate-500">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
               <span>2. Visiteurs Réels</span>
               <Users className="w-4 h-4 text-slate-400" />
             </div>
@@ -1095,7 +1095,7 @@ export default function TrackerPage() {
             <p className="text-xs text-slate-600">
               Visiteurs humains arrivés sur la page
             </p>
-            <div className="pt-1 border-t border-slate-200/60 text-[11px] font-semibold text-slate-500">
+            <div className="pt-1 border-t border-black/[0.08]/60 text-[11px] font-semibold text-slate-500">
               Arrivée :{" "}
               <strong className="text-slate-800">
                 {funnel.landingArrivalRate.toFixed(0)}%
@@ -1110,7 +1110,7 @@ export default function TrackerPage() {
                 : "bg-emerald-50/40 border-emerald-300"
             }`}
           >
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase text-slate-500">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
               <span>3. Intention d'achat</span>
               <MousePointerClick className="w-4 h-4 text-slate-400" />
             </div>
@@ -1120,7 +1120,7 @@ export default function TrackerPage() {
             <p className="text-xs text-slate-600">
               Clics Commander / Formulaire
             </p>
-            <div className="pt-1 border-t border-slate-200/60 text-[11px] font-semibold text-slate-500">
+            <div className="pt-1 border-t border-black/[0.08]/60 text-[11px] font-semibold text-slate-500">
               Intérêt :{" "}
               <strong className="text-slate-800">
                 {funnel.pageIntentRate.toFixed(1)}%
@@ -1132,10 +1132,10 @@ export default function TrackerPage() {
             className={`p-4 rounded-2xl border-2 space-y-2 ${
               funnel.abandonedPhones > 0
                 ? "bg-[#fafafa] border-black/[0.08]"
-                : "bg-slate-50 border-slate-200"
+                : "bg-slate-50 border-black/[0.08]"
             }`}
           >
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase text-slate-500">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
               <span>4. Paniers Abandonnés</span>
               <MessageCircle className="w-4 h-4 text-slate-400" />
             </div>
@@ -1145,7 +1145,7 @@ export default function TrackerPage() {
             <p className="text-xs text-slate-600">
               Ont tapé leur numéro sans valider
             </p>
-            <div className="pt-1 border-t border-slate-200/60 text-[11px] font-semibold text-slate-500">
+            <div className="pt-1 border-t border-black/[0.08]/60 text-[11px] font-semibold text-slate-500">
               À relancer sur WhatsApp
             </div>
           </div>
@@ -1157,7 +1157,7 @@ export default function TrackerPage() {
                 : "bg-emerald-50/40 border-emerald-300"
             }`}
           >
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase text-slate-500">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
               <span>5. Commandes Site</span>
               <ShoppingBag className="w-4 h-4 text-slate-400" />
             </div>
@@ -1167,7 +1167,7 @@ export default function TrackerPage() {
             <p className="text-xs text-slate-600">
               CA : <strong>{fmt(funnel.grossRevenue)} F</strong>
             </p>
-            <div className="pt-1 border-t border-slate-200/60 text-[11px] font-semibold text-slate-500">
+            <div className="pt-1 border-t border-black/[0.08]/60 text-[11px] font-semibold text-slate-500">
               Taux conv. :{" "}
               <strong className="text-slate-800">
                 {funnel.siteConversionRate.toFixed(2)}%

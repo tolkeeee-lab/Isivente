@@ -203,7 +203,7 @@ export default function ProspectsPage() {
         <button
           onClick={() => fetchLeads(false)}
           disabled={loading}
-          className="flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all shadow-2xs cursor-pointer"
+          className="flex items-center gap-2 px-3.5 py-2 bg-white border border-black/[0.08] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-colors duration-150 shadow-2xs cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${loading ? "animate-spin" : ""}`} />
           <span>Actualiser en direct</span>
@@ -216,7 +216,7 @@ export default function ProspectsPage() {
         {/* KPI 1 : Chiffre d'Affaires Récupérable */}
         <div className="card-figma p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <span className="text-[11px] font-semibold text-slate-400">
               CA Récupérable
             </span>
             <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
@@ -226,7 +226,7 @@ export default function ProspectsPage() {
           <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
             {fmt(recoverableAmount)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-2.5 pt-2 border-t border-black/[0.08] flex items-center justify-between text-[11px] text-slate-400">
             <span>Paniers non finalisés :</span>
             <span className="font-semibold text-rose-600 font-mono">{abandonedLeads.length} clients</span>
           </div>
@@ -235,7 +235,7 @@ export default function ProspectsPage() {
         {/* KPI 2 : Ventes Sauvées (Converties) */}
         <div className="card-figma p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <span className="text-[11px] font-semibold text-slate-400">
               Ventes Sauvées
             </span>
             <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
@@ -245,7 +245,7 @@ export default function ProspectsPage() {
           <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
             {fmt(convertedAmount)} <span className="text-xs font-normal text-slate-500 font-sans">FCFA</span>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-2.5 pt-2 border-t border-black/[0.08] flex items-center justify-between text-[11px] text-slate-400">
             <span>Commandes converties :</span>
             <span className="font-semibold text-emerald-600 font-mono">{convertedLeads.length} commandes</span>
           </div>
@@ -254,7 +254,7 @@ export default function ProspectsPage() {
         {/* KPI 3 : Prospects Contactés */}
         <div className="card-figma p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <span className="text-[11px] font-semibold text-slate-400">
               Relances Effectuées
             </span>
             <div className="w-7 h-7 rounded-lg bg-[#f4f4f5] text-[#171717] flex items-center justify-center border border-black/[0.08]">
@@ -264,7 +264,7 @@ export default function ProspectsPage() {
           <div className="text-xl sm:text-2xl font-bold font-mono tabular-nums tracking-tight text-slate-900">
             {contactedLeads.length} <span className="text-xs font-normal text-slate-500 font-sans">contactés</span>
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-2.5 pt-2 border-t border-black/[0.08] flex items-center justify-between text-[11px] text-slate-400">
             <span>Total prospects captés :</span>
             <span className="font-semibold text-slate-700 font-mono">{leads.length}</span>
           </div>
@@ -279,7 +279,7 @@ export default function ProspectsPage() {
         <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-xl overflow-x-auto text-xs font-semibold">
           <button
             onClick={() => setFilter("abandoned")}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer whitespace-nowrap ${
               filter === "abandoned"
                 ? "bg-white text-slate-900 shadow-2xs font-bold"
                 : "text-slate-600 hover:text-slate-900"
@@ -289,7 +289,7 @@ export default function ProspectsPage() {
           </button>
           <button
             onClick={() => setFilter("contacted")}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer whitespace-nowrap ${
               filter === "contacted"
                 ? "bg-white text-slate-900 shadow-2xs font-bold"
                 : "text-slate-600 hover:text-slate-900"
@@ -299,7 +299,7 @@ export default function ProspectsPage() {
           </button>
           <button
             onClick={() => setFilter("converted")}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer whitespace-nowrap ${
               filter === "converted"
                 ? "bg-white text-slate-900 shadow-2xs font-bold"
                 : "text-slate-600 hover:text-slate-900"
@@ -309,7 +309,7 @@ export default function ProspectsPage() {
           </button>
           <button
             onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 rounded-lg transition-colors duration-150 cursor-pointer whitespace-nowrap ${
               filter === "all"
                 ? "bg-white text-slate-900 shadow-2xs font-bold"
                 : "text-slate-600 hover:text-slate-900"
@@ -327,7 +327,7 @@ export default function ProspectsPage() {
             placeholder="Rechercher nom, numéro..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
+            className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl border border-black/[0.08] bg-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
           />
         </div>
 
@@ -354,7 +354,7 @@ export default function ProspectsPage() {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-black/[0.06]">
             {filteredLeads.map((lead) => {
               const intlPhone = formatBeninPhoneForWhatsApp(lead.customer_phone);
               const callPhone = formatBeninPhoneForCall(lead.customer_phone);
@@ -423,13 +423,13 @@ export default function ProspectsPage() {
                   </div>
 
                   {/* Boutons d'Action Rapide */}
-                  <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                  <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-black/[0.08]">
                     
                     {/* 1. BOUTON WHATSAPP RELANCE 1-CLIC */}
                     <button
                       onClick={() => handleWhatsAppRelance(lead)}
                       disabled={actionLoadingId === lead.id}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all cursor-pointer"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow active:scale-[0.98] transition-colors duration-150 cursor-pointer"
                       title="Ouvrir la discussion WhatsApp avec message personnalisé (format 10 chiffres garanti)"
                     >
                       <MessageSquare className="w-3.5 h-3.5 fill-current" />
@@ -439,7 +439,7 @@ export default function ProspectsPage() {
                     {/* 2. BOUTON APPEL DIRECT */}
                     <a
                       href={`tel:${callPhone}`}
-                      className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 active:scale-[0.98] transition-all"
+                      className="flex items-center justify-center w-9 h-9 rounded-xl border border-black/[0.08] bg-white hover:bg-slate-50 text-slate-700 active:scale-[0.98] transition-colors duration-150"
                       title="Appeler directement ce client"
                     >
                       <PhoneCall className="w-3.5 h-3.5 stroke-[2]" />
@@ -450,7 +450,7 @@ export default function ProspectsPage() {
                       <button
                         onClick={() => handleConvertToOrder(lead)}
                         disabled={actionLoadingId === lead.id}
-                        className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white active:scale-[0.98] transition-all cursor-pointer"
+                        className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold bg-[#14281D] hover:bg-[#1E3A2B] text-white active:scale-[0.98] transition-colors duration-150 cursor-pointer"
                         title="Créer la commande officielle si le client valide par téléphone"
                       >
                         <ShoppingBag className="w-3.5 h-3.5" />

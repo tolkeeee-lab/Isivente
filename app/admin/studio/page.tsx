@@ -243,7 +243,7 @@ export default function MarketingStudioPage() {
 
       
       {/* ── EN-TÊTE DU STUDIO MARKETING ── */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-7 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white rounded-[14px] border border-black/[0.08] p-5 sm:p-7 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-2xl bg-white text-white flex items-center justify-center shadow-sm">
@@ -267,7 +267,7 @@ export default function MarketingStudioPage() {
         <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
           <button
             onClick={() => setShowKeyModal(true)}
-            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors duration-150 cursor-pointer ${
               isKeyConfigured
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100"
                 : "bg-[#f4f4f5] border-black/[0.08] text-[#525252] hover:bg-[#f4f4f5]"
@@ -282,7 +282,7 @@ export default function MarketingStudioPage() {
       {/* ── MODAL CONFIGURATION CLÉ API ── */}
       {showKeyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200 p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md bg-white rounded-[14px] border border-black/[0.08] p-6 shadow-[0_1px_2px_rgba(0,0,0,0.05)] space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
                 <Key className="w-4 h-4 text-[#171717]" />
@@ -305,7 +305,7 @@ export default function MarketingStudioPage() {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="Ex: hf_key_abc123:hf_sec_xyz789"
-                className="w-full px-3 py-2 text-xs font-mono bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="w-full px-3 py-2 text-xs font-mono bg-slate-50 border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
             </div>
 
@@ -320,7 +320,7 @@ export default function MarketingStudioPage() {
               <button
                 type="button"
                 onClick={handleSaveApiKey}
-                className="px-4 py-2 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-xs transition-all cursor-pointer"
+                className="px-4 py-2 text-xs font-bold bg-[#14281D] hover:bg-[#1E3A2B] text-white rounded-xl shadow-xs transition-colors duration-150 cursor-pointer"
               >
                 Sauvegarder
               </button>
@@ -334,12 +334,12 @@ export default function MarketingStudioPage() {
         
         {/* COLONNE GAUCHE : FORMULAIRE DE CONTRÔLE (7 cols) */}
         <div className="lg:col-span-7 space-y-5">
-          <form onSubmit={handleGenerate} className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5">
+          <form onSubmit={handleGenerate} className="bg-white rounded-[14px] border border-black/[0.08] p-5 sm:p-6 shadow-xs space-y-5">
             
             {/* 1. Sélecteur de Produits Isivente */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-[#171717]" />
                   <span>1. Sélectionner un produit Isivente</span>
                 </label>
@@ -354,13 +354,13 @@ export default function MarketingStudioPage() {
                       key={prod.slug}
                       type="button"
                       onClick={() => handleSelectProduct(prod.slug)}
-                      className={`p-2 rounded-xl text-left border transition-all flex items-center gap-2 cursor-pointer ${
+                      className={`p-2 rounded-xl text-left border transition-colors duration-150 flex items-center gap-2 cursor-pointer ${
                         isSelected 
                           ? "bg-[#fafafa] border-indigo-500 shadow-xs ring-1 ring-indigo-500/20" 
-                          : "bg-slate-50 hover:bg-slate-100/70 border-slate-200/80 text-slate-700"
+                          : "bg-slate-50 hover:bg-slate-100/70 border-black/[0.08] text-slate-700"
                       }`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-white border border-black/[0.08] overflow-hidden shrink-0 flex items-center justify-center">
                         <img src={prod.image_url || prod.image} alt={prod.title} className="w-full h-full object-contain p-0.5" />
                       </div>
                       <div className="overflow-hidden">
@@ -376,7 +376,7 @@ export default function MarketingStudioPage() {
             {/* 2. Prompt Marketing */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-pink-600" />
                   <span>2. Prompt de mise en scène</span>
                 </label>
@@ -389,7 +389,7 @@ export default function MarketingStudioPage() {
                 rows={4}
                 placeholder="Décrivez la scène publicitaire souhaitée, la lumière, l'ambiance, les textures, l'atmosphère (ex: studio minimaliste, marbre, reflets d'eau, ambiance salon chaleureux...)"
                 required
-                className="w-full p-3.5 text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all text-slate-800 leading-relaxed placeholder:text-slate-400"
+                className="w-full p-3.5 text-xs bg-slate-50 border border-black/[0.08] rounded-2xl focus:outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-colors duration-150 text-slate-800 leading-relaxed placeholder:text-slate-400"
               />
             </div>
 
@@ -405,7 +405,7 @@ export default function MarketingStudioPage() {
                   value={productImageUrl}
                   onChange={(e) => setProductImageUrl(e.target.value)}
                   placeholder="https://.../produit.jpg"
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800"
                 />
               </div>
 
@@ -419,7 +419,7 @@ export default function MarketingStudioPage() {
                   value={modelImageUrl}
                   onChange={(e) => setModelImageUrl(e.target.value)}
                   placeholder="https://.../mannequin.jpg"
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800"
                 />
               </div>
             </div>
@@ -433,7 +433,7 @@ export default function MarketingStudioPage() {
                 <select
                   value={aspectRatio}
                   onChange={(e: any) => setAspectRatio(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 font-medium"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 font-medium"
                 >
                   <option value="1:1">1:1 Carré (Instagram, Feed)</option>
                   <option value="9:16">9:16 Vertical (TikTok, Stories)</option>
@@ -450,7 +450,7 @@ export default function MarketingStudioPage() {
                 <select
                   value={resolution}
                   onChange={(e: any) => setResolution(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 font-medium"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 font-medium"
                 >
                   <option value="1k">1K (Rapide)</option>
                   <option value="2k">2K (Haute Qualité - Rec.)</option>
@@ -464,7 +464,7 @@ export default function MarketingStudioPage() {
                 <select
                   value={quality}
                   onChange={(e: any) => setQuality(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 font-medium"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 font-medium"
                 >
                   <option value="high">High (Maximum de détails)</option>
                   <option value="medium">Medium</option>
@@ -475,7 +475,7 @@ export default function MarketingStudioPage() {
             </div>
 
             {/* 5. Mode Preset Ads Studio (Optionnel) */}
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+            <div className="p-3.5 bg-slate-50 rounded-2xl border border-black/[0.08] space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sliders className="w-4 h-4 text-[#171717]" />
@@ -488,12 +488,12 @@ export default function MarketingStudioPage() {
                     onChange={(e) => setEnhancePrompt(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#14281D]"></div>
+                  <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-colors duration-150 peer-checked:bg-[#14281D]"></div>
                 </label>
               </div>
 
               {enhancePrompt && (
-                <div className="pt-2 border-t border-slate-200/80 space-y-2">
+                <div className="pt-2 border-t border-black/[0.08] space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-slate-600 font-medium">Sélectionner un preset publicitaire :</span>
                     <button 
@@ -542,7 +542,7 @@ export default function MarketingStudioPage() {
             <button
               type="submit"
               disabled={isGenerating || !prompt.trim()}
-              className="w-full py-3.5 px-6 bg-white hover:from-pink-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg shadow-pink-900/15 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 px-6 bg-white hover:from-pink-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] shadow-pink-900/15 active:scale-[0.98] transition-colors duration-150 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
               {isGenerating ? (
                 <>
@@ -562,7 +562,7 @@ export default function MarketingStudioPage() {
 
         {/* COLONNE DROITE : GALERIE DES VISUELS & HISTORIQUE (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-5 shadow-xs space-y-4">
+          <div className="bg-white rounded-[14px] border border-black/[0.08] p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-pink-600" />
@@ -583,7 +583,7 @@ export default function MarketingStudioPage() {
             </div>
 
             {history.length === 0 ? (
-              <div className="py-12 px-4 text-center space-y-2 border-2 border-dashed border-slate-100 rounded-2xl">
+              <div className="py-12 px-4 text-center space-y-2 border-2 border-dashed border-black/[0.08] rounded-2xl">
                 <div className="w-10 h-10 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center mx-auto">
                   <ImageIcon className="w-5 h-5 stroke-[1.5]" />
                 </div>
@@ -597,7 +597,7 @@ export default function MarketingStudioPage() {
                 {history.map((item) => (
                   <div 
                     key={item.id} 
-                    className="p-3 bg-slate-50 rounded-2xl border border-slate-200/90 space-y-2.5 transition-all hover:border-slate-300"
+                    className="p-3 bg-slate-50 rounded-2xl border border-black/[0.08] space-y-2.5 transition-colors duration-150 hover:border-slate-300"
                   >
                     <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center group">
                       <img 
@@ -609,7 +609,7 @@ export default function MarketingStudioPage() {
                         <button
                           type="button"
                           onClick={() => setPreviewImageUrl(item.url)}
-                          className="w-8 h-8 rounded-lg bg-white/90 text-slate-900 flex items-center justify-center shadow-sm hover:scale-105 transition-transform cursor-pointer"
+                          className="w-8 h-8 rounded-lg bg-white/90 text-slate-900 flex items-center justify-center shadow-sm transition-transform cursor-pointer"
                           title="Agrandir"
                         >
                           <Maximize2 className="w-4 h-4" />
@@ -618,7 +618,7 @@ export default function MarketingStudioPage() {
                           href={item.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="w-8 h-8 rounded-lg bg-white/90 text-slate-900 flex items-center justify-center shadow-sm hover:scale-105 transition-transform"
+                          className="w-8 h-8 rounded-lg bg-white/90 text-slate-900 flex items-center justify-center shadow-sm transition-transform"
                           title="Télécharger"
                         >
                           <Download className="w-4 h-4" />
@@ -638,7 +638,7 @@ export default function MarketingStudioPage() {
                       </p>
                     </div>
 
-                    <div className="pt-1 flex items-center justify-between border-t border-slate-200/70 text-[10px]">
+                    <div className="pt-1 flex items-center justify-between border-t border-black/[0.08] text-[10px]">
                       <span className="text-slate-400">{item.created_at}</span>
                       <button
                         type="button"
@@ -673,7 +673,7 @@ export default function MarketingStudioPage() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-in fade-in"
           onClick={() => setPreviewImageUrl(null)}
         >
-          <div className="relative max-w-4xl max-h-[90vh] bg-slate-900 rounded-3xl overflow-hidden p-2">
+          <div className="relative max-w-4xl max-h-[90vh] bg-slate-900 rounded-[14px] overflow-hidden p-2">
             <button
               onClick={() => setPreviewImageUrl(null)}
               className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"

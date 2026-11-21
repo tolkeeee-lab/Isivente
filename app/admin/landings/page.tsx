@@ -440,7 +440,7 @@ export default function AdminLandingsPage() {
             setCreateError("");
             setShowCreateModal(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-colors duration-150 active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Créer une Page Produit (Sans coder)</span>
@@ -448,7 +448,7 @@ export default function AdminLandingsPage() {
       </div>
 
       {/* ── EN-TÊTE DE LA PAGE ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black/[0.08] pb-5">
         <div>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-[#f4f4f5] border border-black/[0.08] flex items-center justify-center text-[#171717]">
@@ -473,20 +473,20 @@ export default function AdminLandingsPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Rechercher un produit, slug..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors duration-150 placeholder:text-slate-400"
           />
         </div>
       </div>
 
       {/* ── ONGLETS DE NAVIGATION DÉDIÉS : CATALOGUE vs KPIS ── */}
-      <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
+      <div className="flex items-center gap-2 border-b border-black/[0.08] pb-3">
         <span className="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-xs flex items-center gap-1.5 cursor-default">
           <Store className="w-3.5 h-3.5" />
           <span>Catalogue &amp; Liens ({combinedProducts.length})</span>
         </span>
         <Link
           href="/admin/clicks"
-          className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center gap-1.5 border border-transparent hover:border-slate-200"
+          className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors duration-150 flex items-center gap-1.5 border border-transparent hover:border-black/[0.08]"
         >
           <BarChart3 className="w-3.5 h-3.5 text-[#171717]" />
           <span>KPIs &amp; Visiteurs des Pages</span>
@@ -528,21 +528,21 @@ export default function AdminLandingsPage() {
           return (
             <div
               key={`${prod.isCustomDb ? "db" : "st"}_${prod.slug}`}
-              className="bg-white rounded-3xl border border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.04)] hover:border-black/[0.08] hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group"
+              className="bg-white rounded-[14px] border border-black/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.9),0_4px_20px_-4px_rgba(0,0,0,0.04)] hover:border-black/[0.08] hover:border-black/[0.16] transition-colors duration-150 flex flex-col justify-between overflow-hidden group"
             >
               <div className="p-5 space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shrink-0 flex items-center justify-center p-1">
+                  <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 border border-black/[0.08] shrink-0 flex items-center justify-center p-1">
                     <img
                       src={prod.image || prod.image_url}
                       alt={prod.title}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain transition-transform duration-300"
                     />
                   </div>
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center justify-between gap-2">
                       <div
-                        className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${prod.isCustomDb
+                        className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border ${prod.isCustomDb
                             ? "text-[#171717] bg-[#f4f4f5] border-black/[0.08]"
                             : "text-emerald-700 bg-emerald-50 border-emerald-100"
                           }`}
@@ -577,23 +577,23 @@ export default function AdminLandingsPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-600 pt-1">
-                  <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-center gap-1.5">
+                  <div className="bg-slate-50 p-2 rounded-xl border border-black/[0.08] flex items-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <span className="truncate">Formulaire COD direct</span>
                   </div>
-                  <div className="bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-center gap-1.5">
+                  <div className="bg-slate-50 p-2 rounded-xl border border-black/[0.08] flex items-center gap-1.5">
                     <TrendingUp className="w-3.5 h-3.5 text-[#171717] shrink-0" />
                     <span className="truncate">Pixel &amp; WhatsApp isolés</span>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 bg-slate-50/70 border-t border-slate-100 space-y-2">
+              <div className="p-4 bg-slate-50/70 border-t border-black/[0.08] space-y-2">
                 <a
                   href={`/p/${prod.slug}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all shadow-2xs"
+                  className="w-full py-2 px-3 rounded-xl bg-[#14281D] hover:bg-[#1E3A2B] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors duration-150 shadow-2xs"
                 >
                   <span>Ouvrir la Landing Page</span>
                   <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
@@ -603,9 +603,9 @@ export default function AdminLandingsPage() {
                   <button
                     type="button"
                     onClick={() => handleCopy(cleanUrl, `clean_${prod.slug}`)}
-                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${isCopiedClean
+                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-colors duration-150 cursor-pointer ${isCopiedClean
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
-                        : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200"
+                        : "bg-white hover:bg-slate-100 text-slate-700 border-black/[0.08]"
                       }`}
                   >
                     {isCopiedClean ? <Check className="w-3 h-3 stroke-[2.5]" /> : <Copy className="w-3 h-3" />}
@@ -615,7 +615,7 @@ export default function AdminLandingsPage() {
                   <button
                     type="button"
                     onClick={() => handleCopy(utmMetaUrl, `meta_${prod.slug}`)}
-                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${isCopiedMeta
+                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-colors duration-150 cursor-pointer ${isCopiedMeta
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
                         : "bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#171717] border-black/[0.08]"
                       }`}
@@ -627,7 +627,7 @@ export default function AdminLandingsPage() {
                   <button
                     type="button"
                     onClick={() => handleCopy(utmWaUrl, `wa_${prod.slug}`)}
-                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-all cursor-pointer ${isCopiedWa
+                    className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border inline-flex items-center justify-center gap-1 transition-colors duration-150 cursor-pointer ${isCopiedWa
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
                         : "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
                       }`}
@@ -642,7 +642,7 @@ export default function AdminLandingsPage() {
                     type="button"
                     disabled={deletingId === prod.id}
                     onClick={() => handleDeleteCustomProduct(prod.id, prod.title)}
-                    className="w-full py-1.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[11px] font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+                    className="w-full py-1.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[11px] font-bold inline-flex items-center justify-center gap-1.5 transition-colors duration-150 cursor-pointer disabled:opacity-50"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>
@@ -659,7 +659,7 @@ export default function AdminLandingsPage() {
       </div>
 
       {filteredProducts.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8 space-y-3">
+        <div className="text-center py-12 bg-white rounded-[14px] border border-black/[0.08] p-8 space-y-3">
           <Store className="w-8 h-8 text-slate-300 mx-auto" />
           <h3 className="font-bold text-slate-800 text-base">Aucune landing page trouvée</h3>
           <p className="text-xs text-slate-500">Essayez un autre mot-clé dans la barre de recherche.</p>
@@ -669,8 +669,8 @@ export default function AdminLandingsPage() {
       {/* ── MODALE CRÉATEUR DE PAGE PRODUIT NO-CODE ── */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
+            <div className="flex items-center justify-between border-b border-black/[0.08] pb-4">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
                   Créer une Page Produit COD en 1 minute
@@ -720,7 +720,7 @@ export default function AdminLandingsPage() {
                       if (!slugTouched) setSlug(slugifyStoreName(e.target.value));
                     }}
                     placeholder="Ex: Ampoule Caméra Wi-Fi 360°"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-sm"
                   />
                 </div>
                 <div className="space-y-1">
@@ -734,7 +734,7 @@ export default function AdminLandingsPage() {
                       setSlug(slugifyStoreName(e.target.value));
                     }}
                     placeholder="ampoule-camera-360"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-mono"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-sm font-mono"
                   />
                 </div>
               </div>
@@ -750,7 +750,7 @@ export default function AdminLandingsPage() {
                     min={100}
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-sm font-mono font-bold"
                   />
                 </div>
                 <div className="space-y-1">
@@ -760,7 +760,7 @@ export default function AdminLandingsPage() {
                     min={0}
                     value={originalPrice}
                     onChange={(e) => setOriginalPrice(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-mono"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-sm font-mono"
                   />
                 </div>
               </div>
@@ -772,7 +772,7 @@ export default function AdminLandingsPage() {
                   value={headline}
                   onChange={(e) => setHeadline(e.target.value)}
                   placeholder="Ex: Surveillez votre maison ou boutique depuis votre téléphone sans aucun câble !"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-sm"
                 />
               </div>
 
@@ -782,7 +782,7 @@ export default function AdminLandingsPage() {
                   Photos du produit (max 5 • compression auto ultra-rapide)
                 </label>
 
-                <label className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-2xl border-2 border-dashed border-slate-200 hover:border-emerald-400 bg-slate-50/70 hover:bg-emerald-50/30 transition-colors cursor-pointer">
+                <label className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-2xl border-2 border-dashed border-black/[0.08] hover:border-emerald-400 bg-slate-50/70 hover:bg-emerald-50/30 transition-colors cursor-pointer">
                   <Upload className="w-5 h-5 text-emerald-600" />
                   <span className="text-xs font-bold text-slate-800">
                     {uploadingImages
@@ -805,7 +805,7 @@ export default function AdminLandingsPage() {
                 {uploadedImages.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-1">
                     {uploadedImages.map((url, idx) => (
-                      <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200">
+                      <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-black/[0.08]">
                         <img src={url} alt="" className="w-full h-full object-cover" />
                         <button
                           type="button"
@@ -827,7 +827,7 @@ export default function AdminLandingsPage() {
                   value={imageUrlsText}
                   onChange={(e) => setImageUrlsText(e.target.value)}
                   placeholder="Ou coller un lien d'image externe (optionnel)..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-[11px] font-mono"
+                  className="w-full px-3 py-2 rounded-xl border border-black/[0.08] text-[11px] font-mono"
                 />
               </div>
 
@@ -839,7 +839,7 @@ export default function AdminLandingsPage() {
                   rows={3}
                   value={benefitsText}
                   onChange={(e) => setBenefitsText(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                  className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] text-xs"
                 />
               </div>
 
@@ -851,11 +851,11 @@ export default function AdminLandingsPage() {
                   rows={2}
                   value={faqText}
                   onChange={(e) => setFaqText(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                  className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] text-xs"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-3 border-t border-black/[0.08]">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}

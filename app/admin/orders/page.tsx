@@ -604,13 +604,13 @@ export default function OrdersPage() {
       {/* ── HEADER PAGE & ACTIONS GLOBALES ── */}
       <div className="card-figma p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="min-w-0 w-full sm:w-auto">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 mb-1 flex items-center gap-1.5">
+          <div className="text-[11px] font-semibold tracking-[0.06em] text-slate-400 mb-1 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-[#525252]" />
             <span>Pilotage Commercial & Dispatch</span>
           </div>
           <h1 className="font-display font-bold text-xl sm:text-2xl text-slate-900 flex items-center gap-2.5 flex-wrap">
             <span>Gestion des Commandes</span>
-            <span className="bg-slate-100 text-slate-700 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-200 shrink-0">
+            <span className="bg-slate-100 text-slate-700 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-black/[0.08] shrink-0">
               {orders.length} total
             </span>
           </h1>
@@ -623,7 +623,7 @@ export default function OrdersPage() {
           <button
             type="button"
             onClick={() => setShowManualModal(true)}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 bg-[#14281D] hover:bg-[#1E3A2B] text-white px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-colors duration-150 duration-150 active:scale-[0.97] cursor-pointer"
             title="Ajouter une commande reçue par WhatsApp ou appel téléphonique"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -634,7 +634,7 @@ export default function OrdersPage() {
             type="button"
             onClick={() => fetchOrders()}
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-black/[0.08] text-slate-700 px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-colors duration-150 duration-150 active:scale-[0.97] cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 stroke-[2] ${loading ? 'animate-spin text-[#171717]' : 'text-slate-500'}`} />
             <span>Actualiser</span>
@@ -643,12 +643,12 @@ export default function OrdersPage() {
       </div>
 
       {/* ── SÉLECTEUR DE VUE PRINCIPAL : TABLEAU DE TRIAGE DÉDIÉ vs FLUX GÉNÉRAL ── */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-2 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-2 rounded-2xl border border-black/[0.08] shadow-xs">
         <div className="flex flex-col sm:flex-row p-1 bg-slate-100/80 rounded-xl gap-1 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setViewMode("triage")}
-            className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-between sm:justify-center gap-2 ${viewMode === "triage"
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-colors duration-150 duration-150 flex items-center justify-between sm:justify-center gap-2 ${viewMode === "triage"
                 ? "bg-white text-slate-950 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
               }`}
@@ -665,7 +665,7 @@ export default function OrdersPage() {
           <button
             type="button"
             onClick={() => setViewMode("logistics")}
-            className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-between sm:justify-center gap-2 ${viewMode === "logistics"
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-colors duration-150 duration-150 flex items-center justify-between sm:justify-center gap-2 ${viewMode === "logistics"
                 ? "bg-white text-slate-950 shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
               }`}
@@ -684,7 +684,7 @@ export default function OrdersPage() {
         <button
           type="button"
           onClick={() => exportToCSV(viewMode === "triage" ? [...confirmedOrders, ...reservedOrders, ...postponedOrders] : filteredOrders)}
-          className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-black/[0.08] text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors duration-150 shrink-0"
         >
           <Download className="w-3.5 h-3.5 text-slate-500" />
           <span>Exporter CSV</span>
@@ -704,12 +704,12 @@ export default function OrdersPage() {
             {/* Carte Nouvelles Reçues (À Traiter) */}
             <div
               onClick={() => setTriageFilter("pending")}
-              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "pending" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
+              className={`card-figma p-4 cursor-pointer transition-colors duration-150 border border-black/[0.08] hover:border-black/[0.16] ${triageFilter === "pending" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 } ${pendingOrders.length > 0 ? "ring-1 ring-blue-400/30" : ""}`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#171717] flex items-center gap-1.5 truncate">
+                  <div className="text-[11px] font-bold text-[#171717] flex items-center gap-1.5 truncate">
                     {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-[#14281D] shrink-0" />}
                     <Package className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Nouvelles Reçues</span>
@@ -731,12 +731,12 @@ export default function OrdersPage() {
             {/* Carte Validées */}
             <div
               onClick={() => setTriageFilter("confirmed")}
-              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "confirmed" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
+              className={`card-figma p-4 cursor-pointer transition-colors duration-150 border border-black/[0.08] hover:border-black/[0.16] ${triageFilter === "confirmed" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 }`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5 truncate">
+                  <div className="text-[11px] font-bold text-emerald-700 flex items-center gap-1.5 truncate">
                     <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Commandes Validées</span>
                   </div>
@@ -756,12 +756,12 @@ export default function OrdersPage() {
             {/* Carte Réservations */}
             <div
               onClick={() => setTriageFilter("reserved")}
-              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "reserved" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
+              className={`card-figma p-4 cursor-pointer transition-colors duration-150 border border-black/[0.08] hover:border-black/[0.16] ${triageFilter === "reserved" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 }`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#525252] flex items-center gap-1.5 truncate">
+                  <div className="text-[11px] font-bold text-[#525252] flex items-center gap-1.5 truncate">
                     <Bookmark className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Réservations en cours</span>
                   </div>
@@ -781,12 +781,12 @@ export default function OrdersPage() {
             {/* Carte Mises à plus tard */}
             <div
               onClick={() => setTriageFilter("postponed")}
-              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "postponed" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
+              className={`card-figma p-4 cursor-pointer transition-colors duration-150 border border-black/[0.08] hover:border-black/[0.16] ${triageFilter === "postponed" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 }`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#171717] flex items-center gap-1.5 truncate">
+                  <div className="text-[11px] font-bold text-[#171717] flex items-center gap-1.5 truncate">
                     <CalendarClock className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Mises à plus tard</span>
                   </div>
@@ -808,7 +808,7 @@ export default function OrdersPage() {
           {/* SÉLECTEUR D'AFFICHAGE RAPIDE DES SECTIONS DU TABLEAU À PART */}
           <div className="card-figma p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
             <div className="flex items-center gap-2 overflow-hidden">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 hidden sm:flex items-center gap-1.5 shrink-0">
+              <span className="text-[11px] font-bold text-slate-500 hidden sm:flex items-center gap-1.5 shrink-0">
                 <Filter className="w-3.5 h-3.5 text-[#171717]" />
                 <span>Affichage :</span>
               </span>
@@ -816,7 +816,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("all")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "all" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
                     }`}
                 >
                   Toutes ({totalTriageCount})
@@ -824,7 +824,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("pending")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "pending" ? "bg-[#14281D] text-white shadow-xs" : "text-slate-600 hover:text-[#171717]"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "pending" ? "bg-[#14281D] text-white shadow-xs" : "text-slate-600 hover:text-[#171717]"
                     }`}
                 >
                   🚨 Nouvelles ({pendingOrders.length})
@@ -832,7 +832,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("confirmed")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "confirmed" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-emerald-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "confirmed" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-emerald-700"
                     }`}
                 >
                   1. Validées ({confirmedOrders.length})
@@ -840,7 +840,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("reserved")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "reserved" ? "bg-[#171717] text-white shadow-xs" : "text-slate-600 hover:text-[#525252]"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "reserved" ? "bg-[#171717] text-white shadow-xs" : "text-slate-600 hover:text-[#525252]"
                     }`}
                 >
                   2. Réservations ({reservedOrders.length})
@@ -848,7 +848,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("postponed")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "postponed" ? "bg-[#14281D] text-white shadow-xs" : "text-slate-600 hover:text-[#171717]"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "postponed" ? "bg-[#14281D] text-white shadow-xs" : "text-slate-600 hover:text-[#171717]"
                     }`}
                 >
                   3. Plus tard ({postponedOrders.length})
@@ -902,17 +902,17 @@ export default function OrdersPage() {
                     value={pendingFilters.search}
                     onChange={(e) => setPendingFilters(prev => ({ ...prev, search: e.target.value }))}
                     placeholder="Filtrer les nouvelles commandes (nom, tél, N° commande, adresse)..."
-                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-500"
+                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 {/* Filtre par Ville */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Ville :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Ville :</span>
                   <select
                     value={pendingFilters.city}
                     onChange={(e) => setPendingFilters(prev => ({ ...prev, city: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
                   >
                     <option value="all">Toutes les villes</option>
                     {cityOptions.map(c => (
@@ -923,11 +923,11 @@ export default function OrdersPage() {
 
                 {/* Filtre par Produit */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Produit :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Produit :</span>
                   <select
                     value={pendingFilters.product}
                     onChange={(e) => setPendingFilters(prev => ({ ...prev, product: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer max-w-[180px] truncate"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer max-w-[180px] truncate"
                   >
                     <option value="all">Tous les produits</option>
                     {productOptions.map(p => (
@@ -941,7 +941,7 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setPendingFilters({ search: "", city: "all", product: "all" })}
-                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-colors duration-150 flex items-center gap-1 cursor-pointer"
                     title="Effacer les filtres de cette section"
                   >
                     <X className="w-3 h-3" />
@@ -996,17 +996,17 @@ export default function OrdersPage() {
                     value={confirmedFilters.search}
                     onChange={(e) => setConfirmedFilters(prev => ({ ...prev, search: e.target.value }))}
                     placeholder="Filtrer les validées (nom, tél, N° commande, adresse)..."
-                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 {/* Filtre par Ville pour répartition livreurs */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Ville :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Ville :</span>
                   <select
                     value={confirmedFilters.city}
                     onChange={(e) => setConfirmedFilters(prev => ({ ...prev, city: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-emerald-500 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-emerald-500 cursor-pointer"
                   >
                     <option value="all">Toutes les villes</option>
                     {cityOptions.map(c => (
@@ -1017,11 +1017,11 @@ export default function OrdersPage() {
 
                 {/* Filtre par Produit */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Produit :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Produit :</span>
                   <select
                     value={confirmedFilters.product}
                     onChange={(e) => setConfirmedFilters(prev => ({ ...prev, product: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-emerald-500 cursor-pointer max-w-[180px] truncate"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-emerald-500 cursor-pointer max-w-[180px] truncate"
                   >
                     <option value="all">Tous les produits</option>
                     {productOptions.map(p => (
@@ -1035,7 +1035,7 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setConfirmedFilters({ search: "", city: "all", product: "all" })}
-                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-colors duration-150 flex items-center gap-1 cursor-pointer"
                     title="Effacer les filtres de cette section"
                   >
                     <X className="w-3 h-3" />
@@ -1090,13 +1090,13 @@ export default function OrdersPage() {
                     value={reservedFilters.search}
                     onChange={(e) => setReservedFilters(prev => ({ ...prev, search: e.target.value }))}
                     placeholder="Filtrer les réservations (nom, tél, note, date convenue)..."
-                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-amber-500"
+                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-amber-500"
                   />
                 </div>
 
                 {/* Filtre spécial Échéance / Paie */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-[#525252] uppercase flex items-center gap-1">
+                  <span className="text-[11px] font-bold text-[#525252] flex items-center gap-1">
                     <CalendarClock className="w-3 h-3 text-[#525252]" />
                     <span>Échéance :</span>
                   </span>
@@ -1114,11 +1114,11 @@ export default function OrdersPage() {
 
                 {/* Filtre par Ville */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Ville :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Ville :</span>
                   <select
                     value={reservedFilters.city}
                     onChange={(e) => setReservedFilters(prev => ({ ...prev, city: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-amber-500 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-amber-500 cursor-pointer"
                   >
                     <option value="all">Toutes les villes</option>
                     {cityOptions.map(c => (
@@ -1129,11 +1129,11 @@ export default function OrdersPage() {
 
                 {/* Filtre par Produit */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Produit :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Produit :</span>
                   <select
                     value={reservedFilters.product}
                     onChange={(e) => setReservedFilters(prev => ({ ...prev, product: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-amber-500 cursor-pointer max-w-[180px] truncate"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-amber-500 cursor-pointer max-w-[180px] truncate"
                   >
                     <option value="all">Tous les produits</option>
                     {productOptions.map(p => (
@@ -1147,7 +1147,7 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setReservedFilters({ search: "", city: "all", product: "all", period: "all" })}
-                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-colors duration-150 flex items-center gap-1 cursor-pointer"
                     title="Effacer les filtres de cette section"
                   >
                     <X className="w-3 h-3" />
@@ -1202,17 +1202,17 @@ export default function OrdersPage() {
                     value={postponedFilters.search}
                     onChange={(e) => setPostponedFilters(prev => ({ ...prev, search: e.target.value }))}
                     placeholder="Filtrer les reports (nom, tél, motif, date)..."
-                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-purple-500"
+                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-purple-500"
                   />
                 </div>
 
                 {/* Filtre par Ville */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Ville :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Ville :</span>
                   <select
                     value={postponedFilters.city}
                     onChange={(e) => setPostponedFilters(prev => ({ ...prev, city: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-purple-500 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-purple-500 cursor-pointer"
                   >
                     <option value="all">Toutes les villes</option>
                     {cityOptions.map(c => (
@@ -1223,11 +1223,11 @@ export default function OrdersPage() {
 
                 {/* Filtre par Produit */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase">Produit :</span>
+                  <span className="text-[11px] font-bold text-slate-500">Produit :</span>
                   <select
                     value={postponedFilters.product}
                     onChange={(e) => setPostponedFilters(prev => ({ ...prev, product: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-purple-500 cursor-pointer max-w-[180px] truncate"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-slate-700 text-xs font-medium focus:outline-none focus:border-purple-500 cursor-pointer max-w-[180px] truncate"
                   >
                     <option value="all">Tous les produits</option>
                     {productOptions.map(p => (
@@ -1241,7 +1241,7 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setPostponedFilters({ search: "", city: "all", product: "all" })}
-                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    className="px-2 py-1 rounded-md bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition-colors duration-150 flex items-center gap-1 cursor-pointer"
                     title="Effacer les filtres de cette section"
                   >
                     <X className="w-3 h-3" />
@@ -1273,7 +1273,7 @@ export default function OrdersPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher par nom, téléphone, ville ou N°..."
-                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-slate-400 outline-none"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-black/[0.08] text-xs bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-slate-400 outline-none"
               />
             </div>
 
@@ -1287,13 +1287,13 @@ export default function OrdersPage() {
                     key={tab.id}
                     type="button"
                     onClick={() => setFilter(tab.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-2 transition-all duration-150 cursor-pointer active:scale-[0.97] ${isActive
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-2 transition-colors duration-150 duration-150 cursor-pointer active:scale-[0.97] ${isActive
                         ? "bg-slate-900 text-white shadow-sm"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
                       }`}
                   >
                     <span>{tab.label}</span>
-                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full ${isActive ? "bg-white/20 text-white" : "bg-white text-slate-600 border border-slate-200"
+                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full ${isActive ? "bg-white/20 text-white" : "bg-white text-slate-600 border border-black/[0.08]"
                       }`}>
                       {count}
                     </span>
@@ -1314,8 +1314,8 @@ export default function OrdersPage() {
       {/* ── MODALE POUR NOTER LA DATE DE RÉSERVATION OU MOTIF DE REPORT ── */}
       {editingNoteOrder && (
         <div className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-black/[0.08] pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-[#f4f4f5] text-[#525252] flex items-center justify-center font-bold">
                   <Bookmark className="w-4 h-4" />
@@ -1344,7 +1344,7 @@ export default function OrdersPage() {
                   value={noteForm.reservation_date}
                   onChange={(e) => setNoteForm(prev => ({ ...prev, reservation_date: e.target.value }))}
                   placeholder="Ex: Paie du 28, Samedi prochain, le 5 octobre..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:border-amber-500 font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-xs bg-white text-slate-900 focus:outline-none focus:border-amber-500 font-medium"
                 />
               </div>
 
@@ -1357,7 +1357,7 @@ export default function OrdersPage() {
                   value={noteForm.notes}
                   onChange={(e) => setNoteForm(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="Ex: Client en voyage, rappeler la veille au soir. Préfère livraison au bureau."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-900 focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] text-xs bg-white text-slate-900 focus:outline-none focus:border-amber-500"
                 />
               </div>
 
@@ -1371,7 +1371,7 @@ export default function OrdersPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#171717] hover:bg-[#171717] text-white font-bold shadow-xs active:scale-[0.97] transition-all"
+                  className="px-4 py-2 rounded-xl bg-[#171717] hover:bg-[#171717] text-white font-bold shadow-xs active:scale-[0.97] transition-colors duration-150"
                 >
                   Enregistrer
                 </button>
@@ -1393,10 +1393,10 @@ export default function OrdersPage() {
 
         return (
           <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-            <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-lg w-full p-5 sm:p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+            <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] max-w-lg w-full p-5 sm:p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
               
               {/* En-tête de la modale */}
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center justify-between border-b border-black/[0.08] pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-700 flex items-center justify-center font-bold shadow-xs">
                     <Truck className="w-4 h-4" />
@@ -1429,7 +1429,7 @@ export default function OrdersPage() {
               </div>
 
               {/* Paramétrage rapide du livreur */}
-              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 space-y-2.5">
+              <div className="bg-slate-50 border border-black/[0.08] rounded-2xl p-3.5 space-y-2.5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5 text-emerald-600" />
@@ -1446,7 +1446,7 @@ export default function OrdersPage() {
                     value={courierPhone}
                     onChange={(e) => handleCourierPhoneChange(e.target.value)}
                     placeholder="ex: 01 97 12 34 56 ou 97 12 34 56"
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-900 text-xs font-mono font-medium focus:outline-none focus:border-emerald-500 placeholder:text-slate-400"
+                    className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] bg-white text-slate-900 text-xs font-mono font-medium focus:outline-none focus:border-emerald-500 placeholder:text-slate-400"
                   />
                 </div>
 
@@ -1465,7 +1465,7 @@ export default function OrdersPage() {
               {/* Aperçu direct de la fiche WhatsApp */}
               <div className="space-y-1.5 flex-1 min-h-0 flex flex-col">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-slate-600 uppercase tracking-wider text-[10px]">
+                  <span className="font-bold text-slate-600 text-[10px]">
                     Message pré-rempli pour WhatsApp :
                   </span>
                   <button
@@ -1493,11 +1493,11 @@ export default function OrdersPage() {
               </div>
 
               {/* Actions Footer */}
-              <div className="pt-2 border-t border-slate-100 space-y-2">
+              <div className="pt-2 border-t border-black/[0.08] space-y-2">
                 <button
                   type="button"
                   onClick={() => handleSendDispatch(activeText)}
-                  className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-slate-950 font-semibold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-[0_8px_20px_-4px_rgba(37,211,102,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                  className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-slate-950 font-semibold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-[0_8px_20px_-4px_rgba(37,211,102,0.35)] transition-colors duration-150 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                 >
                   <Send className="w-4 h-4 fill-current" />
                   <span>
@@ -1511,7 +1511,7 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => handleSendDispatch(activeText, "")}
-                    className="flex-1 py-2 px-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="flex-1 py-2 px-3 rounded-xl border border-black/[0.08] text-slate-700 hover:bg-slate-50 font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     title="Ouvrir WhatsApp sans numéro pour choisir un groupe ou contact"
                   >
                     <Share2 className="w-3.5 h-3.5 text-slate-500" />
@@ -1539,8 +1539,8 @@ export default function OrdersPage() {
       {/* ── MODALE DE SAISIE COMMANDE DIRECTE WHATSAPP ── */}
       {showManualModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-black/[0.08] pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                   <UserCheck className="w-4 h-4" />
@@ -1570,9 +1570,9 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "confirmed" }))}
-                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "confirmed"
+                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-colors duration-150 ${manualForm.status === "confirmed"
                         ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                        : "bg-white text-slate-600 border-black/[0.08] hover:bg-slate-50"
                       }`}
                   >
                     ✅ Validée
@@ -1580,9 +1580,9 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "reserved" }))}
-                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "reserved"
+                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-colors duration-150 ${manualForm.status === "reserved"
                         ? "bg-[#171717] text-white border-amber-500 shadow-xs"
-                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                        : "bg-white text-slate-600 border-black/[0.08] hover:bg-slate-50"
                       }`}
                   >
                     📅 Réservation
@@ -1590,9 +1590,9 @@ export default function OrdersPage() {
                   <button
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "postponed" }))}
-                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "postponed"
+                    className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-colors duration-150 ${manualForm.status === "postponed"
                         ? "bg-[#14281D] text-white border-purple-600 shadow-xs"
-                        : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                        : "bg-white text-slate-600 border-black/[0.08] hover:bg-slate-50"
                       }`}
                   >
                     ⏳ Plus tard
@@ -1610,7 +1610,7 @@ export default function OrdersPage() {
                   placeholder="Ex: Koffi Mensah"
                   value={manualForm.customer_name}
                   onChange={(e) => setManualForm({ ...manualForm, customer_name: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none"
                 />
               </div>
 
@@ -1624,7 +1624,7 @@ export default function OrdersPage() {
                   placeholder="Ex: 0197000000"
                   value={manualForm.customer_phone}
                   onChange={(e) => setManualForm({ ...manualForm, customer_phone: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none font-mono"
+                  className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none font-mono"
                 />
               </div>
 
@@ -1634,7 +1634,7 @@ export default function OrdersPage() {
                   <select
                     value={manualForm.city}
                     onChange={(e) => setManualForm({ ...manualForm, city: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:border-slate-900 outline-none"
+                    className="w-full px-3 py-2 rounded-xl border border-black/[0.08] text-xs bg-white focus:border-slate-900 outline-none"
                   >
                     <option value="Cotonou">Cotonou</option>
                     <option value="Calavi">Calavi</option>
@@ -1651,7 +1651,7 @@ export default function OrdersPage() {
                     placeholder="Ex: Akpakpa, pharmacie"
                     value={manualForm.address}
                     onChange={(e) => setManualForm({ ...manualForm, address: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none"
                   />
                 </div>
               </div>
@@ -1686,7 +1686,7 @@ export default function OrdersPage() {
                       total_amount: item.price,
                     });
                   }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:border-slate-900 outline-none"
+                  className="w-full px-3 py-2 rounded-xl border border-black/[0.08] text-xs bg-white focus:border-slate-900 outline-none"
                 >
                   {DEFAULT_CATALOG.map((item) => (
                     <option key={item.slug} value={item.slug}>
@@ -1702,7 +1702,7 @@ export default function OrdersPage() {
                   type="number"
                   value={manualForm.total_amount}
                   onChange={(e) => setManualForm({ ...manualForm, total_amount: Number(e.target.value) })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none font-mono font-bold"
+                  className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] text-xs bg-slate-50/50 focus:bg-white focus:border-slate-900 outline-none font-mono font-bold"
                 />
               </div>
 
@@ -1710,7 +1710,7 @@ export default function OrdersPage() {
                 <button
                   type="submit"
                   disabled={manualLoading}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all active:scale-[0.98] disabled:opacity-50"
+                  className="w-full py-2.5 rounded-xl bg-[#14281D] hover:bg-[#1E3A2B] text-white font-bold text-xs shadow-sm transition-colors duration-150 active:scale-[0.98] disabled:opacity-50"
                 >
                   {manualLoading ? "Enregistrement en cours..." : "Valider et Ajouter au Tableau"}
                 </button>
@@ -1749,7 +1749,7 @@ export default function OrdersPage() {
       <div className="overflow-x-auto bg-white">
         <table className="w-full text-left border-collapse min-w-[980px]">
           <thead>
-            <tr className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold uppercase text-slate-400 tracking-wider">
+            <tr className="bg-slate-50/80 border-b border-black/[0.08] text-[11px] font-semibold text-slate-400">
               <th className="py-3 px-4">Réf.</th>
               <th className="py-3 px-4">Client & WhatsApp</th>
               <th className="py-3 px-4">Destination & Quartier</th>
@@ -1761,7 +1761,7 @@ export default function OrdersPage() {
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-slate-100 text-xs">
+          <tbody className="divide-y divide-black/[0.06] text-xs">
             {orderList.map((order, idx) => {
               const phoneClean = (order.customer_phone || "").replace(/\s+/g, "");
               const phoneDigits = phoneClean.replace(/[^0-9]/g, "");
@@ -1877,13 +1877,13 @@ export default function OrdersPage() {
                       value={order.status || "pending"}
                       disabled={updatingId === order.id}
                       onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                      className={`text-xs font-bold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition-all ${order.status === "confirmed" ? "bg-emerald-50 text-emerald-800 border-emerald-300" :
+                      className={`text-xs font-bold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition-colors duration-150 ${order.status === "confirmed" ? "bg-emerald-50 text-emerald-800 border-emerald-300" :
                           order.status === "reserved" ? "bg-[#f4f4f5] text-[#525252] border-black/[0.08]" :
                             order.status === "postponed" ? "bg-[#f4f4f5] text-[#171717] border-black/[0.08]" :
                               order.status === "shipped" ? "bg-[#f4f4f5] text-[#171717] border-black/[0.08]" :
                                 order.status === "delivered" ? "bg-emerald-100 text-emerald-900 border-emerald-400" :
                                   order.status === "cancelled" ? "bg-rose-50 text-rose-800 border-rose-300" :
-                                    "bg-slate-100 text-slate-700 border-slate-200"
+                                    "bg-slate-100 text-slate-700 border-black/[0.08]"
                         }`}
                     >
                       <option value="confirmed">✅ Validée</option>
@@ -1908,7 +1908,7 @@ export default function OrdersPage() {
                             setDispatchOrder(order);
                             setDispatchTourOrders(null);
                           }}
-                          className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs ${
+                          className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-1 active:scale-95 transition-colors duration-150 cursor-pointer shadow-xs ${
                             order.status === "confirmed"
                               ? "bg-emerald-600 hover:bg-emerald-700 text-white"
                               : "bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#171717] border border-black/[0.08]"
@@ -1925,7 +1925,7 @@ export default function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => handleStatusChange(order.id, "confirmed")}
-                          className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer"
+                          className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-colors duration-150 cursor-pointer"
                           title="Marquer comme commande validée et prête pour livraison"
                         >
                           <Check className="w-3 h-3" />
@@ -1944,7 +1944,7 @@ export default function OrdersPage() {
                               notes: order.notes || ""
                             });
                           }}
-                          className="px-2 py-1 bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#525252] border border-black/[0.08] rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer"
+                          className="px-2 py-1 bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#525252] border border-black/[0.08] rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-colors duration-150 cursor-pointer"
                           title="Mettre en réservation pour plus tard"
                         >
                           <Bookmark className="w-3 h-3" />
@@ -1957,7 +1957,7 @@ export default function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => handleStatusChange(order.id, "postponed")}
-                          className="px-2 py-1 bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#171717] border border-black/[0.08] rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer"
+                          className="px-2 py-1 bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#171717] border border-black/[0.08] rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-colors duration-150 cursor-pointer"
                           title="Déplacer dans les reports / rappels plus tard"
                         >
                           <Clock className="w-3 h-3" />

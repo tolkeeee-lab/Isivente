@@ -202,7 +202,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#171717] mb-1 flex items-center gap-1.5">
+          <div className="text-[11px] font-semibold tracking-[0.06em] text-[#171717] mb-1 flex items-center gap-1.5">
             <BarChart3 className="w-3.5 h-3.5 text-[#171717]" />
             <span>Tableau de Bord Analytics Produit</span>
           </div>
@@ -218,7 +218,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-black/[0.08] hover:bg-slate-50 transition-colors duration-150 active:scale-[0.98]"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#171717]" : "text-slate-500"}`} />
             <span>Actualiser</span>
@@ -226,7 +226,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
 
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/80 hover:bg-rose-100 transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/80 hover:bg-rose-100 transition-colors duration-150 active:scale-[0.98]"
             title="Effacer les clics et visites de test pour repartir de zéro"
           >
             <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
@@ -266,7 +266,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
           <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
             <button
               onClick={handleCopySql}
-              className="px-3 py-1.5 rounded-lg bg-[#171717] text-white font-semibold text-xs hover:bg-[#262626] transition-all flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
+              className="px-3 py-1.5 rounded-lg bg-[#171717] text-white font-semibold text-xs hover:bg-[#262626] transition-colors duration-150 flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
             >
               {copiedSql ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copiedSql ? "SQL copié !" : "Copier le script SQL"}</span>
@@ -275,7 +275,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
               href="https://supabase.com/dashboard/project/uelognqedzqtvupwzejh/sql/new"
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-1.5 rounded-lg bg-white border border-black/[0.08] text-[#525252] font-semibold text-xs hover:bg-[#f4f4f5] transition-all flex items-center gap-1 shadow-xs"
+              className="px-3 py-1.5 rounded-lg bg-white border border-black/[0.08] text-[#525252] font-semibold text-xs hover:bg-[#f4f4f5] transition-colors duration-150 flex items-center gap-1 shadow-xs"
             >
               <span>Ouvrir Supabase</span>
               <ExternalLink className="w-3 h-3" />
@@ -294,7 +294,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-display font-bold text-base text-slate-900">Entonnoir Publicitaire Meta Ads</h2>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#f4f4f5] text-[#171717] border border-black/[0.08]">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f4f4f5] text-[#171717] border border-black/[0.08]">
                   Campagne en direct
                 </span>
               </div>
@@ -350,8 +350,8 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
               {/* LES 4 ÉTAPES DU TUNNEL DE VENTE */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
                 {/* Étape 1 : Pub Meta */}
-                <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#171717]">
+                <div className="p-3.5 rounded-xl bg-white border border-black/[0.08] space-y-1">
+                  <span className="text-[10px] font-bold text-[#171717]">
                     1. Clics Pub Facebook
                   </span>
                   <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
@@ -361,8 +361,8 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 </div>
 
                 {/* Étape 2 : Atterrissage sur le site */}
-                <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <div className="p-3.5 rounded-xl bg-white border border-black/[0.08] space-y-1">
+                  <span className="text-[10px] font-bold text-slate-500">
                     2. Visites Réelles Site
                   </span>
                   <div className="text-xl font-bold font-mono text-slate-900 tabular-nums">
@@ -375,7 +375,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
 
                 {/* Étape 3 : Paniers & Contacts capturés */}
                 <div className="p-3.5 rounded-xl bg-[#fafafa] border border-black/[0.08] space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#525252]">
+                  <span className="text-[10px] font-bold text-[#525252]">
                     3. Paniers / Numéros
                   </span>
                   <div className="text-xl font-bold font-mono text-amber-950 tabular-nums">
@@ -386,7 +386,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
 
                 {/* Étape 4 : Commandes */}
                 <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-200/80 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                  <span className="text-[10px] font-bold text-emerald-700">
                     4. Commandes Finales
                   </span>
                   <div className="text-xl font-bold font-mono text-emerald-950 tabular-nums">
@@ -401,8 +401,8 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 {/* KPI 1 : VUES TOTALES */}
                 <div className="card-figma p-5 flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Visiteurs / Vues</span>
-                    <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200/60">
+                    <span className="text-[11px] font-semibold text-slate-400">Visiteurs / Vues</span>
+                    <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center border border-black/[0.08]/60">
                       <Eye className="w-4 h-4" />
                     </div>
                   </div>
@@ -417,7 +417,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 {/* KPI 2 : CLICS COMMANDES */}
                 <div className="card-figma p-5 flex flex-col justify-between border-black/[0.08] bg-[#fafafa]">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#171717]">Clics d&apos;Intention</span>
+                    <span className="text-[11px] font-semibold text-[#171717]">Clics d&apos;Intention</span>
                     <div className="w-8 h-8 rounded-xl bg-[#f4f4f5] text-[#171717] flex items-center justify-center border border-black/[0.08]">
                       <MousePointerClick className="w-4 h-4" />
                     </div>
@@ -433,7 +433,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 {/* KPI 3 : TAUX DE CLIC (CTR) */}
                 <div className="card-figma p-5 flex flex-col justify-between border-emerald-200/80 bg-emerald-50/20">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">Taux de Clic (CTR)</span>
+                    <span className="text-[11px] font-semibold text-emerald-700">Taux de Clic (CTR)</span>
                     <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center border border-emerald-200">
                       <TrendingUp className="w-4 h-4" />
                     </div>
@@ -451,7 +451,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 {/* KPI 4 : TEMPS MOYEN */}
                 <div className="card-figma p-5 flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Temps Moyen Passé</span>
+                    <span className="text-[11px] font-semibold text-slate-400">Temps Moyen Passé</span>
                     <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
                       <Timer className="w-4 h-4" />
                     </div>
@@ -471,7 +471,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
 
       {/* TABLEAU FIGMA-GRADE PAR PRODUIT */}
       <div className="card-figma overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40">
+        <div className="p-5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40">
           <div>
             <h2 className="font-display font-bold text-base text-slate-900">Performance par Page Produit</h2>
             <p className="text-xs text-slate-500">Détail des clics, taux de clic et commandes par landing page.</p>
@@ -489,7 +489,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] uppercase font-semibold text-slate-400 tracking-wider">
+              <tr className="border-b border-black/[0.08] bg-slate-50/70 text-[11px] font-semibold text-slate-400">
                 <th className="py-3 px-4">Produit</th>
                 <th className="py-3 px-4 text-center">Vues</th>
                 <th className="py-3 px-4 text-center">Clics</th>
@@ -500,7 +500,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                 <th className="py-3 px-4 text-right">Lien Direct</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-sans">
+            <tbody className="divide-y divide-black/[0.06] font-sans">
               {productsList.map((prod) => {
                 const pa = productAnalytics.find((p) => p.slug === prod.slug);
                 const orders = orderCountsBySlug[prod.slug] || 0;
@@ -517,7 +517,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                         <img
                           src={prod.image}
                           alt={prod.title}
-                          className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0 bg-white"
+                          className="w-10 h-10 rounded-lg object-cover border border-black/[0.08] shrink-0 bg-white"
                         />
                         <div className="min-w-0">
                           <div className="font-bold text-slate-900 truncate max-w-[200px] sm:max-w-[260px]">{prod.title}</div>
@@ -577,7 +577,7 @@ CREATE POLICY "Allow public all on analytics" ON public.analytics
                         <button
                           type="button"
                           onClick={() => handleCopyLink(prod.slug)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                          className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors duration-150 cursor-pointer ${
                             copiedSlug === prod.slug
                               ? "bg-emerald-600 text-white shadow-xs"
                               : "bg-slate-100 hover:bg-slate-200 text-slate-700"

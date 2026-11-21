@@ -453,7 +453,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
     <div className="space-y-6 max-w-[1400px] mx-auto pb-16">
       
       {/* ── EN-TÊTE PRINCIPAL : TITRE & BOUTONS D'ACTION ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-[14px] border border-black/[0.08] shadow-xs">
         <div>
           <div className="flex items-center gap-2">
             <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
@@ -474,7 +474,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setShowExpenseModal(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs hover:shadow transition-colors duration-150 active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>+ Ajouter Dépense</span>
@@ -482,7 +482,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
           <button
             onClick={() => setShowSaleModal(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs hover:shadow transition-all active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs hover:shadow transition-colors duration-150 active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>+ Ajouter Vente</span>
@@ -491,7 +491,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
           <button
             onClick={loadData}
             disabled={isRefreshing}
-            className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+            className="p-2.5 rounded-xl border border-black/[0.08] bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors duration-150 active:scale-95 cursor-pointer disabled:opacity-50"
             title="Rafraîchir les données"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-[#171717]" : ""}`} />
@@ -499,7 +499,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
           <button
             onClick={handleExportCsv}
-            className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-all active:scale-95 cursor-pointer"
+            className="p-2.5 rounded-xl border border-black/[0.08] bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors duration-150 active:scale-95 cursor-pointer"
             title="Exporter en CSV"
           >
             <Download className="w-4 h-4" />
@@ -507,7 +507,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
           <button
             onClick={handleResetAllFinances}
-            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 text-xs font-semibold shadow-2xs transition-all active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-black/[0.08] bg-white hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 text-xs font-semibold shadow-2xs transition-colors duration-150 active:scale-95 cursor-pointer"
             title="Remettre tout à zéro pour repartir vierge"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -517,10 +517,10 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       </div>
 
       {/* ── MA CAISSE & CAPITAL DE DÉPART (CE QU'IL RESTE DANS TA POCHE) ── */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 sm:p-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs p-5 sm:p-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-black/[0.08]">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold uppercase tracking-wider mb-1.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold mb-1.5">
               <Wallet className="w-3.5 h-3.5 text-emerald-600" />
               Suivi de Ma Caisse (Argent en Poche)
             </span>
@@ -535,7 +535,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                 setCapitalInput(startingCapital > 0 ? String(startingCapital) : "100000");
                 setIsEditingCapital(true);
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all cursor-pointer self-start md:self-auto"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#14281D] hover:bg-[#1E3A2B] text-white text-xs font-bold shadow-xs transition-colors duration-150 cursor-pointer self-start md:self-auto"
             >
               <DollarSign className="w-3.5 h-3.5" />
               <span>{startingCapital > 0 ? "Modifier mon capital" : "Définir mon capital de départ"}</span>
@@ -582,8 +582,8 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {/* 1. Capital de départ */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-black/[0.08]">
+            <div className="text-[11px] font-bold text-slate-500">
               1. Capital de Départ
             </div>
             <div className="mt-1.5 text-2xl font-semibold font-mono text-slate-900">
@@ -596,7 +596,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
           {/* 2. Total Achats & Dépenses */}
           <div className="p-4 rounded-2xl bg-[#fafafa] border border-rose-200/70">
-            <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wider">
+            <div className="text-[11px] font-bold text-rose-700">
               2. Sorties (Achats &amp; Frais)
             </div>
             <div className="mt-1.5 text-2xl font-semibold font-mono text-rose-600">
@@ -609,7 +609,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
           {/* 3. Total Ventes Encaissées */}
           <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/70">
-            <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
+            <div className="text-[11px] font-bold text-emerald-700">
               3. Entrées (Ventes Encaissées)
             </div>
             <div className="mt-1.5 text-2xl font-semibold font-mono text-emerald-600">
@@ -628,7 +628,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                 : "bg-[#fafafa] border-black/[0.08]"
             }`}
           >
-            <div className="text-[11px] font-semibold text-slate-800 uppercase tracking-wider">
+            <div className="text-[11px] font-semibold text-slate-800">
               4. Reste dans ta Poche
             </div>
             <div
@@ -654,10 +654,10 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       </div>
 
       {/* ── BARRE DE SÉLECTION DE PÉRIODE & OPTIONS DE SYNCHRO ── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-black/[0.08] shadow-2xs">
         {/* Sélecteur de période */}
         <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 flex items-center gap-1">
+          <span className="text-xs font-bold text-slate-400 px-2 flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5" /> Période :
           </span>
           {(
@@ -673,7 +673,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             <button
               key={btn.id}
               onClick={() => setPeriod(btn.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors duration-150 whitespace-nowrap cursor-pointer ${
                 period === btn.id
                   ? "bg-slate-900 text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -685,7 +685,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         </div>
 
         {/* Toggle Synchronisation Commandes Livrées du Site */}
-        <div className="flex items-center gap-2 px-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+        <div className="flex items-center gap-2 px-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-black/[0.08]">
           <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 select-none">
             <input
               type="checkbox"
@@ -702,9 +702,9 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* KPI 1 : VENTES RÉELLES (CA ENCAISSÉ) */}
-        <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white p-5 rounded-[14px] border border-black/[0.08] shadow-xs flex flex-col justify-between relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Ventes Réelles (Encaissé)</span>
+            <span className="text-xs font-bold text-slate-500">Ventes Réelles (Encaissé)</span>
             <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <TrendingUp className="w-4 h-4 stroke-[2.5]" />
             </span>
@@ -721,9 +721,9 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         </div>
 
         {/* KPI 2 : DÉPENSES RÉELLES */}
-        <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white p-5 rounded-[14px] border border-black/[0.08] shadow-xs flex flex-col justify-between relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Dépenses Réelles</span>
+            <span className="text-xs font-bold text-slate-500">Dépenses Réelles</span>
             <span className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
               <TrendingDown className="w-4 h-4 stroke-[2.5]" />
             </span>
@@ -739,13 +739,13 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         </div>
 
         {/* KPI 3 : BÉNÉFICE NET RÉEL (PROFIT) */}
-        <div className={`p-5 rounded-3xl border shadow-xs flex flex-col justify-between relative overflow-hidden transition-all ${
+        <div className={`p-5 rounded-[14px] border shadow-xs flex flex-col justify-between relative overflow-hidden transition-colors duration-150 ${
           netProfit >= 0
             ? "bg-emerald-950 text-white border-emerald-900"
             : "bg-[#171717] text-white border-[#171717]"
         }`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-200/90">Bénéfice Net Réel</span>
+            <span className="text-xs font-bold text-emerald-200/90">Bénéfice Net Réel</span>
             <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-white ${
               netProfit >= 0 ? "bg-emerald-800" : "bg-[#262626]"
             }`}>
@@ -763,9 +763,9 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         </div>
 
         {/* KPI 4 : MARGE NETTE & ROAS */}
-        <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white p-5 rounded-[14px] border border-black/[0.08] shadow-xs flex flex-col justify-between relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Marge & ROAS Réel</span>
+            <span className="text-xs font-bold text-slate-500">Marge & ROAS Réel</span>
             <span className="w-8 h-8 rounded-xl bg-[#f4f4f5] text-[#171717] flex items-center justify-center">
               <PieChart className="w-4 h-4 stroke-[2]" />
             </span>
@@ -786,7 +786,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       </div>
 
       {/* ── VENTILATION DES DÉPENSES PAR CATÉGORIE ── */}
-      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
+      <div className="bg-white p-5 sm:p-6 rounded-[14px] border border-black/[0.08] shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <PieChart className="w-4 h-4 text-[#171717]" />
@@ -806,7 +806,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             return (
               <div
                 key={catKey}
-                className="p-3.5 rounded-2xl border border-slate-100 bg-slate-50/60 flex flex-col justify-between space-y-2"
+                className="p-3.5 rounded-2xl border border-black/[0.08] bg-slate-50/60 flex flex-col justify-between space-y-2"
               >
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-slate-700 truncate">{cat.label}</span>
@@ -815,7 +815,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                 <div className="space-y-1">
                   <div className="w-full bg-slate-200/80 rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all duration-500"
+                      className="h-full rounded-full transition-colors duration-150 duration-500"
                       style={{ width: `${Math.min(100, pct)}%`, backgroundColor: cat.color }}
                     />
                   </div>
@@ -830,10 +830,10 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       </div>
 
       {/* ── SOUS-ONGLETS DE NAVIGATION DU DASHBOARD ── */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+      <div className="flex items-center gap-2 border-b border-black/[0.08] pb-3">
         <button
           onClick={() => setActiveTab("overview")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors duration-150 cursor-pointer ${
             activeTab === "overview"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -843,7 +843,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         </button>
         <button
           onClick={() => setActiveTab("expenses")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors duration-150 cursor-pointer ${
             activeTab === "expenses"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -853,7 +853,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         </button>
         <button
           onClick={() => setActiveTab("sales")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors duration-150 cursor-pointer ${
             activeTab === "sales"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -865,8 +865,8 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
       {/* ══════════════ TAB 1 : BILAN JOURNALIER AGRÉGÉ ══════════════ */}
       {activeTab === "overview" && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+        <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between">
             <h3 className="font-bold text-sm text-slate-900">
               Historique quotidien des entrées / sorties
             </h3>
@@ -883,7 +883,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-100 text-slate-500 font-bold text-[11px] uppercase tracking-wider">
+                  <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
                     <th className="py-3 px-4">Date</th>
                     <th className="py-3 px-4">Ventes Réelles</th>
                     <th className="py-3 px-4">Dépenses Réelles</th>
@@ -892,7 +892,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                     <th className="py-3 px-4 text-right">ROAS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-black/[0.06]">
                   {dailyBreakdown.map((row) => {
                     const profit = row.sales - row.expenses;
                     const dayRoas = row.ads > 0 ? row.sales / row.ads : 0;
@@ -936,8 +936,8 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
       {/* ══════════════ TAB 2 : TABLEAU DÉTAILLÉ DES DÉPENSES ══════════════ */}
       {activeTab === "expenses" && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+        <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between">
             <h3 className="font-bold text-sm text-slate-900">
               Journal des dépenses engagées ({filteredExpenses.length})
             </h3>
@@ -957,7 +957,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-100 text-slate-500 font-bold text-[11px] uppercase tracking-wider">
+                  <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
                     <th className="py-3 px-4">Date</th>
                     <th className="py-3 px-4">Poste / Catégorie</th>
                     <th className="py-3 px-4">Description / Note</th>
@@ -966,7 +966,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                     <th className="py-3 px-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-black/[0.06]">
                   {filteredExpenses.map((exp) => {
                     const catMeta = EXPENSE_CATEGORIES[exp.category] || EXPENSE_CATEGORIES.other;
                     return (
@@ -1015,8 +1015,8 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
 
       {/* ══════════════ TAB 3 : TABLEAU DÉTAILLÉ DES VENTES RÉELLES ══════════════ */}
       {activeTab === "sales" && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+        <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between">
             <div>
               <h3 className="font-bold text-sm text-slate-900">
                 Journal des ventes et encaissements réels ({filteredSales.length})
@@ -1041,7 +1041,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs sm:text-sm border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-100 text-slate-500 font-bold text-[11px] uppercase tracking-wider">
+                  <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
                     <th className="py-3 px-4">Date</th>
                     <th className="py-3 px-4">Produit</th>
                     <th className="py-3 px-4">Client / Destination</th>
@@ -1050,7 +1050,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                     <th className="py-3 px-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-black/[0.06]">
                   {filteredSales.map((sale) => (
                     <tr key={sale.id} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3 px-4 font-mono text-slate-700 whitespace-nowrap">
@@ -1099,7 +1099,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       {/* ── MODALE : NOUVELLE DÉPENSE ── */}
       {showExpenseModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-[14px] max-w-md w-full p-6 border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] relative animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
@@ -1193,7 +1193,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors duration-150 cursor-pointer"
                 >
                   Enregistrer la dépense
                 </button>
@@ -1206,7 +1206,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       {/* ── MODALE : NOUVELLE VENTE MANUELLE ── */}
       {showSaleModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-[14px] max-w-md w-full p-6 border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] relative animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -1308,7 +1308,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors duration-150 cursor-pointer"
                 >
                   Enregistrer la vente
                 </button>

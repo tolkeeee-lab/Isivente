@@ -410,7 +410,7 @@ export default async function ProductPage({ params }: PageProps) {
             // La boutique associée existe mais est en PAUSE (is_active = false n'est pas dans public_stores)
             return (
               <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 font-sans text-slate-900">
-                <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-3 shadow-xs">
+                <div className="max-w-md w-full bg-white rounded-[14px] border border-black/[0.08] p-8 text-center space-y-3 shadow-xs">
                   <h1 className="text-xl font-black text-slate-900">
                     Boutique temporairement en pause
                   </h1>
