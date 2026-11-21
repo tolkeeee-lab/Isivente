@@ -90,6 +90,12 @@ export default function OrdersPage() {
   // ── États d'actions ──
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [sectionLimits, setSectionLimits] = useState<Record<string, number>>({
+    global: 10,
+    confirmed: 10,
+    reserved: 10,
+    postponed: 10,
+  });
 
   // ── Modale Dispatch Livreur WhatsApp ──
   const [dispatchOrder, setDispatchOrder] = useState<OrderItem | null>(null);
@@ -1745,24 +1751,171 @@ export default function OrdersPage() {
       );
     }
 
-    return (
-      <div className="overflow-x-auto bg-white">
-        <table className="w-full text-left border-collapse min-w-[980px]">
-          <thead>
-            <tr className="bg-slate-50/80 border-b border-black/[0.08] text-[11px] font-semibold text-slate-400">
-              <th className="py-3 px-4">Réf.</th>
-              <th className="py-3 px-4">Client & WhatsApp</th>
-              <th className="py-3 px-4">Destination & Quartier</th>
-              <th className="py-3 px-4">Produit</th>
-              <th className="py-3 px-4 text-right">Montant</th>
-              <th className="py-3 px-4">Date / Note</th>
-              <th className="py-3 px-4 text-center">Triage & Statut</th>
-              <th className="py-3 px-4 text-center">Actions Rapides</th>
-            </tr>
-          </thead>
+    const limit = sectionLimits[context] || 10;
+    const visibleOrders = orderList.slice(0, limit);
+    const remainingOrders = Math.max(0, orderList.length - visibleOrders.length);
 
-          <tbody className="divide-y divide-black/[0.06] text-xs">
-            {orderList.map((order, idx) => {
+    return (
+      <div className="bg-white">
+        {/* ── VUE MOBILE (< lg) : CARTES PLEINE LARGEUR SANS SCROLL HORIZONTAL ── */}
+        <div className="lg:hidden divide-y divide-black/[0.06]">
+          {visibleOrders.map((order, idx) => {
+            const whatsappReservationMsg = encodeURIComponent(
+              `Bonjour ${order.customer_name || ""}, c'est Isivente au sujet de votre réservation du ${order.product_title || "produit"} (Réf: ${order.order_number || ""}).\n\nVotre colis a bien été mis de côté. Nous souhaitions faire le point avec vous pour caler la livraison (${order.reservation_date || "date à convenir"}). Êtes-vous disponible ?`
+            );
+            const whatsappRelanceMsg = encodeURIComponent(
+              `Bonjour ${order.customer_name || ""}, c'est Isivente. Vous nous aviez demandé de vous recontacter un peu plus tard pour votre commande ${order.order_number || ""} (${order.product_title || ""}).\n\nNous préparons les tournées de nos livreurs : quel jour vous arrangerait cette semaine ?`
+            );
+            const whatsappDeliveryMsg = encodeURIComponent(
+              `Bonjour ${order.customer_name || ""}, c'est Isivente. Votre commande ${order.order_number || ""} (${order.product_title || ""}) est validée et prête pour livraison à ${order.shipping_city || order.city || "Cotonou"}. Le livreur peut-il passer aujourd'hui ?`
+            );
+            const waText =
+              order.status === "reserved"
+                ? whatsappReservationMsg
+                : order.status === "postponed"
+                ? whatsappRelanceMsg
+                : whatsappDeliveryMsg;
+
+            return (
+              <div key={order.id || `m_ord_${idx}`} className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-[15px] font-medium text-[#171717] truncate">
+                      {order.customer_name || "Client"}
+                    </div>
+                    <div className="text-[12px] font-mono text-[#737373] mt-0.5">
+                      {order.order_number || `CMD-${idx + 101}`} ·{" "}
+                      {order.reservation_date ||
+                        new Date(order.created_at || Date.now()).toLocaleDateString("fr-FR")}
+                    </div>
+                  </div>
+                  <div className="text-[15px] font-mono tabular-nums font-semibold text-[#171717] shrink-0">
+                    {fmt(order.total_amount || 0)} F
+                  </div>
+                </div>
+
+                <div className="bg-[#fafafa] border border-black/[0.06] rounded-[10px] p-3 space-y-1.5 text-[13px]">
+                  <div className="flex items-start gap-2 text-[#171717] font-medium">
+                    <Package className="w-4 h-4 stroke-[1.5] text-[#737373] shrink-0 mt-0.5" />
+                    <span className="leading-snug">
+                      {order.product_title || order.product_slug}{" "}
+                      <span className="text-[#737373] font-normal">
+                        (x{order.quantity || 1})
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2 text-[#525252] text-[12px]">
+                    <MapPin className="w-3.5 h-3.5 stroke-[1.5] text-[#737373] shrink-0 mt-0.5" />
+                    <span>
+                      {order.shipping_city || order.city || "Cotonou"}
+                      {(order.shipping_address || order.address) &&
+                        ` · ${order.shipping_address || order.address}`}
+                    </span>
+                  </div>
+                  {order.notes && (
+                    <div className="text-[12px] text-[#737373] pt-1 border-t border-black/[0.06]">
+                      Note : {order.notes}
+                    </div>
+                  )}
+                </div>
+
+                {order.customer_phone && (
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`https://wa.me/${formatBeninPhoneForWhatsApp(order.customer_phone)}?text=${waText}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 h-9 rounded-[8px] bg-[#15803d] hover:bg-[#166534] text-white text-[13px] font-medium inline-flex items-center justify-center gap-1.5 transition-colors duration-150"
+                    >
+                      <MessageSquare className="w-4 h-4 stroke-[1.5]" />
+                      <span>WhatsApp</span>
+                    </a>
+                    <a
+                      href={`tel:${formatBeninPhoneForCall(order.customer_phone)}`}
+                      className="flex-1 h-9 rounded-[8px] bg-white hover:bg-[#f4f4f5] text-[#171717] border border-black/[0.08] text-[13px] font-medium inline-flex items-center justify-center gap-1.5 transition-colors duration-150"
+                    >
+                      <Phone className="w-4 h-4 stroke-[1.5] text-[#525252]" />
+                      <span className="font-mono text-[12px]">
+                        {formatBeninPhoneDisplay(order.customer_phone)}
+                      </span>
+                    </a>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <select
+                    value={order.status || "pending"}
+                    disabled={updatingId === order.id}
+                    onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                    className="h-9 flex-1 min-w-[140px] px-2.5 rounded-[8px] border border-black/[0.1] bg-white text-[12px] font-medium text-[#171717] outline-none cursor-pointer"
+                  >
+                    <option value="confirmed">Validée</option>
+                    <option value="reserved">Réservation</option>
+                    <option value="postponed">Plus tard</option>
+                    <option value="pending">À confirmer</option>
+                    <option value="shipped">En livraison</option>
+                    <option value="delivered">Livrée</option>
+                    <option value="cancelled">Annulée</option>
+                  </select>
+
+                  {order.status !== "confirmed" && (
+                    <button
+                      type="button"
+                      onClick={() => handleStatusChange(order.id, "confirmed")}
+                      className="h-9 px-3 rounded-[8px] bg-[#14281D] hover:bg-[#1E3A2B] text-white text-[12px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <Check className="w-3.5 h-3.5 stroke-[1.5]" />
+                      <span>Valider</span>
+                    </button>
+                  )}
+
+                  {(order.status === "confirmed" || order.status === "pending" || order.status === "shipped") && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDispatchOrder(order);
+                        setDispatchTourOrders(null);
+                      }}
+                      className="h-9 px-3 rounded-[8px] bg-[#f4f4f5] hover:bg-[#e5e5e5] text-[#171717] border border-black/[0.08] text-[12px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <Truck className="w-3.5 h-3.5 stroke-[1.5]" />
+                      <span>Livreur</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(order)}
+                    disabled={deletingId === (order.id || String(order.order_number))}
+                    className="h-9 w-9 rounded-[8px] border border-black/[0.08] text-[#737373] hover:text-[#dc2626] hover:bg-rose-50 inline-flex items-center justify-center cursor-pointer"
+                    title="Supprimer la commande"
+                  >
+                    <Trash2 className="w-4 h-4 stroke-[1.5]" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── VUE DESKTOP (lg+) : TABLEAU COMPLET ── */}
+        <div className="hidden lg:block overflow-x-auto bg-white">
+          <table className="w-full text-left border-collapse min-w-[980px]">
+            <thead>
+              <tr className="bg-slate-50/80 border-b border-black/[0.08] text-[11px] font-semibold text-slate-400">
+                <th className="py-3 px-4">Réf.</th>
+                <th className="py-3 px-4">Client &amp; WhatsApp</th>
+                <th className="py-3 px-4">Destination &amp; Quartier</th>
+                <th className="py-3 px-4">Produit</th>
+                <th className="py-3 px-4 text-right">Montant</th>
+                <th className="py-3 px-4">Date / Note</th>
+                <th className="py-3 px-4 text-center">Triage &amp; Statut</th>
+                <th className="py-3 px-4 text-center">Actions Rapides</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-black/[0.06] text-xs">
+              {visibleOrders.map((order, idx) => {
               const phoneClean = (order.customer_phone || "").replace(/\s+/g, "");
               const phoneDigits = phoneClean.replace(/[^0-9]/g, "");
               const hasReservationDate = !!(order.reservation_date || order.notes);
@@ -2002,6 +2155,24 @@ export default function OrdersPage() {
             })}
           </tbody>
         </table>
+        </div>
+
+        {remainingOrders > 0 && (
+          <div className="p-4 border-t border-black/[0.08] text-center bg-[#fafafa]/60">
+            <button
+              type="button"
+              onClick={() =>
+                setSectionLimits((prev) => ({
+                  ...prev,
+                  [context]: (prev[context] || 10) + 10,
+                }))
+              }
+              className="h-9 px-4 rounded-[8px] bg-white hover:bg-[#f4f4f5] border border-black/[0.08] text-[13px] font-medium text-[#171717] transition-colors duration-150 cursor-pointer"
+            >
+              Afficher {Math.min(10, remainingOrders)} de plus ({remainingOrders} restante{remainingOrders > 1 ? "s" : ""})
+            </button>
+          </div>
+        )}
       </div>
     );
   }
