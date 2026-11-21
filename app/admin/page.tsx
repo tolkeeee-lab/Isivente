@@ -40,6 +40,7 @@ import {
   Clock,
 } from "lucide-react";
 import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
+import { getStoredTenantContext } from "@/lib/storesStorage";
 
 type PeriodFilter = "today" | "7d" | "all";
 type OrderQuickFilter = "all" | "pending" | "confirmed";
@@ -63,18 +64,21 @@ export default function AdminOverviewPage() {
   const [period, setPeriod] = useState<PeriodFilter>("all");
   const [orderTab, setOrderTab] = useState<OrderQuickFilter>("all");
 
-  const productsList = useMemo(() => getAdminDashboardProducts(), []);
+  const tenantCtx = getStoredTenantContext();
+  const isFounder = tenantCtx ? tenantCtx.isFounder : false;
+  const productsList = useMemo(() => (isFounder ? getAdminDashboardProducts() : []), [isFounder]);
   // ── Rapprochement Livraisons & CA Réel ──
   const [deliveredOverrides, setDeliveredOverrides] = useState<Record<string, number>>({});
   const [showOnlyWithOrders, setShowOnlyWithOrders] = useState<boolean>(true);
 
-  // Charger les ajustements enregistrés
+  // Charger les ajustements enregistrés (uniquement pour le fondateur)
   useEffect(() => {
+    if (!isFounder) return;
     try {
       const saved = localStorage.getItem("isivente_delivered_counts");
       if (saved) setDeliveredOverrides(JSON.parse(saved));
     } catch {}
-  }, []);
+  }, [isFounder]);
 
   const handleUpdateDeliveredCount = (slug: string, newCount: number) => {
     const safeCount = Math.max(0, Math.floor(newCount || 0));

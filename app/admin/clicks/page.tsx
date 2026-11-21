@@ -32,6 +32,7 @@ import {
 import { getAllOrders } from "@/lib/ordersStorage";
 import { getAllLeads } from "@/lib/leadsStorage";
 import { getAdminDashboardProducts, DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
+import { getStoredTenantContext } from "@/lib/storesStorage";
 
 export default function AdminClicksPage() {
   const [analytics, setAnalytics] = useState<AnalyticsStats>({
@@ -49,7 +50,9 @@ export default function AdminClicksPage() {
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const defaultProducts = getAdminDashboardProducts();
+  const tenantCtx = getStoredTenantContext();
+  const isFounder = tenantCtx ? tenantCtx.isFounder : false;
+  const defaultProducts = isFounder ? getAdminDashboardProducts() : [];
 
   const [productsList, setProductsList] = useState(defaultProducts);
   const [metaAdClicks, setMetaAdClicks] = useState<number>(0); // Saisi manuellement depuis le gestionnaire Meta Ads

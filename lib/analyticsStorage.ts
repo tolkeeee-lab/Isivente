@@ -315,10 +315,12 @@ export async function getAnalyticsStats(slug?: string): Promise<AnalyticsStats> 
 }
 
 export async function getAllProductsAnalytics(): Promise<ProductAnalyticsStats[]> {
+  const tenantCtx = getStoredTenantContext();
+  const isTenantScoped = tenantCtx !== null && !tenantCtx.isFounder;
   try {
     let { data, error } = await fetchAllAnalyticsRows();
 
-    if ((error || !data || data.length === 0) && typeof window !== 'undefined') {
+    if (!isTenantScoped && (error || !data || data.length === 0) && typeof window !== 'undefined') {
       try {
         const res = await fetch('/api/analytics', { cache: 'no-store' });
         if (res.ok) {
