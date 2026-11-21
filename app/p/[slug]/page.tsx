@@ -406,6 +406,20 @@ export default async function ProductPage({ params }: PageProps) {
             .maybeSingle();
           if (store) {
             storeConfig = store;
+          } else {
+            // La boutique associée existe mais est en PAUSE (is_active = false n'est pas dans public_stores)
+            return (
+              <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 font-sans text-slate-900">
+                <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-3 shadow-xs">
+                  <h1 className="text-xl font-black text-slate-900">
+                    Boutique temporairement en pause
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                    Cette page produit est momentanément indisponible. Revenez un peu plus tard.
+                  </p>
+                </div>
+              </div>
+            );
           }
         }
       }

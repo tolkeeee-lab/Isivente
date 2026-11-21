@@ -65,6 +65,8 @@ export default function AdminLayout({
           isFounder,
           storeId: store?.id || null,
           storeName: store?.name || (isFounder ? "Isivente" : "Ma Boutique"),
+          storeActive: store ? store.is_active !== false : true,
+          storePlan: store?.plan || "trial",
           email: user.email || null,
         };
         setStoredTenantContext(ctx);
@@ -127,6 +129,49 @@ export default function AdminLayout({
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-slate-600 font-sans">
         <div className="w-8 h-8 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin mb-3" />
         <p className="text-xs font-semibold">Vérification sécurisée de votre espace vendeur...</p>
+      </div>
+    );
+  }
+
+  // Verrouillage immédiat si la boutique du vendeur a été mise en PAUSE par le fondateur
+  if (tenantCtx && !tenantCtx.isFounder && tenantCtx.storeId && !tenantCtx.storeActive) {
+    const waPayUrl = `https://wa.me/2290192901817?text=${encodeURIComponent(
+      `Bonjour Isivente, ma boutique "${tenantCtx.storeName}" (${tenantCtx.email}) est en pause. Je souhaite régler mon abonnement Mobile Money pour la réactiver.`
+    )}`;
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-4 font-sans text-slate-900">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-rose-200 shadow-sm p-8 text-center space-y-5">
+          <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto font-black text-xl">
+            ⏸
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-black text-slate-900">
+              Votre boutique est en pause
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              L&apos;accès à votre espace vendeur et vos pages produits sont temporairement suspendus en attente du règlement de votre abonnement Isivente.
+            </p>
+          </div>
+          <a
+            href={waPayUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm inline-flex items-center justify-center gap-2 shadow-sm transition-colors"
+          >
+            <span>Activer mon abonnement sur WhatsApp</span>
+          </a>
+          <button
+            type="button"
+            onClick={async () => {
+              clearStoredTenantContext();
+              await supabase.auth.signOut();
+              router.replace("/login");
+            }}
+            className="text-xs font-semibold text-slate-500 hover:text-slate-900 underline cursor-pointer"
+          >
+            Se déconnecter
+          </button>
+        </div>
       </div>
     );
   }

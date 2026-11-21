@@ -21,6 +21,8 @@ export interface ActiveTenantContext {
   isFounder: boolean;
   storeId: string | null;
   storeName: string | null;
+  storeActive: boolean;
+  storePlan?: "trial" | "starter" | "pro";
   email: string | null;
 }
 
@@ -210,6 +212,44 @@ export async function upsertUserStore(
     return { store: null, error: error.message };
   }
 
+  return { store: data as StoreConfig };
+}
+
+/**
+ * (Fondateur uniquement) Liste toutes les boutiques inscrites sur la plateforme
+ */
+export async function listAllStoresForFounder(): Promise<{
+  stores: StoreConfig[];
+  error?: string;
+}> {
+  const { data, error } = await supabase
+    .from("stores")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { stores: [], error: error.message };
+  }
+  return { stores: (data as StoreConfig[]) || [] };
+}
+
+/**
+ * (Fondateur uniquement) Met en pause / réactive une boutique ou change son plan
+ */
+export async function updateStoreStatusByFounder(
+  storeId: string,
+  updates: { is_active?: boolean; plan?: "trial" | "starter" | "pro" }
+): Promise<{ store: StoreConfig | null; error?: string }> {
+  const { data, error } = await supabase
+    .from("stores")
+    .update(updates)
+    .eq("id", storeId)
+    .select("*")
+    .single();
+
+  if (error) {
+    return { store: null, error: error.message };
+  }
   return { store: data as StoreConfig };
 }
 

@@ -18,6 +18,10 @@ import {
   Copy,
   Check,
   ShieldCheck,
+  Users,
+  PauseCircle,
+  PlayCircle,
+  MessageCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import {
@@ -27,8 +31,10 @@ import {
   clearStoredTenantContext,
   getCurrentUserStore,
   isFounderEmail,
+  listAllStoresForFounder,
   setStoredTenantContext,
   slugifyStoreName,
+  updateStoreStatusByFounder,
   upsertUserStore,
 } from "@/lib/storesStorage";
 
@@ -41,6 +47,11 @@ export default function AdminStoreSettingsPage() {
   const [store, setStore] = useState<StoreConfig | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [copiedUrl, setCopiedUrl] = useState(false);
+
+  // Panneau Super-Admin (réservé uniquement au fondateur tolkeeee@gmail.com)
+  const [allStores, setAllStores] = useState<StoreConfig[]>([]);
+  const [togglingStoreId, setTogglingStoreId] = useState<string | null>(null);
+  const [founderError, setFounderError] = useState("");
 
   // Formulaire de configuration boutique
   const [name, setName] = useState("");
@@ -71,6 +82,12 @@ export default function AdminStoreSettingsPage() {
         setUserEmail(user.email || "Vendeur connecté");
         const { store: existingStore, tableMissing: missing } = await getCurrentUserStore();
         setTableMissing(missing);
+
+        if (isFounderEmail(user.email) && !missing) {
+          const { stores: founderStores, error: fErr } = await listAllStoresForFounder();
+          if (fErr) setFounderError(fErr);
+          else setAllStores(founderStores);
+        }
 
         if (existingStore) {
           setStore(existingStore);
@@ -156,6 +173,8 @@ export default function AdminStoreSettingsPage() {
       isFounder: isFounderEmail(userEmail),
       storeId: saved.id,
       storeName: saved.name,
+      storeActive: saved.is_active !== false,
+      storePlan: saved.plan,
       email: userEmail,
     });
     setFeedback({
@@ -170,6 +189,41 @@ export default function AdminStoreSettingsPage() {
     setUserEmail(null);
     setStore(null);
     router.replace("/login");
+  };
+
+  const handleToggleStorePause = async (target: StoreConfig) => {
+    setTogglingStoreId(target.id);
+    setFounderError("");
+    const { store: updated, error } = await updateStoreStatusByFounder(target.id, {
+      is_active: !target.is_active,
+    });
+    if (error || !updated) {
+      setFounderError(
+        error ||
+          "Exécutez supabase/migrations/003_founder_manage_stores.sql dans Supabase SQL Editor pour activer le contrôle fondateur."
+      );
+    } else {
+      setAllStores((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+    }
+    setTogglingStoreId(null);
+  };
+
+  const handleChangeStorePlan = async (
+    target: StoreConfig,
+    newPlan: "trial" | "starter" | "pro"
+  ) => {
+    setTogglingStoreId(target.id);
+    setFounderError("");
+    const { store: updated, error } = await updateStoreStatusByFounder(target.id, {
+      plan: newPlan,
+      is_active: true,
+    });
+    if (error || !updated) {
+      setFounderError(error || "Erreur lors du changement de plan.");
+    } else {
+      setAllStores((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+    }
+    setTogglingStoreId(null);
   };
 
   const origin =
@@ -473,6 +527,138 @@ export default function AdminStoreSettingsPage() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* ── PANNEAU SUPER-ADMIN FONDATEUR : CONTRÔLE DES VENDEURS (PAUSE / RÉACTIVATION) ── */}
+      {userEmail && isFounderEmail(userEmail) && !tableMissing && (
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center">
+                <Users className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  Contrôle Fondateur — Boutiques Inscrites ({allStores.length})
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Mettez n&apos;importe quel vendeur en pause tant qu&apos;il n&apos;a pas payé son abonnement, ou réactivez-le en 1 clic.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {founderError && (
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+              {founderError}
+            </div>
+          )}
+
+          {allStores.length === 0 ? (
+            <p className="text-xs text-slate-500 py-4 text-center">
+              Aucune boutique inscrite pour le moment.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {allStores.map((st) => {
+                const isOwnStore = store?.id === st.id;
+                const isPaused = st.is_active === false;
+                return (
+                  <div
+                    key={st.id}
+                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                      isPaused
+                        ? "bg-rose-50/40 border-rose-200"
+                        : "bg-slate-50/60 border-slate-200/80"
+                    }`}
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-bold text-sm text-slate-900">{st.name}</span>
+                        <span className="text-[11px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                          {st.slug}
+                        </span>
+                        <span
+                          className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                            isPaused
+                              ? "bg-rose-100 text-rose-700 border border-rose-200"
+                              : "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                          }`}
+                        >
+                          {isPaused ? "En Pause" : "Actif"}
+                        </span>
+                        {isOwnStore && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                            Ma Boutique
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500">
+                        <span>
+                          {st.city} ({st.country})
+                        </span>
+                        {st.whatsapp_number && (
+                          <a
+                            href={`https://wa.me/${st.whatsapp_number}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-emerald-700 font-semibold hover:underline"
+                          >
+                            <MessageCircle className="w-3 h-3" />
+                            +{st.whatsapp_number}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      <select
+                        value={st.plan || "trial"}
+                        disabled={togglingStoreId === st.id}
+                        onChange={(e) =>
+                          handleChangeStorePlan(
+                            st,
+                            e.target.value as "trial" | "starter" | "pro"
+                          )
+                        }
+                        className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 cursor-pointer"
+                      >
+                        <option value="trial">Essai 7j</option>
+                        <option value="starter">Starter (9 900 F)</option>
+                        <option value="pro">Pro (19 900 F)</option>
+                      </select>
+
+                      {!isOwnStore && (
+                        <button
+                          type="button"
+                          disabled={togglingStoreId === st.id}
+                          onClick={() => handleToggleStorePause(st)}
+                          className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 ${
+                            isPaused
+                              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                              : "bg-rose-600 hover:bg-rose-700 text-white"
+                          }`}
+                        >
+                          {isPaused ? (
+                            <>
+                              <PlayCircle className="w-3.5 h-3.5" />
+                              <span>Réactiver</span>
+                            </>
+                          ) : (
+                            <>
+                              <PauseCircle className="w-3.5 h-3.5" />
+                              <span>Mettre en pause</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
