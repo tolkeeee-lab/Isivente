@@ -636,7 +636,7 @@ export default function OrdersPage() {
             disabled={loading}
             className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 px-3.5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-all duration-150 active:scale-[0.97] cursor-pointer shrink-0"
           >
-            <RefreshCw className={`w-3.5 h-3.5 stroke-[2] ${loading ? 'animate-spin text-indigo-600' : 'text-slate-500'}`} />
+            <RefreshCw className={`w-3.5 h-3.5 stroke-[2] ${loading ? 'animate-spin text-[#171717]' : 'text-slate-500'}`} />
             <span>Actualiser</span>
           </button>
         </div>
@@ -654,10 +654,10 @@ export default function OrdersPage() {
               }`}
           >
             <div className="flex items-center gap-2 truncate">
-              <Layers className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <Layers className="w-3.5 h-3.5 text-[#171717] shrink-0" />
               <span className="truncate">Triage & Suivi Commercial</span>
             </div>
-            <span className="bg-indigo-50 text-indigo-700 text-[10.5px] font-mono px-2 py-0.5 rounded-full font-bold shrink-0">
+            <span className="bg-[#f4f4f5] text-[#171717] text-[10.5px] font-mono px-2 py-0.5 rounded-full font-bold shrink-0">
               {totalTriageCount}
             </span>
           </button>
@@ -704,13 +704,13 @@ export default function OrdersPage() {
             {/* Carte Nouvelles Reçues (À Traiter) */}
             <div
               onClick={() => setTriageFilter("pending")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-blue-500 hover:shadow-md ${triageFilter === "pending" ? "ring-2 ring-blue-500/40 bg-blue-50/20" : ""
+              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "pending" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 } ${pendingOrders.length > 0 ? "ring-1 ring-blue-400/30" : ""}`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-blue-700 flex items-center gap-1.5 truncate">
-                    {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping shrink-0" />}
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#171717] flex items-center gap-1.5 truncate">
+                    {pendingOrders.length > 0 && <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />}
                     <Package className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Nouvelles Reçues</span>
                   </div>
@@ -718,7 +718,7 @@ export default function OrdersPage() {
                     {pendingOrders.length}
                   </div>
                 </div>
-                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg shrink-0 ${pendingOrders.length > 0 ? "bg-blue-600 text-white shadow-xs" : "bg-blue-100 text-blue-800"
+                <span className={`text-xs font-mono font-bold px-2 py-1 rounded-lg shrink-0 ${pendingOrders.length > 0 ? "bg-[#14281D] text-white shadow-xs" : "bg-[#f4f4f5] text-[#171717]"
                   }`}>
                   {fmt(totalPendingAmount)} F
                 </span>
@@ -731,7 +731,7 @@ export default function OrdersPage() {
             {/* Carte Validées */}
             <div
               onClick={() => setTriageFilter("confirmed")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-emerald-500 hover:shadow-md ${triageFilter === "confirmed" ? "ring-2 ring-emerald-500/40 bg-emerald-50/20" : ""
+              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "confirmed" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 }`}
             >
               <div className="flex justify-between items-start gap-2">
@@ -756,12 +756,12 @@ export default function OrdersPage() {
             {/* Carte Réservations */}
             <div
               onClick={() => setTriageFilter("reserved")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-amber-500 hover:shadow-md ${triageFilter === "reserved" ? "ring-2 ring-amber-500/40 bg-amber-50/20" : ""
+              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "reserved" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 }`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-amber-700 flex items-center gap-1.5 truncate">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#525252] flex items-center gap-1.5 truncate">
                     <Bookmark className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Réservations en cours</span>
                   </div>
@@ -769,7 +769,7 @@ export default function OrdersPage() {
                     {reservedOrders.length}
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-amber-100 text-amber-800 shrink-0">
+                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-[#f4f4f5] text-[#525252] shrink-0">
                   {fmt(totalReservedAmount)} F
                 </span>
               </div>
@@ -781,12 +781,12 @@ export default function OrdersPage() {
             {/* Carte Mises à plus tard */}
             <div
               onClick={() => setTriageFilter("postponed")}
-              className={`card-figma p-4 cursor-pointer transition-all border-l-4 border-l-purple-500 hover:shadow-md ${triageFilter === "postponed" ? "ring-2 ring-purple-500/40 bg-purple-50/20" : ""
+              className={`card-figma p-4 cursor-pointer transition-all border border-black/[0.08] hover:shadow-md ${triageFilter === "postponed" ? "border-[#14281D] bg-[#f4f4f5]/60" : ""
                 }`}
             >
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-purple-700 flex items-center gap-1.5 truncate">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#171717] flex items-center gap-1.5 truncate">
                     <CalendarClock className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">Mises à plus tard</span>
                   </div>
@@ -794,7 +794,7 @@ export default function OrdersPage() {
                     {postponedOrders.length}
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-purple-100 text-purple-800 shrink-0">
+                <span className="text-xs font-mono font-bold px-2 py-1 rounded-lg bg-[#f4f4f5] text-[#171717] shrink-0">
                   {fmt(totalPostponedAmount)} F
                 </span>
               </div>
@@ -809,7 +809,7 @@ export default function OrdersPage() {
           <div className="card-figma p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/50">
             <div className="flex items-center gap-2 overflow-hidden">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 hidden sm:flex items-center gap-1.5 shrink-0">
-                <Filter className="w-3.5 h-3.5 text-indigo-600" />
+                <Filter className="w-3.5 h-3.5 text-[#171717]" />
                 <span>Affichage :</span>
               </span>
               <div className="flex p-0.5 bg-slate-200/70 rounded-xl overflow-x-auto scrollbar-none max-w-full">
@@ -824,7 +824,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("pending")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "pending" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-blue-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "pending" ? "bg-[#14281D] text-white shadow-xs" : "text-slate-600 hover:text-[#171717]"
                     }`}
                 >
                   🚨 Nouvelles ({pendingOrders.length})
@@ -840,7 +840,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("reserved")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "reserved" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-amber-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "reserved" ? "bg-[#171717] text-white shadow-xs" : "text-slate-600 hover:text-[#525252]"
                     }`}
                 >
                   2. Réservations ({reservedOrders.length})
@@ -848,7 +848,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setTriageFilter("postponed")}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "postponed" ? "bg-purple-600 text-white shadow-xs" : "text-slate-600 hover:text-purple-700"
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${triageFilter === "postponed" ? "bg-[#14281D] text-white shadow-xs" : "text-slate-600 hover:text-[#171717]"
                     }`}
                 >
                   3. Plus tard ({postponedOrders.length})
@@ -865,36 +865,36 @@ export default function OrdersPage() {
               SECTION 0 DU TABLEAU : LES NOUVELLES COMMANDES DU SITE (À CONFIRMER)
              ═══════════════════════════════════════════════════════════ */}
           {(triageFilter === "all" || triageFilter === "pending") && pendingOrders.length > 0 && (
-            <div className="card-figma overflow-hidden border-blue-300 shadow-sm ring-1 ring-blue-400/20">
+            <div className="card-figma overflow-hidden border-black/[0.08] shadow-sm ring-1 ring-blue-400/20">
 
               {/* En-tête de la section À Confirmer */}
-              <div className="bg-blue-50/90 px-5 py-3.5 border-b border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="bg-[#fafafa] px-5 py-3.5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  <div className="w-7 h-7 rounded-lg bg-[#14281D] text-white flex items-center justify-center font-bold text-xs shadow-xs">
                     <Package className="w-4 h-4" />
                   </div>
                   <div>
                     <h2 className="font-display font-bold text-sm text-blue-950 flex items-center gap-2">
                       <span>Section 0 • Nouvelles Commandes Reçues (À Traiter)</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-blue-200 text-blue-900 font-bold animate-pulse">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#e5e5e5] text-[#171717] font-bold">
                         Action requise
                       </span>
                     </h2>
-                    <p className="text-[11px] text-blue-800">
+                    <p className="text-[11px] text-[#171717]">
                       Commandes passées sur le site en attente de confirmation client avant expédition.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-end sm:self-auto">
-                  <span className="text-xs font-mono font-bold bg-white text-blue-900 px-3 py-1 rounded-lg border border-blue-200 shadow-xs">
+                  <span className="text-xs font-mono font-bold bg-white text-[#171717] px-3 py-1 rounded-lg border border-black/[0.08] shadow-xs">
                     {filteredPendingOrders.length} affichée{filteredPendingOrders.length > 1 ? "s" : ""} / {pendingOrders.length} • {fmt(filteredPendingOrders.reduce((a, o) => a + (o.total_amount || 0), 0))} F
                   </span>
                 </div>
               </div>
 
               {/* BARRE DE FILTRES DÉDIÉE À LA SECTION NOUVELLES COMMANDES */}
-              <div className="bg-blue-50/30 px-4 py-2.5 border-b border-blue-100 flex flex-wrap items-center gap-2 text-xs">
+              <div className="bg-[#fafafa] px-4 py-2.5 border-b border-black/[0.08] flex flex-wrap items-center gap-2 text-xs">
                 <div className="relative flex-1 min-w-[200px]">
                   <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
@@ -1053,36 +1053,36 @@ export default function OrdersPage() {
               SECTION 2 DU TABLEAU : LES RÉSERVATIONS
              ═══════════════════════════════════════════════════════════ */}
           {(triageFilter === "all" || triageFilter === "reserved") && (
-            <div className="card-figma overflow-hidden border-amber-200/80 shadow-xs">
+            <div className="card-figma overflow-hidden border-black/[0.08] shadow-xs">
 
               {/* En-tête de la section Réservations */}
-              <div className="bg-amber-50/90 px-5 py-3.5 border-b border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="bg-[#fafafa] px-5 py-3.5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  <div className="w-7 h-7 rounded-lg bg-[#171717] text-white flex items-center justify-center font-bold text-xs shadow-xs">
                     <Bookmark className="w-4 h-4" />
                   </div>
                   <div>
                     <h2 className="font-display font-bold text-sm text-amber-950 flex items-center gap-2">
                       <span>Section 2 • Réservations & Précommandes</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-200/80 text-amber-900 font-bold">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#e5e5e5] text-[#525252] font-bold">
                         Stock bloqué
                       </span>
                     </h2>
-                    <p className="text-[11px] text-amber-800">
+                    <p className="text-[11px] text-[#525252]">
                       Exemplaires réservés pour une date précise (paie de fin de mois, voyage, etc.).
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-end sm:self-auto">
-                  <span className="text-xs font-mono font-bold bg-white text-amber-900 px-3 py-1 rounded-lg border border-amber-200/80 shadow-xs">
+                  <span className="text-xs font-mono font-bold bg-white text-[#525252] px-3 py-1 rounded-lg border border-black/[0.08] shadow-xs">
                     {filteredReservedOrders.length} affichée{filteredReservedOrders.length > 1 ? "s" : ""} / {reservedOrders.length} • {fmt(filteredReservedOrders.reduce((a, o) => a + (o.total_amount || 0), 0))} F
                   </span>
                 </div>
               </div>
 
               {/* BARRE DE FILTRES DÉDIÉE À LA SECTION RÉSERVATIONS */}
-              <div className="bg-amber-50/30 px-4 py-2.5 border-b border-amber-100 flex flex-wrap items-center gap-2 text-xs">
+              <div className="bg-[#fafafa] px-4 py-2.5 border-b border-black/[0.08] flex flex-wrap items-center gap-2 text-xs">
                 <div className="relative flex-1 min-w-[200px]">
                   <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
@@ -1096,14 +1096,14 @@ export default function OrdersPage() {
 
                 {/* Filtre spécial Échéance / Paie */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-amber-800 uppercase flex items-center gap-1">
-                    <CalendarClock className="w-3 h-3 text-amber-600" />
+                  <span className="text-[11px] font-bold text-[#525252] uppercase flex items-center gap-1">
+                    <CalendarClock className="w-3 h-3 text-[#525252]" />
                     <span>Échéance :</span>
                   </span>
                   <select
                     value={reservedFilters.period}
                     onChange={(e) => setReservedFilters(prev => ({ ...prev, period: e.target.value }))}
-                    className="px-2.5 py-1.5 rounded-lg border border-amber-200 bg-white text-amber-900 text-xs font-bold focus:outline-none focus:border-amber-500 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg border border-black/[0.08] bg-white text-[#525252] text-xs font-bold focus:outline-none focus:border-amber-500 cursor-pointer"
                   >
                     <option value="all">Toutes les échéances</option>
                     <option value="payday">💰 Paie / Fin de mois (25 - 31)</option>
@@ -1165,36 +1165,36 @@ export default function OrdersPage() {
               SECTION 3 DU TABLEAU : LES MISES À PLUS TARD
              ═══════════════════════════════════════════════════════════ */}
           {(triageFilter === "all" || triageFilter === "postponed") && (
-            <div className="card-figma overflow-hidden border-purple-200/80 shadow-xs">
+            <div className="card-figma overflow-hidden border-black/[0.08] shadow-xs">
 
               {/* En-tête de la section Mises à plus tard */}
-              <div className="bg-purple-50/90 px-5 py-3.5 border-b border-purple-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="bg-[#fafafa] px-5 py-3.5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  <div className="w-7 h-7 rounded-lg bg-[#14281D] text-white flex items-center justify-center font-bold text-xs shadow-xs">
                     <CalendarClock className="w-4 h-4" />
                   </div>
                   <div>
                     <h2 className="font-display font-bold text-sm text-purple-950 flex items-center gap-2">
                       <span>Section 3 • Mises à plus tard</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-200/80 text-purple-900 font-bold">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#e5e5e5] text-[#171717] font-bold">
                         Clients à relancer
                       </span>
                     </h2>
-                    <p className="text-[11px] text-purple-800">
+                    <p className="text-[11px] text-[#171717]">
                       Clients ayant demandé un rappel ou injoignables lors du premier appel.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-end sm:self-auto">
-                  <span className="text-xs font-mono font-bold bg-white text-purple-900 px-3 py-1 rounded-lg border border-purple-200/80 shadow-xs">
+                  <span className="text-xs font-mono font-bold bg-white text-[#171717] px-3 py-1 rounded-lg border border-black/[0.08] shadow-xs">
                     {filteredPostponedOrders.length} affichée{filteredPostponedOrders.length > 1 ? "s" : ""} / {postponedOrders.length} • {fmt(filteredPostponedOrders.reduce((a, o) => a + (o.total_amount || 0), 0))} F
                   </span>
                 </div>
               </div>
 
               {/* BARRE DE FILTRES DÉDIÉE À LA SECTION MISES À PLUS TARD */}
-              <div className="bg-purple-50/30 px-4 py-2.5 border-b border-purple-100 flex flex-wrap items-center gap-2 text-xs">
+              <div className="bg-[#fafafa] px-4 py-2.5 border-b border-black/[0.08] flex flex-wrap items-center gap-2 text-xs">
                 <div className="relative flex-1 min-w-[200px]">
                   <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
@@ -1317,7 +1317,7 @@ export default function OrdersPage() {
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#f4f4f5] text-[#525252] flex items-center justify-center font-bold">
                   <Bookmark className="w-4 h-4" />
                 </div>
                 <div>
@@ -1371,7 +1371,7 @@ export default function OrdersPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-xs active:scale-[0.97] transition-all"
+                  className="px-4 py-2 rounded-xl bg-[#171717] hover:bg-[#171717] text-white font-bold shadow-xs active:scale-[0.97] transition-all"
                 >
                   Enregistrer
                 </button>
@@ -1458,7 +1458,7 @@ export default function OrdersPage() {
                     onChange={(e) => setAutoMarkShipped(e.target.checked)}
                     className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer"
                   />
-                  <span>Passer automatiquement la commande en statut <strong className="text-sky-700 font-semibold">« 🚚 En cours livreur »</strong></span>
+                  <span>Passer automatiquement la commande en statut <strong className="text-[#171717] font-semibold">« 🚚 En cours livreur »</strong></span>
                 </label>
               </div>
 
@@ -1497,7 +1497,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => handleSendDispatch(activeText)}
-                  className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-slate-950 font-black text-xs sm:text-sm py-3 px-4 rounded-xl shadow-[0_8px_20px_-4px_rgba(37,211,102,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                  className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-slate-950 font-semibold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-[0_8px_20px_-4px_rgba(37,211,102,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                 >
                   <Send className="w-4 h-4 fill-current" />
                   <span>
@@ -1581,7 +1581,7 @@ export default function OrdersPage() {
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "reserved" }))}
                     className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "reserved"
-                        ? "bg-amber-500 text-white border-amber-500 shadow-xs"
+                        ? "bg-[#171717] text-white border-amber-500 shadow-xs"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                       }`}
                   >
@@ -1591,7 +1591,7 @@ export default function OrdersPage() {
                     type="button"
                     onClick={() => setManualForm(prev => ({ ...prev, status: "postponed" }))}
                     className={`py-2 px-1 rounded-xl border text-[11px] font-bold text-center transition-all ${manualForm.status === "postponed"
-                        ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                        ? "bg-[#14281D] text-white border-purple-600 shadow-xs"
                         : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                       }`}
                   >
@@ -1659,7 +1659,7 @@ export default function OrdersPage() {
               {/* Si réservation ou report : champ date */}
               {(manualForm.status === "reserved" || manualForm.status === "postponed") && (
                 <div>
-                  <label className="font-bold text-amber-800 block mb-1">
+                  <label className="font-bold text-[#525252] block mb-1">
                     Date prévue / Note de rappel :
                   </label>
                   <input
@@ -1667,7 +1667,7 @@ export default function OrdersPage() {
                     placeholder="Ex: Paie du 28, Rappeler samedi 10h..."
                     value={manualForm.reservation_date}
                     onChange={(e) => setManualForm({ ...manualForm, reservation_date: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-amber-300 bg-amber-50/30 text-xs focus:border-amber-500 outline-none"
+                    className="w-full px-3.5 py-2 rounded-xl border border-black/[0.08] bg-[#fafafa] text-xs focus:border-amber-500 outline-none"
                   />
                 </div>
               )}
@@ -1730,7 +1730,7 @@ export default function OrdersPage() {
   function renderOrderTable(orderList: OrderItem[], context: "confirmed" | "reserved" | "postponed" | "global") {
     if (loading) {
       return (
-        <div className="p-8 text-center text-slate-400 animate-pulse text-xs">
+        <div className="p-8 text-center text-slate-400 text-xs">
           Chargement des commandes en temps réel...
         </div>
       );
@@ -1812,10 +1812,10 @@ export default function OrdersPage() {
                           </a>
                           <a
                             href={`tel:${formatBeninPhoneForCall(order.customer_phone)}`}
-                            className="text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold border border-blue-200/60 inline-flex items-center gap-0.5 transition-colors"
+                            className="text-[#171717] hover:text-[#171717] bg-[#f4f4f5] hover:bg-[#f4f4f5] px-1.5 py-0.5 rounded text-[10px] font-bold border border-black/[0.08] inline-flex items-center gap-0.5 transition-colors"
                             title="Appeler directement ce client"
                           >
-                            <Phone className="w-2.5 h-2.5 text-blue-600" />
+                            <Phone className="w-2.5 h-2.5 text-[#171717]" />
                             <span>Appeler</span>
                           </a>
                         </>
@@ -1855,8 +1855,8 @@ export default function OrdersPage() {
                   {/* 6. DATE / NOTE DE RÉSERVATION */}
                   <td className="py-3 px-4 whitespace-nowrap">
                     {order.reservation_date ? (
-                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-semibold">
-                        <CalendarClock className="w-3 h-3 text-amber-600" />
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#f4f4f5] text-[#525252] border border-black/[0.08] text-[11px] font-semibold">
+                        <CalendarClock className="w-3 h-3 text-[#525252]" />
                         <span>{order.reservation_date}</span>
                       </div>
                     ) : (
@@ -1878,9 +1878,9 @@ export default function OrdersPage() {
                       disabled={updatingId === order.id}
                       onChange={(e) => handleStatusChange(order.id, e.target.value)}
                       className={`text-xs font-bold px-2.5 py-1 rounded-full border outline-none cursor-pointer transition-all ${order.status === "confirmed" ? "bg-emerald-50 text-emerald-800 border-emerald-300" :
-                          order.status === "reserved" ? "bg-amber-50 text-amber-800 border-amber-300" :
-                            order.status === "postponed" ? "bg-purple-50 text-purple-800 border-purple-300" :
-                              order.status === "shipped" ? "bg-sky-50 text-sky-800 border-sky-300" :
+                          order.status === "reserved" ? "bg-[#f4f4f5] text-[#525252] border-black/[0.08]" :
+                            order.status === "postponed" ? "bg-[#f4f4f5] text-[#171717] border-black/[0.08]" :
+                              order.status === "shipped" ? "bg-[#f4f4f5] text-[#171717] border-black/[0.08]" :
                                 order.status === "delivered" ? "bg-emerald-100 text-emerald-900 border-emerald-400" :
                                   order.status === "cancelled" ? "bg-rose-50 text-rose-800 border-rose-300" :
                                     "bg-slate-100 text-slate-700 border-slate-200"
@@ -1911,7 +1911,7 @@ export default function OrdersPage() {
                           className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-xs ${
                             order.status === "confirmed"
                               ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                              : "bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200"
+                              : "bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#171717] border border-black/[0.08]"
                           }`}
                           title="Générer la fiche de livraison et l'envoyer au livreur sur WhatsApp"
                         >
@@ -1944,7 +1944,7 @@ export default function OrdersPage() {
                               notes: order.notes || ""
                             });
                           }}
-                          className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer"
+                          className="px-2 py-1 bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#525252] border border-black/[0.08] rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer"
                           title="Mettre en réservation pour plus tard"
                         >
                           <Bookmark className="w-3 h-3" />
@@ -1957,7 +1957,7 @@ export default function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => handleStatusChange(order.id, "postponed")}
-                          className="px-2 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer"
+                          className="px-2 py-1 bg-[#f4f4f5] hover:bg-[#f4f4f5] text-[#171717] border border-black/[0.08] rounded-lg text-[10.5px] font-bold inline-flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer"
                           title="Déplacer dans les reports / rappels plus tard"
                         >
                           <Clock className="w-3 h-3" />
@@ -1976,7 +1976,7 @@ export default function OrdersPage() {
                               notes: order.notes || ""
                             });
                           }}
-                          className="p-1 text-slate-400 hover:text-amber-600 rounded-md hover:bg-amber-50"
+                          className="p-1 text-slate-400 hover:text-[#525252] rounded-md hover:bg-[#f4f4f5]"
                           title="Modifier la date ou note de réservation"
                         >
                           <CalendarClock className="w-3.5 h-3.5" />

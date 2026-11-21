@@ -257,7 +257,7 @@ export default function ProspectsPage() {
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
               Relances Effectuées
             </span>
-            <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center border border-sky-100">
+            <div className="w-7 h-7 rounded-lg bg-[#f4f4f5] text-[#171717] flex items-center justify-center border border-black/[0.08]">
               <MessageSquare className="w-3.5 h-3.5 stroke-[2]" />
             </div>
           </div>
@@ -375,12 +375,12 @@ export default function ProspectsPage() {
                       {/* Statut Badge */}
                       {lead.status === "abandoned" && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                           Abandonné
                         </span>
                       )}
                       {lead.status === "contacted" && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-semibold bg-[#f4f4f5] text-[#171717] border border-black/[0.08]">
                           Contacté
                         </span>
                       )}

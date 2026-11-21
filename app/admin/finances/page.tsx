@@ -460,7 +460,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
               <Wallet className="w-5 h-5 stroke-[2]" />
             </span>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight flex items-center gap-2">
                 Finances & Rentabilité Réelle
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -494,7 +494,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
             title="Rafraîchir les données"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-indigo-600" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-[#171717]" : ""}`} />
           </button>
 
           <button
@@ -524,7 +524,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
               <Wallet className="w-3.5 h-3.5 text-emerald-600" />
               Suivi de Ma Caisse (Argent en Poche)
             </span>
-            <h2 className="text-base sm:text-lg font-extrabold text-slate-900">
+            <h2 className="text-base sm:text-lg font-semibold text-slate-900">
               Capital de départ − Achats/Dépenses + Ventes encaissées = Ce qu&apos;il te reste en poche
             </h2>
           </div>
@@ -586,7 +586,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               1. Capital de Départ
             </div>
-            <div className="mt-1.5 text-2xl font-black font-mono text-slate-900">
+            <div className="mt-1.5 text-2xl font-semibold font-mono text-slate-900">
               {fmt(startingCapital)} <span className="text-xs font-bold text-slate-500">FCFA</span>
             </div>
             <div className="text-[11px] text-slate-500 mt-1">
@@ -595,11 +595,11 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
           </div>
 
           {/* 2. Total Achats & Dépenses */}
-          <div className="p-4 rounded-2xl bg-rose-50/50 border border-rose-200/70">
+          <div className="p-4 rounded-2xl bg-[#fafafa] border border-rose-200/70">
             <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wider">
               2. Sorties (Achats &amp; Frais)
             </div>
-            <div className="mt-1.5 text-2xl font-black font-mono text-rose-600">
+            <div className="mt-1.5 text-2xl font-semibold font-mono text-rose-600">
               − {fmt(allTimeExpenses)} <span className="text-xs font-bold text-rose-400">FCFA</span>
             </div>
             <div className="text-[11px] text-slate-500 mt-1">
@@ -612,7 +612,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
               3. Entrées (Ventes Encaissées)
             </div>
-            <div className="mt-1.5 text-2xl font-black font-mono text-emerald-600">
+            <div className="mt-1.5 text-2xl font-semibold font-mono text-emerald-600">
               + {fmt(allTimeSales)} <span className="text-xs font-bold text-emerald-500">FCFA</span>
             </div>
             <div className="text-[11px] text-slate-500 mt-1">
@@ -625,15 +625,15 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             className={`p-4 rounded-2xl border-2 ${
               cashInPocket >= startingCapital
                 ? "bg-emerald-50/80 border-emerald-400"
-                : "bg-amber-50/70 border-amber-300"
+                : "bg-[#fafafa] border-black/[0.08]"
             }`}
           >
-            <div className="text-[11px] font-extrabold text-slate-800 uppercase tracking-wider">
+            <div className="text-[11px] font-semibold text-slate-800 uppercase tracking-wider">
               4. Reste dans ta Poche
             </div>
             <div
-              className={`mt-1.5 text-2xl sm:text-3xl font-black font-mono ${
-                cashInPocket >= startingCapital ? "text-emerald-700" : "text-amber-800"
+              className={`mt-1.5 text-2xl sm:text-3xl font-semibold font-mono ${
+                cashInPocket >= startingCapital ? "text-emerald-700" : "text-[#525252]"
               }`}
             >
               {fmt(cashInPocket)} <span className="text-xs font-bold">FCFA</span>
@@ -710,7 +710,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             </span>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-slate-900">
+            <div className="text-2xl sm:text-3xl font-semibold font-mono tracking-tight text-slate-900">
               {fmt(totalRevenue)} <span className="text-sm font-bold text-slate-500">FCFA</span>
             </div>
             <div className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
@@ -729,7 +729,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
             </span>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-rose-600">
+            <div className="text-2xl sm:text-3xl font-semibold font-mono tracking-tight text-rose-600">
               {fmt(totalExpenses)} <span className="text-sm font-bold text-slate-500">FCFA</span>
             </div>
             <div className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
@@ -742,18 +742,18 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         <div className={`p-5 rounded-3xl border shadow-xs flex flex-col justify-between relative overflow-hidden transition-all ${
           netProfit >= 0
             ? "bg-emerald-950 text-white border-emerald-900"
-            : "bg-rose-950 text-white border-rose-900"
+            : "bg-[#171717] text-white border-[#171717]"
         }`}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-200/90">Bénéfice Net Réel</span>
             <span className={`w-8 h-8 rounded-xl flex items-center justify-center text-white ${
-              netProfit >= 0 ? "bg-emerald-800" : "bg-rose-800"
+              netProfit >= 0 ? "bg-emerald-800" : "bg-[#262626]"
             }`}>
               <DollarSign className="w-4 h-4 stroke-[2.5]" />
             </span>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white">
+            <div className="text-2xl sm:text-3xl font-semibold font-mono tracking-tight text-white">
               {netProfit >= 0 ? "+" : ""}{fmt(netProfit)} <span className="text-sm font-medium text-slate-300">FCFA</span>
             </div>
             <div className="text-xs mt-1 flex items-center gap-1.5 opacity-90">
@@ -766,13 +766,13 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
         <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col justify-between relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Marge & ROAS Réel</span>
-            <span className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <span className="w-8 h-8 rounded-xl bg-[#f4f4f5] text-[#171717] flex items-center justify-center">
               <PieChart className="w-4 h-4 stroke-[2]" />
             </span>
           </div>
           <div className="mt-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black font-mono tracking-tight text-slate-900">
+              <span className="text-2xl sm:text-3xl font-semibold font-mono tracking-tight text-slate-900">
                 {netMargin.toFixed(1)}%
               </span>
               <span className="text-xs font-bold text-slate-500">Marge Nette</span>
@@ -789,7 +789,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-indigo-600" />
+            <PieChart className="w-4 h-4 text-[#171717]" />
             <h2 className="text-sm sm:text-base font-bold text-slate-900">
               Où part votre argent ? (Ventilation par poste de dépense)
             </h2>
@@ -912,7 +912,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                         </td>
                         <td className="py-3 px-4">
                           <span
-                            className={`font-mono font-black px-2 py-0.5 rounded-lg text-xs ${
+                            className={`font-mono font-semibold px-2 py-0.5 rounded-lg text-xs ${
                               profit >= 0
                                 ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                                 : "bg-rose-50 text-rose-800 border border-rose-200"
@@ -991,7 +991,7 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                         <td className="py-3 px-4 text-slate-500 text-xs">
                           {exp.product_slug || "Général"}
                         </td>
-                        <td className="py-3 px-4 font-mono font-black text-rose-600 whitespace-nowrap">
+                        <td className="py-3 px-4 font-mono font-semibold text-rose-600 whitespace-nowrap">
                           -{fmt(exp.amount)} FCFA
                         </td>
                         <td className="py-3 px-4 text-right">
@@ -1068,12 +1068,12 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                             Commande site #{sale.order_number || ""}
                           </span>
                         ) : (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f4f4f5] text-[#171717] border border-black/[0.08]">
                             Saisie manuelle directe
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 font-mono font-black text-emerald-700 whitespace-nowrap">
+                      <td className="py-3 px-4 font-mono font-semibold text-emerald-700 whitespace-nowrap">
                         +{fmt(sale.amount)} FCFA
                       </td>
                       <td className="py-3 px-4 text-right">
