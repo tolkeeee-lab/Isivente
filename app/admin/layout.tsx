@@ -102,12 +102,10 @@ export default function AdminLayout({
     };
   }, [router]);
 
-  // Fermer le tiroir mobile lors d'un changement de route
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // ── NAVIGATION STRUCTURÉE PAR PÔLES (STANDARD LINEAR / SHOPIFY ADMIN) ──
   const navGroups: NavGroup[] = [
     {
       title: "Opérations",
@@ -137,7 +135,7 @@ export default function AdminLayout({
       items: [
         {
           href: "/admin/landings",
-          label: "Pages Produits",
+          label: "Pages produits",
           icon: Store,
           matcher: (p) => p.startsWith("/admin/landings") || p.startsWith("/admin/studio"),
         },
@@ -167,10 +165,10 @@ export default function AdminLayout({
 
   if (!authReady) {
     return (
-      <div className="min-h-screen bg-[#F8F9FB] flex flex-col items-center justify-center p-6 text-slate-600 font-sans">
-        <div className="w-7 h-7 rounded-full border-2 border-slate-200 border-t-slate-900 animate-spin mb-3" />
-        <p className="text-xs font-medium text-slate-500">
-          Chargement de votre espace vendeur...
+      <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center p-6 text-[#525252] font-sans">
+        <div className="w-6 h-6 rounded-full border-2 border-black/[0.08] border-t-[#171717] animate-spin mb-3" />
+        <p className="text-[13px] font-normal text-[#737373]">
+          Chargement de votre espace vendeur
         </p>
       </div>
     );
@@ -182,16 +180,16 @@ export default function AdminLayout({
       `Bonjour Isivente, ma boutique "${tenantCtx.storeName}" (${tenantCtx.email}) est en pause. Je souhaite régler mon abonnement Mobile Money pour la réactiver.`
     )}`;
     return (
-      <div className="min-h-screen bg-[#F8F9FB] flex flex-col items-center justify-center p-4 font-sans text-slate-900">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200 shadow-sm p-8 text-center space-y-5">
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto">
-            <PauseCircle className="w-6 h-6" />
+      <div className="min-h-screen bg-[#fafafa] flex flex-col items-center justify-center p-6 font-sans text-[#171717]">
+        <div className="max-w-md w-full bg-white rounded-[16px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] p-8 text-center space-y-5">
+          <div className="w-10 h-10 rounded-[10px] bg-[#f4f4f5] text-[#dc2626] flex items-center justify-center mx-auto">
+            <PauseCircle className="w-5 h-5 stroke-[1.5]" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xl font-extrabold tracking-tight text-slate-900">
-              Votre boutique est en pause
+            <h1 className="text-[20px] font-medium text-[#171717] leading-snug">
+              Boutique en pause
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="text-[14px] text-[#525252] leading-relaxed">
               L&apos;accès à votre espace vendeur et vos pages produits sont temporairement suspendus en attente du règlement de votre abonnement Isivente.
             </p>
           </div>
@@ -199,14 +197,14 @@ export default function AdminLayout({
             href={waPayUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm inline-flex items-center justify-center gap-2 shadow-sm transition-colors"
+            className="w-full h-11 px-4 rounded-[8px] bg-[#15803d] hover:bg-[#166534] text-white font-medium text-[14px] inline-flex items-center justify-center transition-colors duration-150"
           >
-            <span>Activer mon abonnement sur WhatsApp</span>
+            Activer mon abonnement sur WhatsApp
           </a>
           <button
             type="button"
             onClick={handleSignOut}
-            className="text-xs font-semibold text-slate-500 hover:text-slate-900 underline cursor-pointer"
+            className="text-[13px] font-normal text-[#737373] hover:text-[#171717] transition-colors duration-150 cursor-pointer"
           >
             Se déconnecter
           </button>
@@ -218,51 +216,51 @@ export default function AdminLayout({
   const displayBrand = tenantCtx?.storeName || "Isivente";
 
   const renderSidebarContent = () => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-white">
       {/* En-tête Boutique */}
-      <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200/70 shrink-0">
+      <div className="h-16 px-4 flex items-center justify-between border-b border-black/[0.08] shrink-0">
         <Link href="/admin" className="flex items-center gap-2.5 min-w-0">
-          <span className="w-8 h-8 rounded-xl bg-slate-950 text-white flex items-center justify-center font-extrabold text-xs shrink-0 shadow-xs">
+          <span className="w-7 h-7 rounded-[6px] bg-[#171717] text-white flex items-center justify-center font-medium text-[12px] shrink-0">
             {displayBrand.slice(0, 2).toUpperCase()}
           </span>
           <div className="min-w-0">
-            <span className="font-bold text-sm text-slate-950 tracking-tight truncate block leading-tight">
+            <span className="font-medium text-[15px] text-[#171717] truncate block leading-none">
               {displayBrand}
             </span>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
-              {tenantCtx?.isFounder ? "Fondateur" : "Espace Vendeur"}
+            <span className="text-[12px] font-normal text-[#737373] block mt-1 leading-none">
+              {tenantCtx?.isFounder ? "Fondateur" : "Vendeur"}
             </span>
           </div>
         </Link>
         <button
           type="button"
           onClick={() => setMobileMenuOpen(false)}
-          className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+          className="lg:hidden p-1.5 rounded-[8px] text-[#737373] hover:text-[#171717] hover:bg-[#f4f4f5] transition-colors duration-150"
           aria-label="Fermer le menu"
         >
-          <X className="w-4 h-4" />
+          <X className="w-4 h-4 stroke-[1.5]" />
         </button>
       </div>
 
-      {/* Bouton action rapide */}
-      <div className="px-3 pt-4 pb-2">
+      {/* Action principale */}
+      <div className="px-4 pt-4">
         <Link
           href="/admin/landings"
-          className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold transition-all shadow-xs"
+          className="w-full h-9 inline-flex items-center justify-center gap-2 px-3 rounded-[8px] bg-[#171717] hover:bg-[#262626] text-white text-[13px] font-medium transition-colors duration-150"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-4 h-4 stroke-[1.5]" />
           <span>Nouvelle page produit</span>
         </Link>
       </div>
 
-      {/* Groupes de navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-5">
+      {/* Groupes de navigation : 24px au-dessus du titre, 8px en-dessous, lignes 36px */}
+      <nav className="flex-1 overflow-y-auto px-4 pb-4">
         {navGroups.map((group) => (
-          <div key={group.title}>
-            <div className="px-2.5 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <div key={group.title} className="mt-6">
+            <div className="px-2.5 mb-2 text-[12px] font-normal text-[#737373]">
               {group.title}
             </div>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {group.items.map((item) => {
                 const isActive = item.matcher(pathname);
                 const Icon = item.icon;
@@ -270,21 +268,18 @@ export default function AdminLayout({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-[13px] font-semibold transition-all ${
+                    className={`h-9 flex items-center gap-2.5 px-2.5 rounded-[8px] text-[14px] transition-colors duration-150 ${
                       isActive
-                        ? "bg-slate-900/5 text-slate-950 font-bold"
-                        : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/70"
+                        ? "bg-[#f4f4f5] text-[#171717] font-medium"
+                        : "text-[#525252] hover:text-[#171717] hover:bg-[#f4f4f5]/60 font-normal"
                     }`}
                   >
                     <Icon
-                      className={`w-4 h-4 shrink-0 ${
-                        isActive ? "text-slate-950 stroke-[2.2]" : "text-slate-400 stroke-[1.75]"
+                      className={`w-4 h-4 shrink-0 stroke-[1.5] ${
+                        isActive ? "text-[#171717]" : "text-[#737373]"
                       }`}
                     />
                     <span className="truncate">{item.label}</span>
-                    {isActive && (
-                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-slate-950" />
-                    )}
                   </Link>
                 );
               })}
@@ -293,40 +288,40 @@ export default function AdminLayout({
         ))}
       </nav>
 
-      {/* Pied de Sidebar : Réglages & Déconnexion */}
-      <div className="p-3 border-t border-slate-200/70 space-y-1 shrink-0 bg-white">
+      {/* Pied de Sidebar */}
+      <div className="p-4 border-t border-black/[0.08] space-y-1 shrink-0">
         <Link
           href="/admin/settings"
-          className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-[13px] font-semibold transition-all ${
+          className={`h-9 flex items-center gap-2.5 px-2.5 rounded-[8px] text-[14px] transition-colors duration-150 ${
             pathname.startsWith("/admin/settings")
-              ? "bg-slate-900/5 text-slate-950 font-bold"
-              : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/70"
+              ? "bg-[#f4f4f5] text-[#171717] font-medium"
+              : "text-[#525252] hover:text-[#171717] hover:bg-[#f4f4f5]/60 font-normal"
           }`}
         >
-          <Settings className="w-4 h-4 text-slate-400" />
-          <span>Ma Boutique</span>
+          <Settings className="w-4 h-4 shrink-0 stroke-[1.5] text-[#737373]" />
+          <span>Ma boutique</span>
         </Link>
 
         {tenantCtx?.isFounder && (
           <Link
             href="/p/voiture-camera"
             target="_blank"
-            className="flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-[13px] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/70 transition-all"
+            className="h-9 flex items-center justify-between gap-2 px-2.5 rounded-[8px] text-[14px] font-normal text-[#525252] hover:text-[#171717] hover:bg-[#f4f4f5]/60 transition-colors duration-150"
           >
-            <span className="flex items-center gap-2.5">
-              <Store className="w-4 h-4 text-slate-400" />
-              <span>Voir la vitrine</span>
+            <span className="flex items-center gap-2.5 min-w-0">
+              <Store className="w-4 h-4 shrink-0 stroke-[1.5] text-[#737373]" />
+              <span className="truncate">Vitrine publique</span>
             </span>
-            <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+            <ExternalLink className="w-3.5 h-3.5 shrink-0 stroke-[1.5] text-[#737373]" />
           </Link>
         )}
 
         <button
           type="button"
           onClick={handleSignOut}
-          className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-[13px] font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50/70 transition-all cursor-pointer"
+          className="w-full h-9 flex items-center gap-2.5 px-2.5 rounded-[8px] text-[14px] font-normal text-[#737373] hover:text-[#dc2626] hover:bg-[#f4f4f5]/60 transition-colors duration-150 cursor-pointer"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 shrink-0 stroke-[1.5]" />
           <span>Déconnexion</span>
         </button>
       </div>
@@ -334,44 +329,44 @@ export default function AdminLayout({
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB] text-slate-900 font-sans antialiased flex">
-      {/* ── SIDEBAR DESKTOP FIXE (240px) ── */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:fixed lg:inset-y-0 lg:left-0 bg-white border-r border-slate-200/80 z-40">
+    <div className="min-h-screen bg-[#fafafa] text-[#171717] font-sans antialiased flex">
+      {/* Sidebar desktop 256px */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-white border-r border-black/[0.08] z-40">
         {renderSidebarContent()}
       </aside>
 
-      {/* ── TIROIR MOBILE (DRAWER) ── */}
+      {/* Tiroir mobile */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-slate-950/35 backdrop-blur-[2px]"
+            className="fixed inset-0 bg-black/25"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="relative w-64 max-w-[80vw] bg-white h-full shadow-xl border-r border-slate-200 z-10">
+          <aside className="relative w-64 max-w-[80vw] bg-white h-full border-r border-black/[0.08] z-10">
             {renderSidebarContent()}
           </aside>
         </div>
       )}
 
-      {/* ── ZONE PRINCIPALE ── */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-60">
-        {/* Barre supérieure Mobile / Tablette uniquement */}
-        <header className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
-          <div className="px-3 sm:px-5 h-14 flex items-center justify-between gap-2">
+      {/* Zone principale */}
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
+        {/* Barre supérieure mobile uniquement */}
+        <header className="lg:hidden sticky top-0 z-30 bg-white border-b border-black/[0.08]">
+          <div className="px-4 h-14 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5 min-w-0">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="p-2 -ml-1 rounded-xl text-slate-600 hover:text-slate-950 hover:bg-slate-100"
+                className="p-2 -ml-2 rounded-[8px] text-[#525252] hover:text-[#171717] hover:bg-[#f4f4f5] transition-colors duration-150"
                 aria-label="Ouvrir le menu"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-4 h-4 stroke-[1.5]" />
               </button>
               <Link href="/admin" className="flex items-center gap-2 min-w-0">
-                <span className="w-7 h-7 rounded-lg bg-slate-950 text-white flex items-center justify-center font-extrabold text-[11px] shrink-0">
+                <span className="w-6 h-6 rounded-[6px] bg-[#171717] text-white flex items-center justify-center font-medium text-[11px] shrink-0">
                   {displayBrand.slice(0, 2).toUpperCase()}
                 </span>
-                <span className="font-bold text-sm text-slate-950 tracking-tight truncate max-w-[140px]">
+                <span className="font-medium text-[15px] text-[#171717] truncate max-w-[150px]">
                   {displayBrand}
                 </span>
               </Link>
@@ -379,15 +374,14 @@ export default function AdminLayout({
 
             <Link
               href="/admin/settings"
-              className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:text-slate-950 hover:bg-slate-50"
+              className="p-2 rounded-[8px] border border-black/[0.08] text-[#525252] hover:text-[#171717] hover:bg-[#f4f4f5] transition-colors duration-150"
               title="Réglages de ma boutique"
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-4 h-4 stroke-[1.5]" />
             </Link>
           </div>
 
-          {/* Raccourcis horizontaux rapides sur mobile */}
-          <div className="border-t border-slate-100 px-3 py-2 overflow-x-auto scrollbar-none flex items-center gap-1.5">
+          <div className="border-t border-black/[0.06] px-4 py-2 overflow-x-auto scrollbar-none flex items-center gap-1.5">
             {allNavItems.map((item) => {
               const isActive = item.matcher(pathname);
               const Icon = item.icon;
@@ -395,13 +389,13 @@ export default function AdminLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
+                  className={`h-8 inline-flex items-center gap-1.5 px-3 rounded-[8px] text-[13px] transition-colors duration-150 shrink-0 whitespace-nowrap ${
                     isActive
-                      ? "bg-slate-950 text-white"
-                      : "text-slate-600 hover:text-slate-950 bg-slate-100/80"
+                      ? "bg-[#171717] text-white font-medium"
+                      : "text-[#525252] hover:text-[#171717] bg-[#f4f4f5] font-normal"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <Icon className="w-4 h-4 shrink-0 stroke-[1.5]" />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -409,16 +403,16 @@ export default function AdminLayout({
           </div>
         </header>
 
-        {/* Bandeau d'onboarding doux si nouvel utilisateur sans boutique configurée */}
+        {/* Bandeau d'onboarding si boutique non configurée */}
         {tenantCtx && !tenantCtx.storeId && !pathname.startsWith("/admin/settings") && (
-          <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5">
-            <div className="bg-slate-950 text-white rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm">
-              <span className="text-slate-200 leading-relaxed">
-                <strong className="text-white">Bienvenue sur Isivente.</strong> Finalisez les réglages de votre boutique (nom, WhatsApp, pays) pour publier vos premières pages produits.
+          <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+            <div className="bg-white border border-black/[0.08] rounded-[14px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[13px] shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+              <span className="text-[#525252]">
+                <strong className="font-medium text-[#171717]">Configuration requise</strong> — renseignez le nom de votre boutique et votre numéro WhatsApp pour publier vos pages produits
               </span>
               <Link
                 href="/admin/settings"
-                className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-bold whitespace-nowrap self-start sm:self-auto transition-colors"
+                className="h-9 px-4 rounded-[8px] bg-[#171717] hover:bg-[#262626] text-white font-medium text-[13px] inline-flex items-center justify-center whitespace-nowrap self-start sm:self-auto transition-colors duration-150"
               >
                 Configurer ma boutique
               </Link>
@@ -426,8 +420,8 @@ export default function AdminLayout({
           </div>
         )}
 
-        {/* Contenu principal aéré */}
-        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Contenu principal fluide */}
+        <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
           {children}
         </main>
       </div>

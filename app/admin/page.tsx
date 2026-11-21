@@ -23,11 +23,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { formatBeninPhoneForWhatsApp } from "@/lib/phoneUtils";
 import {
-  TrendingUp,
-  Package,
-  MousePointerClick,
   RefreshCw,
-  AlertCircle,
   CheckCircle2,
   MessageSquare,
   ChevronRight,
@@ -35,9 +31,6 @@ import {
   ExternalLink,
   Copy,
   Check,
-  BarChart3,
-  Clock,
-  Wallet,
   ArrowUpRight,
 } from "lucide-react";
 import { getAdminDashboardProducts } from "@/lib/defaultCatalog";
@@ -82,7 +75,6 @@ export default function AdminOverviewPage() {
     [isFounder]
   );
 
-  // Produits de la boutique courante (catalogue fondateur ou produits Supabase du vendeur)
   const productsList = useMemo<DashboardProductItem[]>(() => {
     if (isFounder) {
       const seen = new Set(founderProducts.map((p) => p.slug));
@@ -92,7 +84,6 @@ export default function AdminOverviewPage() {
     return tenantProducts;
   }, [isFounder, founderProducts, tenantProducts]);
 
-  // ── Rapprochement Livraisons & CA Réel ──
   const [deliveredOverrides, setDeliveredOverrides] = useState<Record<string, number>>({});
   const [showOnlyWithOrders, setShowOnlyWithOrders] = useState<boolean>(true);
 
@@ -104,7 +95,6 @@ export default function AdminOverviewPage() {
     } catch {}
   }, [isFounder]);
 
-  // Charger les produits créés en base pour la boutique active
   useEffect(() => {
     let active = true;
     async function loadStoreProducts() {
@@ -284,9 +274,9 @@ export default function AdminOverviewPage() {
     if (mins < 1) return "À l'instant";
     if (mins < 60) return `Il y a ${mins} min`;
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `Il y a ${hours}h`;
+    if (hours < 24) return `Il y a ${hours} h`;
     const days = Math.floor(hours / 24);
-    return `Il y a ${days}j`;
+    return `Il y a ${days} j`;
   };
 
   const isWithinPeriod = (isoDate?: string) => {
@@ -359,6 +349,23 @@ export default function AdminOverviewPage() {
     };
   }, [filteredOrders, filteredLeads, orders]);
 
+  // Répartition visuelle du pipeline COD (le "Moment" visuel du dashboard)
+  const pipelineShare = useMemo(() => {
+    const delivered = realDeliveryReport.totalRealRevenue;
+    const confirmedNotDelivered = Math.max(0, metrics.confirmedRevenue - delivered);
+    const pending = metrics.pendingRevenue;
+    const total = delivered + confirmedNotDelivered + pending;
+    if (total <= 0) {
+      return { deliveredPct: 0, confirmedPct: 0, pendingPct: 0, total: 0 };
+    }
+    return {
+      deliveredPct: Math.round((delivered / total) * 100),
+      confirmedPct: Math.round((confirmedNotDelivered / total) * 100),
+      pendingPct: Math.round((pending / total) * 100),
+      total,
+    };
+  }, [realDeliveryReport.totalRealRevenue, metrics.confirmedRevenue, metrics.pendingRevenue]);
+
   const handleQuickConfirmOrder = async (order: OrderItem) => {
     const targetId = order.id || order.order_number;
     if (!targetId) return;
@@ -409,51 +416,24 @@ export default function AdminOverviewPage() {
     window.open(waUrl, "_blank");
   };
 
-  const statusBadge = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-            Validée
-          </span>
-        );
-      case "shipped":
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/80">
-            En livraison
-          </span>
-        );
-      case "delivered":
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-50 text-violet-700 border border-violet-200/80">
-            Livrée
-          </span>
-        );
-      case "reserved":
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
-            Réservation
-          </span>
-        );
-      case "postponed":
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
-            Reportée
-          </span>
-        );
-      case "cancelled":
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500">
-            Annulée
-          </span>
-        );
-      default:
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/80">
-            À confirmer
-          </span>
-        );
-    }
+  // Signature visuelle : pastille 6px + texte sobre aligné sans badges criards
+  const renderOrderStatus = (status: string) => {
+    const map: Record<string, { label: string; dot: string; text: string }> = {
+      confirmed: { label: "Validée", dot: "bg-[#15803d]", text: "text-[#171717]" },
+      shipped: { label: "En livraison", dot: "bg-[#525252]", text: "text-[#525252]" },
+      delivered: { label: "Livrée", dot: "bg-[#15803d]", text: "text-[#15803d]" },
+      reserved: { label: "Réservation", dot: "bg-[#525252]", text: "text-[#525252]" },
+      postponed: { label: "Reportée", dot: "bg-[#a3a3a3]", text: "text-[#737373]" },
+      cancelled: { label: "Annulée", dot: "bg-[#d4d4d4]", text: "text-[#737373]" },
+      pending: { label: "À confirmer", dot: "bg-[#d97706]", text: "text-[#171717]" },
+    };
+    const item = map[status] || map.pending;
+    return (
+      <span className={`inline-flex items-center gap-1.5 text-[12px] font-normal ${item.text}`}>
+        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${item.dot}`} />
+        <span>{item.label}</span>
+      </span>
+    );
   };
 
   const displayedOrders = useMemo(() => {
@@ -527,28 +507,24 @@ export default function AdminOverviewPage() {
     [leads]
   );
 
+  const periodLabel =
+    period === "today" ? "Aujourd'hui" : period === "7d" ? "7 derniers jours" : "Depuis le début";
+
   return (
-    <div className="space-y-6 pb-10">
-      {/* ── 1. EN-TÊTE ÉPURÉ (STYLE STRIPE / LINEAR) ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 pb-8">
+      {/* 1. En-tête de page */}
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-950 tracking-tight">
-              Tableau de bord
-            </h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              En direct
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Vue synthétique de vos ventes, relances et performances.
+          <h1 className="text-[28px] leading-[1.15] font-medium text-[#171717] tracking-[-0.02em]">
+            Tableau de bord
+          </h1>
+          <p className="text-[14px] font-normal text-[#737373] mt-1">
+            {periodLabel} · suivi des commandes et encaissements à la livraison
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Sélecteur de période */}
-          <div className="inline-flex p-1 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
+        <div className="flex items-center gap-2">
+          <div className="inline-flex p-1 rounded-[10px] bg-white border border-black/[0.08]">
             {(
               [
                 { id: "today", label: "Aujourd'hui" },
@@ -560,10 +536,10 @@ export default function AdminOverviewPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setPeriod(tab.id)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`h-7 px-3 rounded-[6px] text-[13px] transition-colors duration-150 cursor-pointer ${
                   period === tab.id
-                    ? "bg-slate-950 text-white"
-                    : "text-slate-500 hover:text-slate-900"
+                    ? "bg-[#f4f4f5] text-[#171717] font-medium"
+                    : "text-[#737373] hover:text-[#171717] font-normal"
                 }`}
               >
                 {tab.label}
@@ -578,165 +554,155 @@ export default function AdminOverviewPage() {
               loadAllData();
             }}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs"
-            title="Actualiser les données"
+            className="h-9 px-3 rounded-[8px] bg-white border border-black/[0.08] hover:bg-[#f4f4f5] text-[#525252] hover:text-[#171717] text-[13px] font-medium inline-flex items-center gap-2 transition-colors duration-150 cursor-pointer"
+            title="Actualiser"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${
-                isRefreshing ? "animate-spin text-slate-900" : "text-slate-500"
+              className={`w-4 h-4 stroke-[1.5] text-[#737373] ${
+                isRefreshing ? "animate-spin" : ""
               }`}
             />
             <span className="hidden sm:inline">Actualiser</span>
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* ── 2. LES 4 INDICATEURS CLÉS (GRILLE ÉPURÉE SANS BORDURES CRIARDES) ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {/* KPI 1 : CA Confirmé */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-500">
-              CA Confirmé
-            </span>
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
-            </span>
+      {/* 2. Quatre cartes chiffres (zéro icône décorative, chiffres tabulaires nets) */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] p-5 flex flex-col justify-between">
+          <span className="text-[13px] font-normal text-[#737373]">
+            CA confirmé
+          </span>
+          <div className="mt-3 text-[26px] sm:text-[28px] leading-none font-medium font-mono tabular-nums text-[#171717] truncate">
+            {loading ? "—" : `${fmt(metrics.confirmedRevenue)} F`}
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight truncate">
-              {loading ? "—" : fmt(metrics.confirmedRevenue)}
-              <span className="text-xs font-medium text-slate-400 font-sans ml-1">
-                F
-              </span>
-            </div>
-            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Encaissé réel</span>
-              <span className="font-semibold text-emerald-700 font-mono">
-                {loading ? "—" : fmt(realDeliveryReport.totalRealRevenue)} F
-              </span>
-            </div>
+          <div className="mt-3 pt-3 border-t border-black/[0.06] flex items-center justify-between text-[12px]">
+            <span className="text-[#737373]">Encaissé réel</span>
+            <span className="font-mono tabular-nums font-medium text-[#15803d]">
+              {loading ? "—" : `${fmt(realDeliveryReport.totalRealRevenue)} F`}
+            </span>
           </div>
         </div>
 
-        {/* KPI 2 : À Confirmer */}
         <Link
           href="/admin/orders"
-          className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 shadow-2xs flex flex-col justify-between transition-all group"
+          className="bg-white rounded-[14px] border border-black/[0.08] hover:border-black/[0.16] shadow-[0_1px_2px_rgba(0,0,0,0.05)] p-5 flex flex-col justify-between transition-colors duration-150"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-              {metrics.pendingOrdersCount > 0 && (
-                <span className="w-2 h-2 rounded-full bg-amber-500" />
-              )}
-              <span>À confirmer</span>
-            </span>
-            <span className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Package className="w-4 h-4" />
-            </span>
+          <span className="text-[13px] font-normal text-[#737373]">
+            À confirmer
+          </span>
+          <div className="mt-3 text-[26px] sm:text-[28px] leading-none font-medium font-mono tabular-nums text-[#171717]">
+            {loading ? "—" : metrics.pendingOrdersCount}
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight">
-              {loading ? "—" : metrics.pendingOrdersCount}
-              <span className="text-xs font-medium text-slate-400 font-sans ml-1.5">
-                commandes
-              </span>
-            </div>
-            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Potentiel</span>
-              <span className="font-semibold text-slate-900 font-mono">
-                {fmt(metrics.pendingRevenue)} F
-              </span>
-            </div>
+          <div className="mt-3 pt-3 border-t border-black/[0.06] flex items-center justify-between text-[12px]">
+            <span className="text-[#737373]">Montant en attente</span>
+            <span className="font-mono tabular-nums font-medium text-[#525252]">
+              {fmt(metrics.pendingRevenue)} F
+            </span>
           </div>
         </Link>
 
-        {/* KPI 3 : Paniers à Relancer */}
         <Link
           href="/admin/prospects"
-          className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 shadow-2xs flex flex-col justify-between transition-all group"
+          className="bg-white rounded-[14px] border border-black/[0.08] hover:border-black/[0.16] shadow-[0_1px_2px_rgba(0,0,0,0.05)] p-5 flex flex-col justify-between transition-colors duration-150"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-500">
-              Paniers à relancer
-            </span>
-            <span className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <AlertCircle className="w-4 h-4" />
-            </span>
+          <span className="text-[13px] font-normal text-[#737373]">
+            Paniers à relancer
+          </span>
+          <div className="mt-3 text-[26px] sm:text-[28px] leading-none font-medium font-mono tabular-nums text-[#171717]">
+            {loading ? "—" : metrics.abandonedLeadsCount}
           </div>
-          <div>
-            <div className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight">
-              {loading ? "—" : metrics.abandonedLeadsCount}
-              <span className="text-xs font-medium text-slate-400 font-sans ml-1.5">
-                prospects
-              </span>
-            </div>
-            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Récupérable</span>
-              <span className="font-semibold text-rose-600 font-mono">
-                {fmt(metrics.recoverableRevenue)} F
-              </span>
-            </div>
+          <div className="mt-3 pt-3 border-t border-black/[0.06] flex items-center justify-between text-[12px]">
+            <span className="text-[#737373]">Récupérable</span>
+            <span className="font-mono tabular-nums font-medium text-[#525252]">
+              {fmt(metrics.recoverableRevenue)} F
+            </span>
           </div>
         </Link>
 
-        {/* KPI 4 : Trafic & Clics */}
         <Link
           href="/admin/clicks"
-          className="bg-white rounded-2xl border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 shadow-2xs flex flex-col justify-between transition-all group"
+          className="bg-white rounded-[14px] border border-black/[0.08] hover:border-black/[0.16] shadow-[0_1px_2px_rgba(0,0,0,0.05)] p-5 flex flex-col justify-between transition-colors duration-150"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-500">
-              Trafic & Clics
-            </span>
-            <span className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <MousePointerClick className="w-4 h-4" />
-            </span>
+          <span className="text-[13px] font-normal text-[#737373]">
+            Visites boutique
+          </span>
+          <div className="mt-3 text-[26px] sm:text-[28px] leading-none font-medium font-mono tabular-nums text-[#171717]">
+            {loading
+              ? "—"
+              : fmt(period === "today" ? analytics.todayViews : analytics.totalViews)}
           </div>
-          <div>
-            <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-xl sm:text-2xl font-extrabold font-mono tabular-nums text-slate-950 tracking-tight">
-                {loading
-                  ? "—"
-                  : period === "today"
-                  ? analytics.todayViews
-                  : analytics.totalViews}
-              </span>
-              <span className="text-xs font-medium text-slate-400">visites</span>
-              {period !== "today" && analytics.todayViews > 0 && (
-                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                  +{analytics.todayViews} auj.
-                </span>
-              )}
-            </div>
-            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Clics CTA</span>
-              <span className="font-semibold text-slate-900 font-mono">
-                {period === "today" ? analytics.todayClicks : analytics.totalClicks} ({analytics.ctr.toFixed(1)}%)
-              </span>
-            </div>
+          <div className="mt-3 pt-3 border-t border-black/[0.06] flex items-center justify-between text-[12px]">
+            <span className="text-[#737373]">Clics commande</span>
+            <span className="font-mono tabular-nums font-medium text-[#525252]">
+              {period === "today" ? analytics.todayClicks : analytics.totalClicks} ({analytics.ctr.toFixed(1)}%)
+            </span>
           </div>
         </Link>
-      </div>
+      </section>
 
-      {/* ── 3. ACTIONS PRIORITAIRES : COMMANDES (GAUCHE) & RELANCES (DROITE) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* DERNIÈRES COMMANDES (7 cols) */}
-        <section className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* 2.5 Moment visuel : barre de répartition du pipeline COD */}
+      {pipelineShare.total > 0 && (
+        <section className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] px-5 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span className="text-[13px] font-medium text-[#171717]">
+              Répartition de la caisse COD
+            </span>
+            <div className="flex flex-wrap items-center gap-4 text-[12px] text-[#525252]">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#15803d]" />
+                <span>Encaissé {pipelineShare.deliveredPct}%</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#171717]" />
+                <span>Validé en cours {pipelineShare.confirmedPct}%</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#d4d4d4]" />
+                <span>À confirmer {pipelineShare.pendingPct}%</span>
+              </span>
+            </div>
+          </div>
+          <div className="h-2 w-full rounded-full bg-[#f4f4f5] overflow-hidden flex">
+            {pipelineShare.deliveredPct > 0 && (
+              <div
+                style={{ width: `${pipelineShare.deliveredPct}%` }}
+                className="h-full bg-[#15803d]"
+              />
+            )}
+            {pipelineShare.confirmedPct > 0 && (
+              <div
+                style={{ width: `${pipelineShare.confirmedPct}%` }}
+                className="h-full bg-[#171717]"
+              />
+            )}
+            {pipelineShare.pendingPct > 0 && (
+              <div
+                style={{ width: `${pipelineShare.pendingPct}%` }}
+                className="h-full bg-[#d4d4d4]"
+              />
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* 3. Flux opérationnel prioritaire : Commandes (7) & Relances (5) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <section className="lg:col-span-7 bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] overflow-hidden">
+          <div className="px-5 py-4 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <h2 className="font-bold text-sm text-slate-950">
+              <h2 className="text-[15px] font-medium text-[#171717]">
                 Dernières commandes
               </h2>
               {metrics.pendingOrdersCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                  {metrics.pendingOrdersCount} à traiter
+                <span className="text-[12px] font-mono tabular-nums text-[#737373]">
+                  · {metrics.pendingOrdersCount} en attente
                 </span>
               )}
             </div>
 
-            <div className="flex items-center justify-between sm:justify-end gap-2">
-              <div className="inline-flex p-0.5 rounded-lg bg-slate-100 text-[11px]">
+            <div className="flex items-center justify-between sm:justify-end gap-3">
+              <div className="inline-flex p-0.5 rounded-[8px] bg-[#f4f4f5] text-[12px]">
                 {(
                   [
                     { id: "all", label: "Toutes" },
@@ -748,10 +714,10 @@ export default function AdminOverviewPage() {
                     key={t.id}
                     type="button"
                     onClick={() => setOrderTab(t.id)}
-                    className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                    className={`h-7 px-2.5 rounded-[6px] transition-colors duration-150 cursor-pointer ${
                       orderTab === t.id
-                        ? "bg-white text-slate-950 shadow-2xs"
-                        : "text-slate-500 hover:text-slate-800"
+                        ? "bg-white text-[#171717] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+                        : "text-[#737373] hover:text-[#171717] font-normal"
                     }`}
                   >
                     {t.label}
@@ -761,73 +727,72 @@ export default function AdminOverviewPage() {
 
               <Link
                 href="/admin/orders"
-                className="text-xs font-semibold text-slate-600 hover:text-slate-950 inline-flex items-center gap-0.5 shrink-0"
+                className="text-[13px] font-normal text-[#525252] hover:text-[#171717] inline-flex items-center gap-1 transition-colors duration-150 shrink-0"
               >
                 <span>Tout voir</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <ChevronRight className="w-4 h-4 stroke-[1.5] text-[#737373]" />
               </Link>
             </div>
           </div>
 
-          <div className="p-2 sm:p-3">
+          <div className="p-2">
             {loading ? (
-              <div className="py-10 text-center text-xs text-slate-400">
-                Chargement des commandes…
+              <div className="py-10 text-center text-[13px] text-[#737373]">
+                Chargement des commandes
               </div>
             ) : displayedOrders.length === 0 ? (
               <div className="py-10 text-center space-y-1">
-                <p className="text-xs font-semibold text-slate-600">
+                <p className="text-[14px] font-medium text-[#171717]">
                   Aucune commande dans cette vue
                 </p>
-                <p className="text-[11px] text-slate-400">
-                  Les nouvelles commandes apparaîtront ici en temps réel.
+                <p className="text-[13px] text-[#737373]">
+                  Les nouvelles commandes apparaîtront ici dès réception
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-black/[0.06]">
                 {displayedOrders.map((order) => {
                   const isPending = !order.status || order.status === "pending";
                   return (
                     <div
                       key={order.id || String(order.order_number)}
-                      className="px-3 py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 rounded-xl transition-colors"
+                      className="px-3 py-3 flex items-center justify-between gap-4 hover:bg-[#fafafa] rounded-[8px] transition-colors duration-150"
                     >
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-xs sm:text-[13px] text-slate-950 truncate">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <span className="font-medium text-[14px] text-[#171717] truncate">
                             {order.customer_name || "Client"}
                           </span>
-                          {statusBadge(order.status || "pending")}
-                          <span className="text-[11px] text-slate-400">
+                          {renderOrderStatus(order.status || "pending")}
+                          <span className="text-[12px] text-[#737373]">
                             {order.shipping_city || order.city || "Cotonou"}
                           </span>
                           {order.created_at && (
-                            <span className="text-[10px] text-slate-400 inline-flex items-center gap-0.5">
-                              <Clock className="w-2.5 h-2.5" />
+                            <span className="text-[12px] font-mono text-[#737373]">
                               {formatRelativeTime(order.created_at)}
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-slate-500 mt-1 truncate flex items-center gap-2">
-                          <span className="truncate text-slate-600">
+                        <div className="text-[13px] text-[#525252] mt-1 truncate flex items-center gap-2">
+                          <span className="truncate">
                             {order.product_title || order.product_slug}
                           </span>
-                          <span className="text-slate-300">•</span>
-                          <span className="font-mono font-bold text-slate-900">
+                          <span className="text-[#d4d4d4]">·</span>
+                          <span className="font-mono tabular-nums font-medium text-[#171717]">
                             {fmt(order.total_amount || 0)} F
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0">
                         {isPending && (
                           <button
                             type="button"
                             onClick={() => handleQuickConfirmOrder(order)}
-                            className="px-2.5 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 text-white text-[11px] font-semibold inline-flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
-                            title="Valider immédiatement cette commande"
+                            className="h-8 px-3 rounded-[8px] bg-[#171717] hover:bg-[#262626] text-white text-[12px] font-medium inline-flex items-center gap-1.5 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer"
+                            title="Valider cette commande"
                           >
-                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <CheckCircle2 className="w-4 h-4 stroke-[1.5]" />
                             <span className="hidden sm:inline">Valider</span>
                           </button>
                         )}
@@ -836,10 +801,10 @@ export default function AdminOverviewPage() {
                           href={getOrderWhatsAppUrl(order)}
                           target="_blank"
                           rel="noreferrer"
-                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 text-[11px] font-semibold inline-flex items-center gap-1 transition-colors"
-                          title="Contacter le client sur WhatsApp"
+                          className="h-8 px-3 rounded-[8px] bg-white hover:bg-[#f4f4f5] text-[#171717] border border-black/[0.08] text-[12px] font-medium inline-flex items-center gap-1.5 transition-colors duration-150"
+                          title="Contacter sur WhatsApp"
                         >
-                          <MessageSquare className="w-3.5 h-3.5" />
+                          <MessageSquare className="w-4 h-4 stroke-[1.5] text-[#15803d]" />
                           <span className="hidden md:inline">WhatsApp</span>
                         </a>
                       </div>
@@ -851,59 +816,59 @@ export default function AdminOverviewPage() {
           </div>
         </section>
 
-        {/* PANIERS À RELANCER (5 cols) */}
-        <section className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between gap-2">
+        {/* Paniers à relancer (5 cols) */}
+        <section className="lg:col-span-5 bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] overflow-hidden">
+          <div className="px-5 py-4 border-b border-black/[0.08] flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <h2 className="font-bold text-sm text-slate-950">
+              <h2 className="text-[15px] font-medium text-[#171717]">
                 Paniers à relancer
               </h2>
-              {urgentLeads.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  {metrics.abandonedLeadsCount}
+              {metrics.abandonedLeadsCount > 0 && (
+                <span className="text-[12px] font-mono tabular-nums text-[#737373]">
+                  · {metrics.abandonedLeadsCount}
                 </span>
               )}
             </div>
             <Link
               href="/admin/prospects"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-950 inline-flex items-center gap-0.5"
+              className="text-[13px] font-normal text-[#525252] hover:text-[#171717] inline-flex items-center gap-1 transition-colors duration-150"
             >
               <span>Tout voir</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight className="w-4 h-4 stroke-[1.5] text-[#737373]" />
             </Link>
           </div>
 
-          <div className="p-3">
+          <div className="p-2">
             {urgentLeads.length === 0 ? (
               <div className="py-10 text-center space-y-1">
-                <p className="text-xs font-semibold text-slate-600">
+                <p className="text-[14px] font-medium text-[#171717]">
                   Aucun panier abandonné
                 </p>
-                <p className="text-[11px] text-slate-400">
-                  Les numéros saisis sans validation finale apparaîtront ici.
+                <p className="text-[13px] text-[#737373]">
+                  Les numéros saisis sans validation finale apparaîtront ici
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="divide-y divide-black/[0.06]">
                 {urgentLeads.map((lead) => (
                   <div
                     key={lead.id}
-                    className="p-3 rounded-xl bg-slate-50/70 hover:bg-slate-50 border border-slate-200/70 flex items-center justify-between gap-3 transition-colors"
+                    className="px-3 py-3 flex items-center justify-between gap-3 hover:bg-[#fafafa] rounded-[8px] transition-colors duration-150"
                   >
                     <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-xs text-slate-950 truncate">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-[14px] text-[#171717] truncate">
                           {lead.customer_name || "Client intéressé"}
                         </span>
                         {lead.created_at && (
-                          <span className="text-[10px] text-slate-400 shrink-0">
-                            • {formatRelativeTime(lead.created_at)}
+                          <span className="text-[12px] font-mono text-[#737373] shrink-0">
+                            {formatRelativeTime(lead.created_at)}
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] text-slate-500 truncate mt-0.5">
-                        {lead.product_title} •{" "}
-                        <span className="font-mono font-bold text-slate-800">
+                      <div className="text-[13px] text-[#525252] truncate mt-0.5">
+                        {lead.product_title} ·{" "}
+                        <span className="font-mono tabular-nums font-medium text-[#171717]">
                           {fmt(lead.total_amount)} F
                         </span>
                       </div>
@@ -912,9 +877,9 @@ export default function AdminOverviewPage() {
                     <button
                       type="button"
                       onClick={() => handleWhatsAppRelance(lead)}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold inline-flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer shrink-0"
+                      className="h-8 px-3 rounded-[8px] bg-[#15803d] hover:bg-[#166534] text-white text-[12px] font-medium inline-flex items-center gap-1.5 active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer shrink-0"
                     >
-                      <MessageSquare className="w-3 h-3" />
+                      <MessageSquare className="w-4 h-4 stroke-[1.5]" />
                       <span>Relancer</span>
                     </button>
                   </div>
@@ -925,116 +890,113 @@ export default function AdminOverviewPage() {
         </section>
       </div>
 
-      {/* ── 4. ESPACE ANALYSE UNIFIÉ PAR ONGLETS (ZERO ENCOMBREMENT VERTICAL) ── */}
-      <section className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
-        {/* Barre d'onglets */}
-        <div className="px-5 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="inline-flex p-1 rounded-xl bg-slate-100/90 self-start">
+      {/* 4. Espace d'analyse unifié par onglets */}
+      <section className="bg-white rounded-[14px] border border-black/[0.08] shadow-[0_1px_2px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="inline-flex p-1 rounded-[10px] bg-[#f4f4f5] self-start">
             <button
               type="button"
               onClick={() => setWorkspaceTab("products")}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`h-8 px-3.5 rounded-[6px] text-[13px] transition-colors duration-150 cursor-pointer ${
                 workspaceTab === "products"
-                  ? "bg-white text-slate-950 shadow-2xs"
-                  : "text-slate-500 hover:text-slate-900"
+                  ? "bg-white text-[#171717] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+                  : "text-[#737373] hover:text-[#171717] font-normal"
               }`}
             >
-              <BarChart3 className="w-3.5 h-3.5" />
-              <span>Produits & Trafic</span>
+              Produits et trafic
             </button>
             <button
               type="button"
               onClick={() => setWorkspaceTab("cashflow")}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`h-8 px-3.5 rounded-[6px] text-[13px] transition-colors duration-150 cursor-pointer ${
                 workspaceTab === "cashflow"
-                  ? "bg-white text-slate-950 shadow-2xs"
-                  : "text-slate-500 hover:text-slate-900"
+                  ? "bg-white text-[#171717] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+                  : "text-[#737373] hover:text-[#171717] font-normal"
               }`}
             >
-              <Wallet className="w-3.5 h-3.5" />
-              <span>Point de Caisse COD</span>
+              Point de caisse COD
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {workspaceTab === "products" ? (
               <>
                 <Link
                   href="/admin/landings"
-                  className="text-xs font-semibold text-slate-600 hover:text-slate-950 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 inline-flex items-center gap-1.5 transition-colors"
+                  className="h-8 px-3 rounded-[8px] border border-black/[0.08] hover:bg-[#f4f4f5] text-[13px] font-medium text-[#525252] hover:text-[#171717] inline-flex items-center gap-1.5 transition-colors duration-150"
                 >
-                  <Store className="w-3.5 h-3.5" />
+                  <Store className="w-4 h-4 stroke-[1.5] text-[#737373]" />
                   <span>Gérer ({productsList.length})</span>
                 </Link>
                 <Link
                   href="/admin/clicks"
-                  className="text-xs font-semibold text-slate-950 hover:bg-slate-100 px-3 py-1.5 rounded-xl bg-slate-100/80 inline-flex items-center gap-1 transition-colors"
+                  className="h-8 px-3 rounded-[8px] bg-[#f4f4f5] hover:bg-[#e5e5e5] text-[13px] font-medium text-[#171717] inline-flex items-center gap-1 transition-colors duration-150"
                 >
-                  <span>Tous les KPIs</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <span>Tous les indicateurs</span>
+                  <ArrowUpRight className="w-4 h-4 stroke-[1.5] text-[#737373]" />
                 </Link>
               </>
             ) : (
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg font-mono">
-                  Encaissé : {fmt(realDeliveryReport.totalRealRevenue)} FCFA ({realDeliveryReport.totalDelivered} livrés)
+              <>
+                <span className="text-[13px] font-mono tabular-nums font-medium text-[#15803d] px-2">
+                  Encaissé : {fmt(realDeliveryReport.totalRealRevenue)} F ({realDeliveryReport.totalDelivered} livrés)
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowOnlyWithOrders(!showOnlyWithOrders)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200/80 text-slate-700 transition-colors cursor-pointer"
+                  className="h-8 px-3 rounded-[8px] bg-[#f4f4f5] hover:bg-[#e5e5e5] text-[13px] font-medium text-[#171717] transition-colors duration-150 cursor-pointer"
                 >
                   {showOnlyWithOrders
                     ? `Avec commandes (${realDeliveryReport.rows.length})`
-                    : `Tout (${productsList.length})`}
+                    : `Tout le catalogue (${productsList.length})`}
                 </button>
                 {realDeliveryReport.hasOverrides && (
                   <button
                     type="button"
                     onClick={handleResetToAutoDelivered}
-                    className="text-[11px] font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer inline-flex items-center gap-1"
+                    className="h-8 px-3 rounded-[8px] border border-black/[0.08] hover:bg-[#f4f4f5] text-[12px] font-medium text-[#525252] inline-flex items-center gap-1.5 transition-colors duration-150 cursor-pointer"
                   >
-                    <RefreshCw className="w-3 h-3" />
+                    <RefreshCw className="w-3.5 h-3.5 stroke-[1.5]" />
                     <span>Réinitialiser</span>
                   </button>
                 )}
-              </div>
+              </>
             )}
           </div>
         </div>
 
-        {/* Contenu Onglet 1 : Top Produits & Liens Rapides */}
+        {/* Onglet 1 : Produits et trafic */}
         {workspaceTab === "products" && (
           <div className="overflow-x-auto">
             {top5Products.length === 0 ? (
               <div className="py-12 px-5 text-center space-y-3">
-                <p className="text-sm font-bold text-slate-800">
-                  Aucune page produit publiée pour le moment
+                <p className="text-[15px] font-medium text-[#171717]">
+                  Aucune page produit publiée
                 </p>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  Créez votre première page de vente en 2 minutes et commencez à encaisser vos commandes Cash-on-Delivery.
+                <p className="text-[13px] text-[#737373] max-w-sm mx-auto">
+                  Créez votre première page de vente et commencez à recevoir vos commandes à la livraison
                 </p>
                 <Link
                   href="/admin/landings"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold transition-colors"
+                  className="h-9 px-4 rounded-[8px] bg-[#171717] hover:bg-[#262626] text-white text-[13px] font-medium inline-flex items-center gap-2 transition-colors duration-150"
                 >
-                  <Store className="w-3.5 h-3.5" />
-                  <span>Créer ma première page produit</span>
+                  <Store className="w-4 h-4 stroke-[1.5]" />
+                  <span>Créer une page produit</span>
                 </Link>
               </div>
             ) : (
-              <table className="w-full text-left text-xs border-collapse min-w-[600px]">
+              <table className="w-full text-left text-[13px] border-collapse min-w-[620px]">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/60 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                    <th className="py-2.5 px-5">Produit</th>
-                    <th className="py-2.5 px-3 text-center">Visites</th>
-                    <th className="py-2.5 px-3 text-center">Clics CTA</th>
-                    <th className="py-2.5 px-3 text-center">Commandes</th>
-                    <th className="py-2.5 px-3 text-center">Conv.</th>
-                    <th className="py-2.5 px-5 text-right">Liens rapides</th>
+                  <tr className="border-b border-black/[0.08] bg-[#fafafa] text-[#737373] font-normal text-[12px]">
+                    <th className="py-3 px-5 font-normal">Produit</th>
+                    <th className="py-3 px-3 text-right font-normal">Visites</th>
+                    <th className="py-3 px-3 text-right font-normal">Clics</th>
+                    <th className="py-3 px-3 text-right font-normal">Commandes</th>
+                    <th className="py-3 px-3 text-right font-normal">Conversion</th>
+                    <th className="py-3 px-5 text-right font-normal">Liens</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-black/[0.06]">
                   {top5Products.map((prod) => {
                     const isCopied = copiedSlug === prod.slug;
                     const isCopiedUtm = copiedSlug === `${prod.slug}_utm`;
@@ -1042,78 +1004,66 @@ export default function AdminOverviewPage() {
                     return (
                       <tr
                         key={prod.slug}
-                        className="hover:bg-slate-50/70 transition-colors"
+                        className="hover:bg-[#fafafa] transition-colors duration-150"
                       >
                         <td className="py-3 px-5">
                           <div className="flex items-center gap-3">
                             <img
                               src={prod.image}
                               alt={prod.title}
-                              className="w-9 h-9 rounded-xl object-cover border border-slate-200/80 shrink-0 bg-slate-50"
+                              className="w-9 h-9 rounded-[8px] object-cover border border-black/[0.08] shrink-0 bg-[#f4f4f5]"
                             />
                             <div className="min-w-0">
-                              <div className="font-semibold text-slate-950 truncate max-w-[220px]">
+                              <div className="font-medium text-[#171717] truncate max-w-[240px]">
                                 {prod.title}
                               </div>
-                              <div className="text-[11px] text-slate-400 font-mono">
-                                {fmt(prod.price)} F • /p/{prod.slug}
+                              <div className="text-[12px] text-[#737373] font-mono tabular-nums">
+                                {fmt(prod.price)} F · /p/{prod.slug}
                               </div>
                             </div>
                           </div>
                         </td>
 
-                        <td className="py-3 px-3 text-center font-mono">
-                          <span className="font-bold text-slate-900">
-                            {prod.views}
-                          </span>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums text-[#171717]">
+                          <span>{fmt(prod.views)}</span>
                           {prod.todayViews > 0 && (
-                            <span className="ml-1.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                            <span className="ml-1.5 text-[12px] text-[#15803d]">
                               +{prod.todayViews}
                             </span>
                           )}
                         </td>
 
-                        <td className="py-3 px-3 text-center font-mono font-semibold text-slate-700">
-                          {prod.clicks}
+                        <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
+                          {fmt(prod.clicks)}
                         </td>
 
-                        <td className="py-3 px-3 text-center font-mono font-bold text-emerald-700">
-                          {prod.ordersCount}
+                        <td className="py-3 px-3 text-right font-mono tabular-nums font-medium text-[#171717]">
+                          {fmt(prod.ordersCount)}
                         </td>
 
-                        <td className="py-3 px-3 text-center">
-                          <span
-                            className={`inline-block px-2 py-0.5 rounded-md font-mono font-semibold text-[11px] ${
-                              Number(prod.convRate) >= 5
-                                ? "bg-emerald-50 text-emerald-700"
-                                : Number(prod.convRate) > 0
-                                ? "bg-sky-50 text-sky-700"
-                                : "bg-slate-100 text-slate-500"
-                            }`}
-                          >
-                            {prod.convRate}%
-                          </span>
+                        <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
+                          {prod.convRate}%
                         </td>
 
                         <td className="py-3 px-5 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                          <div className="inline-flex items-center justify-end gap-1.5">
                             <button
                               type="button"
                               onClick={() => handleCopyLink(prod.slug, false)}
-                              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1 border transition-colors cursor-pointer ${
+                              className={`h-7 px-2.5 rounded-[6px] text-[12px] font-medium inline-flex items-center gap-1 border transition-colors duration-150 cursor-pointer ${
                                 isCopied
-                                  ? "bg-emerald-600 text-white border-emerald-600"
-                                  : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
+                                  ? "bg-[#15803d] text-white border-[#15803d]"
+                                  : "bg-white hover:bg-[#f4f4f5] text-[#171717] border-black/[0.08]"
                               }`}
                             >
                               {isCopied ? (
                                 <>
-                                  <Check className="w-3 h-3" />
+                                  <Check className="w-3.5 h-3.5 stroke-[1.5]" />
                                   <span>Copié</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-3 h-3" />
+                                  <Copy className="w-3.5 h-3.5 stroke-[1.5] text-[#737373]" />
                                   <span>Lien</span>
                                 </>
                               )}
@@ -1123,10 +1073,10 @@ export default function AdminOverviewPage() {
                               type="button"
                               onClick={() => handleCopyLink(prod.slug, true)}
                               title="Copier le lien avec UTM Meta Ads"
-                              className={`px-2 py-1 rounded-lg text-[10px] font-mono font-semibold border transition-colors cursor-pointer ${
+                              className={`h-7 px-2 rounded-[6px] text-[12px] font-mono border transition-colors duration-150 cursor-pointer ${
                                 isCopiedUtm
-                                  ? "bg-emerald-50 text-emerald-700 border-emerald-300"
-                                  : "bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200"
+                                  ? "bg-[#f4f4f5] text-[#15803d] border-[#15803d]/40"
+                                  : "bg-[#fafafa] hover:bg-[#f4f4f5] text-[#525252] border-black/[0.08]"
                               }`}
                             >
                               {isCopiedUtm ? "OK" : "UTM"}
@@ -1136,9 +1086,9 @@ export default function AdminOverviewPage() {
                               href={`/p/${prod.slug}`}
                               target="_blank"
                               title="Ouvrir la page"
-                              className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:text-slate-950 hover:bg-slate-50 transition-colors"
+                              className="h-7 w-7 rounded-[6px] border border-black/[0.08] text-[#737373] hover:text-[#171717] hover:bg-[#f4f4f5] inline-flex items-center justify-center transition-colors duration-150"
                             >
-                              <ExternalLink className="w-3.5 h-3.5" />
+                              <ExternalLink className="w-3.5 h-3.5 stroke-[1.5]" />
                             </Link>
                           </div>
                         </td>
@@ -1151,62 +1101,62 @@ export default function AdminOverviewPage() {
           </div>
         )}
 
-        {/* Contenu Onglet 2 : Point de Caisse & Livraisons par Produit */}
+        {/* Onglet 2 : Point de caisse COD */}
         {workspaceTab === "cashflow" && (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse min-w-[620px]">
+            <table className="w-full text-left text-[13px] border-collapse min-w-[620px]">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/60 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                  <th className="py-2.5 px-5">Produit</th>
-                  <th className="py-2.5 px-3 text-center">Commandes</th>
-                  <th className="py-2.5 px-3 text-center">Colis livrés (ajustable)</th>
-                  <th className="py-2.5 px-3 text-center">Taux livraison</th>
-                  <th className="py-2.5 px-5 text-right">CA réel encaissé</th>
+                <tr className="border-b border-black/[0.08] bg-[#fafafa] text-[#737373] font-normal text-[12px]">
+                  <th className="py-3 px-5 font-normal">Produit</th>
+                  <th className="py-3 px-3 text-right font-normal">Commandes</th>
+                  <th className="py-3 px-3 text-center font-normal">Colis livrés</th>
+                  <th className="py-3 px-3 text-right font-normal">Taux livraison</th>
+                  <th className="py-3 px-5 text-right font-normal">CA réel encaissé</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-black/[0.06]">
                 {realDeliveryReport.rows.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-10 text-center text-slate-400 text-xs">
-                      Aucune commande enregistrée pour le moment.
+                    <td colSpan={5} className="py-10 text-center text-[#737373] text-[13px]">
+                      Aucune commande enregistrée pour le moment
                     </td>
                   </tr>
                 ) : (
                   realDeliveryReport.rows.map((prod) => (
-                    <tr key={prod.slug} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={prod.slug} className="hover:bg-[#fafafa] transition-colors duration-150">
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-3">
                           <img
                             src={prod.image}
                             alt={prod.title}
-                            className="w-9 h-9 rounded-xl object-cover border border-slate-200/80 shrink-0 bg-slate-50"
+                            className="w-9 h-9 rounded-[8px] object-cover border border-black/[0.08] shrink-0 bg-[#f4f4f5]"
                           />
                           <div className="min-w-0">
                             <Link
                               href={`/p/${prod.slug}`}
                               target="_blank"
-                              className="font-semibold text-slate-950 hover:text-slate-700 transition-colors truncate max-w-[220px] block"
+                              className="font-medium text-[#171717] hover:underline truncate max-w-[240px] block"
                             >
                               {prod.title}
                             </Link>
-                            <span className="text-[11px] text-slate-400 font-mono">
+                            <span className="text-[12px] text-[#737373] font-mono tabular-nums">
                               {fmt(prod.price)} F / unité
                             </span>
                           </div>
                         </div>
                       </td>
 
-                      <td className="py-3 px-3 text-center font-mono font-semibold text-slate-700">
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
                         {prod.totalOrders}
                       </td>
 
                       <td className="py-3 px-3 text-center">
-                        <div className="inline-flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1">
+                        <div className="inline-flex items-center gap-1 bg-white border border-black/[0.08] rounded-[8px] p-0.5">
                           <button
                             type="button"
                             onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount - 1)}
                             disabled={prod.deliveredCount <= 0}
-                            className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors disabled:opacity-30 cursor-pointer"
+                            className="w-6 h-6 rounded-[6px] hover:bg-[#f4f4f5] text-[#525252] font-medium flex items-center justify-center text-[13px] transition-colors duration-150 disabled:opacity-30 cursor-pointer"
                           >
                             -
                           </button>
@@ -1215,43 +1165,29 @@ export default function AdminOverviewPage() {
                             min={0}
                             value={prod.deliveredCount}
                             onChange={(e) => handleUpdateDeliveredCount(prod.slug, parseInt(e.target.value) || 0)}
-                            className="w-11 text-center font-mono font-bold text-xs text-slate-950 bg-transparent focus:outline-none"
+                            className="w-11 text-center font-mono tabular-nums font-medium text-[13px] text-[#171717] bg-transparent focus:outline-none"
                           />
                           <button
                             type="button"
                             onClick={() => handleUpdateDeliveredCount(prod.slug, prod.deliveredCount + 1)}
-                            className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-xs transition-colors cursor-pointer"
+                            className="w-6 h-6 rounded-[6px] hover:bg-[#f4f4f5] text-[#525252] font-medium flex items-center justify-center text-[13px] transition-colors duration-150 cursor-pointer"
                           >
                             +
                           </button>
                         </div>
                         {prod.isOverridden && (
-                          <span className="block text-[9.5px] text-amber-600 font-medium mt-0.5">
+                          <span className="block text-[11px] text-[#737373] mt-0.5">
                             Ajusté
                           </span>
                         )}
                       </td>
 
-                      <td className="py-3 px-3 text-center">
-                        <span
-                          className={`inline-block px-2 py-0.5 rounded-full font-mono font-semibold text-[11px] ${
-                            prod.deliveryRate >= 70
-                              ? "bg-emerald-50 text-emerald-700"
-                              : prod.deliveryRate >= 40
-                              ? "bg-amber-50 text-amber-700"
-                              : prod.deliveryRate > 0
-                              ? "bg-rose-50 text-rose-700"
-                              : "bg-slate-100 text-slate-500"
-                          }`}
-                        >
-                          {prod.deliveryRate.toFixed(0)}%
-                        </span>
+                      <td className="py-3 px-3 text-right font-mono tabular-nums text-[#525252]">
+                        {prod.deliveryRate.toFixed(0)}%
                       </td>
 
-                      <td className="py-3 px-5 text-right">
-                        <span className="font-mono font-bold text-sm text-emerald-700 tabular-nums">
-                          {fmt(prod.realRevenue)} FCFA
-                        </span>
+                      <td className="py-3 px-5 text-right font-mono tabular-nums font-medium text-[#15803d]">
+                        {fmt(prod.realRevenue)} F
                       </td>
                     </tr>
                   ))
@@ -1259,21 +1195,19 @@ export default function AdminOverviewPage() {
               </tbody>
               {realDeliveryReport.rows.length > 0 && (
                 <tfoot>
-                  <tr className="bg-slate-50/90 border-t border-slate-200 font-bold text-xs text-slate-950">
-                    <td className="py-3 px-5">TOTAL BOUTIQUE</td>
-                    <td className="py-3 px-3 text-center font-mono">
+                  <tr className="bg-[#fafafa] border-t border-black/[0.08] font-medium text-[13px] text-[#171717]">
+                    <td className="py-3 px-5">Total boutique</td>
+                    <td className="py-3 px-3 text-right font-mono tabular-nums">
                       {realDeliveryReport.totalOrdersCount}
                     </td>
-                    <td className="py-3 px-3 text-center font-mono text-emerald-800">
+                    <td className="py-3 px-3 text-center font-mono tabular-nums text-[#15803d]">
                       {realDeliveryReport.totalDelivered} livrés
                     </td>
-                    <td className="py-3 px-3 text-center">
-                      <span className="inline-block px-2 py-0.5 rounded-full font-mono bg-emerald-50 text-emerald-700">
-                        {realDeliveryReport.globalDeliveryRate.toFixed(0)}%
-                      </span>
+                    <td className="py-3 px-3 text-right font-mono tabular-nums">
+                      {realDeliveryReport.globalDeliveryRate.toFixed(0)}%
                     </td>
-                    <td className="py-3 px-5 text-right font-mono font-extrabold text-sm text-emerald-700 tabular-nums">
-                      {fmt(realDeliveryReport.totalRealRevenue)} FCFA
+                    <td className="py-3 px-5 text-right font-mono tabular-nums text-[#15803d]">
+                      {fmt(realDeliveryReport.totalRealRevenue)} F
                     </td>
                   </tr>
                 </tfoot>
