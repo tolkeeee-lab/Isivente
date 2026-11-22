@@ -47,18 +47,31 @@ Chaque responsabilité dans Isivente possède **un seul point d'entrée officiel
 - **Paniers Abandonnés** : Uniquement via `saveOrUpdateLead()` (`lib/leadsStorage.ts`) avec l'identifiant déterministe `lead_{telephone8chiffres}_{slug}` pour qu'un même client sur un même produit mette à jour sa fiche au lieu de créer 5 lignes.
 
 ### 🔀 D. Routes Unifiées & Isolation Multi-Utilisateurs (Interdiction des Routes Parallèles)
-- **Ne JAMAIS créer une nouvelle route (page ou API) lorsqu'une route remplissant le même rôle existe déjà** — sauf impossibilité technique avérée et validée.
-- **Unifier et isoler par `store_id` au maximum** :
-  - **Pages produits** : Une seule route publique unifiée (`/p/[slug]` et `/p/[slug]/success`) pour tous les utilisateurs (fondateur ET vendeurs SaaS). Pas de route parallèle `/s/...` en doublon.
-  - **APIs** : Les mêmes routes uniques (`/api/orders`, `/api/leads`, `/api/analytics`, `/api/finances`) servent toutes les boutiques, avec isolation stricte via `store_id` et RLS Supabase.
-  - **Isolation Pixel Meta & WhatsApp** : Ne jamais laisser le Pixel ou le numéro WhatsApp du fondateur s'exécuter globalement sur les pages d'autres vendeurs. Chaque page produit charge dynamiquement **uniquement** le `meta_pixel_id`, le `meta_capi_token` et le `whatsapp_number` de la boutique propriétaire (`store_id`) — zéro pollution croisée.
+- **Ne JAMAIS créer une nouvelle route (page ou API) lorsqu'une route remplissant le même rôle existe déjà** — étendre la route existante via paramètre (`?type=`, `action:`), méthode HTTP ou isolation `store_id`.
+- **Registre Officiel des 11 Routes API Unifiées (seules autorisées)** :
+  1. `/api/orders` — CRUD complet des commandes COD (public `POST`, admin isolé `GET`/`PATCH`/`DELETE`).
+  2. `/api/leads` — Capture silencieuse des paniers abandonnés & gestion relances.
+  3. `/api/analytics` — Visites humaines uniques & interactions produits.
+  4. `/api/finances` — Dépenses, ventes manuelles & capital de départ par boutique.
+  5. `/api/delivery` — Suivi & validation livreur par numéro de commande (`RPC`).
+  6. `/api/pixel/event` — Relais Meta CAPI + mode `action: "test"` authentifié (remplace `/api/pixel/test`).
+  7. `/api/notify` — Alertes & tests push/email fondateur via `GET ?type=push|email` et `POST` (remplace `/api/notify/test-push` et `/api/test-email`).
+  8. `/api/meta-ads` — Connexion & statistiques Meta Ads (remplace `/api/meta/insights`).
+  9. `/api/whatsapp/webhook` — Webhook & closing WhatsApp.
+  10. `/api/agent/chat` — Agent conversationnel boutique.
+  11. `/api/higgsfield` — Génération créatives studio.
+- **Pages Publiques & Admin Unifiées** :
+  - **Pages produits** : Une seule route publique unifiée (`/p/[slug]` et `/p/[slug]/success`) pour tous les utilisateurs (fondateur ET vendeurs SaaS). Interdiction absolue de créer `/s/...`, `/shop/...` ou `/product/...`.
+  - **Isolation Pixel Meta & WhatsApp** : Chaque page produit charge dynamiquement **uniquement** le `meta_pixel_id`, le `meta_capi_token` et le `whatsapp_number` de la boutique propriétaire (`store_id`) — zéro pollution croisée.
+- **Vérification Automatique Obligatoire** :
+  Exécuter `node .agents/skills/isivente-anti-doublon-root-cause/scripts/check-routes.js` avant tout commit. Le script échoue immédiatement si une route API hors registre ou morte est détectée.
 
 ---
 
 ## ✅ 3. Checklist de Vérification Avant Chaque Commit
 
 Avant de valider et pousser une modification :
-1. **Ai-je créé une nouvelle route parallèle alors qu'une route existante pouvait être unifiée et isolée par `store_id` ?** (Si oui ➔ STOP, unifier dans la route existante).
+1. **Ai-je créé une nouvelle route parallèle alors qu'une route existante pouvait être unifiée et isolée par `store_id` ?** (Exécuter `node .agents/skills/isivente-anti-doublon-root-cause/scripts/check-routes.js` — si alerte ➔ STOP, unifier dans la route existante).
 2. **Ai-je créé un doublon d'appel réseau ou d'événement ?** (Vérifier qu'aucun événement n'est tiré à la fois dans l'enfant et dans le parent).
 3. **Ai-je supprimé l'ancien code défectueux au lieu de le laisser tourner à côté ?**
 4. **Toutes les promesses serveur sur Vercel (`sendMetaConversionApiEvent`, `sendOrderNotification`, `supabase`) ont-elles bien `await` avant le `return NextResponse.json()` ?**

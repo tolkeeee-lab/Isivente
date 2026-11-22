@@ -1,9 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendMetaConversionApiEvent } from "@/lib/metaConversionsApi";
+import { sendMetaConversionApiEvent, META_PIXEL_ID } from "@/lib/metaConversionsApi";
+import { requireAuthenticatedTenant } from "@/lib/apiAuth";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
+
+    // Mode test CAPI unifié (réservé aux utilisateurs authentifiés — remplace /api/pixel/test)
+    if (body.action === "test") {
+      const auth = await requireAuthenticatedTenant(req);
+      if (!auth.ok) {
+        return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
+      }
+      const pixelId = body.pixel_id || META_PIXEL_ID;
+      const token = body.token || process.env.META_CONVERSIONS_API_TOKEN || "";
+      const testEventCode = body.test_event_code || process.env.META_TEST_EVENT_CODE || "";
+      if (!token) {
+        return NextResponse.json(
+          { success: false, error: "Token Meta CAPI manquant." },
+          { status: 400 }
+        );
+      }
+      const testPayload: any = {
+        data: [
+          {
+            event_name: body.event_name || "InitiateCheckout",
+            event_time: Math.floor(Date.now() / 1000),
+            event_id: "test_" + Date.now(),
+            action_source: "website",
+            event_source_url: "https://isivente.vercel.app/p/microscope",
+            user_data: {
+              ph: ["b68a4be46cb61d9a2ff507c57b9856f64264627d3fae1f2cfcbff64b18f8444a"],
+              ct: ["ca759714c30c33a903061266d713c7ff8fb177242c7526715f20f0cc207a1ffb"],
+              country: ["04b2a4729c13d8032512f49aa602aa4c57abefaa30f24ee437db87596ae3bf67"],
+            },
+            custom_data: { currency: "XOF", value: 24900, content_name: "Test CAPI Isivente", content_type: "product" },
+          },
+        ],
+      };
+      if (testEventCode) testPayload.test_event_code = String(testEventCode).trim();
+      const testRes = await fetch(`https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${String(token).trim()}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(testPayload),
+      });
+      const testResult = await testRes.json();
+      return NextResponse.json(
+        { success: testRes.ok && Boolean(testResult?.events_received), meta_response: testResult },
+        { status: testRes.ok ? 200 : 400 }
+      );
+    }
+
     const eventName = body.event_name || "PageView";
     const customData = body.custom_data || {};
     const eventSourceUrl = body.event_source_url || req.headers.get("referer") || "";
