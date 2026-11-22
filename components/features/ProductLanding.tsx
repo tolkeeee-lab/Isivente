@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { saveNewOrder } from "@/lib/ordersStorage";
+import { saveOrUpdateLead } from "@/lib/leadsStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { trackViewContent, trackInitiateCheckout } from "@/lib/metaPixel";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
@@ -265,6 +266,44 @@ export default function ProductLanding({
 
   const selectedBundle = product?.bundles?.[selectedBundleIdx] || null;
   const currentPrice = selectedBundle ? selectedBundle.price : product?.price || 0;
+
+  // Capture silencieuse des paniers abandonnés (Pilier 9 + isolation store_id multi-boutiques)
+  useEffect(() => {
+    if (!product || orderSuccess) return;
+    const cleanPhone = customerPhone.replace(/\D/g, "");
+    if (cleanPhone.length < 8) return;
+
+    const timer = setTimeout(() => {
+      saveOrUpdateLead({
+        store_id: storeConfig?.id || undefined,
+        customer_name: customerName,
+        customer_phone: cleanPhone,
+        customer_phone2: customerPhone2,
+        customer_email: customerEmail,
+        city,
+        address,
+        product_slug: slug,
+        product_title: product.title,
+        bundle_name: selectedBundle?.name || product.title,
+        total_amount: currentPrice,
+      });
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [
+    customerPhone,
+    customerName,
+    customerPhone2,
+    customerEmail,
+    city,
+    address,
+    product,
+    selectedBundle,
+    currentPrice,
+    slug,
+    storeConfig?.id,
+    orderSuccess,
+  ]);
   const originalPrice = product?.original_price || 0;
   const savings = originalPrice > currentPrice ? originalPrice - currentPrice : 0;
   const discountPct =

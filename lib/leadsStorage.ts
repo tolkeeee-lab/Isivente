@@ -6,6 +6,7 @@ import { getAuthHeaders } from "@/lib/apiAuth";
 
 export interface LeadRecord {
   id: string;
+  store_id?: string | null;
   customer_name: string;
   customer_phone: string;
   customer_phone2?: string;
@@ -59,6 +60,7 @@ export function saveLocalLeads(leads: LeadRecord[]) {
  * Enregistre ou met à jour un prospect silencieusement dès qu'il saisit son numéro
  */
 export async function saveOrUpdateLead(data: {
+  store_id?: string;
   customer_name?: string;
   customer_phone: string;
   customer_phone2?: string;
@@ -84,8 +86,11 @@ export async function saveOrUpdateLead(data: {
     : cleanPhone;
   const leadId = `lead_${normalizedKey}_${cleanSlug}`;
 
+  const cleanStoreId = typeof data.store_id === "string" && data.store_id.trim() ? data.store_id.trim() : undefined;
+
   const lead: LeadRecord = {
     id: leadId,
+    ...(cleanStoreId ? { store_id: cleanStoreId } : {}),
     customer_name: (data.customer_name || "").trim().slice(0, 100) || "Client intéressé",
     customer_phone: cleanPhone,
     customer_phone2: (data.customer_phone2 || "").trim().slice(0, 20),
@@ -141,6 +146,7 @@ export async function saveOrUpdateLead(data: {
           bundle_name: lead.bundle_name,
           total_amount: lead.total_amount,
           status: lead.status,
+          ...(cleanStoreId ? { store_id: cleanStoreId } : {}),
           created_at: lead.created_at,
           updated_at: lead.updated_at,
         },
@@ -161,6 +167,7 @@ export async function saveOrUpdateLead(data: {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          ...(cleanStoreId ? { store_id: cleanStoreId } : {}),
           customer_name: lead.customer_name,
           customer_phone: lead.customer_phone,
           customer_phone2: lead.customer_phone2,
