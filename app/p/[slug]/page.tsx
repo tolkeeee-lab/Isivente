@@ -1,190 +1,159 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
 import { getSupabase } from "@/lib/supabase";
 import StoreMetaPixel from "@/components/tracking/StoreMetaPixel";
+import {
+  DedicatedLandingShell,
+  GenericProductShell,
+} from "@/components/features/DynamicLandingLoader";
 
 const FOUNDER_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2150878529184686";
 
-// ── CODE-SPLITTING INTELLIGENT : Chaque landing page est un chunk indépendant ──
-// Évite de charger les 35 produits dans le bundle mobile du Masseur Vibrant
-const UmeiLanding = dynamic(() => import("@/components/features/UmeiLanding"));
-const PeelerLanding = dynamic(() => import("@/components/features/PeelerLanding"));
-const EyeMassagerLanding = dynamic(() => import("@/components/features/EyeMassagerLanding"));
-const MicroscopeLanding = dynamic(() => import("@/components/features/MicroscopeLanding"));
-const CameraLanding = dynamic(() => import("@/components/features/CameraLanding"));
-const TrozkLanding = dynamic(() => import("@/components/features/TrozkLanding"));
-const StabilisateurLanding = dynamic(() => import("@/components/features/StabilisateurLanding"));
-const EraCleanLanding = dynamic(() => import("@/components/features/EraCleanLanding"));
-const TurboFanLanding = dynamic(() => import("@/components/features/TurboFanLanding"));
-const VeilleuseLanding = dynamic(() => import("@/components/features/VeilleuseLanding"));
-const MiniLaveLingeLanding = dynamic(() => import("@/components/features/MiniLaveLingeLanding"));
-const MatelasLanding = dynamic(() => import("@/components/features/MatelasLanding"));
-const VoitureCameraLanding = dynamic(() => import("@/components/features/VoitureCameraLanding"));
-const SavonRepousseLanding = dynamic(() => import("@/components/features/SavonRepousseLanding"));
-const SourireEclatantLanding = dynamic(() => import("@/components/features/SourireEclatantLanding"));
-const ProjecteurNoelLanding = dynamic(() => import("@/components/features/ProjecteurNoelLanding"));
-const ProbioticGummiesLanding = dynamic(() => import("@/components/features/ProbioticGummiesLanding"));
-const BraceletMainLanding = dynamic(() => import("@/components/features/BraceletMainLanding"));
-const Stylo3DLanding = dynamic(() => import("@/components/features/Stylo3DLanding"));
-const CarteDuMondeLanding = dynamic(() => import("@/components/features/CarteDuMondeLanding"));
-const CapsaCareLanding = dynamic(() => import("@/components/features/CapsaCareLanding"));
-const OdorAwayLanding = dynamic(() => import("@/components/features/OdorAwayLanding"));
-const DuoBraceletsCoeurLanding = dynamic(() => import("@/components/features/DuoBraceletsCoeurLanding"));
-const ParesoleilLanding = dynamic(() => import("@/components/features/ParesoleilLanding"));
-const ShilajitLanding = dynamic(() => import("@/components/features/ShilajitLanding"));
-const FiltreEauLanding = dynamic(() => import("@/components/features/FiltreEauLanding"));
-const CubiCraftLanding = dynamic(() => import("@/components/features/CubiCraftLanding"));
-const TrousseBiometriqueLanding = dynamic(() => import("@/components/features/TrousseBiometriqueLanding"));
-const DigestiGumLanding = dynamic(() => import("@/components/features/DigestiGumLanding"));
-const Calendrier3DLanding = dynamic(() => import("@/components/features/Calendrier3DLanding"));
-const LikelRiteLanding = dynamic(() => import("@/components/features/LikelRiteLanding"));
-const StarlightLanding = dynamic(() => import("@/components/features/StarlightLanding"));
-const The5TresorsLanding = dynamic(() => import("@/components/features/The5TresorsLanding"));
-const GameStickLanding = dynamic(() => import("@/components/features/GameStickLanding"));
-const R36SLanding = dynamic(() => import("@/components/features/R36SLanding"));
-const MoustiquairePorteLanding = dynamic(() => import("@/components/features/MoustiquairePorteLanding"));
-const MasseurVibrantLanding = dynamic(() => import("@/components/features/MasseurVibrantLanding"));
-const ProductLanding = dynamic(() => import("@/components/features/ProductLanding"));
+const SLUG_TO_CANONICAL: Record<string, string> = {
+  cubicraft: "cubicraft",
+  "cubi-craft": "cubicraft",
+  pixelcraft: "cubicraft",
+  "blocs-magnetiques": "cubicraft",
+  mineblocks: "cubicraft",
+  "savon-repousse": "savon-repousse",
+  savon: "savon-repousse",
+  "savon-usma": "savon-repousse",
+  "savon-nature": "savon-repousse",
+  biota: "savon-repousse",
+  "voiture-camera": "voiture-camera",
+  "voiture-telecommandee": "voiture-camera",
+  "voiture-rc": "voiture-camera",
+  c6: "voiture-camera",
+  umei: "umei",
+  brosse: "umei",
+  "brosse-spray": "umei",
+  yufan: "umei",
+  peeler: "peeler",
+  mandoline: "peeler",
+  "coupe-legumes": "peeler",
+  "masseur-oculaire": "masseur-oculaire",
+  "eye-massager": "masseur-oculaire",
+  microscope: "microscope",
+  camera: "camera",
+  trozk: "trozk",
+  stabilisateur: "stabilisateur",
+  stabilizer: "stabilisateur",
+  eraclean: "eraclean",
+  turbofan: "turbofan",
+  veilleuse: "veilleuse",
+  "mini-lave-linge": "mini-lave-linge",
+  "lave-linge": "mini-lave-linge",
+  washer: "mini-lave-linge",
+  matelas: "matelas",
+  "matelas-gonflable": "matelas",
+  camping: "matelas",
+  "sourire-eclatant": "sourire-eclatant",
+  "routine-sourire": "sourire-eclatant",
+  "dentifrice-violet": "sourire-eclatant",
+  "projecteur-noel": "projecteur-noel",
+  "lampe-noel": "projecteur-noel",
+  noel: "projecteur-noel",
+  "projecteur-usb": "projecteur-noel",
+  "magie-noel": "projecteur-noel",
+  "equilibre-feminin": "equilibre-feminin",
+  "probiotiques-femme": "equilibre-feminin",
+  "gummies-probiotiques": "equilibre-feminin",
+  gummies: "equilibre-feminin",
+  probiotiques: "equilibre-feminin",
+  "bracelet-main": "bracelet-main",
+  "bracelet-bague": "bracelet-main",
+  "bracelet-eclat": "bracelet-main",
+  "bijou-main": "bracelet-main",
+  "stylo-3d": "stylo-3d",
+  stylo: "stylo-3d",
+  "stylo-3d-enfant": "stylo-3d",
+  "3dpen": "stylo-3d",
+  "stylo-3d-creatif": "stylo-3d",
+  "carte-du-monde": "carte-du-monde",
+  "carte-monde": "carte-du-monde",
+  "scratch-map": "carte-du-monde",
+  "carte-a-gratter": "carte-du-monde",
+  "explore-the-world": "carte-du-monde",
+  capsacare: "capsacare",
+  "creme-douleur": "capsacare",
+  "capsa-care": "capsacare",
+  "creme-articulaire": "capsacare",
+  odoraway: "odoraway",
+  "odor-away": "odoraway",
+  "creme-deodorante": "odoraway",
+  "deodorant-aisselles": "odoraway",
+  "duo-bracelets-coeur": "duo-bracelets-coeur",
+  "bracelets-coeur": "duo-bracelets-coeur",
+  "duo-coeur": "duo-bracelets-coeur",
+  "bracelet-coeur": "duo-bracelets-coeur",
+  "pare-soleil": "pare-soleil",
+  "pare-brise": "pare-soleil",
+  "anti-eblouissement": "pare-soleil",
+  "visiere-auto": "pare-soleil",
+  shilajit: "shilajit",
+  "shilajit-gold": "shilajit",
+  "shilajit-gummies": "shilajit",
+  "pure-himalayan-shilajit": "shilajit",
+  "himalayan-shilajit": "shilajit",
+  "filtre-eau": "filtre-eau",
+  "filtre-robinet": "filtre-eau",
+  "filtre-eau-robinet": "filtre-eau",
+  "purificateur-eau": "filtre-eau",
+  "filtre-purificateur": "filtre-eau",
+  "trousse-biometrique": "trousse-biometrique",
+  "trousse-cuir": "trousse-biometrique",
+  "pochette-biometrique": "trousse-biometrique",
+  "organiseur-cuir": "trousse-biometrique",
+  digestigum: "digestigum",
+  "gummies-digestifs": "digestigum",
+  "enzymes-digestives": "digestigum",
+  "probio-digest": "digestigum",
+  "calendrier-3d": "calendrier-3d",
+  "calendrier-perpetuel": "calendrier-3d",
+  "calendrier-decoratif": "calendrier-3d",
+  "calendrier-magnetique": "calendrier-3d",
+  "the-5-tresors": "the-5-tresors",
+  "tisane-5-tresors": "the-5-tresors",
+  "the-cinq-tresors": "the-5-tresors",
+  "tisane-des-cinq-tresors": "the-5-tresors",
+  "starlight-chargeur": "starlight-chargeur",
+  "chargeur-retractable": "starlight-chargeur",
+  starlight: "starlight-chargeur",
+  "chargeur-5en1": "starlight-chargeur",
+  "chargeur-voiture": "starlight-chargeur",
+  "likel-rite": "likel-rite",
+  diffuseur: "likel-rite",
+  "diffuseur-arome": "likel-rite",
+  humidificateur: "likel-rite",
+  "parfum-interieur": "likel-rite",
+  "game-stick-4k": "game-stick-4k",
+  "game-stick": "game-stick-4k",
+  gamestick: "game-stick-4k",
+  "game-stick-pro": "game-stick-4k",
+  "console-retro": "game-stick-4k",
+  r36s: "r36s",
+  "console-r36s": "r36s",
+  "r36s-portable": "r36s",
+  "moustiquaire-porte": "moustiquaire-porte",
+  moustiquaire: "moustiquaire-porte",
+  "moustiquaire-magnetique": "moustiquaire-porte",
+  "moustiquaire-aimantee": "moustiquaire-porte",
+  "masseur-vibrant": "masseur-vibrant",
+  "masseur-abdomen-dos": "masseur-vibrant",
+  "masseur-2en1": "masseur-vibrant",
+};
 
-// Widgets hors du chemin critique mobile (chargés côté client sans bloquer le rendu)
-const ShoppingAgentWidget = dynamic(() => import("@/components/features/ShoppingAgentWidget"));
-const ExitIntentModal = dynamic(() => import("@/components/features/ExitIntentModal"));
-const DynamicIsland = dynamic(() => import("@/components/features/DynamicIsland"));
+const STANDALONE_LANDINGS = new Set([
+  "masseur-vibrant",
+  "likel-rite",
+  "umei",
+  "trousse-biometrique",
+  "r36s",
+]);
 
 export function generateStaticParams() {
-  return [
-    { slug: "cubicraft" },
-    { slug: "cubi-craft" },
-    { slug: "pixelcraft" },
-    { slug: "blocs-magnetiques" },
-    { slug: "mineblocks" },
-    { slug: "savon-repousse" },
-    { slug: "savon" },
-    { slug: "savon-usma" },
-    { slug: "savon-nature" },
-    { slug: "biota" },
-    { slug: "voiture-camera" },
-    { slug: "voiture-telecommandee" },
-    { slug: "voiture-rc" },
-    { slug: "c6" },
-    { slug: "microscope" },
-    { slug: "camera" },
-    { slug: "masseur-oculaire" },
-    { slug: "eye-massager" },
-    { slug: "umei" },
-    { slug: "peeler" },
-    { slug: "trozk" },
-    { slug: "stabilisateur" },
-    { slug: "stabilizer" },
-    { slug: "eraclean" },
-    { slug: "turbofan" },
-    { slug: "veilleuse" },
-    { slug: "mini-lave-linge" },
-    { slug: "lave-linge" },
-    { slug: "mandoline" },
-    { slug: "coupe-legumes" },
-    { slug: "matelas" },
-    { slug: "matelas-gonflable" },
-    { slug: "camping" },
-    { slug: "brosse" },
-    { slug: "brosse-spray" },
-    { slug: "yufan" },
-    { slug: "sourire-eclatant" },
-    { slug: "routine-sourire" },
-    { slug: "dentifrice-violet" },
-    { slug: "projecteur-noel" },
-    { slug: "lampe-noel" },
-    { slug: "noel" },
-    { slug: "projecteur-usb" },
-    { slug: "magie-noel" },
-    { slug: "equilibre-feminin" },
-    { slug: "probiotiques-femme" },
-    { slug: "gummies-probiotiques" },
-    { slug: "gummies" },
-    { slug: "probiotiques" },
-    { slug: "bracelet-main" },
-    { slug: "bracelet-bague" },
-    { slug: "bracelet-eclat" },
-    { slug: "bijou-main" },
-    { slug: "stylo-3d" },
-    { slug: "stylo" },
-    { slug: "stylo-3d-enfant" },
-    { slug: "3dpen" },
-    { slug: "stylo-3d-creatif" },
-    { slug: "carte-du-monde" },
-    { slug: "carte-monde" },
-    { slug: "scratch-map" },
-    { slug: "carte-a-gratter" },
-    { slug: "explore-the-world" },
-    { slug: "capsacare" },
-    { slug: "creme-douleur" },
-    { slug: "capsa-care" },
-    { slug: "creme-articulaire" },
-    { slug: "odoraway" },
-    { slug: "odor-away" },
-    { slug: "creme-deodorante" },
-    { slug: "deodorant-aisselles" },
-    { slug: "duo-bracelets-coeur" },
-    { slug: "bracelets-coeur" },
-    { slug: "duo-coeur" },
-    { slug: "bracelet-coeur" },
-    { slug: "pare-soleil" },
-    { slug: "pare-brise" },
-    { slug: "anti-eblouissement" },
-    { slug: "visiere-auto" },
-    { slug: "shilajit" },
-    { slug: "shilajit-gold" },
-    { slug: "shilajit-gummies" },
-    { slug: "pure-himalayan-shilajit" },
-    { slug: "himalayan-shilajit" },
-    { slug: "filtre-eau" },
-    { slug: "filtre-robinet" },
-    { slug: "filtre-eau-robinet" },
-    { slug: "purificateur-eau" },
-    { slug: "filtre-purificateur" },
-    { slug: "trousse-biometrique" },
-    { slug: "trousse-cuir" },
-    { slug: "pochette-biometrique" },
-    { slug: "organiseur-cuir" },
-    { slug: "digestigum" },
-    { slug: "gummies-digestifs" },
-    { slug: "enzymes-digestives" },
-    { slug: "probio-digest" },
-    { slug: "calendrier-3d" },
-    { slug: "calendrier-perpetuel" },
-    { slug: "calendrier-decoratif" },
-    { slug: "calendrier-magnetique" },
-    { slug: "likel-rite" },
-    { slug: "diffuseur" },
-    { slug: "diffuseur-arome" },
-    { slug: "humidificateur" },
-    { slug: "parfum-interieur" },
-    { slug: "starlight-chargeur" },
-    { slug: "chargeur-retractable" },
-    { slug: "starlight" },
-    { slug: "chargeur-5en1" },
-    { slug: "the-5-tresors" },
-    { slug: "tisane-5-tresors" },
-    { slug: "the-cinq-tresors" },
-    { slug: "tisane-des-cinq-tresors" },
-    { slug: "game-stick-4k" },
-    { slug: "game-stick" },
-    { slug: "gamestick" },
-    { slug: "game-stick-pro" },
-    { slug: "console-retro" },
-    { slug: "r36s" },
-    { slug: "console-r36s" },
-    { slug: "r36s-portable" },
-    { slug: "moustiquaire-porte" },
-    { slug: "moustiquaire" },
-    { slug: "moustiquaire-magnetique" },
-    { slug: "moustiquaire-aimantee" },
-    { slug: "masseur-vibrant" },
-    { slug: "masseur-abdomen-dos" },
-    { slug: "masseur-2en1" },
-  ];
+  return Object.keys(SLUG_TO_CANONICAL).map((slug) => ({ slug }));
 }
 
 interface PageProps {
@@ -204,275 +173,87 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
   const normalizedSlug = slug.toLowerCase();
+  const canonicalSlug = SLUG_TO_CANONICAL[normalizedSlug];
 
-  const renderContent = () => {
-    switch (normalizedSlug) {
-      case "cubicraft":
-      case "cubi-craft":
-      case "pixelcraft":
-      case "blocs-magnetiques":
-      case "mineblocks":
-        return <CubiCraftLanding slug="cubicraft" />;
-      case "savon-repousse":
-      case "savon":
-      case "savon-usma":
-      case "savon-nature":
-      case "biota":
-        return <SavonRepousseLanding slug="savon-repousse" />;
-      case "voiture-camera":
-      case "voiture-telecommandee":
-      case "voiture-rc":
-      case "c6":
-        return <VoitureCameraLanding slug="voiture-camera" />;
-      case "umei":
-      case "brosse":
-      case "brosse-spray":
-      case "yufan":
-        return <UmeiLanding slug="umei" />;
-      case "peeler":
-      case "mandoline":
-      case "coupe-legumes":
-        return <PeelerLanding slug="peeler" />;
-      case "masseur-oculaire":
-      case "eye-massager":
-        return <EyeMassagerLanding slug="masseur-oculaire" />;
-      case "microscope":
-        return <MicroscopeLanding slug="microscope" />;
-      case "camera":
-        return <CameraLanding slug="camera" />;
-      case "trozk":
-        return <TrozkLanding slug="trozk" />;
-      case "stabilisateur":
-      case "stabilizer":
-        return <StabilisateurLanding slug="stabilisateur" />;
-      case "eraclean":
-        return <EraCleanLanding slug="eraclean" />;
-      case "turbofan":
-        return <TurboFanLanding slug="turbofan" />;
-      case "veilleuse":
-        return <VeilleuseLanding slug="veilleuse" />;
-      case "mini-lave-linge":
-      case "lave-linge":
-      case "washer":
-        return <MiniLaveLingeLanding slug="mini-lave-linge" />;
-      case "matelas":
-      case "matelas-gonflable":
-      case "camping":
-        return <MatelasLanding slug="matelas" />;
-      case "sourire-eclatant":
-      case "routine-sourire":
-      case "dentifrice-violet":
-        return <SourireEclatantLanding slug="sourire-eclatant" />;
-      case "projecteur-noel":
-      case "lampe-noel":
-      case "noel":
-      case "projecteur-usb":
-      case "magie-noel":
-        return <ProjecteurNoelLanding slug="projecteur-noel" />;
-      case "equilibre-feminin":
-      case "probiotiques-femme":
-      case "gummies-probiotiques":
-      case "gummies":
-      case "probiotiques":
-        return <ProbioticGummiesLanding slug="equilibre-feminin" />;
-      case "bracelet-main":
-      case "bracelet-bague":
-      case "bracelet-eclat":
-      case "bijou-main":
-        return <BraceletMainLanding slug="bracelet-main" />;
-      case "stylo-3d":
-      case "stylo":
-      case "stylo-3d-enfant":
-      case "3dpen":
-      case "stylo-3d-creatif":
-        return <Stylo3DLanding slug="stylo-3d" />;
-      case "carte-du-monde":
-      case "carte-monde":
-      case "scratch-map":
-      case "carte-a-gratter":
-      case "explore-the-world":
-        return <CarteDuMondeLanding slug="carte-du-monde" />;
-      case "capsacare":
-      case "creme-douleur":
-      case "capsa-care":
-      case "creme-articulaire":
-        return <CapsaCareLanding slug="capsacare" />;
-      case "odoraway":
-      case "odor-away":
-      case "creme-deodorante":
-      case "deodorant-aisselles":
-        return <OdorAwayLanding slug="odoraway" />;
-      case "duo-bracelets-coeur":
-      case "bracelets-coeur":
-      case "duo-coeur":
-      case "bracelet-coeur":
-        return <DuoBraceletsCoeurLanding slug="duo-bracelets-coeur" />;
-      case "pare-soleil":
-      case "pare-brise":
-      case "anti-eblouissement":
-      case "visiere-auto":
-        return <ParesoleilLanding slug="pare-soleil" />;
-      case "shilajit":
-      case "shilajit-gold":
-      case "shilajit-gummies":
-      case "pure-himalayan-shilajit":
-      case "himalayan-shilajit":
-        return <ShilajitLanding slug="shilajit" />;
-      case "filtre-eau":
-      case "filtre-robinet":
-      case "filtre-eau-robinet":
-      case "purificateur-eau":
-      case "filtre-purificateur":
-        return <FiltreEauLanding slug="filtre-eau" />;
-      case "trousse-biometrique":
-      case "trousse-cuir":
-      case "pochette-biometrique":
-      case "organiseur-cuir":
-        return <TrousseBiometriqueLanding slug="trousse-biometrique" />;
-      case "digestigum":
-      case "gummies-digestifs":
-      case "enzymes-digestives":
-      case "probio-digest":
-        return <DigestiGumLanding slug="digestigum" />;
-      case "calendrier-3d":
-      case "calendrier-perpetuel":
-      case "calendrier-decoratif":
-      case "calendrier-magnetique":
-        return <Calendrier3DLanding slug="calendrier-3d" />;
-      case "the-5-tresors":
-      case "tisane-5-tresors":
-      case "the-cinq-tresors":
-      case "tisane-des-cinq-tresors":
-        return <The5TresorsLanding slug="the-5-tresors" />;
-      case "starlight-chargeur":
-      case "chargeur-retractable":
-      case "starlight":
-      case "chargeur-5en1":
-      case "chargeur-voiture":
-        return <StarlightLanding slug="starlight-chargeur" />;
-      case "likel-rite":
-      case "diffuseur":
-      case "diffuseur-arome":
-      case "humidificateur":
-      case "parfum-interieur":
-        return <LikelRiteLanding slug="likel-rite" />;
-      case "game-stick-4k":
-      case "game-stick":
-      case "gamestick":
-      case "game-stick-pro":
-      case "console-retro":
-        return <GameStickLanding slug="game-stick-4k" />;
-      case "r36s":
-      case "console-r36s":
-      case "r36s-portable":
-        return <R36SLanding slug="r36s" />;
-      case "moustiquaire-porte":
-      case "moustiquaire":
-      case "moustiquaire-magnetique":
-      case "moustiquaire-aimantee":
-        return <MoustiquairePorteLanding slug="moustiquaire-porte" />;
-      case "masseur-vibrant":
-      case "masseur-abdomen-dos":
-      case "masseur-2en1":
-        return <MasseurVibrantLanding slug="masseur-vibrant" />;
-      default:
-        return null;
-    }
-  };
-
-  const hardcodedNode = renderContent();
-
-  // Si ce n'est pas une landing dédiée du fondateur, chercher dans DEFAULT_CATALOG ou Supabase (Multi-Boutiques unifié)
-  if (!hardcodedNode) {
-    let dbProduct: any = null;
-    let storeConfig: any = null;
-
-    try {
-      const supabase = getSupabase();
-      const { data: prod } = await supabase
-        .from("products")
-        .select("*")
-        .eq("slug", normalizedSlug)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (prod) {
-        dbProduct = prod;
-        if (prod.store_id) {
-          const { data: store } = await supabase
-            .from("public_stores")
-            .select("id, name, slug, country, currency, city, whatsapp_number, meta_pixel_id, accent_color, is_active")
-            .eq("id", prod.store_id)
-            .maybeSingle();
-          if (store) {
-            storeConfig = store;
-          } else {
-            // La boutique associée existe mais est en PAUSE (is_active = false n'est pas dans public_stores)
-            return (
-              <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 font-sans text-slate-900">
-                <div className="max-w-md w-full bg-white rounded-[14px] border border-black/[0.08] p-8 text-center space-y-3 shadow-xs">
-                  <h1 className="text-xl font-black text-slate-900">
-                    Boutique temporairement en pause
-                  </h1>
-                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                    Cette page produit est momentanément indisponible. Revenez un peu plus tard.
-                  </p>
-                </div>
-              </div>
-            );
-          }
-        }
-      }
-    } catch {}
-
-    if (dbProduct) {
-      const resolvedPixelId = storeConfig
-        ? storeConfig.meta_pixel_id || null
-        : FOUNDER_PIXEL_ID;
-
-      return (
-        <>
-          <StoreMetaPixel pixelId={resolvedPixelId} />
-          <ProductLanding
-            slug={normalizedSlug}
-            initialProduct={dbProduct}
-            storeConfig={storeConfig}
-          />
-        </>
-      );
-    }
-
-    if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
-      return (
-        <>
-          <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
-          <DynamicIsland slug={normalizedSlug} />
-          <ProductLanding slug={normalizedSlug} />
-          <ShoppingAgentWidget slug={normalizedSlug} />
-          <ExitIntentModal slug={normalizedSlug} />
-        </>
-      );
-    }
-
-    return notFound();
+  if (canonicalSlug) {
+    return (
+      <>
+        <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
+        <DedicatedLandingShell
+          canonicalSlug={canonicalSlug}
+          withWidgets={!STANDALONE_LANDINGS.has(canonicalSlug)}
+        />
+      </>
+    );
   }
 
-  const isDedicatedLanding = [
-    "masseur-vibrant",
-    "likel-rite",
-    "umei",
-    "trousse-biometrique",
-    "r36s",
-  ].includes(normalizedSlug);
+  // Si ce n'est pas une landing dédiée du fondateur, chercher dans Supabase ou DEFAULT_CATALOG (Multi-Boutiques unifié)
+  let dbProduct: any = null;
+  let storeConfig: any = null;
 
-  return (
-    <>
-      <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
-      {!isDedicatedLanding && <DynamicIsland slug={normalizedSlug} />}
-      {hardcodedNode}
-      {!isDedicatedLanding && <ShoppingAgentWidget slug={normalizedSlug} />}
-      {!isDedicatedLanding && <ExitIntentModal slug={normalizedSlug} />}
-    </>
-  );
+  try {
+    const supabase = getSupabase();
+    const { data: prod } = await supabase
+      .from("products")
+      .select("*")
+      .eq("slug", normalizedSlug)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (prod) {
+      dbProduct = prod;
+      if (prod.store_id) {
+        const { data: store } = await supabase
+          .from("public_stores")
+          .select("id, name, slug, country, currency, city, whatsapp_number, meta_pixel_id, accent_color, is_active")
+          .eq("id", prod.store_id)
+          .maybeSingle();
+        if (store) {
+          storeConfig = store;
+        } else {
+          return (
+            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 font-sans text-slate-900">
+              <div className="max-w-md w-full bg-white rounded-[14px] border border-black/[0.08] p-8 text-center space-y-3 shadow-xs">
+                <h1 className="text-xl font-black text-slate-900">
+                  Boutique temporairement en pause
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                  Cette page produit est momentanément indisponible. Revenez un peu plus tard.
+                </p>
+              </div>
+            </div>
+          );
+        }
+      }
+    }
+  } catch {}
+
+  if (dbProduct) {
+    const resolvedPixelId = storeConfig
+      ? storeConfig.meta_pixel_id || null
+      : FOUNDER_PIXEL_ID;
+
+    return (
+      <>
+        <StoreMetaPixel pixelId={resolvedPixelId} />
+        <GenericProductShell
+          slug={normalizedSlug}
+          initialProduct={dbProduct}
+          storeConfig={storeConfig}
+          withWidgets={false}
+        />
+      </>
+    );
+  }
+
+  if (DEFAULT_CATALOG_MAP[normalizedSlug]) {
+    return (
+      <>
+        <StoreMetaPixel pixelId={FOUNDER_PIXEL_ID} />
+        <GenericProductShell slug={normalizedSlug} withWidgets={true} />
+      </>
+    );
+  }
+
+  return notFound();
 }
-
