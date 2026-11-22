@@ -63,6 +63,11 @@ export default function AdminFinancesPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [period, setPeriod] = useState<PeriodFilter>("all");
   const [activeTab, setActiveTab] = useState<TabView>("overview");
+  const [visibleRows, setVisibleRows] = useState<number>(10);
+
+  useEffect(() => {
+    setVisibleRows(10);
+  }, [activeTab, period]);
 
   // Modales d'ajout
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -830,48 +835,48 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       </div>
 
       {/* ── SOUS-ONGLETS DE NAVIGATION DU DASHBOARD ── */}
-      <div className="flex items-center gap-2 border-b border-black/[0.08] pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-black/[0.08] pb-3">
         <button
           onClick={() => setActiveTab("overview")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors duration-150 cursor-pointer ${
+          className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors duration-150 cursor-pointer ${
             activeTab === "overview"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
-          📊 Bilan Journalier ({dailyBreakdown.length} jours)
+          Bilan journalier ({dailyBreakdown.length} j)
         </button>
         <button
           onClick={() => setActiveTab("expenses")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors duration-150 cursor-pointer ${
+          className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors duration-150 cursor-pointer ${
             activeTab === "expenses"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
-          💸 Toutes les Dépenses ({filteredExpenses.length})
+          Dépenses ({filteredExpenses.length})
         </button>
         <button
           onClick={() => setActiveTab("sales")}
-          className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors duration-150 cursor-pointer ${
+          className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors duration-150 cursor-pointer ${
             activeTab === "sales"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           }`}
         >
-          🛒 Toutes les Ventes Réelles ({filteredSales.length})
+          Ventes réelles ({filteredSales.length})
         </button>
       </div>
 
       {/* ══════════════ TAB 1 : BILAN JOURNALIER AGRÉGÉ ══════════════ */}
       {activeTab === "overview" && (
         <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between">
+          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
             <h3 className="font-bold text-sm text-slate-900">
               Historique quotidien des entrées / sorties
             </h3>
             <span className="text-xs text-slate-500 font-mono">
-              Bénéfice cumulé : <strong>{fmt(netProfit)} FCFA</strong>
+              Bénéfice cumulé : <strong className="text-slate-900">{fmt(netProfit)} FCFA</strong>
             </span>
           </div>
 
@@ -880,56 +885,114 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
               Aucune opération enregistrée pour la période sélectionnée.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
-                    <th className="py-3 px-4">Date</th>
-                    <th className="py-3 px-4">Ventes Réelles</th>
-                    <th className="py-3 px-4">Dépenses Réelles</th>
-                    <th className="py-3 px-4">Dépenses Pub</th>
-                    <th className="py-3 px-4">Bénéfice Net</th>
-                    <th className="py-3 px-4 text-right">ROAS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/[0.06]">
-                  {dailyBreakdown.map((row) => {
-                    const profit = row.sales - row.expenses;
-                    const dayRoas = row.ads > 0 ? row.sales / row.ads : 0;
-                    return (
-                      <tr key={row.date} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-slate-900">
-                          {row.date}
-                        </td>
-                        <td className="py-3 px-4 font-mono font-bold text-emerald-700">
-                          +{fmt(row.sales)} F <span className="text-[10px] text-slate-400">({row.salesCount})</span>
-                        </td>
-                        <td className="py-3 px-4 font-mono font-bold text-rose-600">
-                          -{fmt(row.expenses)} F <span className="text-[10px] text-slate-400">({row.expCount})</span>
-                        </td>
-                        <td className="py-3 px-4 font-mono text-slate-600">
-                          {row.ads > 0 ? `${fmt(row.ads)} F` : "—"}
-                        </td>
-                        <td className="py-3 px-4">
-                          <span
-                            className={`font-mono font-semibold px-2 py-0.5 rounded-lg text-xs ${
-                              profit >= 0
-                                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                                : "bg-rose-50 text-rose-800 border border-rose-200"
-                            }`}
-                          >
-                            {profit >= 0 ? "+" : ""}{fmt(profit)} F
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">
-                          {dayRoas > 0 ? `${dayRoas.toFixed(2)}x` : "—"}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              {/* Vue cartes mobile pleine largeur */}
+              <div className="lg:hidden divide-y divide-black/[0.06]">
+                {dailyBreakdown.slice(0, visibleRows).map((row) => {
+                  const profit = row.sales - row.expenses;
+                  const dayRoas = row.ads > 0 ? row.sales / row.ads : 0;
+                  return (
+                    <div key={row.date} className="p-4 space-y-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-sm font-bold text-slate-900">{row.date}</span>
+                        <span
+                          className={`font-mono font-semibold px-2.5 py-0.5 rounded-lg text-xs ${
+                            profit >= 0
+                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                              : "bg-rose-50 text-rose-800 border border-rose-200"
+                          }`}
+                        >
+                          {profit >= 0 ? "+" : ""}{fmt(profit)} F
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                        <div className="rounded-lg bg-slate-50 border border-black/[0.05] py-1.5 px-2">
+                          <div className="text-[10px] text-slate-400">Ventes ({row.salesCount})</div>
+                          <div className="font-mono text-xs font-bold text-emerald-700 mt-0.5">+{fmt(row.sales)} F</div>
+                        </div>
+                        <div className="rounded-lg bg-slate-50 border border-black/[0.05] py-1.5 px-2">
+                          <div className="text-[10px] text-slate-400">Dépenses ({row.expCount})</div>
+                          <div className="font-mono text-xs font-bold text-rose-600 mt-0.5">-{fmt(row.expenses)} F</div>
+                        </div>
+                        <div className="rounded-lg bg-slate-50 border border-black/[0.05] py-1.5 px-2">
+                          <div className="text-[10px] text-slate-400">ROAS / Pub</div>
+                          <div className="font-mono text-xs font-bold text-slate-900 mt-0.5">
+                            {dayRoas > 0 ? `${dayRoas.toFixed(2)}x` : row.ads > 0 ? `${fmt(row.ads)} F` : "—"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Vue tableau desktop */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
+                      <th className="py-3 px-4">Date</th>
+                      <th className="py-3 px-4">Ventes Réelles</th>
+                      <th className="py-3 px-4">Dépenses Réelles</th>
+                      <th className="py-3 px-4">Dépenses Pub</th>
+                      <th className="py-3 px-4">Bénéfice Net</th>
+                      <th className="py-3 px-4 text-right">ROAS</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black/[0.06]">
+                    {dailyBreakdown.slice(0, visibleRows).map((row) => {
+                      const profit = row.sales - row.expenses;
+                      const dayRoas = row.ads > 0 ? row.sales / row.ads : 0;
+                      return (
+                        <tr key={row.date} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-3 px-4 font-mono font-bold text-slate-900">
+                            {row.date}
+                          </td>
+                          <td className="py-3 px-4 font-mono font-bold text-emerald-700">
+                            +{fmt(row.sales)} F <span className="text-[10px] text-slate-400">({row.salesCount})</span>
+                          </td>
+                          <td className="py-3 px-4 font-mono font-bold text-rose-600">
+                            -{fmt(row.expenses)} F <span className="text-[10px] text-slate-400">({row.expCount})</span>
+                          </td>
+                          <td className="py-3 px-4 font-mono text-slate-600">
+                            {row.ads > 0 ? `${fmt(row.ads)} F` : "—"}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span
+                              className={`font-mono font-semibold px-2 py-0.5 rounded-lg text-xs ${
+                                profit >= 0
+                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                  : "bg-rose-50 text-rose-800 border border-rose-200"
+                              }`}
+                            >
+                              {profit >= 0 ? "+" : ""}{fmt(profit)} F
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">
+                            {dayRoas > 0 ? `${dayRoas.toFixed(2)}x` : "—"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {dailyBreakdown.length > visibleRows && (
+                <div className="px-4 py-3 border-t border-black/[0.06] bg-slate-50/60 flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <span className="text-xs text-slate-500">
+                    Affichage de <strong className="text-slate-900">{Math.min(visibleRows, dailyBreakdown.length)}</strong> sur <strong className="text-slate-900">{dailyBreakdown.length}</strong> jours
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setVisibleRows((prev) => prev + 10)}
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-black/[0.1] text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Afficher 10 jours de plus ({dailyBreakdown.length - visibleRows} restants)
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -937,15 +1000,15 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       {/* ══════════════ TAB 2 : TABLEAU DÉTAILLÉ DES DÉPENSES ══════════════ */}
       {activeTab === "expenses" && (
         <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between">
+          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between gap-2">
             <h3 className="font-bold text-sm text-slate-900">
-              Journal des dépenses engagées ({filteredExpenses.length})
+              Journal des dépenses ({filteredExpenses.length})
             </h3>
             <button
               onClick={() => setShowExpenseModal(true)}
-              className="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer"
+              className="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer shrink-0"
             >
-              + Ajouter une dépense
+              + Ajouter
             </button>
           </div>
 
@@ -954,47 +1017,38 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
               Aucune dépense enregistrée pour cette période.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
-                    <th className="py-3 px-4">Date</th>
-                    <th className="py-3 px-4">Poste / Catégorie</th>
-                    <th className="py-3 px-4">Description / Note</th>
-                    <th className="py-3 px-4">Produit lié</th>
-                    <th className="py-3 px-4">Montant</th>
-                    <th className="py-3 px-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/[0.06]">
-                  {filteredExpenses.map((exp) => {
-                    const catMeta = EXPENSE_CATEGORIES[exp.category] || EXPENSE_CATEGORIES.other;
-                    return (
-                      <tr key={exp.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3 px-4 font-mono text-slate-700 whitespace-nowrap">
-                          {exp.date}
-                        </td>
-                        <td className="py-3 px-4 whitespace-nowrap">
-                          <span
-                            className="text-[11px] font-bold px-2 py-0.5 rounded-full inline-block"
-                            style={{
-                              backgroundColor: catMeta.badgeBg,
-                              color: catMeta.badgeText,
-                            }}
-                          >
-                            {catMeta.label}
+            <>
+              {/* Vue cartes mobile */}
+              <div className="lg:hidden divide-y divide-black/[0.06]">
+                {filteredExpenses.slice(0, visibleRows).map((exp) => {
+                  const catMeta = EXPENSE_CATEGORIES[exp.category] || EXPENSE_CATEGORIES.other;
+                  return (
+                    <div key={exp.id} className="p-4 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span
+                              className="text-[11px] font-bold px-2 py-0.5 rounded-full inline-block"
+                              style={{
+                                backgroundColor: catMeta.badgeBg,
+                                color: catMeta.badgeText,
+                              }}
+                            >
+                              {catMeta.label}
+                            </span>
+                            <span className="font-mono text-[11px] text-slate-400">{exp.date}</span>
+                          </div>
+                          <p className="text-sm font-medium text-slate-900 mt-1.5 leading-snug">
+                            {exp.description}
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-0.5">
+                            Produit : {exp.product_slug || "Général"}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2 shrink-0">
+                          <span className="font-mono text-sm font-bold text-rose-600">
+                            -{fmt(exp.amount)} F
                           </span>
-                        </td>
-                        <td className="py-3 px-4 text-slate-800 font-medium">
-                          {exp.description}
-                        </td>
-                        <td className="py-3 px-4 text-slate-500 text-xs">
-                          {exp.product_slug || "Général"}
-                        </td>
-                        <td className="py-3 px-4 font-mono font-semibold text-rose-600 whitespace-nowrap">
-                          -{fmt(exp.amount)} FCFA
-                        </td>
-                        <td className="py-3 px-4 text-right">
                           <button
                             onClick={() => handleDeleteExpense(exp.id)}
                             className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
@@ -1002,13 +1056,85 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Vue tableau desktop */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
+                      <th className="py-3 px-4">Date</th>
+                      <th className="py-3 px-4">Poste / Catégorie</th>
+                      <th className="py-3 px-4">Description / Note</th>
+                      <th className="py-3 px-4">Produit lié</th>
+                      <th className="py-3 px-4">Montant</th>
+                      <th className="py-3 px-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black/[0.06]">
+                    {filteredExpenses.slice(0, visibleRows).map((exp) => {
+                      const catMeta = EXPENSE_CATEGORIES[exp.category] || EXPENSE_CATEGORIES.other;
+                      return (
+                        <tr key={exp.id} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-3 px-4 font-mono text-slate-700 whitespace-nowrap">
+                            {exp.date}
+                          </td>
+                          <td className="py-3 px-4 whitespace-nowrap">
+                            <span
+                              className="text-[11px] font-bold px-2 py-0.5 rounded-full inline-block"
+                              style={{
+                                backgroundColor: catMeta.badgeBg,
+                                color: catMeta.badgeText,
+                              }}
+                            >
+                              {catMeta.label}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-slate-800 font-medium">
+                            {exp.description}
+                          </td>
+                          <td className="py-3 px-4 text-slate-500 text-xs">
+                            {exp.product_slug || "Général"}
+                          </td>
+                          <td className="py-3 px-4 font-mono font-semibold text-rose-600 whitespace-nowrap">
+                            -{fmt(exp.amount)} FCFA
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <button
+                              onClick={() => handleDeleteExpense(exp.id)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                              title="Supprimer cette dépense"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {filteredExpenses.length > visibleRows && (
+                <div className="px-4 py-3 border-t border-black/[0.06] bg-slate-50/60 flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <span className="text-xs text-slate-500">
+                    Affichage de <strong className="text-slate-900">{Math.min(visibleRows, filteredExpenses.length)}</strong> sur <strong className="text-slate-900">{filteredExpenses.length}</strong> dépenses
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setVisibleRows((prev) => prev + 10)}
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-black/[0.1] text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Afficher 10 de plus ({filteredExpenses.length - visibleRows} restantes)
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -1016,20 +1142,20 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
       {/* ══════════════ TAB 3 : TABLEAU DÉTAILLÉ DES VENTES RÉELLES ══════════════ */}
       {activeTab === "sales" && (
         <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between">
+          <div className="p-4 sm:p-5 border-b border-black/[0.08] flex items-center justify-between gap-2">
             <div>
               <h3 className="font-bold text-sm text-slate-900">
-                Journal des ventes et encaissements réels ({filteredSales.length})
+                Journal des ventes ({filteredSales.length})
               </h3>
               <p className="text-[11px] text-slate-400">
-                Combine les commandes livrées du site et vos encaissements manuels
+                Commandes livrées du site et encaissements manuels
               </p>
             </div>
             <button
               onClick={() => setShowSaleModal(true)}
-              className="text-xs font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer"
+              className="text-xs font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer shrink-0"
             >
-              + Ajouter une vente manuelle
+              + Ajouter
             </button>
           </div>
 
@@ -1038,45 +1164,36 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
               Aucune vente enregistrée pour cette période.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
-                    <th className="py-3 px-4">Date</th>
-                    <th className="py-3 px-4">Produit</th>
-                    <th className="py-3 px-4">Client / Destination</th>
-                    <th className="py-3 px-4">Origine</th>
-                    <th className="py-3 px-4">Montant</th>
-                    <th className="py-3 px-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/[0.06]">
-                  {filteredSales.map((sale) => (
-                    <tr key={sale.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3 px-4 font-mono text-slate-700 whitespace-nowrap">
-                        {sale.date}
-                      </td>
-                      <td className="py-3 px-4 font-bold text-slate-900">
-                        {sale.product_title || sale.product_slug}
-                      </td>
-                      <td className="py-3 px-4 text-slate-600 text-xs">
-                        {sale.customer_name || "Client"} {sale.city ? `(${sale.city})` : ""}
-                      </td>
-                      <td className="py-3 px-4 whitespace-nowrap">
-                        {sale.is_delivered_order ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Commande site #{sale.order_number || ""}
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f4f4f5] text-[#171717] border border-black/[0.08]">
-                            Saisie manuelle directe
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 font-mono font-semibold text-emerald-700 whitespace-nowrap">
-                        +{fmt(sale.amount)} FCFA
-                      </td>
-                      <td className="py-3 px-4 text-right">
+            <>
+              {/* Vue cartes mobile */}
+              <div className="lg:hidden divide-y divide-black/[0.06]">
+                {filteredSales.slice(0, visibleRows).map((sale) => (
+                  <div key={sale.id} className="p-4 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {sale.is_delivered_order ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Site #{sale.order_number || ""}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f4f4f5] text-[#171717] border border-black/[0.08]">
+                              Saisie manuelle
+                            </span>
+                          )}
+                          <span className="font-mono text-[11px] text-slate-400">{sale.date}</span>
+                        </div>
+                        <p className="text-sm font-bold text-slate-900 mt-1.5 leading-snug">
+                          {sale.product_title || sale.product_slug}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {sale.customer_name || "Client"} {sale.city ? `· ${sale.city}` : ""}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <span className="font-mono text-sm font-bold text-emerald-700">
+                          +{fmt(sale.amount)} F
+                        </span>
                         {!sale.is_delivered_order && (
                           <button
                             onClick={() => handleDeleteSale(sale.id)}
@@ -1086,12 +1203,83 @@ CREATE POLICY "Allow anon all on finances" ON public.finances FOR ALL USING (tru
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
-                      </td>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Vue tableau desktop */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/80 border-b border-black/[0.08] text-slate-500 font-bold text-[11px]">
+                      <th className="py-3 px-4">Date</th>
+                      <th className="py-3 px-4">Produit</th>
+                      <th className="py-3 px-4">Client / Destination</th>
+                      <th className="py-3 px-4">Origine</th>
+                      <th className="py-3 px-4">Montant</th>
+                      <th className="py-3 px-4 text-right">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-black/[0.06]">
+                    {filteredSales.slice(0, visibleRows).map((sale) => (
+                      <tr key={sale.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="py-3 px-4 font-mono text-slate-700 whitespace-nowrap">
+                          {sale.date}
+                        </td>
+                        <td className="py-3 px-4 font-bold text-slate-900">
+                          {sale.product_title || sale.product_slug}
+                        </td>
+                        <td className="py-3 px-4 text-slate-600 text-xs">
+                          {sale.customer_name || "Client"} {sale.city ? `(${sale.city})` : ""}
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          {sale.is_delivered_order ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Commande site #{sale.order_number || ""}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#f4f4f5] text-[#171717] border border-black/[0.08]">
+                              Saisie manuelle directe
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 font-mono font-semibold text-emerald-700 whitespace-nowrap">
+                          +{fmt(sale.amount)} FCFA
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          {!sale.is_delivered_order && (
+                            <button
+                              onClick={() => handleDeleteSale(sale.id)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                              title="Supprimer cette vente manuelle"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {filteredSales.length > visibleRows && (
+                <div className="px-4 py-3 border-t border-black/[0.06] bg-slate-50/60 flex flex-col sm:flex-row items-center justify-between gap-2">
+                  <span className="text-xs text-slate-500">
+                    Affichage de <strong className="text-slate-900">{Math.min(visibleRows, filteredSales.length)}</strong> sur <strong className="text-slate-900">{filteredSales.length}</strong> ventes
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setVisibleRows((prev) => prev + 10)}
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-black/[0.1] text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Afficher 10 de plus ({filteredSales.length - visibleRows} restantes)
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

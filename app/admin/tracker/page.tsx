@@ -81,7 +81,12 @@ export default function TrackerPage() {
   // ── Filtres globaux ("all" = Tout l'historique par défaut pour voir toutes les vraies données) ──
   const [filterDays, setFilterDays] = useState<number>(0); // 0 = Tout l'historique, 1 = Aujourd'hui, 7 = 7j, 30 = 30j
   const [selectedSlug, setSelectedSlug] = useState<string>("all");
+  const [visibleProducts, setVisibleProducts] = useState<number>(8);
   const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    setVisibleProducts(8);
+  }, [filterDays]);
   const [copiedUrlParams, setCopiedUrlParams] = useState<boolean>(false);
 
   // ── Données internes Isivente (Supabase) ──
@@ -750,7 +755,96 @@ export default function TrackerPage() {
           )}
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Vue cartes mobile pleine largeur */}
+        <div className="lg:hidden divide-y divide-black/[0.06] -mx-5 sm:-mx-6 border-t border-black/[0.06]">
+          {productScorecard.slice(0, visibleProducts).map((p) => {
+            let badge = {
+              dot: "bg-slate-400",
+              text: "En test (peu de trafic)",
+              cls: "bg-slate-100 text-slate-700",
+            };
+            if (p.conversionRate >= 4.5 && p.orders >= 1) {
+              badge = {
+                dot: "bg-emerald-500",
+                text: "Winner à scaler",
+                cls: "bg-emerald-50 text-emerald-800 border border-emerald-200",
+              };
+            } else if (p.conversionRate >= 2.5 && p.orders >= 1) {
+              badge = {
+                dot: "bg-emerald-500",
+                text: "Rentable",
+                cls: "bg-[#f4f4f5] text-[#171717] border border-black/[0.08]",
+              };
+            } else if (p.visitors >= 40 && p.orders === 0) {
+              badge = {
+                dot: "bg-rose-500",
+                text: "Couper la pub (0 vente)",
+                cls: "bg-rose-50 text-rose-700 border border-rose-200",
+              };
+            }
+
+            const isSelected = selectedSlug === p.slug;
+            return (
+              <div
+                key={p.slug}
+                onClick={() => setSelectedSlug(isSelected ? "all" : p.slug)}
+                className={`p-4 space-y-2.5 cursor-pointer transition-colors ${
+                  isSelected ? "bg-[#fafafa]" : "active:bg-slate-50"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-bold text-sm text-slate-900 leading-snug">{p.title}</div>
+                    <div className="text-[11px] font-mono text-slate-400 truncate">/p/{p.slug}</div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 ${badge.cls}`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
+                    {badge.text}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-1.5 text-center">
+                  <div className="rounded-lg bg-slate-50 border border-black/[0.05] py-1.5 px-1">
+                    <div className="text-[10px] text-slate-400">Visites</div>
+                    <div className="font-mono text-xs font-bold text-slate-900 mt-0.5">{fmt(p.visitors)}</div>
+                  </div>
+                  <div className="rounded-lg bg-slate-50 border border-black/[0.05] py-1.5 px-1">
+                    <div className="text-[10px] text-slate-400">Abandons</div>
+                    <div className="font-mono text-xs font-bold text-slate-700 mt-0.5">{p.abandonedLeads}</div>
+                  </div>
+                  <div className="rounded-lg bg-slate-50 border border-black/[0.05] py-1.5 px-1">
+                    <div className="text-[10px] text-slate-400">Cmds</div>
+                    <div className="font-mono text-xs font-bold text-slate-900 mt-0.5">{fmt(p.orders)}</div>
+                  </div>
+                  <div className="rounded-lg bg-slate-50 border border-black/[0.05] py-1.5 px-1">
+                    <div className="text-[10px] text-slate-400">Conv.</div>
+                    <div
+                      className={`font-mono text-xs font-bold mt-0.5 ${
+                        p.conversionRate >= 4
+                          ? "text-emerald-600"
+                          : p.conversionRate > 0
+                          ? "text-[#171717]"
+                          : "text-rose-600"
+                      }`}
+                    >
+                      {p.conversionRate.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs pt-0.5">
+                  <span className="text-slate-400">Chiffre d&apos;affaires</span>
+                  <span className="font-mono font-bold text-slate-900">{fmt(p.revenue)} F</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Vue tableau desktop */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 border-b border-black/[0.08] text-slate-600 font-bold">
               <tr>
@@ -759,30 +853,34 @@ export default function TrackerPage() {
                 <th className="p-3">Paniers Abandonnés</th>
                 <th className="p-3">Commandes Validées</th>
                 <th className="p-3">Taux de Conversion</th>
-                <th className="p-3">Chiffre d'Affaires</th>
-                <th className="p-3">Verdict & Action</th>
+                <th className="p-3">Chiffre d&apos;Affaires</th>
+                <th className="p-3">Verdict &amp; Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/[0.06]">
-              {productScorecard.map((p) => {
+              {productScorecard.slice(0, visibleProducts).map((p) => {
                 let badge = {
-                  text: "🟡 EN TEST (Peu de trafic)",
+                  dot: "bg-slate-400",
+                  text: "En test (peu de trafic)",
                   cls: "bg-slate-100 text-slate-700",
                 };
                 if (p.conversionRate >= 4.5 && p.orders >= 1) {
                   badge = {
-                    text: "🟢 WINNER À SCALER (Mettre du budget)",
-                    cls: "bg-emerald-100 text-emerald-800",
+                    dot: "bg-emerald-500",
+                    text: "Winner à scaler (mettre du budget)",
+                    cls: "bg-emerald-50 text-emerald-800 border border-emerald-200",
                   };
                 } else if (p.conversionRate >= 2.5 && p.orders >= 1) {
                   badge = {
-                    text: "🟢 RENTABLE (Relancer les abandonnés)",
-                    cls: "bg-[#f4f4f5] text-[#171717]",
+                    dot: "bg-emerald-500",
+                    text: "Rentable (relancer les abandonnés)",
+                    cls: "bg-[#f4f4f5] text-[#171717] border border-black/[0.08]",
                   };
                 } else if (p.visitors >= 40 && p.orders === 0) {
                   badge = {
-                    text: "🔴 COUPEZ LA PUB (0 vente sur " + p.visitors + " visites)",
-                    cls: "bg-rose-100 text-rose-700",
+                    dot: "bg-rose-500",
+                    text: "Couper la pub (0 vente sur " + p.visitors + " visites)",
+                    cls: "bg-rose-50 text-rose-700 border border-rose-200",
                   };
                 }
 
@@ -838,8 +936,9 @@ export default function TrackerPage() {
                     </td>
                     <td className="p-3">
                       <span
-                        className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-semibold ${badge.cls}`}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold ${badge.cls}`}
                       >
+                        <span className={`w-1.5 h-1.5 rounded-full ${badge.dot}`} />
                         {badge.text}
                       </span>
                     </td>
@@ -849,6 +948,21 @@ export default function TrackerPage() {
             </tbody>
           </table>
         </div>
+
+        {productScorecard.length > visibleProducts && (
+          <div className="pt-3 border-t border-black/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span className="text-xs text-slate-500">
+              Affichage de <strong className="text-slate-900">{Math.min(visibleProducts, productScorecard.length)}</strong> sur <strong className="text-slate-900">{productScorecard.length}</strong> produits
+            </span>
+            <button
+              type="button"
+              onClick={() => setVisibleProducts((prev) => prev + 8)}
+              className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-black/[0.1] text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Afficher 8 produits de plus ({productScorecard.length - visibleProducts} restants)
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── PANNEAU DE CONNEXION DIRECTE API META (Affiché au clic) ── */}

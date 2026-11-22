@@ -45,7 +45,12 @@ interface DbProductItem {
 
 export default function AdminLandingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [visibleCount, setVisibleCount] = useState<number>(9);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setVisibleCount(9);
+  }, [searchTerm]);
   const [userStore, setUserStore] = useState<StoreConfig | null>(null);
   const [dbProducts, setDbProducts] = useState<DbProductItem[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -515,7 +520,7 @@ export default function AdminLandingsPage() {
 
       {/* ── GRILLE DES LANDING PAGES ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredProducts.map((prod) => {
+        {filteredProducts.slice(0, visibleCount).map((prod) => {
           const origin = getBaseUrl();
           const cleanUrl = `${origin}/p/${prod.slug}`;
           const utmMetaUrl = `${origin}/p/${prod.slug}?utm_source=meta&utm_medium=cpc&utm_campaign=${prod.slug}_conversion`;
@@ -657,6 +662,21 @@ export default function AdminLandingsPage() {
           );
         })}
       </div>
+
+      {filteredProducts.length > visibleCount && (
+        <div className="bg-white rounded-[14px] border border-black/[0.08] px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+          <span className="text-xs text-slate-500">
+            Affichage de <strong className="text-slate-900">{Math.min(visibleCount, filteredProducts.length)}</strong> sur <strong className="text-slate-900">{filteredProducts.length}</strong> pages produits
+          </span>
+          <button
+            type="button"
+            onClick={() => setVisibleCount((prev) => prev + 9)}
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-black/[0.1] text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+          >
+            Afficher 9 pages de plus ({filteredProducts.length - visibleCount} restantes)
+          </button>
+        </div>
+      )}
 
       {filteredProducts.length === 0 && (
         <div className="text-center py-12 bg-white rounded-[14px] border border-black/[0.08] p-8 space-y-3">
