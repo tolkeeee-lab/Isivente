@@ -162,11 +162,47 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  const product = DEFAULT_CATALOG_MAP[slug.toLowerCase()];
-  const title = product?.shortTitle || product?.title || "Boutique Officielle";
+  const normalizedSlug = slug.toLowerCase();
+  const product = DEFAULT_CATALOG_MAP[normalizedSlug];
+  if (product) {
+    const title = product.shortTitle || product.title;
+    return {
+      title: `${title} | Isivente`,
+      description: `Commandez ${title} avec livraison rapide et paiement en espèces à la réception.`,
+    };
+  }
+
+  try {
+    const supabase = getSupabase();
+    const { data: prod } = await supabase
+      .from("products")
+      .select("title, headline, store_id")
+      .eq("slug", normalizedSlug)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (prod?.title) {
+      let brand = "Boutique Officielle";
+      if (prod.store_id) {
+        const { data: store } = await supabase
+          .from("public_stores")
+          .select("name")
+          .eq("id", prod.store_id)
+          .maybeSingle();
+        if (store?.name) brand = store.name;
+      }
+      return {
+        title: `${prod.title} | ${brand}`,
+        description:
+          prod.headline ||
+          `Commandez ${prod.title} chez ${brand}. Livraison rapide et paiement à la réception.`,
+      };
+    }
+  } catch {}
+
   return {
-    title: `${title} | Isivente Bénin`,
-    description: `Commandez ${title} sur Isivente. Livraison express sous 24h au Bénin et paiement en espèces à la réception.`,
+    title: "Boutique Officielle | Isivente",
+    description: "Commandez avec livraison express et paiement en espèces à la réception.",
   };
 }
 

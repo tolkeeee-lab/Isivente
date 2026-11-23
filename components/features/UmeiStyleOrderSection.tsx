@@ -64,6 +64,9 @@ interface UmeiStyleOrderSectionProps {
   onSubmit: (e: React.FormEvent) => void;
   accentColor?: string;
   whatsappNumber?: string;
+  storeName?: string;
+  dialCode?: string;
+  currency?: string;
   orderSuccess?: boolean;
   orderNumber?: string;
   onResetOrder?: () => void;
@@ -128,6 +131,9 @@ export default function UmeiStyleOrderSection({
   onSubmit,
   accentColor,
   whatsappNumber = "2290192901817",
+  storeName = "Isivente",
+  dialCode = "229",
+  currency = "FCFA",
   orderSuccess = false,
   orderNumber,
   onResetOrder,
@@ -566,8 +572,8 @@ export default function UmeiStyleOrderSection({
                 )}
               </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-xs font-bold text-slate-500">
-                  🇧🇯 +229
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-xs font-mono font-bold text-slate-500">
+                  +{dialCode}
                 </div>
                 <input
                   id="customer-phone-input"
@@ -577,8 +583,8 @@ export default function UmeiStyleOrderSection({
                   onFocus={handleInteractionTrigger}
                   onBlur={captureGhostLead}
                   onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="01 97 00 00 00 ou 97 00 00 00"
-                  className="w-full pl-16 pr-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-mono font-semibold"
+                  placeholder={dialCode === "229" ? "01 97 00 00 00 ou 97 00 00 00" : "Votre numéro WhatsApp"}
+                  className="w-full pl-14 pr-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-mono font-semibold"
                 />
               </div>
             </div>
@@ -683,7 +689,7 @@ export default function UmeiStyleOrderSection({
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                     }`}
                 >
-                  <span>⚡ Dès que possible</span>
+                  <span>Dès que possible</span>
                 </button>
                 <button
                   type="button"
@@ -711,7 +717,7 @@ export default function UmeiStyleOrderSection({
                     className="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 text-xs bg-amber-50/40 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 font-medium"
                   />
                   <p className="text-[10.5px] text-slate-400 mt-1">
-                    💡 Votre colis est mis de côté gratuitement. Notre équipe vous contactera la veille pour confirmer.
+                    Votre colis est mis de côté gratuitement. Notre équipe vous contactera la veille pour confirmer.
                   </p>
                 </div>
               )}
@@ -728,7 +734,7 @@ export default function UmeiStyleOrderSection({
                 className="text-xl font-bold font-mono tabular-nums"
                 style={{ color: theme.primary }}
               >
-                {fmt(totalPrice)} FCFA
+                {fmt(totalPrice)} {currency}
               </span>
             </div>
 
@@ -753,7 +759,7 @@ export default function UmeiStyleOrderSection({
               />
               <span className="text-[11.5px] leading-snug text-slate-700 font-medium">
                 Je confirme être disponible pour réceptionner le colis et avoir les{" "}
-                <strong className="text-slate-900">{fmt(totalPrice)} FCFA</strong> prêts à la livraison.
+                <strong className="text-slate-900">{fmt(totalPrice)} {currency}</strong> prêts à la livraison.
               </span>
             </label>
             {engagementWarning && !isEngagementConfirmed && (
@@ -804,9 +810,9 @@ export default function UmeiStyleOrderSection({
           </p>
           <a
             href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-              `Bonjour Isivente ! Je suis intéressé(e) par : ${productTitle} (${fmt(
+              `Bonjour ${storeName} ! Je suis intéressé(e) par : ${productTitle} (${fmt(
                 totalPrice
-              )} FCFA). J'aimerais poser une question ou commander directement sur WhatsApp.`
+              )} ${currency}). J'aimerais poser une question ou commander directement sur WhatsApp.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

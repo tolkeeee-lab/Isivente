@@ -8,6 +8,7 @@ import { saveOrUpdateLead } from "@/lib/leadsStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
 import { trackViewContent, trackInitiateCheckout } from "@/lib/metaPixel";
 import { DEFAULT_CATALOG_MAP } from "@/lib/defaultCatalog";
+import { AFRICAN_COUNTRIES } from "@/lib/storesStorage";
 import UmeiStyleOrderSection from "@/components/features/UmeiStyleOrderSection";
 import StickyMobileCtaBar from "@/components/features/StickyMobileCtaBar";
 import {
@@ -112,6 +113,9 @@ export default function ProductLanding({
   const brandWhatsapp = storeConfig?.whatsapp_number || product?.whatsapp_number || "2290192901817";
   const brandCurrency = storeConfig?.currency || "FCFA";
   const defaultCity = storeConfig?.city || "Cotonou";
+  const brandDialCode =
+    AFRICAN_COUNTRIES.find((c) => c.code === storeConfig?.country)?.dialCode || "229";
+  const [formError, setFormError] = useState("");
 
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(0);
   const [customerName, setCustomerName] = useState("");
@@ -341,10 +345,11 @@ export default function ProductLanding({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
     if (isSubmittingRef.current || isSubmitting) return;
     if (!product || !selectedBundle) return;
-    if (!customerPhone.trim() || customerPhone.trim().length < 8) {
-      alert("Veuillez saisir un numéro de téléphone valide.");
+    if (!customerPhone.trim() || customerPhone.replace(/\D/g, "").length < 8) {
+      setFormError("Veuillez saisir un numéro WhatsApp valide (au moins 8 chiffres).");
       return;
     }
 
@@ -400,7 +405,7 @@ export default function ProductLanding({
       }
     } catch (err) {
       console.error("Order error:", err);
-      alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
+      setFormError("Impossible d'enregistrer votre commande pour le moment. Réessayez.");
       setIsSubmitting(false);
       isSubmittingRef.current = false;
     }
@@ -471,8 +476,7 @@ export default function ProductLanding({
 
           <button
             onClick={() => scrollToSection("commander")}
-            style={{ backgroundColor: brandAccent }}
-            className="h-9 px-4 rounded-[8px] text-white text-[13px] font-medium font-mono tabular-nums hover:opacity-90 active:scale-[0.98] transition-[opacity,transform] duration-150 cursor-pointer shrink-0"
+            className="h-9 px-4 rounded-[8px] bg-[#fafafa] hover:bg-[#f4f4f5] border border-black/[0.12] text-[#171717] text-[13px] font-medium font-mono tabular-nums active:scale-[0.98] transition-[background-color,transform] duration-150 cursor-pointer shrink-0"
           >
             Commander · {fmt(currentPrice)} {brandCurrency === "FCFA" ? "F" : brandCurrency}
           </button>
@@ -545,15 +549,22 @@ export default function ProductLanding({
           {/* Identité, prix, réassurance & formulaire COD */}
           <div className="lg:col-span-6 space-y-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 text-[13px] text-[#525252]">
+              <button
+                type="button"
+                onClick={() => scrollToSection("avis")}
+                className="inline-flex items-center gap-2 text-[13px] text-[#525252] hover:text-[#171717] transition-colors cursor-pointer"
+              >
                 <div className="flex items-center text-[#b45309]">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-3.5 h-3.5 fill-current" />
                   ))}
                 </div>
                 <span className="font-mono tabular-nums font-medium text-[#171717]">4,9</span>
+                <span className="text-[#737373] underline underline-offset-2">
+                  ({displayedReviews.length} avis vérifiés)
+                </span>
                 <span className="text-[#737373]">· En stock à {defaultCity}</span>
-              </div>
+              </button>
 
               <h1 className="text-[28px] sm:text-[36px] leading-[1.15] font-medium text-[#171717] tracking-[-0.02em]">
                 {product.title}
@@ -604,14 +615,19 @@ export default function ProductLanding({
               <div className="flex items-start gap-2">
                 <Zap className="w-4 h-4 stroke-[1.5] text-[#525252] shrink-0 mt-0.5" />
                 <div>
-                  <div className="text-[13px] font-medium text-[#171717]">Produit neuf</div>
-                  <div className="text-[12px] text-[#737373]">Garanti</div>
+                  <div className="text-[13px] font-medium text-[#171717]">Échange gratuit</div>
+                  <div className="text-[12px] text-[#737373]">Sous 7 jours</div>
                 </div>
               </div>
             </div>
 
             {/* Formulaire de commande COD immédiat */}
-            <div id="commander" className="scroll-mt-20">
+            <div id="commander" className="scroll-mt-20 space-y-3">
+              {formError && (
+                <div className="p-3 rounded-[10px] bg-rose-50 border border-rose-200 text-rose-700 text-[13px] font-medium">
+                  {formError}
+                </div>
+              )}
               <UmeiStyleOrderSection
                 productSlug={slug}
                 productTitle={product.title}
@@ -638,6 +654,9 @@ export default function ProductLanding({
                 onSubmit={handleSubmit}
                 accentColor={brandAccent}
                 whatsappNumber={brandWhatsapp}
+                storeName={brandName}
+                dialCode={brandDialCode}
+                currency={brandCurrency}
                 orderSuccess={orderSuccess}
                 orderNumber={orderNumber}
                 onResetOrder={() => {
@@ -683,7 +702,7 @@ export default function ProductLanding({
         )}
 
         {/* ── 5. AVIS CLIENTS ── */}
-        <section className="space-y-8 pt-10 border-t border-black/[0.08]">
+        <section id="avis" className="scroll-mt-24 space-y-8 pt-10 border-t border-black/[0.08]">
           <div className="max-w-xl space-y-1">
             <h2 className="text-[24px] sm:text-[28px] font-medium text-[#171717] tracking-[-0.02em]">
               Retours clients à {defaultCity}
