@@ -21,6 +21,7 @@ import {
   AlertCircle,
   Upload,
   Image as ImageIcon,
+  Calendar,
 } from "lucide-react";
 import { DEFAULT_CATALOG } from "@/lib/defaultCatalog";
 import { supabase } from "@/lib/supabase";
@@ -40,17 +41,20 @@ interface DbProductItem {
   original_price?: number;
   images?: any[];
   store_id?: string | null;
+  created_at?: string | null;
   is_custom_db?: boolean;
 }
 
 export default function AdminLandingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
   const [visibleCount, setVisibleCount] = useState<number>(9);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [slugDates, setSlugDates] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setVisibleCount(9);
-  }, [searchTerm]);
+  }, [searchTerm, dateFilter]);
   const [userStore, setUserStore] = useState<StoreConfig | null>(null);
   const [dbProducts, setDbProducts] = useState<DbProductItem[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -86,7 +90,7 @@ export default function AdminLandingsPage() {
       if (store) {
         const { data } = await supabase
           .from("products")
-          .select("id, slug, title, headline, price, original_price, images, store_id")
+          .select("id, slug, title, headline, price, original_price, images, store_id, created_at")
           .eq("store_id", store.id)
           .order("created_at", { ascending: false });
         if (Array.isArray(data)) {
@@ -94,6 +98,23 @@ export default function AdminLandingsPage() {
         }
       } else {
         setDbProducts([]);
+      }
+
+      // Récupérer les dates de création des produits catalogue pour le filtrage par date
+      const tenantCtx = getStoredTenantContext();
+      if (tenantCtx?.isFounder) {
+        const { data: allProdDates } = await supabase
+          .from("products")
+          .select("slug, created_at");
+        if (Array.isArray(allProdDates)) {
+          const map: Record<string, string> = {};
+          for (const row of allProdDates) {
+            if (row.slug && row.created_at) {
+              map[String(row.slug).toLowerCase()] = String(row.created_at);
+            }
+          }
+          setSlugDates(map);
+        }
       }
     } catch { }
   };
@@ -121,6 +142,7 @@ export default function AdminLandingsPage() {
         price: Number(p.price) || 0,
         image: firstImg,
         image_url: firstImg,
+        created_at: p.created_at || null,
         isCustomDb: true,
       };
     });
@@ -132,22 +154,35 @@ export default function AdminLandingsPage() {
 
     const staticMapped = DEFAULT_CATALOG.map((p) => ({
       ...p,
+      created_at: slugDates[p.slug.toLowerCase()] || null,
       isCustomDb: false,
     }));
 
     return [...customMapped, ...staticMapped];
-  }, [dbProducts]);
+  }, [dbProducts, slugDates]);
 
   const filteredProducts = useMemo(() => {
     const q = searchTerm.toLowerCase().trim();
-    if (!q) return combinedProducts;
-    return combinedProducts.filter(
-      (p) =>
+    return combinedProducts.filter((p) => {
+      const isoDate = p.created_at ? String(p.created_at).slice(0, 10) : "";
+      const frDate = p.created_at
+        ? new Date(p.created_at).toLocaleDateString("fr-FR")
+        : "";
+
+      if (dateFilter && isoDate !== dateFilter) {
+        return false;
+      }
+
+      if (!q) return true;
+      return (
         p.title.toLowerCase().includes(q) ||
         p.slug.toLowerCase().includes(q) ||
-        (p.shortTitle && p.shortTitle.toLowerCase().includes(q))
-    );
-  }, [combinedProducts, searchTerm]);
+        (p.shortTitle && p.shortTitle.toLowerCase().includes(q)) ||
+        isoDate.includes(q) ||
+        frDate.includes(q)
+      );
+    });
+  }, [combinedProducts, searchTerm, dateFilter]);
 
   const handleCopy = (text: string, id: string) => {
     if (navigator.clipboard) {
@@ -471,15 +506,48 @@ export default function AdminLandingsPage() {
           </p>
         </div>
 
-        <div className="relative min-w-[260px] sm:min-w-[320px]">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Rechercher un produit, slug..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors duration-150 placeholder:text-slate-400"
-          />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:min-w-[260px]">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Rechercher par nom, slug ou date..."
+              className="w-full pl-9 pr-8 py-2 text-xs bg-white border border-black/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors duration-150 placeholder:text-slate-400"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                title="Effacer la recherche"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          <div className="relative flex items-center">
+            <Calendar className="w-3.5 h-3.5 absolute left-3 text-slate-400 pointer-events-none" />
+            <input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              aria-label="Filtrer par date de création"
+              className="w-full sm:w-auto pl-8 pr-3 py-2 text-xs bg-white border border-black/[0.08] rounded-xl text-slate-700 font-mono focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors duration-150"
+            />
+            {dateFilter && (
+              <button
+                type="button"
+                onClick={() => setDateFilter("")}
+                className="ml-1.5 p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer shrink-0"
+                title="Réinitialiser la date"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -569,7 +637,7 @@ export default function AdminLandingsPage() {
                     <h3 className="font-bold text-sm text-slate-900 leading-snug line-clamp-2">
                       {prod.title}
                     </h3>
-                    <div className="flex items-center gap-2 pt-0.5">
+                    <div className="flex items-center flex-wrap gap-2 pt-0.5">
                       <span className="font-mono text-sm font-semibold text-[#171717]">
                         {fmt(prod.price)} {userStore?.currency || "FCFA"}
                       </span>
@@ -577,6 +645,12 @@ export default function AdminLandingsPage() {
                       <span className="font-mono text-[11px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded truncate">
                         /p/{prod.slug}
                       </span>
+                      {prod.created_at && (
+                        <span className="font-mono text-[10px] text-slate-400 inline-flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(prod.created_at).toLocaleDateString("fr-FR")}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
