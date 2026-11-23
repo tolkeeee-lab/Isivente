@@ -189,7 +189,7 @@ export function saveLocalSales(sales: SaleItem[]) {
   } catch {}
 }
 
-/* ── Fonctions API avec bascule locale ── */
+/* ── Fonctions API avec bascule locale + synchro automatique vers Supabase ── */
 export async function fetchAllFinances(): Promise<{
   expenses: ExpenseItem[];
   sales: SaleItem[];
@@ -208,19 +208,80 @@ export async function fetchAllFinances(): Promise<{
     if (res.ok) {
       const data = await res.json();
       if (data && data.hasTable) {
+        const remoteExpenses: ExpenseItem[] = Array.isArray(data.expenses) ? data.expenses : [];
+        const remoteSales: SaleItem[] = Array.isArray(data.sales) ? data.sales : [];
+        const remoteCapital: number | null =
+          typeof data.startingCapital === "number" ? data.startingCapital : null;
+
         if (!isTenantScoped) {
-          if (Array.isArray(data.expenses)) saveLocalExpenses(data.expenses);
-          if (Array.isArray(data.sales)) saveLocalSales(data.sales);
-          if (typeof data.startingCapital === "number") {
-            saveLocalStartingCapital(data.startingCapital);
+          // Si Supabase est vide mais que l'appareil possède encore un historique local non migré,
+          // le préserver et le remonter automatiquement dans Supabase au lieu de l'écraser par [].
+          const localExpenses = getLocalExpenses();
+          const localSales = getLocalSales();
+          const localCapital = getLocalStartingCapital();
+
+          if (
+            remoteExpenses.length === 0 &&
+            remoteSales.length === 0 &&
+            remoteCapital === null &&
+            (localExpenses.length > 0 || localSales.length > 0 || localCapital > 0)
+          ) {
+            const syncTasks: Promise<any>[] = [];
+            for (const exp of localExpenses) {
+              syncTasks.push(
+                fetch("/api/finances", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", ...authHeaders },
+                  body: JSON.stringify({ type: "expense", item: exp }),
+                }).catch(() => {})
+              );
+            }
+            for (const sale of localSales) {
+              syncTasks.push(
+                fetch("/api/finances", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", ...authHeaders },
+                  body: JSON.stringify({ type: "sale", item: sale }),
+                }).catch(() => {})
+              );
+            }
+            if (localCapital > 0) {
+              syncTasks.push(
+                fetch("/api/finances", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", ...authHeaders },
+                  body: JSON.stringify({
+                    type: "capital",
+                    item: {
+                      id: "capital_initial",
+                      amount: localCapital,
+                      date: new Date().toISOString().slice(0, 10),
+                      description: "Capital de départ en caisse",
+                    },
+                  }),
+                }).catch(() => {})
+              );
+            }
+            await Promise.all(syncTasks);
+            return {
+              expenses: localExpenses,
+              sales: localSales,
+              startingCapital: localCapital,
+            };
+          }
+
+          saveLocalExpenses(remoteExpenses);
+          saveLocalSales(remoteSales);
+          if (remoteCapital !== null) {
+            saveLocalStartingCapital(remoteCapital);
           }
         }
         return {
-          expenses: data.expenses || [],
-          sales: data.sales || [],
+          expenses: remoteExpenses,
+          sales: remoteSales,
           startingCapital:
-            typeof data.startingCapital === "number"
-              ? data.startingCapital
+            remoteCapital !== null
+              ? remoteCapital
               : isTenantScoped
               ? 0
               : getLocalStartingCapital(),
@@ -248,7 +309,7 @@ export async function updateStartingCapital(amount: number): Promise<number> {
 
   try {
     const authHeaders = await getAuthHeaders();
-    fetch("/api/finances", {
+    const res = await fetch("/api/finances", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({
@@ -261,8 +322,13 @@ export async function updateStartingCapital(amount: number): Promise<number> {
           description: "Capital de départ en caisse",
         },
       }),
-    }).catch(() => {});
-  } catch {}
+    });
+    if (!res.ok) {
+      console.error("Erreur sauvegarde capital Supabase:", res.status);
+    }
+  } catch (err) {
+    console.error("Erreur réseau sauvegarde capital:", err);
+  }
 
   return cleanAmount;
 }
@@ -283,18 +349,23 @@ export async function addExpense(expense: Omit<ExpenseItem, "id" | "created_at">
     saveLocalExpenses(updated);
   }
 
-  // Synchroniser avec l'API
+  // Synchroniser avec Supabase avec await garanti
   try {
     const authHeaders = await getAuthHeaders();
-    fetch("/api/finances", {
+    const res = await fetch("/api/finances", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({
         type: "expense",
         item: { ...newExpense, ...(storeId ? { store_id: storeId } : {}) },
       }),
-    }).catch(() => {});
-  } catch {}
+    });
+    if (!res.ok) {
+      console.error("Erreur sauvegarde dépense Supabase:", res.status);
+    }
+  } catch (err) {
+    console.error("Erreur réseau sauvegarde dépense:", err);
+  }
 
   return newExpense;
 }
@@ -306,11 +377,13 @@ export async function removeExpense(id: string): Promise<boolean> {
 
   try {
     const authHeaders = await getAuthHeaders();
-    fetch(`/api/finances?id=${encodeURIComponent(id)}&type=expense`, {
+    await fetch(`/api/finances?id=${encodeURIComponent(id)}&type=expense`, {
       method: "DELETE",
       headers: authHeaders,
-    }).catch(() => {});
-  } catch {}
+    });
+  } catch (err) {
+    console.error("Erreur suppression dépense:", err);
+  }
 
   return true;
 }
@@ -334,15 +407,20 @@ export async function addSale(sale: Omit<SaleItem, "id" | "created_at">): Promis
 
   try {
     const authHeaders = await getAuthHeaders();
-    fetch("/api/finances", {
+    const res = await fetch("/api/finances", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({
         type: "sale",
         item: { ...newSale, ...(storeId ? { store_id: storeId } : {}) },
       }),
-    }).catch(() => {});
-  } catch {}
+    });
+    if (!res.ok) {
+      console.error("Erreur sauvegarde vente Supabase:", res.status);
+    }
+  } catch (err) {
+    console.error("Erreur réseau sauvegarde vente:", err);
+  }
 
   return newSale;
 }
@@ -354,11 +432,13 @@ export async function removeSale(id: string): Promise<boolean> {
 
   try {
     const authHeaders = await getAuthHeaders();
-    fetch(`/api/finances?id=${encodeURIComponent(id)}&type=sale`, {
+    await fetch(`/api/finances?id=${encodeURIComponent(id)}&type=sale`, {
       method: "DELETE",
       headers: authHeaders,
-    }).catch(() => {});
-  } catch {}
+    });
+  } catch (err) {
+    console.error("Erreur suppression vente:", err);
+  }
 
   return true;
 }
