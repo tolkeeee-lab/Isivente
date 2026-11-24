@@ -41,6 +41,7 @@ const LANDING_LOADERS: Record<string, React.ComponentType<any>> = {
   r36s: dynamic(() => import("@/components/features/R36SLanding")),
   "moustiquaire-porte": dynamic(() => import("@/components/features/MoustiquairePorteLanding")),
   "masseur-vibrant": dynamic(() => import("@/components/features/MasseurVibrantLanding")),
+  "coussin-masseur": dynamic(() => import("@/components/features/CoussinMasseurLanding")),
 };
 
 const ProductLanding = dynamic(() => import("@/components/features/ProductLanding"));

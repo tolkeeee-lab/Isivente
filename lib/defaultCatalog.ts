@@ -689,6 +689,31 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Coffret Officiel Chargeur 5-en-1 Starlight™ + 3 Arômes Inclus", price: 16900 }
     ]
+  },
+  {
+    id: "coussin-masseur-default",
+    title: "Coussin Masseur Shiatsu Chauffant 4 Têtes™ — Maison & Voiture",
+    shortTitle: "Coussin Masseur Shiatsu",
+    slug: "coussin-masseur",
+    price: 16900,
+    accentColor: "#7C2D12",
+    keywords: [
+      "coussin masseur",
+      "coussin shiatsu",
+      "masseur cervical",
+      "masseur nuque",
+      "masseur dos",
+      "coussin chauffant",
+      "massage voiture",
+      "shiatsu",
+      "cervicales",
+    ],
+    image_url: "/images/coussin-masseur/hero-1.jpg",
+    image: "/images/coussin-masseur/hero-1.jpg",
+    headline: "Soulagez nuque, dos et jambes en 15 minutes avec 4 têtes rotatives chauffantes et double alimentation secteur maison + voiture 12V incluse.",
+    bundles: [
+      { name: "Coussin Masseur Shiatsu Chauffant 4 Têtes™ (Maison + Voiture 12V)", price: 16900 }
+    ]
   }
 ];
 
