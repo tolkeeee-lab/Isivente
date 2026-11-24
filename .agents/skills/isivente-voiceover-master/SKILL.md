@@ -69,12 +69,11 @@ Ne jamais oublier d'ancrer la fin du script dans la réalité d'achat locale :
 
 ---
 
-## 🎵 6. Règle de l'Intensité Non-Stop (Musique de Fond Obligatoire)
+## 🎵 6. Règle Audio Propre (Couper 100 % des Voix Originales)
 
-Une voix-off publicitaire ne doit **JAMAIS** être livrée sans musique de fond (« dry voice ») :
-1. **Musique continue de 0:00 à la dernière frame** : Un beat moderne, commercial ou tech house rythmé doit porter la vidéo du début à la fin sans interruption.
-2. **Duck sonore équilibré** : Le volume de la musique de fond est calé à **18% - 22%**, tandis que la voix de Vivienne est boostée à **140% - 145%** avec `normalize=0` dans FFmpeg (`amix=inputs=2:dropout_transition=0:normalize=0`).
-3. **Fondu doux à la fin** : L'audio se conclut avec un fade-out doux de 1,0s à 1,2s sur le CTA final (`afade=t=out:st=...:d=1.2`).
+1. **Interdiction absolue de garder l'audio original des vidéos sources** : Les Reels/TikTok sources contiennent presque toujours des voix étrangères ou bruits parasites qui polluent la voix de Vivienne. Toujours **couper totalement les pistes audio originales** (`-an` ou ne jamais les mixer).
+2. **Voix Vivienne ultra-claire (+ musique 100 % instrumentale uniquement)** : La voix de Vivienne est boostée à **140% - 145%** (`volume=1.45`). Si une piste musicale **purement instrumentale (sans aucune voix)** est disponible, la mixer à **18% - 22%** avec `amix=inputs=2:dropout_transition=0:normalize=0`. Sinon, privilégier la voix Vivienne pure et nette plutôt qu'un fond pollué.
+3. **Fondu doux à la fin** : L'audio se conclut proprement avec un fade-out doux (`afade=t=out`) sur la fin de la vidéo.
 
 ---
 

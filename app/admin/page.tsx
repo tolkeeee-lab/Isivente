@@ -624,9 +624,16 @@ export default function AdminOverviewPage() {
           href="/admin/clicks"
           className="bg-white rounded-[14px] border border-black/[0.08] hover:border-black/[0.16] shadow-[0_1px_2px_rgba(0,0,0,0.05)] p-5 flex flex-col justify-between transition-colors duration-150"
         >
-          <span className="text-[13px] font-normal text-[#737373]">
-            Visites boutique
-          </span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[13px] font-normal text-[#737373]">
+              Visites boutique
+            </span>
+            {!loading && period !== "today" && (
+              <span className="text-[11px] font-mono tabular-nums font-medium text-[#15803d] bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                +{fmt(analytics.todayViews)} aujourd&apos;hui
+              </span>
+            )}
+          </div>
           <div className="mt-3 text-[26px] sm:text-[28px] leading-none font-medium font-mono tabular-nums text-[#171717]">
             {loading
               ? "—"
