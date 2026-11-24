@@ -281,7 +281,7 @@ export default function CoussinMasseurLanding({ slug = "coussin-masseur" }: { sl
           <button
             type="button"
             onClick={scrollToOrder}
-            className="px-4 py-2 rounded-xl bg-[#fafafa] hover:bg-[#f4f4f5] border border-black/[0.12] text-[#171717] text-xs sm:text-sm font-semibold font-mono tabular-nums transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-[#7C2D12] hover:bg-[#64230e] text-white text-xs sm:text-sm font-semibold font-mono tabular-nums shadow-xs transition-colors cursor-pointer"
           >
             Commander (16 900 F)
           </button>
