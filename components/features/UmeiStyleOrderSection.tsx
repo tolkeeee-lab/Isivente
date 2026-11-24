@@ -645,36 +645,6 @@ export default function UmeiStyleOrderSection({
               )
             )}
 
-            {/* Champ 4 : Adresse Email Facultative (Reçu & Suivi) */}
-            <div className="space-y-1 text-left pt-1">
-              <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Adresse email</span>
-                  <span className="text-[11px] text-slate-400 font-normal">(Facultatif - pour recevoir le reçu)</span>
-                </span>
-              </label>
-              <input
-                id="customer-email-input"
-                type="email"
-                value={currentCustomerEmail}
-                onFocus={handleInteractionTrigger}
-                onBlur={() => {
-                  if (currentCustomerEmail && currentCustomerEmail.includes("@")) {
-                    saveUserContactInfo({
-                      email: currentCustomerEmail.trim().toLowerCase(),
-                      phone: customerPhone,
-                      name: customerName,
-                      city: city,
-                    });
-                  }
-                }}
-                onChange={(e) => handleEmailChange(e.target.value)}
-                placeholder="Ex: dossou@gmail.com"
-                className="w-full px-3.5 py-3 rounded-xl border border-slate-300 text-sm bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all font-medium"
-              />
-            </div>
-
             {/* OPTION DE LIVRAISON OU RÉSERVATION */}
             <div className="pt-2 border-t border-slate-100">
               <label className="text-xs font-bold text-slate-700 block mb-2">
