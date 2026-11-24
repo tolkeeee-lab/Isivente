@@ -290,18 +290,18 @@ export default function CoussinMasseurLanding({ slug = "coussin-masseur" }: { sl
 
       {/* 3. CONTENEUR PRINCIPAL */}
       <main className="max-w-4xl mx-auto px-4 pt-6 sm:pt-10 space-y-12 sm:space-y-16">
-        {/* 4. EN-TÊTE TITRE & ACCROCHE */}
+        {/* 4. EN-TÊTE TITRE & ACCROCHE (MIROIR DE LA DOULEUR) */}
         <section className="text-center space-y-3 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fef2f2] border border-[#7C2D12]/15 text-[#7C2D12] text-xs font-semibold">
             <Flame className="w-3.5 h-3.5 stroke-[1.75]" />
-            <span>4 Têtes Rotatives + Compresse Chaude · Maison &amp; Voiture</span>
+            <span>4 Têtes Chauffantes · Maison, Bureau &amp; Voiture 12V</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#171717] leading-tight">
-            Soulagez votre nuque et votre dos en 15 minutes par jour
+            Vous rentrez avec la nuque bloquée et le dos cassé… même en étant encore jeune ?
           </h1>
           <p className="text-sm sm:text-base text-[#525252] leading-relaxed">
-            Coussin Masseur Shiatsu Électrique Chauffant avec pétrissage bidirectionnel profond.
-            Livré complet avec <strong>câble secteur maison + adaptateur voiture 12V</strong> et sangle élastique.
+            Arrêtez de subir les douleurs après le bureau, l&apos;écran ou les embouteillages.
+            Posez simplement votre nuque ou votre dos sur ces <strong>4 têtes chauffantes</strong> : en 15 minutes, vos muscles se relâchent comme après un vrai massage.
           </p>
         </section>
 
@@ -409,14 +409,64 @@ export default function CoussinMasseurLanding({ slug = "coussin-masseur" }: { sl
           />
         </section>
 
-        {/* 8. GRILLE DES 4 BÉNÉFICES MAJEURS */}
+        {/* 8. MIROIR D'IDENTIFICATION (« C'EST EXACTEMENT CE QU'IL ME FALLAIT ») */}
+        <section className="space-y-5 pt-6 border-t border-black/[0.08]">
+          <div className="text-center space-y-1.5 max-w-xl mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#171717]">
+              Reconnaissez-vous l&apos;une de ces situations ?
+            </h2>
+            <p className="text-xs sm:text-sm text-[#525252]">
+              Si oui, vous comprenez déjà pourquoi ce coussin devient vite indispensable chaque soir.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="p-4 rounded-2xl bg-[#fef2f2]/45 border border-[#7C2D12]/15 flex items-start gap-3">
+              <CheckCircle2 className="w-4 h-4 stroke-[2] text-[#7C2D12] shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <div className="text-sm font-semibold text-[#171717]">Nuque raide après l&apos;ordinateur ou le téléphone</div>
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Les trapèzes durs comme de la pierre dès 17h — même sans effort physique.
+                </p>
+              </div>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#fef2f2]/45 border border-[#7C2D12]/15 flex items-start gap-3">
+              <CheckCircle2 className="w-4 h-4 stroke-[2] text-[#7C2D12] shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <div className="text-sm font-semibold text-[#171717]">Bas du dos cassé dans les trajets &amp; embouteillages</div>
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Attachez-le sur le siège avec la sangle et branchez le câble 12V voiture inclus.
+                </p>
+              </div>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#fef2f2]/45 border border-[#7C2D12]/15 flex items-start gap-3">
+              <CheckCircle2 className="w-4 h-4 stroke-[2] text-[#7C2D12] shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <div className="text-sm font-semibold text-[#171717]">Jambes lourdes et pieds fatigués le soir</div>
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Après une journée debout à la boutique ou sur le terrain, 10 min de chaleur apaisent tout.
+                </p>
+              </div>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#fef2f2]/45 border border-[#7C2D12]/15 flex items-start gap-3">
+              <CheckCircle2 className="w-4 h-4 stroke-[2] text-[#7C2D12] shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <div className="text-sm font-semibold text-[#171717]">Soulager papa ou maman sans comprimés</div>
+                <p className="text-xs text-[#525252] leading-relaxed">
+                  Un seul bouton à presser : le cadeau concret qu&apos;ils utiliseront vraiment tous les jours.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 9. GRILLE DES 4 BÉNÉFICES MAJEURS */}
         <section className="space-y-6 pt-6 border-t border-black/[0.08]">
           <div className="text-center space-y-1.5">
             <h2 className="text-xl sm:text-2xl font-bold text-[#171717]">
-              Pourquoi il soulage dès la première séance
+              Ce qui change dès les 5 premières minutes
             </h2>
             <p className="text-xs sm:text-sm text-[#525252]">
-              Conçu pour imiter le pétrissage profond des mains d&apos;un kinésithérapeute
+              Un vrai pétrissage profond + chaleur infrarouge, prêt à la demande chez vous
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -526,7 +576,7 @@ export default function CoussinMasseurLanding({ slug = "coussin-masseur" }: { sl
             onClick={scrollToOrder}
             className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#E8643C] hover:bg-[#d6552f] text-white font-semibold text-sm transition-colors cursor-pointer"
           >
-            <span>Commander maintenant (16 900 F)</span>
+            <span>Je veux soulager mon dos (16 900 F)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </section>
