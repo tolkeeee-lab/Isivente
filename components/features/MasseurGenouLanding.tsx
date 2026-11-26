@@ -19,6 +19,7 @@ import {
   Clock,
   Star,
   Sliders,
+  MessageCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -30,16 +31,16 @@ import { saveNewOrder } from "@/lib/ordersStorage";
 import { markLeadConverted, saveOrUpdateLead } from "@/lib/leadsStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
 
-// ── PILIER 1 : OFFRE UNIQUE HARMONISÉE (19 900 FCFA) ──
+// ── PILIER 1 : OFFRE UNIQUE HARMONISÉE (16 900 FCFA) ──
 const BUNDLES: BundleOption[] = [
   {
     id: "solo",
     name: "Masseur de Genou Électrique Sans Fil Chauffant™",
     subtitle:
       "Coffret complet : 1 appareil universel sans fil (genou gauche/droit, épaule ou coude) + sangle Velcro réglable + câble de recharge USB-C",
-    price: 19900,
-    originalPrice: 32000,
-    savings: 12100,
+    price: 16900,
+    originalPrice: 28000,
+    savings: 11100,
     quantity: 1,
     popular: true,
   },
@@ -93,7 +94,7 @@ const REVIEWS = [
     rating: 5,
     title: "Testé devant le livreur avant de payer",
     comment:
-      "Colis reçu le lendemain. J'ai allumé l'écran, vérifié que la chaleur montait bien, testé les vibrations et les LED rouges devant le livreur avant de régler les 19 900 F. Sérieux et propre.",
+      "Colis reçu le lendemain. J'ai allumé l'écran, vérifié que la chaleur montait bien, testé les vibrations et les LED rouges devant le livreur avant de régler les 16 900 F. Sérieux et propre.",
   },
   {
     name: "Sébastien D.",
@@ -108,7 +109,7 @@ const REVIEWS = [
 // ── FAQ INTERACTIVE ──
 const FAQS = [
   {
-    q: "L'offre à 19 900 FCFA comprend-elle 1 ou 2 appareils ?",
+    q: "L'offre à 16 900 FCFA comprend-elle 1 ou 2 appareils ?",
     a: "Le coffret comprend 1 appareil universel sans fil qui s'adapte aussi bien au genou gauche qu'au genou droit, ainsi qu'à l'épaule ou au coude grâce à sa sangle Velcro réglable. Une séance dure seulement 15 minutes par genou.",
   },
   {
@@ -121,7 +122,7 @@ const FAQS = [
   },
   {
     q: "Puis-je tester le masseur devant le livreur avant de payer ?",
-    a: "Oui, à 100 %. Vous ne payez aucune avance en ligne : le livreur vous remet l'appareil à Cotonou, Calavi, Porto-Novo ou partout au Bénin, vous vérifiez l'écran, la chaleur, les vibrations et les LED rouges avant de payer les 19 900 FCFA.",
+    a: "Oui, à 100 %. Vous ne payez aucune avance en ligne : le livreur vous remet l'appareil à Cotonou, Calavi, Porto-Novo ou partout au Bénin, vous vérifiez l'écran, la chaleur, les vibrations et les LED rouges avant de payer les 16 900 FCFA.",
   },
 ];
 
@@ -285,7 +286,7 @@ export default function MasseurGenouLanding({ slug = "masseur-genou" }: { slug?:
             onClick={scrollToOrder}
             className="px-4 py-2 rounded-xl bg-[#0B3B8C] hover:bg-[#082d6b] text-white text-xs sm:text-sm font-semibold font-mono tabular-nums shadow-xs transition-colors cursor-pointer"
           >
-            Commander (19 900 F)
+            Commander (16 900 F)
           </button>
         </div>
       </header>
@@ -409,6 +410,33 @@ export default function MasseurGenouLanding({ slug = "masseur-genou" }: { slug?:
             onSubmit={handleSubmitOrder}
             accentColor="#0B3B8C"
           />
+
+          {/* BOUTON COMMANDE DIRECTE WHATSAPP (1 CLIC) */}
+          <div className="pt-1 text-center space-y-1.5">
+            <p className="text-[11px] font-medium text-[#737373]">
+              Vous préférez commander ou poser une question directement ?
+            </p>
+            <a
+              href={`https://wa.me/2290192901817?text=${encodeURIComponent(
+                "Bonjour Isivente ! Je souhaite commander le Masseur de Genou Sans Fil Chauffant à 16 900 FCFA (paiement à la livraison)."
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                recordInteraction();
+                trackAddToCart({
+                  content_name: selectedBundle.name,
+                  content_ids: [slug],
+                  value: selectedBundle.price,
+                  currency: "XOF",
+                });
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#16A34A] hover:bg-[#15803d] text-white font-semibold text-sm shadow-xs transition-colors"
+            >
+              <MessageCircle className="w-4 h-4 stroke-[2]" />
+              <span>Commander par WhatsApp (1 clic)</span>
+            </a>
+          </div>
         </section>
 
         {/* 8. MIROIR D'IDENTIFICATION */}
@@ -521,12 +549,12 @@ export default function MasseurGenouLanding({ slug = "masseur-genou" }: { slug?:
             </div>
             <div className="p-5 rounded-2xl bg-[#eff6ff]/70 border border-[#0B3B8C]/25 space-y-3">
               <div className="text-xs font-bold uppercase tracking-wider text-[#0B3B8C]">
-                Masseur de Genou Sans Fil™ (19 900 F)
+                Masseur de Genou Sans Fil™ (16 900 F)
               </div>
               <ul className="space-y-2 text-xs text-[#171717] font-medium">
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-[#15803d] shrink-0 mt-0.5" />
-                  <span>Un seul achat de 19 900 F réutilisable chaque jour à volonté</span>
+                  <span>Un seul achat de 16 900 F réutilisable chaque jour à volonté</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-[#15803d] shrink-0 mt-0.5" />
@@ -585,17 +613,17 @@ export default function MasseurGenouLanding({ slug = "masseur-genou" }: { slug?:
             <span>Stock limité disponible à Cotonou · Livraison express 24h</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold">
-            Coffret Complet Masseur de Genou Sans Fil à 19 900 FCFA
+            Coffret Complet Masseur de Genou Sans Fil à 16 900 FCFA
           </h2>
           <p className="text-xs sm:text-sm text-white/80 max-w-lg mx-auto">
-            Prix habituel <span className="line-through">32 000 F</span> — vous économisez 12 100 F et vous ne payez qu&apos;à la livraison après avoir testé l&apos;appareil devant le livreur.
+            Prix habituel <span className="line-through">28 000 F</span> — vous économisez 11 100 F et vous ne payez qu&apos;à la livraison après avoir testé l&apos;appareil devant le livreur.
           </p>
           <button
             type="button"
             onClick={scrollToOrder}
             className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#E8643C] hover:bg-[#d6552f] text-white font-semibold text-sm transition-colors cursor-pointer"
           >
-            <span>Commander mon Masseur de Genou (19 900 F)</span>
+            <span>Commander mon Masseur de Genou (16 900 F)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </section>
@@ -682,11 +710,11 @@ export default function MasseurGenouLanding({ slug = "masseur-genou" }: { slug?:
 
       {/* 16. BARRE MOBILE STICKY CTA */}
       <StickyMobileCtaBar
-        price={19900}
+        price={16900}
         targetSectionId="commander"
         accentColor="#0B3B8C"
         buttonText="Commander"
-        whatsappMessage="Bonjour Isivente ! Je suis intéressé(e) par le Masseur de Genou Électrique Sans Fil Chauffant à 19 900 FCFA."
+        whatsappMessage="Bonjour Isivente ! Je suis intéressé(e) par le Masseur de Genou Électrique Sans Fil Chauffant à 16 900 FCFA."
       />
 
       {/* 17. POP-UP D'ABANDON INTELLIGENT (PILIER 7) */}
