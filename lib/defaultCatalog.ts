@@ -714,6 +714,33 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     bundles: [
       { name: "Coussin Masseur Shiatsu Chauffant 4 Têtes™ (Maison + Voiture 12V)", price: 16900 }
     ]
+  },
+  {
+    id: "masseur-genou-default",
+    title: "Masseur de Genou Électrique Sans Fil Chauffant™ — Chaleur, Vibrations & Infrarouge",
+    shortTitle: "Masseur de Genou Chauffant",
+    slug: "masseur-genou",
+    price: 19900,
+    accentColor: "#0B3B8C",
+    keywords: [
+      "masseur genou",
+      "masseur de genou",
+      "masseur genoux",
+      "genouillere chauffante",
+      "genou chauffant",
+      "appareil genou",
+      "genou",
+      "genoux",
+      "articulation",
+      "infrarouge genou",
+      "douleur genou",
+    ],
+    image_url: "/images/masseur-genou/hero-1.jpg",
+    image: "/images/masseur-genou/hero-1.jpg",
+    headline: "Soulagez les tensions et raideurs du genou en 15 minutes à domicile : chaleur apaisante, vibrations ciblées et lumière rouge infrarouge 100 % sans fil.",
+    bundles: [
+      { name: "Masseur de Genou Électrique Sans Fil Chauffant™ (1 Appareil Universel + Câble USB-C)", price: 19900 }
+    ]
   }
 ];
 

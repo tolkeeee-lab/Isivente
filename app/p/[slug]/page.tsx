@@ -147,6 +147,11 @@ const SLUG_TO_CANONICAL: Record<string, string> = {
   "masseur-cervical": "coussin-masseur",
   "masseur-nuque": "coussin-masseur",
   "coussin-chauffant": "coussin-masseur",
+  "masseur-genou": "masseur-genou",
+  "masseur-genoux": "masseur-genou",
+  "genouillere-chauffante": "masseur-genou",
+  "genou-chauffant": "masseur-genou",
+  "appareil-genou": "masseur-genou",
 };
 
 const STANDALONE_LANDINGS = new Set([
@@ -156,6 +161,7 @@ const STANDALONE_LANDINGS = new Set([
   "trousse-biometrique",
   "r36s",
   "coussin-masseur",
+  "masseur-genou",
 ]);
 
 export function generateStaticParams() {
