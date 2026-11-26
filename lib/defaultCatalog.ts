@@ -720,7 +720,7 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     title: "Masseur de Genou Électrique Sans Fil Chauffant™ — Chaleur, Vibrations & Infrarouge",
     shortTitle: "Masseur de Genou Chauffant",
     slug: "masseur-genou",
-    price: 16900,
+    price: 19900,
     accentColor: "#0B3B8C",
     keywords: [
       "masseur genou",
@@ -739,7 +739,7 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
     image: "/images/masseur-genou/hero-1.jpg",
     headline: "Soulagez les tensions et raideurs du genou en 15 minutes à domicile : chaleur apaisante, vibrations ciblées et lumière rouge infrarouge 100 % sans fil.",
     bundles: [
-      { name: "Masseur de Genou Électrique Sans Fil Chauffant™ (1 Appareil Universel + Câble USB-C)", price: 16900 }
+      { name: "Masseur de Genou Électrique Sans Fil Chauffant™ (1 Appareil Universel + Câble USB-C)", price: 19900 }
     ]
   }
 ];
