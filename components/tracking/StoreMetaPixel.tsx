@@ -64,7 +64,14 @@ export default function StoreMetaPixel({ pixelId }: StoreMetaPixelProps) {
               var cleanPath = (path || 'home').toLowerCase().replace(/[^a-z0-9_-]/g, '');
               var lockKey = 'isivente_px_lock_pv_' + cleanPath;
               if (!f.sessionStorage.getItem(lockKey)) {
-                var pvId = 'pv_' + cleanPath + '_' + Math.floor(Date.now() / (6 * 3600 * 1000));
+                var sid = f.sessionStorage.getItem('isivente_px_sid');
+                if (!sid) {
+                  sid = (f.crypto && f.crypto.randomUUID)
+                    ? f.crypto.randomUUID().replace(/-/g, '').slice(0, 12)
+                    : (Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
+                  f.sessionStorage.setItem('isivente_px_sid', sid);
+                }
+                var pvId = 'pv_' + cleanPath + '_' + sid;
                 f.sessionStorage.setItem(lockKey, pvId);
                 f.fbq('track', 'PageView', {}, { eventID: pvId });
                 ${

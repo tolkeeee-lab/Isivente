@@ -130,10 +130,10 @@ function getSessionEventLock(
 ): { alreadySent: boolean; eventId: string } {
   const cleanKey = (productKey || "global").toLowerCase().replace(/[^a-z0-9_-]/g, "");
   const storageKey = `isivente_px_lock_${eventType}_${cleanKey}`;
-  const eventId = `${eventType}_${cleanKey}_${Math.floor(Date.now() / (6 * 3600 * 1000))}`;
 
   if (typeof window === "undefined") {
-    return { alreadySent: false, eventId };
+    const fallbackId = `${eventType}_${cleanKey}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    return { alreadySent: false, eventId: fallbackId };
   }
 
   try {
@@ -141,10 +141,21 @@ function getSessionEventLock(
     if (existing) {
       return { alreadySent: true, eventId: existing };
     }
+    let sid = sessionStorage.getItem("isivente_px_sid");
+    if (!sid) {
+      sid =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID().replace(/-/g, "").slice(0, 12)
+          : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+      sessionStorage.setItem("isivente_px_sid", sid);
+    }
+    const eventId = `${eventType}_${cleanKey}_${sid}`;
     sessionStorage.setItem(storageKey, eventId);
-  } catch {}
-
-  return { alreadySent: false, eventId };
+    return { alreadySent: false, eventId };
+  } catch {
+    const fallbackId = `${eventType}_${cleanKey}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    return { alreadySent: false, eventId: fallbackId };
+  }
 }
 
 /**
