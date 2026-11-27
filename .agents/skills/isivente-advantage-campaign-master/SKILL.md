@@ -31,26 +31,37 @@ Avant de produire une seule créa vidéo ou voix-off pour un produit, il est **O
 
 ---
 
-## 🛡️ 2. Les 3 Seuls Garde-Fous Obligatoires de l'Ad Set (À Verrouiller Sans Faute)
+## 🛡️ 2. Les 4 Verrous Obligatoires de l'Ad Set (Prouvés par 30 Jours de Données Compte Isivente)
 
-L'IA de Facebook est surpuissante, mais elle est aveugle aux contraintes physiques de l'Afrique. Vous devez impérativement verrouiller ces 3 paramètres dans l'ensemble de publicités :
+L'IA de Facebook est aveugle aux contraintes COD du Bénin. Sur 30 jours réels du compte Isivente (`2331294390992700`, `72,72 $` → `23 achats`), **Audience Advantage+** et **Audience Network** ont brûlé plus de **50 % du budget** (`28,87 $` sur placements poubelle + `8,99 $` sur `55+` = `0 achat`).
+
+Vous devez impérativement verrouiller ces **4 paramètres en Audience d'Origine (JAMAIS Advantage+ Audience)** :
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                      LES 3 GARDE-FOUS ISIVENTE                          │
+│             LES 4 VERROUS PROUVÉS ISIVENTE (DATA 30 JOURS)              │
 ├───────────────────────┬─────────────────────────────────────────────────┤
-│ 1. Géofencing Strict  │ Cotonou (+10 km) et Abomey-Calavi (+10 km)      │
-│                       │ ❌ Interdiction absolue de cocher "Tout le Bénin"│
+│ 1. Audience d'Origine │ Cliquer sur "Passer aux options d'audience      │
+│    (Verrou Dur)       │ d'origine" — ❌ JAMAIS Advantage+ Audience      │
+│                       │ (sinon Meta ignore l'âge et envoie aux 18-24)   │
 ├───────────────────────┼─────────────────────────────────────────────────┤
-│ 2. Plancher d'Âge     │ 25 ans à 55+ ans (ou 28 à 55 ans selon produit) │
-│                       │ ❌ Jamais de 18-24 ans (zéro pouvoir d'achat COD)│
+│ 2. Géofencing Strict  │ Cotonou (+10 km) et Abomey-Calavi (+10 km)      │
+│                       │ ❌ Interdit : "+40 km" ou "Tout le Bénin"       │
 ├───────────────────────┼─────────────────────────────────────────────────┤
-│ 3. Audience Suggestion│ "Acheteurs Actifs" (Engaged Shoppers)           │
-│    (Advantage+)       │ + Intérêts ciblés du produit (Cuisine, Famille) │
+│ 3. Âge & Genre        │ 25 à 54 ans STRICTEMENT                         │
+│                       │ ❌ JAMAIS 55-65+ (0 achat sur 777 clics web!)   │
+│                       │ 💡 Genre : Hommes prioritaires (87% des ventes) │
+├───────────────────────┼─────────────────────────────────────────────────┤
+│ 4. Placements Manuels │ Cocher UNIQUEMENT les 3 placements gagnants :   │
+│    (3 cases max)      │ ✅ Reels Facebook  (2,25 $/achat, ROAS 12,76)   │
+│                       │ ✅ Reels Instagram (0,45 $/achat)               │
+│                       │ ✅ Fil Facebook    (3,61 $/achat)               │
+│                       │ ❌ DÉCOCHER : Audience Network, Stories,        │
+│                       │    Status, In-Stream, Marketplace               │
 └───────────────────────┴─────────────────────────────────────────────────┘
 ```
 
-* **Placements** : **Décocher impérativement `Audience Network`** (source n°1 des faux clics accidentels dans les jeux mobiles au Bénin à 0,01 $ sans aucune intention d'achat). Garder uniquement **Fil Facebook, Reels Facebook, Stories Facebook, Fil & Reels Instagram**.
+* **Audience sauvegardée recommandée** : `Isivente_Winning_Cotonou_25-54` (Cotonou +10km, Calavi +10km, 25–54 ans, Original Audience, Mobile App).
 
 ---
 
@@ -71,9 +82,9 @@ Chaque campagne doit respecter la nomenclature officielle pour alimenter dynamiq
 ### 2. Niveau Ensemble de Publicités (*Ad Set Level*)
 * **Nom de l'Ad Set** :
   ```text
-  AdSet 01 | ADVANTAGE+ - Cotonou&Calavi (+10km) - [Age_Min]-[Age_Max]ans
+  AdSet 01 | ORIGINAL - Cotonou&Calavi (+10km) - 25-54ans - 3Placements
   ```
-  *Exemple : `AdSet 01 | ADVANTAGE+ - Cotonou&Calavi (+10km) - 25-55ans`*
+  *Exemple : `AdSet 01 | ORIGINAL - Cotonou&Calavi (+10km) - 25-54ans - 3Placements`*
 
 ### 3. Niveau Annonces (*Ad Level*)
 Tester systématiquement **3 angles créatifs en concurrence dynamique** pour permettre à l'algorithme d'Advantage+ de ventiler le budget vers la créa qui convertit au plus bas coût d'acquisition :
