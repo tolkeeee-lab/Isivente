@@ -32,8 +32,8 @@ import { trackViewContent, trackAddToCart, trackInitiateCheckout } from "@/lib/m
 const BUNDLES: BundleOption[] = [
   {
     id: "solo",
-    name: "Coffret Coupe-Légumes Multifonction 14-en-1 avec Panier Égouttoir à Anses™",
-    subtitle: "Bac transparent + panier passoire amovible à anses + 9 lames inox + poussoir de sécurité + éplucheur offert",
+    name: "Coffret Coupe-Légumes Multifonction 22-en-1 avec Panier Égouttoir™",
+    subtitle: "Bac de conservation + panier égouttoir à compartiments & anses + 13 grilles/lames inox + séparateur d'œuf + poussoir protège-doigts + brosse + éplucheur offert",
     price: 14900,
     originalPrice: 25000,
     savings: 10100,
@@ -45,29 +45,24 @@ const BUNDLES: BundleOption[] = [
 // ── RÈGLE DU CARROUSEL : EXACTEMENT 5 VISUELS NARRATIFS ──
 const HERO_IMAGES = [
   {
-    src: "/images/peeler/carousel-1-hero-africaine.jpg",
-    alt: "Coupe-Légumes Multifonction 3-en-1 avec Panier Égouttoir pour la Cuisine Quotidienne",
-    badge: "3-en-1 Cuisine Express",
+    src: "/images/peeler/v2-hero-1-kit-22en1.jpg",
+    alt: "Coupe-Légumes Multifonction 22-en-1 : toutes les lames, râpes, éplucheur, séparateur d'œuf et panier égouttoir",
   },
   {
-    src: "/images/peeler/carousel-2-passoire-spaghetti.jpg",
-    alt: "Égouttez vos spaghettis chauds et rincez vos légumes directement dans le panier égouttoir",
-    badge: "Vraie Passoire Spaghettis",
+    src: "/images/peeler/v2-hero-2-decoupes.jpg",
+    alt: "4 fonctions clés : couper en dés, hacher oignons et tomates, trancher uniformément et coupe ondulée",
   },
   {
-    src: "/images/peeler/carousel-3-grilles-formes.jpg",
-    alt: "5 Formes de Découpe : Cubes, Petits cubes, Bâtonnets, Rondelles et Ondulé",
-    badge: "5 Découpes en 1 Clic",
+    src: "/images/peeler/v2-hero-3-tranchage.jpg",
+    alt: "Fonction tranchage net et rapide en cubes parfaits pour fruits, légumes et salades",
   },
   {
-    src: "/images/peeler/carousel-4-securite-accessoires.jpg",
-    alt: "Plus de 10 accessoires avec poussoir de sécurité protège-doigts et anti-coupure",
-    badge: "Sécurité Anti-Coupure",
+    src: "/images/peeler/v2-hero-4-mode-emploi.jpg",
+    alt: "Mode d'utilisation simple en 4 étapes avec brosse de nettoyage incluse",
   },
   {
-    src: "/images/peeler/carousel-5-3en1-usages.jpg",
-    alt: "Un seul ustensile, plusieurs usages : Découpe, Rinçage, Égouttage spaghettis et pâtes",
-    badge: "Gain de Temps x4",
+    src: "/images/peeler/v2-hero-5-conservation.jpg",
+    alt: "Conservation fraîche et empilable au réfrigérateur avec bac transparent à couvercle",
   },
 ];
 
@@ -311,39 +306,34 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-xs font-semibold uppercase tracking-wider">
             <Zap className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Le Secret des Cuisines Sans Fatigue</span>
+            <span>Édition Complète 22-en-1 • Découpe, Râpe, Égouttoir &amp; Conservation</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Préparez vos repas en 5 minutes : oignons coupés sans pleurer & spaghettis égouttés sans vous brûler !
+            Préparez vos repas 4× plus vite : oignons, tomates et légumes coupés en 5 secondes sans pleurer !
           </h1>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            L&apos;assistant 3-en-1 indispensable qui découpe vos oignons et légumes en dés parfaits d&apos;un coup sec, et vous sert de vraie passoire résistante à anses pour rincer et égoutter vos spaghettis sans vous brûler les mains.
+            Le coffret <strong>22-en-1</strong> complet : 13 grilles et lames inox, panier de drainage à compartiments &amp; anses, séparateur de jaune d&apos;œuf, poussoir protège-doigts, brosse de nettoyage et bac de conservation transparent.
           </p>
         </div>
 
-        {/* ── 5. CARROUSEL HERO AUTO-DÉFILANT (EXACTEMENT 5 IMAGES NARRATIVES) ── */}
+        {/* ── 5. CARROUSEL HERO AUTO-DÉFILANT (EXACTEMENT 5 IMAGES NARRATIVES, SANS BADGE SUPERPOSÉ) ── */}
         <div
           className="relative bg-white rounded-3xl p-3 sm:p-4 border border-slate-200/90 shadow-xl overflow-hidden"
           onMouseEnter={() => setIsHeroHovered(true)}
           onMouseLeave={() => setIsHeroHovered(false)}
         >
-          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100">
+          <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white">
             <Image
               src={HERO_IMAGES[currentSlide].src}
               alt={HERO_IMAGES[currentSlide].alt}
               fill
-              priority
+              priority={currentSlide === 0}
               quality={80}
               className="object-contain transition-all duration-700 ease-out"
               sizes="(max-width: 640px) 100vw, 600px"
             />
-
-            {/* Badge contextuel sur chaque slide */}
-            <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold tracking-wide shadow-md">
-              {HERO_IMAGES[currentSlide].badge}
-            </div>
 
             {/* Boutons navigation gauche / droite */}
             <button
@@ -425,8 +415,8 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
 
           <UmeiStyleOrderSection
             productSlug="peeler"
-            productTitle="Coupe-Légumes Multifonction 14-en-1 avec Panier Égouttoir à Anses™"
-            productImage="/images/peeler/carousel-1-hero-africaine.jpg"
+            productTitle="Coupe-Légumes Multifonction 22-en-1 avec Panier Égouttoir™"
+            productImage="/images/peeler/v2-hero-1-kit-22en1.jpg"
             bundles={BUNDLES}
             selectedBundle={selectedBundle}
             onSelectBundle={(b) => setSelectedBundle(b)}
@@ -450,7 +440,7 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
             </p>
             <a
               href={`https://wa.me/2290192901817?text=${encodeURIComponent(
-                "Bonjour Isivente ! Je souhaite commander le Coupe-Légumes Multifonction 14-en-1 à 14 900 FCFA (paiement à la livraison)."
+                "Bonjour Isivente ! Je souhaite commander le Coupe-Légumes Multifonction 22-en-1 à 14 900 FCFA (paiement à la livraison)."
               )}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -537,84 +527,84 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
           </div>
         </section>
 
-        {/* ── 9. SECTION FOCUS : LA PASSOIRE À SPAGHETTIS & ÉGOUTTOIR ── */}
+        {/* ── 9. SECTION FOCUS : PANIER DE DRAINAGE & RANGEMENT À COMPARTIMENTS ── */}
         <section className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
           <div className="text-center space-y-1">
-            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Double Usage Quotidien</span>
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Panier Égouttoir &amp; Rangement</span>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-              Bien plus qu&apos;un simple coupe-légumes : Votre passoire express
+              Découpez, rincez, égouttez et transportez dans le même panier
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
-              Ne cherchez plus votre passoire au fond des placards : soulevez le panier à double anse et égouttez en toute simplicité.
+              Séparateur amovible à compartiments, panier de drainage pratique et double anse solide pour rincer vos légumes ou égoutter vos pâtes en 2 secondes.
             </p>
           </div>
 
-          <div className="relative aspect-square sm:aspect-video w-full max-w-2xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-xs">
+          <div className="relative aspect-square w-full max-w-xl mx-auto rounded-2xl overflow-hidden bg-white border border-slate-100 shadow-xs">
             <Image
-              src="/images/peeler/carousel-2-passoire-spaghetti.jpg"
-              alt="Panier égouttoir à anses pour spaghettis et rinçage de légumes"
+              src="/images/peeler/v2-detail-panier-drainage.jpg"
+              alt="Panier de drainage à compartiments avec anses vertes du Coupe-Légumes 22-en-1"
               fill
               loading="lazy"
               className="object-contain"
-              sizes="(max-width: 768px) 100vw, 700px"
+              sizes="(max-width: 768px) 100vw, 600px"
             />
           </div>
         </section>
 
-        {/* ── 10. SECTION GRILLES & FORMES DE DÉCOUPE ── */}
+        {/* ── 10. SECTION MODE D'UTILISATION & DÉCOUPES ── */}
         <section className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
           <div className="text-center space-y-1">
-            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Variété & Présentation</span>
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Mode d&apos;Emploi en 4 Étapes</span>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-              Des découpes parfaites dignes d&apos;un grand restaurant
+              Simple à utiliser, rapide à nettoyer avec la brosse incluse
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
-              Petits cubes pour les oignons et tomates, bâtonnets pour les frites, tranches ondulées ou carottes râpées : tout est inclus.
+              Posez votre légume sur la grille, appuyez d&apos;un geste, puis nettoyez la plaque en 3 secondes grâce au peigne et à la brosse fournis.
             </p>
           </div>
 
-          <div className="relative aspect-square sm:aspect-video w-full max-w-2xl mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shadow-xs">
+          <div className="relative aspect-square w-full max-w-xl mx-auto rounded-2xl overflow-hidden bg-white border border-slate-100 shadow-xs">
             <Image
-              src="/images/peeler/carousel-3-grilles-formes.jpg"
-              alt="Grilles interchangeables pour cubes, bâtonnets, rondelles et râpé"
+              src="/images/peeler/v2-hero-4-mode-emploi.jpg"
+              alt="Mode d'utilisation en 4 étapes du Coupe-Légumes 22-en-1"
               fill
               loading="lazy"
               className="object-contain"
-              sizes="(max-width: 768px) 100vw, 700px"
+              sizes="(max-width: 768px) 100vw, 600px"
             />
           </div>
         </section>
 
-        {/* ── 11. SECTION CONTENU OFFICIEL DU COFFRET 14-EN-1 ── */}
+        {/* ── 11. SECTION CONTENU OFFICIEL DU COFFRET 22-EN-1 & CONSERVATION ── */}
         <section className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
           <div className="text-center space-y-1">
-            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Coffret Intégral Officiel</span>
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Coffret Intégral 22-en-1</span>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-              Ce que vous recevez dans votre colis Isivente
+              Tout le coffret complet + conservation fraîche au réfrigérateur
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
-              Un ensemble complet prêt à l&apos;emploi avec tous ses accessoires officiels et l&apos;éplucheur offert.
+              Gros dés, dés moyens, petits dés, tranches, julienne, râpes, séparateur de jaune d&apos;œuf, éplucheur, brosse et bac transparent empilable.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-slate-50 border border-slate-200">
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-white border border-slate-200">
               <Image
-                src="/images/peeler/coffret-accessoires-complet.jpg"
-                alt="Vue de tous les accessoires du coffret 14-en-1"
+                src="/images/peeler/v2-hero-1-kit-22en1.jpg"
+                alt="Vue complète des accessoires du coffret Coupe-Légumes 22-en-1"
                 fill
                 loading="lazy"
                 className="object-contain"
                 sizes="(max-width: 640px) 100vw, 400px"
               />
             </div>
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-slate-50 border border-slate-200">
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-white border border-slate-200">
               <Image
-                src="/images/peeler/produit-cuisine-reel.jpg"
-                alt="Produit coupe-légumes posé sur plan de travail en marbre"
+                src="/images/peeler/v2-hero-5-conservation.jpg"
+                alt="Conservation fraîche et organisée au réfrigérateur avec bac transparent"
                 fill
                 loading="lazy"
-                className="object-cover"
+                className="object-contain"
                 sizes="(max-width: 640px) 100vw, 400px"
               />
             </div>

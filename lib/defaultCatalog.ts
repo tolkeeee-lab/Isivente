@@ -369,8 +369,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
   },
   {
     id: "peeler-default",
-    title: "Coupe-Légumes Multifonction 14-en-1 avec Panier Égouttoir à Anses™",
-    shortTitle: "Coupe-Légumes Panier Égouttoir",
+    title: "Coupe-Légumes Multifonction 22-en-1 avec Panier Égouttoir à Anses™",
+    shortTitle: "Coupe-Légumes 22-en-1",
     slug: "peeler",
     price: 14900,
     accentColor: "#16A34A",
@@ -388,8 +388,8 @@ export const DEFAULT_CATALOG: CatalogProduct[] = [
       "râpe",
       "frites"
     ],
-    image_url: "/images/peeler/carousel-1-hero-africaine.jpg",
-    image: "/images/peeler/carousel-1-hero-africaine.jpg",
+    image_url: "/images/peeler/v2-hero-1-kit-22en1.jpg",
+    image: "/images/peeler/v2-hero-1-kit-22en1.jpg",
     headline: "Vos oignons, tomates et légumes coupés en dés parfaits en 1 seconde sans verser une larme ! Panier égouttoir amovible à anses pour rincer et égoutter vos spaghettis et pâtes sans vous brûler.",
     bundles: [
       { name: "Coffret Intégral Coupe-Légumes 14-en-1 + Panier Égouttoir à Anses + 9 Lames Inox + Éplucheur Offert", price: 14900 }
