@@ -21,6 +21,7 @@ import {
   Sparkles,
   Save,
   Check,
+  MessageCircle,
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
@@ -464,6 +465,31 @@ export default function GameStickLanding({ slug = "game-stick-4k" }: { slug?: st
             onSubmit={handleOrderSubmit}
             isSubmitting={isSubmitting}
           />
+          <div className="mt-3 text-center space-y-1.5">
+            <p className="text-[11px] font-medium text-slate-500">
+              Vous préférez commander ou poser une question directement ?
+            </p>
+            <a
+              href={`https://wa.me/2290192901817?text=${encodeURIComponent(
+                "Bonjour Isivente ! Je souhaite commander la Console Game Stick 4K Pro (+10 000 Jeux & 2 Manettes) à 22 900 FCFA (paiement à la livraison)."
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                recordInteraction();
+                trackAddToCart({
+                  content_name: selectedBundle.name,
+                  content_ids: [slug],
+                  value: selectedBundle.price,
+                  currency: "XOF",
+                });
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#16A34A] hover:bg-[#15803d] text-white font-semibold text-sm shadow-xs transition-colors"
+            >
+              <MessageCircle className="w-4 h-4 stroke-[2]" />
+              <span>Commander par WhatsApp (1 clic)</span>
+            </a>
+          </div>
         </div>
 
         {/* ── 8. GRILLE DES 4 BÉNÉFICES MAJEURS ── */}
