@@ -547,8 +547,8 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
           </div>
           <div className="relative aspect-[9/16] w-full max-w-xs sm:max-w-sm mx-auto rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
             <video
-              src="/videos/mandoline-demo-1.mp4"
-              poster="/images/peeler/v2-hero-3-tranchage.jpg"
+              src="/videos/peeler-22en1-demo.mp4"
+              poster="/images/peeler/v2-hero-1-kit-22en1.jpg"
               autoPlay
               muted
               playsInline
