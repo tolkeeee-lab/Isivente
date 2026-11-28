@@ -532,6 +532,34 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
           </div>
         </section>
 
+        {/* ── 8B. DÉMONSTRATION VIDÉO AUTOPLAY (PILIER 4) ── */}
+        <section className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
+          <div className="text-center space-y-1">
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">
+              Démonstration en Action
+            </span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Voyez la vitesse de découpe en direct
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Oignons, carottes, tomates, pommes de terre : 1 pression et vos légumes sont prêts.
+            </p>
+          </div>
+          <div className="relative aspect-[9/16] w-full max-w-xs sm:max-w-sm mx-auto rounded-2xl overflow-hidden bg-slate-950 border border-slate-200 shadow-md">
+            <video
+              src="/videos/mandoline-demo-1.mp4"
+              poster="/images/peeler/v2-hero-3-tranchage.jpg"
+              autoPlay
+              muted
+              playsInline
+              loop
+              controls
+              preload="metadata"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </section>
+
         {/* ── 9. SECTION FOCUS : PANIER DE DRAINAGE & RANGEMENT À COMPARTIMENTS ── */}
         <section className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
           <div className="text-center space-y-1">
