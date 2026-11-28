@@ -434,10 +434,11 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
             accentColor="#16A34A"
             onSubmit={handleOrderSubmit}
           />
-          <div className="mt-3 text-center space-y-1.5">
-            <p className="text-[11px] font-medium text-slate-500">
-              Vous préférez commander ou poser une question directement ?
-            </p>
+          <div className="mt-4 p-4 rounded-2xl bg-[#f0fdf4] border-2 border-[#25D366]/60 shadow-sm space-y-2.5 text-center">
+            <div className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-[#15803d]">
+              <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
+              <span>Service Client en ligne · Cotonou &amp; Calavi</span>
+            </div>
             <a
               href={`https://wa.me/2290192901817?text=${encodeURIComponent(
                 "Bonjour Isivente ! Je souhaite commander le Coupe-Légumes Multifonction 22-en-1 à 14 900 FCFA (paiement à la livraison)."
@@ -453,11 +454,15 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
                   currency: "XOF",
                 });
               }}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#16A34A] hover:bg-[#15803d] text-white font-semibold text-sm shadow-xs transition-colors"
+              className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-[#25D366] hover:bg-[#1fb855] text-white font-extrabold text-base shadow-lg shadow-[#25D366]/30 transition-all active:scale-[0.98]"
             >
-              <MessageCircle className="w-4 h-4 stroke-[2]" />
-              <span>Commander par WhatsApp (1 clic)</span>
+              <MessageCircle className="w-5 h-5 stroke-[2.25] fill-white/15" />
+              <span>Commander sur WhatsApp (1 clic)</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </a>
+            <p className="text-[11px] font-medium text-slate-600">
+              Réponse rapide · Paiement en espèces uniquement après vérification
+            </p>
           </div>
         </div>
 
