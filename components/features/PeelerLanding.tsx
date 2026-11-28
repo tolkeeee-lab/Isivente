@@ -18,6 +18,7 @@ import {
   Salad,
   Flame,
   Zap,
+  MessageCircle,
 } from "lucide-react";
 import { saveNewOrder } from "@/lib/ordersStorage";
 import { usePagePresence } from "@/hooks/usePagePresence";
@@ -203,12 +204,6 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
       currency: "XOF",
       num_items: 1,
     });
-    trackInitiateCheckout({
-      content_name: "Coupe-Légumes Multifonction 14-en-1 avec Panier Égouttoir à Anses™",
-      content_ids: ["peeler"],
-      value: 14900,
-      currency: "XOF",
-    });
     const el = document.getElementById("commander");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -222,6 +217,16 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
 
     setIsSubmitting(true);
     setOrderError("");
+    recordInteraction();
+    trackInitiateCheckout({
+      content_name: selectedBundle.name,
+      content_ids: ["peeler"],
+      value: selectedBundle.price,
+      currency: "XOF",
+      customer_phone: customerPhone.trim(),
+      customer_name: customerName.trim(),
+      city: city.trim() || "Cotonou",
+    });
 
     try {
       const order = await saveNewOrder({
@@ -439,6 +444,31 @@ export default function PeelerLanding({ slug = "peeler" }: { slug?: string }) {
             accentColor="#16A34A"
             onSubmit={handleOrderSubmit}
           />
+          <div className="mt-3 text-center space-y-1.5">
+            <p className="text-[11px] font-medium text-slate-500">
+              Vous préférez commander ou poser une question directement ?
+            </p>
+            <a
+              href={`https://wa.me/2290192901817?text=${encodeURIComponent(
+                "Bonjour Isivente ! Je souhaite commander le Coupe-Légumes Multifonction 14-en-1 à 14 900 FCFA (paiement à la livraison)."
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                recordInteraction();
+                trackAddToCart({
+                  content_name: selectedBundle.name,
+                  content_ids: ["peeler"],
+                  value: selectedBundle.price,
+                  currency: "XOF",
+                });
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#16A34A] hover:bg-[#15803d] text-white font-semibold text-sm shadow-xs transition-colors"
+            >
+              <MessageCircle className="w-4 h-4 stroke-[2]" />
+              <span>Commander par WhatsApp (1 clic)</span>
+            </a>
+          </div>
         </div>
 
         {/* ── 8. GRILLE DES 4 BÉNÉFICES MAJEURS ── */}
